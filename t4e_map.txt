@@ -1,5 +1,3 @@
-Motorola MC68376
-
 0x00000000, 0x10000, Bootloader
 0x00010000, 0x10000, Calibration (Maps)
 0x00020000, 0x60000, Program
