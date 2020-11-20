@@ -1,3 +1,22 @@
-0x00000000, 0x10000, Bootloader
-0x00010000, 0x10000, Calibration (Maps)
-0x00020000, 0x60000, Program
+Hardware (Thanks Cybernet):
+
+L9612 K Line Transceiver
+L9822EPD Octal Serial Solenoids
+MC68HC908JL8 CPU HC08 comp.
+MC33394FS CAN Transceiver & Power Mgmt
+MPX4001A Pressure Sensor
+TLE6220 Quad Low-Side Switch
+MPC563 Main CPU (PowerPC Core) - 512kb Flash, 32Kb SRAM
+
+Memory Map:
+0x000000, 0x10000, Bootloader
+0x010000, 0x10000, Calibration (Maps)
+0x020000, 0x60000, Program
+
+Bootloader:
+0x00423C Subroutine: Wait on 0030601E (Loop 5000x), return true or false
+
+Device:
+
+0x2FC00E Watchdog Device (Write 0x556C and 0xAA39)
+0x30601E MPWMSM3 Status/Control Register (MPWMSCR)
