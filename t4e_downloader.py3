@@ -20,6 +20,10 @@ can_frame_size = can_header_size + 8;
 ecu_req_fmt = ">IB3x"
 ecu_resp_fmt = "8B"
 
+ecu_write4_fmt = ">I4B"
+ecu_write2_fmt = ">I2B"
+ecu_write1_fmt = ">I1B"
+
 def ECUReadMemory(address, size):
 	if(size > 255):
 		return None
@@ -47,6 +51,30 @@ def ECUReadMemory(address, size):
 			return None
 	return response
 
+def ECUWriteMemory(address, data):
+	if(len(data) < 1 or len(data) > 4):
+		return False
+	if(address < 0x10000 or (address+len(data)) > 0x20000):
+		print("ECU Write only flash calibration yet... sorry...")
+		return False
+	print("ECU Write "+str(data)+" @ "+hex(address))
+	if(len(data) == 4):
+		cf = struct.pack(can_header_fmt, 0x54, 8) + struct.pack(ecu_write4fmt, address, *data)
+		sock.send(cf)
+	if(len(data) == 2):
+		cf = struct.pack(can_header_fmt, 0x55, 2) + struct.pack(ecu_write2fmt, address, *data)
+		sock.send(cf)
+	if(len(data) == 1):
+		cf = struct.pack(can_header_fmt, 0x56, 2) + struct.pack(ecu_write1fmt, address, *data)
+		sock.send(cf)
+	readback = ECUReadMemory(address, len(data))
+	if(data == readback):
+		print("ECU Write successfully!")
+		return True
+	else
+		print("ECU Write failed!")
+		return False
+	
 def ECUDownload(address, size, filename):
 	print("ECU Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
 	f = open(filename, "wb")
@@ -89,6 +117,10 @@ ECUDownload(0x003F8000, 0x08000, "calram.bin")
 
 # Flat dump (Like Obeisance)
 ECUDownload(0x00000000, 0x80000, "dump.bin")
+
+# DANGEROUS
+#print("\nUpload ECU")
+#ECUWriteMemory("0x001FFFF", b'\xFE')
 
 print("Done")
 
