@@ -54,8 +54,11 @@ def ECUReadMemory(address, size):
 def ECUWriteMemory(address, data):
 	if(len(data) < 1 or len(data) > 4):
 		return False
-	if(address < 0x10000 or (address+len(data)) > 0x20000):
-		print("ECU Write only flash calibration yet... sorry...")
+	#if(address < 0x10000 or (address+len(data)) > 0x20000):
+	#	print("ECU Write only flash calibration yet... sorry...")
+	#	return False
+	if(address < 0x80000):
+		print("ECU Write only RAM yet... Sorry...")
 		return False
 	print("ECU Write "+str(data)+" @ "+hex(address))
 	if(len(data) == 4):
@@ -119,8 +122,12 @@ ECUDownload(0x003F8000, 0x08000, "calram.bin")
 ECUDownload(0x00000000, 0x80000, "dump.bin")
 
 # DANGEROUS
-#print("\nUpload ECU")
-#ECUWriteMemory("0x001FFFF", b'\xFE')
+#print("\nUpload ECU Test")
+#UC3FMCR_BASE = 0x2FC800
+#UC3FMCR_PROTECT = ECUReadMemory(UC3FMCR_BASE + 3, 1)
+#print("Actual Write Protection "+str(UC3FMCR_PROTECT))
+#print("Remove Write Protection for calibration data")
+#ECUWriteMemory(UC3FMCR_BASE + 3, b'0xBF')
 
 print("Done")
 

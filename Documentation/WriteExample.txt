@@ -1,0 +1,92 @@
+Hello all,
+
+I have to program the internal flash (it is called UC3F) of an MPC563
+PowerPC. After having read the Reference Manual's chapter three times,
+I still don't understand fully how to write a sequence of bytes to the
+flash. I am sure that it is not that difficult, but it's the first
+time I have this kind of task.
+
+From what I understand:
+
+In order to rewrite the flash, you must first erase it.
+
+Writing the Flash is done via a Hardware State Machine.
+
+I have found this code snippets in
+http://blog.gmane.org/gmane.comp.hardware.motorola.microcontrollers/month=20030901
+
+#define C3F_ADDR       0x002FC800   // C3F register base address
+#define UC3F_A   (*((volatile unsigned long *)(0x00000000)))  // flash
+memory location
+
+....
+ C3F[0] = (struct C3F_tag *)(C3F_ADDR);
+
+//erase
+ C3F[0]->C3FMCR.PROTECT = 0; //Disable Protect
+ C3F[0]->C3FCTL.PE = 1;
+ C3F[0]->C3FCTL.SES = 1; 
+ UC3F_A = 0xffffffff; //garbage value
+ C3F[0]->C3FCTL.EHV = 1; 
+ while( C3F[0]->C3FCTL.HVS != 0 );
+ while(C3F[0]->C3FCTL.PEGOOD != 1);
+
+ C3F[0]->C3FCTL.EHV = 0;
+ C3F[0]->C3FCTL.SES = 0;
+
+//write  
+ C3F[0]->C3FMCR.PROTECT = 0;
+ C3F[0]->C3FCTL.SES = 1; 
+ C3F[0]->C3FCTL.PE = 0;
+ UC3F_A = 0xCCCCCCCC;       
+ C3F[0]->C3FCTL.EHV = 1;  
+ while( C3F[0]->C3FCTL.HVS != 0 );
+
+ while(C3F[0]->C3FCTL.PEGOOD != 1);
+
+ C3F[0]->C3FCTL.EHV = 0;
+ C3F[0]->C3FCTL.SES = 0;
+
+
+I understand the 'frame' of the erase and write blocks: First the
+registers are set to initiate the erase/write process, then comes the
+'interesting' middle part. Finally, you have to poll for two status
+bits and reset two initiating bits.
+
+But I don't understand this middle part. How do I determine the flash
+address to be written to, and how do I determine the content (byte,
+int, long or whatever) to write to that address? In the code above,
+UC3F_A is the first memory location of the flash. Does this mean that
+
+UC3F_A = 0xCCCCCCCC; 
+
+writes 0xCCCCCCCC to this memory location?
+
+The processor manual implies to me that the first write determines the
+address and the second determines the data, but I probably don't
+understand it:
+
+"Programming write &#2013266071; A successful write to the array location to be
+programmed.
+This write updates the program data latch with the information to be
+programmed.
+In addition, the addressof the first programming write is latched in
+the UC3F
+memory interface block. All accesses of the array after the first
+write are to the
+same address regardless of the address provided. Thus the locations
+accessed after
+the first programming write are limited to the location to be
+programmed."
+
+Anyway, the code above only writes to one flash memory location. Does
+this mean, I have to repeat the whole sequence to write to the next
+location?
+
+Any help would be great.
+
+
+Best regards
+
+
+Johannes
