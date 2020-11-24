@@ -8,6 +8,17 @@ MPX4001A Pressure Sensor
 TLE6220 Quad Low-Side Switch
 MPC563 Main CPU (PowerPC Core) - 512kb Flash, 32Kb SRAM
 
+CAN:
+0x02AF88: TouCAN Receive Function
+????? Function: PID: 0x51 Payload: ???? (4 or 6 Bytes Length)
+????? Function: PID: 0x51 Payload: ???? (4 or 7 Bytes Length)
+Read  Function: PID: 0x53 Payload: 32bits address (big-endian) + 1 Byte Size
+Read  Function: PID: 0x53 Payload: 32bits address (big-endian) + 2 Bytes Size
+Write Function: PID: 0x54 Payload: 32bits address (big-endian) + 4 Bytes Data
+Write Function: PID: 0x55 Payload: 32bits address (big-endian) + 2 Bytes Data
+Write Function: PID: 0x56 Payload: 32bits address (big-endian) + 1 Byte Data
+????? Function: PID: 0x57 Payload: ????
+
 Memory Map:
 0x000000, 0x10000, Bootloader
 0x010000, 0x10000, Calibration (Maps)
