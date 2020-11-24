@@ -17,18 +17,17 @@ can_if = "can0"
 can_header_fmt = "=IB3x"
 can_header_size = struct.calcsize(can_header_fmt);
 can_frame_size = can_header_size + 8;
-ecu_req_fmt = ">IB3x"
-ecu_resp_fmt = "8B"
 
+ecu_read_fmt = ">IB3x"
 ecu_write4_fmt = ">I4B"
-ecu_write2_fmt = ">I2B"
-ecu_write1_fmt = ">I1B"
+ecu_write2_fmt = ">I2B2x"
+ecu_write1_fmt = ">I1B3x"
 
 def ECUReadMemory(address, size):
 	if(size > 255):
 		return None
 	#print("ECU Read "+str(size)+" bytes @ "+hex(address))
-	cf = struct.pack(can_header_fmt, 0x53, 5) + struct.pack(ecu_req_fmt, address, size)
+	cf = struct.pack(can_header_fmt, 0x53, 5) + struct.pack(ecu_read_fmt, address, size)
 	sock.send(cf)
 	n_frames_expected = int(size / 8);
 	last_frame_size = size % 8;
@@ -51,7 +50,7 @@ def ECUReadMemory(address, size):
 			return None
 	return response
 
-def ECUWriteMemory(address, data):
+def ECUWriteMemory(address, data, verify):
 	if(len(data) < 1 or len(data) > 4):
 		return False
 	#if(address < 0x10000 or (address+len(data)) > 0x20000):
@@ -62,19 +61,21 @@ def ECUWriteMemory(address, data):
 		return False
 	print("ECU Write "+str(data)+" @ "+hex(address))
 	if(len(data) == 4):
-		cf = struct.pack(can_header_fmt, 0x54, 8) + struct.pack(ecu_write4fmt, address, *data)
+		cf = struct.pack(can_header_fmt, 0x54, 8) + struct.pack(ecu_write4_fmt, address, *data)
 		sock.send(cf)
 	if(len(data) == 2):
-		cf = struct.pack(can_header_fmt, 0x55, 2) + struct.pack(ecu_write2fmt, address, *data)
+		cf = struct.pack(can_header_fmt, 0x55, 6) + struct.pack(ecu_write2_fmt, address, *data)
 		sock.send(cf)
 	if(len(data) == 1):
-		cf = struct.pack(can_header_fmt, 0x56, 2) + struct.pack(ecu_write1fmt, address, *data)
+		cf = struct.pack(can_header_fmt, 0x56, 5) + struct.pack(ecu_write1_fmt, address, *data)
 		sock.send(cf)
 	readback = ECUReadMemory(address, len(data))
+	if(verify == False):
+		return True
 	if(data == readback):
 		print("ECU Write successfully!")
 		return True
-	else
+	else:
 		print("ECU Write failed!")
 		return False
 	
@@ -94,6 +95,14 @@ def ECUDownload(address, size, filename):
 			return False
 	f.close()
 	return True
+
+def ECUUpload_Calibration():
+	UC3FMCR_BASE = 0x2FC800
+	UC3FMCR_PROTECT = ECUReadMemory(UC3FMCR_BASE + 3, 1)
+	if(UC3FMCR_PROTECT != None):
+		print("Actual Write Protection "+str(UC3FMCR_PROTECT))
+		print("Remove Write Protection for calibration data")
+		ECUWriteMemory(UC3FMCR_BASE + 3, b'\xBF', True)
 
 print("Stupid dumper for Lotus T4e ECU\n")
 
@@ -123,11 +132,7 @@ ECUDownload(0x00000000, 0x80000, "dump.bin")
 
 # DANGEROUS
 #print("\nUpload ECU Test")
-#UC3FMCR_BASE = 0x2FC800
-#UC3FMCR_PROTECT = ECUReadMemory(UC3FMCR_BASE + 3, 1)
-#print("Actual Write Protection "+str(UC3FMCR_PROTECT))
-#print("Remove Write Protection for calibration data")
-#ECUWriteMemory(UC3FMCR_BASE + 3, b'0xBF')
+#ECUUpload_Calibration()
 
 print("Done")
 
