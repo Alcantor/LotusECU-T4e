@@ -18,7 +18,7 @@ can_header_fmt = "=IB3x"
 can_header_size = struct.calcsize(can_header_fmt);
 can_frame_size = can_header_size + 8;
 
-ecu_read_fmt = ">IB3x"
+ecu_reads1_fmt = ">I1B3x"
 ecu_write4_fmt = ">I4B"
 ecu_write2_fmt = ">I2B2x"
 ecu_write1_fmt = ">I1B3x"
@@ -27,7 +27,7 @@ def ECUReadMemory(address, size):
 	if(size > 255):
 		return None
 	#print("ECU Read "+str(size)+" bytes @ "+hex(address))
-	cf = struct.pack(can_header_fmt, 0x53, 5) + struct.pack(ecu_read_fmt, address, size)
+	cf = struct.pack(can_header_fmt, 0x53, 5) + struct.pack(ecu_reads1_fmt, address, size)
 	sock.send(cf)
 	n_frames_expected = int(size / 8);
 	last_frame_size = size % 8;
@@ -63,15 +63,17 @@ def ECUWriteMemory(address, data, verify):
 	if(len(data) == 4):
 		cf = struct.pack(can_header_fmt, 0x54, 8) + struct.pack(ecu_write4_fmt, address, *data)
 		sock.send(cf)
+	if(len(data) == 3):
+		return ECUWriteMemory(address, data[:2], verify) and ECUWriteMemory(address+2, data[2:], verify)
 	if(len(data) == 2):
 		cf = struct.pack(can_header_fmt, 0x55, 6) + struct.pack(ecu_write2_fmt, address, *data)
 		sock.send(cf)
 	if(len(data) == 1):
 		cf = struct.pack(can_header_fmt, 0x56, 5) + struct.pack(ecu_write1_fmt, address, *data)
 		sock.send(cf)
-	readback = ECUReadMemory(address, len(data))
 	if(verify == False):
 		return True
+	readback = ECUReadMemory(address, len(data))
 	if(data == readback):
 		print("ECU Write successfully!")
 		return True
