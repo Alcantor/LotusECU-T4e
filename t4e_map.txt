@@ -23,6 +23,9 @@ Memory Map:
 0x000000, 0x10000, Bootloader
 0x010000, 0x10000, Calibration (Maps)
 0x020000, 0x60000, Program
+0x2F8000, 0x00800, 2 KByte DecRAM (Decompression RAM, can be use as RAM)
+0x3F8000, 0x08000, 32 KByte CalRAM (Flash Overlay RAM, can be use as RAM)
+0x3F974C, 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
 
 Bootloader:
 0x00423C Subroutine: Wait on 0030601E (Loop 5000x), return true or false
