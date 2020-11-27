@@ -27,6 +27,12 @@ Memory Map:
 0x3F8000, 0x08000, 32 KByte CalRAM (Flash Overlay RAM, can be use as RAM)
 0x3F974C, 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
 
+0x3FD64C 16 Bits RPM Variable
+
+@0x03BCC8:
+ 0x010206 Value not in XML Def (if rpm < 4300 then put a flag in 0x3F9587)
+ 0x01020C Value not in XML Def (if rpm > 4500 then clear a flag in 0x3F9587)
+
 Bootloader:
 0x00423C Subroutine: Wait on 0030601E (Loop 5000x), return true or false
 

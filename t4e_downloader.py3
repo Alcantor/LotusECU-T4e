@@ -18,94 +18,155 @@ can_header_fmt = "=IB3x"
 can_header_size = struct.calcsize(can_header_fmt);
 can_frame_size = can_header_size + 8;
 
-ecu_reads1_fmt = ">I1B3x"
-ecu_write4_fmt = ">I4B"
-ecu_write2_fmt = ">I2B2x"
-ecu_write1_fmt = ">I1B3x"
-
 def ECUReadMemory(address, size):
-	if(size > 255):
-		return None
 	#print("ECU Read "+str(size)+" bytes @ "+hex(address))
-	cf = struct.pack(can_header_fmt, 0x53, 5) + struct.pack(ecu_reads1_fmt, address, size)
+	if(size < 256):
+		cf = struct.pack(can_header_fmt, 0x53, 5)
+		cf += struct.pack(">IB3x", address, size)
+	else:
+		cf = struct.pack(can_header_fmt, 0x53, 6)
+		cf += struct.pack(">IH2x", address, size)
 	sock.send(cf)
-	n_frames_expected = int(size / 8);
-	last_frame_size = size % 8;
 	response = bytearray()
-	for i in range(0, n_frames_expected):
-		#print("ECU Wait reply "+str(i)+" of "+str(n_frames_expected))
-		try:		
+	while(size > 0):
+		#print(".", end="")
+		try:
+			chunk_size = min(8, size);
 			cf = sock.recv(can_frame_size)
-			response += cf[can_header_size:can_frame_size]
+			response += cf[can_header_size:can_header_size+chunk_size]
+			size -= chunk_size
 		except socket.timeout:
-			print("ECU Timeout!")
-			return None
-	if(last_frame_size > 0):
-		#print("ECU Wait last reply "+str(last_frame_size)+" bytes remaining")
-		try:		
-			cf = sock.recv(can_frame_size)
-			response += cf[can_header_size:can_header_size+last_frame_size]
-		except socket.timeout:
-			print("ECU Timeout!")
+			#print("ECU Timeout!")
 			return None
 	return response
 
 def ECUWriteMemory(address, data, verify):
 	if(len(data) < 1 or len(data) > 4):
 		return False
-	#if(address < 0x10000 or (address+len(data)) > 0x20000):
-	#	print("ECU Write only flash calibration yet... sorry...")
-	#	return False
-	if(address < 0x80000):
-		print("ECU Write only RAM yet... Sorry...")
-		return False
-	print("ECU Write "+str(data)+" @ "+hex(address))
-	if(len(data) == 4):
-		cf = struct.pack(can_header_fmt, 0x54, 8) + struct.pack(ecu_write4_fmt, address, *data)
-		sock.send(cf)
-	if(len(data) == 3):
-		return ECUWriteMemory(address, data[:2], verify) and ECUWriteMemory(address+2, data[2:], verify)
-	if(len(data) == 2):
-		cf = struct.pack(can_header_fmt, 0x55, 6) + struct.pack(ecu_write2_fmt, address, *data)
-		sock.send(cf)
-	if(len(data) == 1):
-		cf = struct.pack(can_header_fmt, 0x56, 5) + struct.pack(ecu_write1_fmt, address, *data)
-		sock.send(cf)
-	if(verify == False):
-		return True
+	#print("ECU Write "+str(data)+" @ "+hex(address))
+	if  (len(data) == 3):
+		return ECUWriteMemory(address, data[:2], verify) \
+			and ECUWriteMemory(address+2, data[2:], verify)
+	elif(len(data) == 4):
+		cf = struct.pack(can_header_fmt, 0x54, 8)
+		cf += struct.pack(">I4B", address, *data)
+	elif(len(data) == 2):
+		cf = struct.pack(can_header_fmt, 0x55, 6)
+		cf += struct.pack(">I2B2x", address, *data)
+	elif(len(data) == 1):
+		cf = struct.pack(can_header_fmt, 0x56, 5)
+		cf += struct.pack(">I1B3x", address, *data)
+	sock.send(cf)
+	if(verify == False): return True
 	readback = ECUReadMemory(address, len(data))
-	if(data == readback):
-		print("ECU Write successfully!")
-		return True
-	else:
-		print("ECU Write failed!")
-		return False
+	return data == readback
 	
 def ECUDownload(address, size, filename):
 	print("ECU Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
 	f = open(filename, "wb")
 	while(size > 0):
-		chunk_size = min(255, size);
+		chunk_size = min(64, size);
 		chunk = ECUReadMemory(address, chunk_size)
 		if(chunk == None):
 			print("ECU Download error. Abording")
 			return False
-		address += chunk_size
-		size -= chunk_size
 		if(f.write(chunk) != chunk_size):
 			print("ECU File writing error. Abording!")
 			return False
+		print(".", end="")
+		address += chunk_size
+		size -= chunk_size
+	f.close()
+	return True
+	
+def ECUVerify(address, data):
+	offset = 0
+	size = len(data)
+	print("ECU Verify "+str(size)+" bytes @ "+hex(address))
+	while(size > 0):
+		chunk_size = min(64, size);
+		chunk = ECUReadMemory(address, chunk_size)
+		if(chunk == None):
+			print("ECU Download error. Abording")
+			return False
+		if(data[offset:offset+chunk_size] != chunk):
+			print("ECU Verify error. Abording")
+			return False
+		print(".", end="")
+		address += chunk_size
+		offset += chunk_size
+		size -= chunk_size
 	f.close()
 	return True
 
-def ECUUpload_Calibration():
-	UC3FMCR_BASE = 0x2FC800
-	UC3FMCR_PROTECT = ECUReadMemory(UC3FMCR_BASE + 3, 1)
-	if(UC3FMCR_PROTECT != None):
-		print("Actual Write Protection "+str(UC3FMCR_PROTECT))
-		print("Remove Write Protection for calibration data")
-		ECUWriteMemory(UC3FMCR_BASE + 3, b'\xBF', True)
-
+def ECUErase(blockid):
+	UC3FMCR_ADDR = 0x2FC800 # Configuration Register
+	UC3FCTL_ADDR = 0x2FC808 # High Voltage Control Register
+	flash_addr  = 0x010000 * blockid # Block base address
+	flash_bmask = 0x80 >> blockid # Block mask
+	print("Erase block "+str(blockid))
+	# PROTECT[M]=0
+	r = ECUWriteMemory(UC3FMCR_ADDR + 3, (0xFF & ~flash_bmask).to_bytes(1, 'big'), True)
+	if(r == None): return False
+	# BLOCK[M]=1
+	r = ECUWriteMemory(UC3FCTL_ADDR + 2, flash_bmask.to_bytes(1, 'big'), True)
+	if(r == None): return False
+	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x06', False) # PE=1 and SES=1
+	ECUWriteMemory(flash_addr, b'\xFF\xFF\xFF\xFF', False) # Interlock
+	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x07', False) # EHV=1
+	while((ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x80): # Wait on HVS=0
+		print(".", end="")
+	pegood = True if ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x40 else False
+	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x00', False) # PE=0 SES=0 EHV=0
+	return pegood
+	
+def ECUProgram(blockid, data):
+	UC3FMCR_ADDR = 0x2FC800 # Configuration Register
+	UC3FCTL_ADDR = 0x2FC808 # High Voltage Control Register
+	flash_addr  = 0x010000 * blockid # Block base address
+	flash_bmask = 0x80 >> blockid # Block mask
+	if(data % 4 > 0):
+		print("WARNING: Data has been padded with 0xFF")
+		data += b'\xFF\xFF\xFF\xFF'[(len(data)%4):]
+	if(len(data) > 0x010000):
+		print("ERROR: Too much data")
+		return False
+	print("Write block"+str(blockid))
+	# PROTECT[M]=0
+	r = ECUWriteMemory(UC3FMCR_ADDR + 3, (0xFF & ~flash_bmask).to_bytes(1, 'big'), True)
+	if(r == None): return False
+	# BLOCK[M]=1
+	r = ECUWriteMemory(UC3FCTL_ADDR + 2, flash_bmask.to_bytes(1, 'big'), True)
+	if(r == None): return False
+	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x02', False) # PE=0 and SES=1
+	for i in range(0, len(data), 4):
+		ECUWriteMemory(flash_addr+i, data[i:i+4], False) # Interlock
+		ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x03', False) # EHV=1
+		while((ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x80): # Wait on HVS=0
+			print(".", end="")
+		pegood = True if ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x40 else False
+		ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x02', False) # EHV=0
+		if(!pegood): break
+	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x00', False) # SES=1
+	return pegood
+	
+def ECUUpload(blockid, filename):
+	f = open(filename, "rb")
+	data = f.read()
+	f.close()
+	address = 0x010000 * blockid
+	print("ECU Upload "+str(size)+" bytes @ block"+hex(address)+" from "+filename)
+	if(!ECUErase(blockid)):
+		print("Erase failed!")
+		return False
+	if(!ECUProgram(blockid, data)):
+		print("Program failed!")
+		return False
+	if(!ECUVerify(address, data)):
+		print("Verify failed!")
+		return False
+	return True
+	
 print("Stupid dumper for Lotus T4e ECU\n")
 
 print("\nConfigure "+can_if+" @ 1 Mbit/s")
@@ -123,18 +184,18 @@ sock.settimeout(1.0)
 
 print("\nDownload ECU")
 # Section dump (Like Cybernet)
-ECUDownload(0x00000000, 0x10000, "bootldr.bin")
-ECUDownload(0x00010000, 0x10000, "calrom.bin")
-ECUDownload(0x00020000, 0x60000, "prog.bin")
-ECUDownload(0x002F8000, 0x00800, "decram.bin")
-ECUDownload(0x003F8000, 0x08000, "calram.bin")
+ECUDownload(0x000000, 0x10000, "bootldr.bin")
+ECUDownload(0x010000, 0x10000, "calrom.bin")
+ECUDownload(0x020000, 0x60000, "prog.bin")
+ECUDownload(0x2F8000, 0x00800, "decram.bin")
+ECUDownload(0x3F8000, 0x08000, "calram.bin")
 
 # Flat dump (Like Obeisance)
-ECUDownload(0x00000000, 0x80000, "dump.bin")
+ECUDownload(0x000000, 0x80000, "dump.bin")
 
 # DANGEROUS
 #print("\nUpload ECU Test")
-#ECUUpload_Calibration()
+#ECUUpload(1, "calrom.bin")
 
 print("Done")
 
