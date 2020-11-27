@@ -113,7 +113,7 @@ def ECUErase(blockid):
 	ECUWriteMemory(flash_addr, b'\xFF\xFF\xFF\xFF', False) # Interlock
 	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x07', False) # EHV=1
 	while(ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x80): pass # Wait on HVS=0
-	pegood = True if ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x40 else False
+	pegood = True if(ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x40) else False
 	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x00', False) # PE=0 SES=0 EHV=0
 	return pegood
 	
@@ -140,7 +140,7 @@ def ECUProgram(blockid, data):
 		ECUWriteMemory(flash_addr+i, data[i:i+4], False) # Interlock
 		ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x03', False) # EHV=1
 		while(ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x80): pass # Wait on HVS=0
-		pegood = True if ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x40 else False
+		pegood = True if(ECUReadMemory(UC3FCTL_ADDR + 0, 1) & 0x40) else False
 		ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x02', False) # EHV=0
 		if(not pegood): break
 		if(i % 128 == 0): print(".", end="", flush=True) # One dot every 128 Bytes
