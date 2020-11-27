@@ -8,35 +8,10 @@ MPX4001A Pressure Sensor
 TLE6220 Quad Low-Side Switch
 MPC563 Main CPU (PowerPC Core) - 512kb Flash, 32Kb SRAM
 
-CAN:
-0x02AF88: TouCAN Receive Function
-????? Function: PID: 0x51 Payload: ???? (4 or 6 Bytes Length)
-????? Function: PID: 0x52 Payload: ???? (4 or 7 Bytes Length)
-Read  Function: PID: 0x53 Payload: 32bits address (big-endian) + 1 Byte Size
-Read  Function: PID: 0x53 Payload: 32bits address (big-endian) + 2 Bytes Size
-Write Function: PID: 0x54 Payload: 32bits address (big-endian) + 4 Bytes Data
-Write Function: PID: 0x55 Payload: 32bits address (big-endian) + 2 Bytes Data
-Write Function: PID: 0x56 Payload: 32bits address (big-endian) + 1 Byte Data
-????? Function: PID: 0x57 Payload: ????
-
 Memory Map:
 0x000000, 0x10000, Bootloader
 0x010000, 0x10000, Calibration (Maps)
 0x020000, 0x60000, Program
-0x2F8000, 0x00800, 2 KByte DecRAM (Decompression RAM, can be use as RAM)
-0x3F8000, 0x08000, 32 KByte CalRAM (Flash Overlay RAM, can be use as RAM)
-0x3F974C, 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
+0x2F8000, 0x00800, 2 KByte DecRAM (Decompression RAM)
+0x3F8000, 0x08000, 32 KByte CalRAM
 
-0x3FD64C 16 Bits RPM Variable
-
-@0x03BCC8:
- 0x010206 Value not in XML Def (if rpm < 4300 then put a flag in 0x3F9587)
- 0x01020C Value not in XML Def (if rpm > 4500 then clear a flag in 0x3F9587)
-
-Bootloader:
-0x00423C Subroutine: Wait on 0030601E (Loop 5000x), return true or false
-
-Device:
-
-0x2FC00E Watchdog Device (Write 0x556C and 0xAA39)
-0x30601E MPWMSM3 Status/Control Register (MPWMSCR)
