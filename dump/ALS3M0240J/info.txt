@@ -1,0 +1,10 @@
+bootldr:
+	ALS3M0240J K0412
+
+calrom:
+	CUP09E05 02-11-2006 11:30
+	ALS3M0239K Lotus Sport Cup 260
+
+prog:
+	BCroftT4E090 14/07/2006 Lotus EngV0093
+
