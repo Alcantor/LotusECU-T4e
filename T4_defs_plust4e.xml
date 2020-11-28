@@ -34,7 +34,7 @@ revision log
 0.0.0.14 12-31-18 add open loop fueling control parameters for T4
 0.0.0.15 01-19-19 add LTFT adjustment parameters for the T4
 0.0.0.16 05-24-20 add OBD mode 0x2F timer adjustment parameters and minimum intake air temperature for closed loop fueling for T4
-0.0.0.17 11-19-20 add T4e, NEED TO BE CHECKED (by alcantor)
+0.0.0.17 11-28-20 add T4e, NEED TO BE CHECKED (by alcantor)
 
 -->
 
@@ -4186,404 +4186,400 @@ revision log
    <table name="Alternate primary ignition advance (A_p-s)" storageaddress="0x30328">
     <table type="Y Axis" storageaddress="0x30318" />
    </table>
-
-
-
  </rom>
 
  <rom base="T4BASE">
   <romid>
-    <xmlid>A128E6009F</xmlid>
-    <internalidaddress>0xFFE0</internalidaddress>
-    <internalidstring>A128E6009F K0404</internalidstring>
-    <ecuid>A128E6009F</ecuid>
-    <year>05</year>
+    <xmlid>T4ECalibration</xmlid>
+    <internalidaddress>0x19</internalidaddress>
+    <internalidstring>       </internalidstring>
+    <ecuid>T4E Calibration</ecuid>
+    <year>05-06</year>
     <market>EU</market>
     <make>Lotus</make>
-    <model>Exige</model>
-    <submodel>S2 SC</submodel>
+    <model>Elise/Exige</model>
+    <submodel>S2</submodel>
     <transmission>MT</transmission>
-    <filesize>512kb</filesize>
-    <memmodel>MC68376</memmodel>
-    <flashmethod>A128E6009F K0404</flashmethod>
+    <filesize>64kb</filesize>
+    <memmodel>MPC563</memmodel>
    </romid>
 
-   <table name="MAF Sensor Scaling" storageaddress="0x11EBC">
-    <table type="Y Axis" storageaddress="0x11E7C" />
+   <table name="MAF Sensor Scaling" storageaddress="0x1EBC">
+    <table type="Y Axis" storageaddress="0x1E7C" />
    </table>
-   <table name="Fuel Sensor Scaling" storageaddress="0x10412" />
-   <table name="Intake Air Temperature Sensor Scaling" storageaddress="0x10220" />
-   <table name="Coolant Temperature Sensor Scaling" storageaddress="0x10242" />
-   <table name="Gear Determination Thresholds Part 1" storageaddress="0x10134" />
-   <table name="Gear Determination Thresholds Part 2" storageaddress="0x101d0" />
-   <table name="Shift Light Turn on Threshold" storageaddress="0x1115C" >
-    <table type="Y Axis" storageaddress="0x11154" />
+   <table name="Fuel Sensor Scaling" storageaddress="0x0412" />
+   <table name="Intake Air Temperature Sensor Scaling" storageaddress="0x0220" />
+   <table name="Coolant Temperature Sensor Scaling" storageaddress="0x0242" />
+   <table name="Gear Determination Thresholds Part 1" storageaddress="0x0134" />
+   <table name="Gear Determination Thresholds Part 2" storageaddress="0x01d0" />
+   <table name="Shift Light Turn on Threshold" storageaddress="0x115C" >
+    <table type="Y Axis" storageaddress="0x1154" />
    </table>
-   <table name="Idle Speed Target Increase vs Coolant Temp" storageaddress="0x1078C" >
-    <table type="Y Axis" storageaddress="0x1077C" />
+   <table name="Idle Speed Target Increase vs Coolant Temp" storageaddress="0x078C" >
+    <table type="Y Axis" storageaddress="0x077C" />
    </table>
-   <table name="Idle Speed Target Increase vs Vehicle Speed" storageaddress="0x114EC" >
-    <table type="Y Axis" storageaddress="0x114E4" />
+   <table name="Idle Speed Target Increase vs Vehicle Speed" storageaddress="0x14EC" >
+    <table type="Y Axis" storageaddress="0x14E4" />
    </table>
-   <table name="A/C on Idle Target Increase" storageaddress="0x101D4" />
-   <table name="Barometric Pressure Sensor Gain" storageaddress="0x10028" />
-   <table name="Barometric Pressure Sensor Offset" storageaddress="0x1002a" />
-   <table name="Relative Throttle Position Scaling" storageaddress="0x1005b" />
-   <table name="Relative Throttle Position Zero Correction Scaling" storageaddress="0x1005a" />
-   <table name="Absolute Throttle Position Hysteresis Factor" storageaddress="0x1004c" />
-   <table name="Internal Engine Speed Byte Coefficient" storageaddress="0x10024" />
-   <table name="Internal Engine Speed Byte Offset" storageaddress="0x10026" /> 
-   <table name="Time Delay between Delta Throttle Position Measurement" storageaddress="0x10047" /> 
-   <table name="Threshold Rate of Throttle Change for Load Switching" storageaddress="0x101CE" />
-   <table name="Timer Length for Load Calculation Switching After Large Throttle Rate of Change" storageaddress="0x10044" />
-   <table name="Throttle Position Threshold for MAF-Free Load Calculation" storageaddress="0x111A4">
-    <table type="Y Axis" storageaddress="0x11194" />
+   <table name="A/C on Idle Target Increase" storageaddress="0x01D4" />
+   <table name="Barometric Pressure Sensor Gain" storageaddress="0x0028" />
+   <table name="Barometric Pressure Sensor Offset" storageaddress="0x002a" />
+   <table name="Relative Throttle Position Scaling" storageaddress="0x005b" />
+   <table name="Relative Throttle Position Zero Correction Scaling" storageaddress="0x005a" />
+   <table name="Absolute Throttle Position Hysteresis Factor" storageaddress="0x004c" />
+   <table name="Internal Engine Speed Byte Coefficient" storageaddress="0x0024" />
+   <table name="Internal Engine Speed Byte Offset" storageaddress="0x0026" />
+   <table name="Time Delay between Delta Throttle Position Measurement" storageaddress="0x0047" />
+   <table name="Threshold Rate of Throttle Change for Load Switching" storageaddress="0x01CE" />
+   <table name="Timer Length for Load Calculation Switching After Large Throttle Rate of Change" storageaddress="0x0044" />
+   <table name="Throttle Position Threshold for MAF-Free Load Calculation" storageaddress="0x11A4">
+    <table type="Y Axis" storageaddress="0x1194" />
    </table>
-   <table name="Manifold Pressure Load-Scaling" storageaddress="0x11024">
-    <table type="Y Axis" storageaddress="0x11014" />
+   <table name="Manifold Pressure Load-Scaling" storageaddress="0x1024">
+    <table type="Y Axis" storageaddress="0x1014" />
    </table>
-   <table name="Manifold Pressure Ambient-Pressure-Scaling" storageaddress="0x11004">
-    <table type="Y Axis" storageaddress="0x10FF4" />
+   <table name="Manifold Pressure Ambient-Pressure-Scaling" storageaddress="0x1004">
+    <table type="Y Axis" storageaddress="0x0FF4" />
    </table>
-   <table name="MAF-Free Idle Load - IAC Flow (L_idle, L_iac-vac)" storageaddress="0x112E4">
-    <table type="X Axis" storageaddress="0x112D4" />
-    <table type="Y Axis" storageaddress="0x112DC" />
+   <table name="MAF-Free Idle Load - IAC Flow (L_idle, L_iac-vac)" storageaddress="0x12E4">
+    <table type="X Axis" storageaddress="0x12D4" />
+    <table type="Y Axis" storageaddress="0x12DC" />
    </table>
-   <table name="MAF-Free Idle Load - Engine Off (L_idle, L_c)" storageaddress="0x10724">
-    <table type="Y Axis" storageaddress="0x1071C" />
+   <table name="MAF-Free Idle Load - Engine Off (L_idle, L_c)" storageaddress="0x0724">
+    <table type="Y Axis" storageaddress="0x071C" />
    </table>
-   <table name="MAF-Free Primary Load (L_ts)" storageaddress="0x13926">
-    <table type="X Axis" storageaddress="0x13906" />
-    <table type="Y Axis" storageaddress="0x13916" />
+   <table name="MAF-Free Primary Load (L_ts)" storageaddress="0x3926">
+    <table type="X Axis" storageaddress="0x3906" />
+    <table type="Y Axis" storageaddress="0x3916" />
    </table>
-   <table name="MAF-Free Load Temperature Correction (C, C_T)" storageaddress="0x102E8">
-    <table type="X Axis" storageaddress="0x102D8" />
-    <table type="Y Axis" storageaddress="0x102E0" />
+   <table name="MAF-Free Load Temperature Correction (C, C_T)" storageaddress="0x02E8">
+    <table type="X Axis" storageaddress="0x02D8" />
+    <table type="Y Axis" storageaddress="0x02E0" />
    </table>
-   <table name="Variable Valve Timing PWM control frequency" storageaddress="0x101B0" /> 
-   <table name="Engine run time necessary before VVT becomes active" storageaddress="0x11FD4">
-    <table type="Y Axis" storageaddress="0x11FCC" />
+   <table name="Variable Valve Timing PWM control frequency" storageaddress="0x01B0" />
+   <table name="Engine run time necessary before VVT becomes active" storageaddress="0x1FD4">
+    <table type="Y Axis" storageaddress="0x1FCC" />
    </table>
-   <table name="Variable Valve Timing Proportional Control Gain" storageaddress="0x101BE" /> 
-   <table name="Variable Valve Timing Integral Control Gain" storageaddress="0x101C0" /> 
-   <table name="High cam - Primary VVT target" storageaddress="0x11054">
-    <table type="X Axis" storageaddress="0x11034" />
-    <table type="Y Axis" storageaddress="0x11044" />
+   <table name="Variable Valve Timing Proportional Control Gain" storageaddress="0x01BE" />
+   <table name="Variable Valve Timing Integral Control Gain" storageaddress="0x01C0" />
+   <table name="High cam - Primary VVT target" storageaddress="0x1054">
+    <table type="X Axis" storageaddress="0x1034" />
+    <table type="Y Axis" storageaddress="0x1044" />
    </table>
-   <table name="Low cam - Primary VVT target" storageaddress="0x10454">
-    <table type="X Axis" storageaddress="0x10434" />
-    <table type="Y Axis" storageaddress="0x10444" />
+   <table name="Low cam - Primary VVT target" storageaddress="0x0454">
+    <table type="X Axis" storageaddress="0x0434" />
+    <table type="Y Axis" storageaddress="0x0444" />
    </table>
-   <table name="Primary VVT engine temperature correction" storageaddress="0x10564">
-    <table type="Y Axis" storageaddress="0x10554" />
+   <table name="Primary VVT engine temperature correction" storageaddress="0x0564">
+    <table type="Y Axis" storageaddress="0x0554" />
    </table>
-   <table name="Engage Variable Valve Lift RPM Threshold" storageaddress="0x101B4" /> 
-   <table name="Disengage Variable Valve Lift RPM Threshold" storageaddress="0x101B6" /> 
-   <table name="Engage Variable Valve Lift Coolant Temperature Threshold" storageaddress="0x101B8" /> 
-   <table name="Disengage Variable Valve Lift Coolant Temperature Threshold" storageaddress="0x101B9" /> 
-   <table name="Engage Variable Valve Lift PWM Pulse Width" storageaddress="0x101BA" /> 
-   <table name="Disengage Variable Valve Lift PWM Pulse Width" storageaddress="0x101BC" /> 
-   <table name="Variable Valve Lift PWM control frequency" storageaddress="0x101B2" /> 
-   <table name="Target A/F to Allow Closed Loop Fueling" storageaddress="0x10148" />
-   <table name="Minimum Engine Runtime Before Allowing Closed Loop Fueling" storageaddress="0x1041C" />
-   <table name="STFT Rich-Switch Threshold" storageaddress="0x101FA" /> 
-   <table name="STFT Lean-Switch Threshold" storageaddress="0x101FC" />
-   <table name="STFT Near-Stoich Rich Threshold" storageaddress="0x1014C" /> 
-   <table name="STFT Near-Stoich Lean Threshold" storageaddress="0x1014A" />
-   <table name="Idle STFT Rich-Switch Correction Step Size (S_sw_r_to_l)" storageaddress="0x101F8" /> 
-   <table name="Idle STFT Lean-Switch Correction Step Size (S_sw_l_to_r)" storageaddress="0x101F6" /> 
-   <table name="STFT Rich-Switch Correction Step Size (S_sw_r_to_l)" storageaddress="0x10B74">
-    <table type="X Axis" storageaddress="0x10B64" />
-    <table type="Y Axis" storageaddress="0x10B6C" />
+   <table name="Engage Variable Valve Lift RPM Threshold" storageaddress="0x01B4" />
+   <table name="Disengage Variable Valve Lift RPM Threshold" storageaddress="0x01B6" />
+   <table name="Engage Variable Valve Lift Coolant Temperature Threshold" storageaddress="0x01B8" />
+   <table name="Disengage Variable Valve Lift Coolant Temperature Threshold" storageaddress="0x01B9" />
+   <table name="Engage Variable Valve Lift PWM Pulse Width" storageaddress="0x01BA" />
+   <table name="Disengage Variable Valve Lift PWM Pulse Width" storageaddress="0x01BC" />
+   <table name="Variable Valve Lift PWM control frequency" storageaddress="0x01B2" />
+   <table name="Target A/F to Allow Closed Loop Fueling" storageaddress="0x0148" />
+   <table name="Minimum Engine Runtime Before Allowing Closed Loop Fueling" storageaddress="0x041C" />
+   <table name="STFT Rich-Switch Threshold" storageaddress="0x01FA" />
+   <table name="STFT Lean-Switch Threshold" storageaddress="0x01FC" />
+   <table name="STFT Near-Stoich Rich Threshold" storageaddress="0x014C" />
+   <table name="STFT Near-Stoich Lean Threshold" storageaddress="0x014A" />
+   <table name="Idle STFT Rich-Switch Correction Step Size (S_sw_r_to_l)" storageaddress="0x01F8" />
+   <table name="Idle STFT Lean-Switch Correction Step Size (S_sw_l_to_r)" storageaddress="0x01F6" />
+   <table name="STFT Rich-Switch Correction Step Size (S_sw_r_to_l)" storageaddress="0x0B74">
+    <table type="X Axis" storageaddress="0x0B64" />
+    <table type="Y Axis" storageaddress="0x0B6C" />
    </table>
-   <table name="STFT Lean-Switch Correction Step Size (S_sw_l_to_r)" storageaddress="0x10B24">
-    <table type="X Axis" storageaddress="0x10B14" />
-    <table type="Y Axis" storageaddress="0x10B1C" />
+   <table name="STFT Lean-Switch Correction Step Size (S_sw_l_to_r)" storageaddress="0x0B24">
+    <table type="X Axis" storageaddress="0x0B14" />
+    <table type="Y Axis" storageaddress="0x0B1C" />
    </table>
-   <table name="STFT Magnitude Limit" storageaddress="0x1014E" /> 
-   <table name="STFT Outside-Limits Step Size Scaling (C_as)" storageaddress="0x10187" /> 
-   <table name="Idle STFT Enleaning Step Size (S_1)" storageaddress="0x101F4" /> 
-   <table name="Idle STFT Enriching Step Size (S_2)" storageaddress="0x101F2" /> 
-   <table name="Idle STFT Engine Revolutions Between STFT Step" storageaddress="0x10073" /> 
-   <table name="STFT Delay Between STFT Step" storageaddress="0x10186" /> 
-   <table name="STFT Enleaning Step Size (S_1)" storageaddress="0x10AD4">
-    <table type="X Axis" storageaddress="0x10AC4" />
-    <table type="Y Axis" storageaddress="0x10ACC" />
+   <table name="STFT Magnitude Limit" storageaddress="0x014E" />
+   <table name="STFT Outside-Limits Step Size Scaling (C_as)" storageaddress="0x0187" />
+   <table name="Idle STFT Enleaning Step Size (S_1)" storageaddress="0x01F4" />
+   <table name="Idle STFT Enriching Step Size (S_2)" storageaddress="0x01F2" />
+   <table name="Idle STFT Engine Revolutions Between STFT Step" storageaddress="0x0073" />
+   <table name="STFT Delay Between STFT Step" storageaddress="0x0186" />
+   <table name="STFT Enleaning Step Size (S_1)" storageaddress="0x0AD4">
+    <table type="X Axis" storageaddress="0x0AC4" />
+    <table type="Y Axis" storageaddress="0x0ACC" />
    </table>
-   <table name="STFT Enriching Step Size (S_2)" storageaddress="0x10A84">
-    <table type="X Axis" storageaddress="0x10A74" />
-    <table type="Y Axis" storageaddress="0x10A7C" />
+   <table name="STFT Enriching Step Size (S_2)" storageaddress="0x0A84">
+    <table type="X Axis" storageaddress="0x0A74" />
+    <table type="Y Axis" storageaddress="0x0A7C" />
    </table>
-   <table name="Injector Pulse Length Battery Voltage Compensation (V_lat)" storageaddress="0x102B6">
-    <table type="Y Axis" storageaddress="0x102A6" />
+   <table name="Injector Pulse Length Battery Voltage Compensation (V_lat)" storageaddress="0x02B6">
+    <table type="Y Axis" storageaddress="0x02A6" />
    </table>
-   <table name="Cranking Injector Pulse Length Coolant Temperature Compensation (I_cool't_temp)" storageaddress="0x114D4">
-    <table type="Y Axis" storageaddress="0x114C4" />
+   <table name="Cranking Injector Pulse Length Coolant Temperature Compensation (I_cool't_temp)" storageaddress="0x14D4">
+    <table type="Y Axis" storageaddress="0x14C4" />
    </table>
-   <table name="Engine Speed Redline Limp Mode Reduction" storageaddress="0x12C44" /> 
-   <table name="Engine Speed Redline Temperature Addition" storageaddress="0x11F3C">
-    <table type="X Axis" storageaddress="0x11F2C" />
-    <table type="Y Axis" storageaddress="0x11F34" />
+   <table name="Engine Speed Redline Limp Mode Reduction" storageaddress="0x2C44" />
+   <table name="Engine Speed Redline Temperature Addition" storageaddress="0x1F3C">
+    <table type="X Axis" storageaddress="0x1F2C" />
+    <table type="Y Axis" storageaddress="0x1F34" />
    </table>
-   <table name="Engine Speed Redline Offset To Evaluate Misfire" storageaddress="0x10128" />
-   <table name="Base Fuel Injector Pulse Length Intake Air Temperature Correction (C_a)" storageaddress="0x1074C">
-    <table type="Y Axis" storageaddress="0x1073C" />
+   <table name="Engine Speed Redline Offset To Evaluate Misfire" storageaddress="0x0128" />
+   <table name="Base Fuel Injector Pulse Length Intake Air Temperature Correction (C_a)" storageaddress="0x074C">
+    <table type="Y Axis" storageaddress="0x073C" />
    </table>
-   <table name="Base Fuel Injector Pulse Length Coolant Temperature/Engine Load Correction (C_cl)" storageaddress="0x111D4">
-    <table type="X Axis" storageaddress="0x111B4" />
-    <table type="Y Axis" storageaddress="0x111C4" />
+   <table name="Base Fuel Injector Pulse Length Coolant Temperature/Engine Load Correction (C_cl)" storageaddress="0x11D4">
+    <table type="X Axis" storageaddress="0x11B4" />
+    <table type="Y Axis" storageaddress="0x11C4" />
    </table>
-   <table name="Base Fuel Injector Pulse Length Coolant Temperature/MAF Ramp Correction (C_cm)" storageaddress="0x1059C">
-    <table type="X Axis" storageaddress="0x10574" />
-    <table type="Y Axis" storageaddress="0x10584" />
+   <table name="Base Fuel Injector Pulse Length Coolant Temperature/MAF Ramp Correction (C_cm)" storageaddress="0x059C">
+    <table type="X Axis" storageaddress="0x0574" />
+    <table type="Y Axis" storageaddress="0x0584" />
    </table>
-   <table name="Base Fuel Target Air/Fuel Ratio (A/F_cmd)" storageaddress="0x13A46">
-    <table type="X Axis" storageaddress="0x13A26" />
-    <table type="Y Axis" storageaddress="0x13A36" />
+   <table name="Base Fuel Target Air/Fuel Ratio (A/F_cmd)" storageaddress="0x3A46">
+    <table type="X Axis" storageaddress="0x3A26" />
+    <table type="Y Axis" storageaddress="0x3A36" />
    </table>
-   <table name="A/F enrich ignition advance scaling factor (C_ign)" storageaddress="0x100BB" />
-   <table name="Fuel Injection Correction Factor (10000/VE)" storageaddress="0x10BF4">
-    <table type="X Axis" storageaddress="0x10BB4" />
-    <table type="Y Axis" storageaddress="0x10BD4" />
+   <table name="A/F enrich ignition advance scaling factor (C_ign)" storageaddress="0x00BB" />
+   <table name="Fuel Injection Correction Factor (10000/VE)" storageaddress="0x0BF4">
+    <table type="X Axis" storageaddress="0x0BB4" />
+    <table type="Y Axis" storageaddress="0x0BD4" />
    </table>
-   <table name="Idle LTFT Low Limit else P0172" storageaddress="0x12C93" />
-   <table name="Idle LTFT High Limit else P0171" storageaddress="0x12C92" />
-   <table name="Idle LTFT Adjust Stepsize (I_lrn_step)" storageaddress="0x100BD" />
-   <table name="Idle LTFT Adjust Engine Speed Threshold" storageaddress="0x101D8" />
-   <table name="Idle LTFT Maximum MAF Threshold" storageaddress="0x101D6" />
-   <table name="Low Flow LTFT Minimum MAF Threshold" storageaddress="0x101DC" />
-   <table name="Low Flow LTFT Maximum MAF Threshold" storageaddress="0x101DA" />
-   <table name="High Flow LTFT Minimum MAF Threshold" storageaddress="0x101E2" />
-   <table name="Minimum coolant temperature for LTFT adjust" storageaddress="0x101E6" />
-   <table name="Minimum air temperature for LTFT adjust" storageaddress="0x10188" />
-   <table name="Minimum ambient pressure for LTFT adjust" storageaddress="0x101A8" />
-   <table name="Minimum fuel level for LTFT adjust" storageaddress="0x10189" />
-   <table name="Delay between LTFT adjustment" storageaddress="0x101E7" />
-   <table name="Maximum avg STFT else LTFT adjustment" storageaddress="0x101E8" />
-   <table name="Minimum avg STFT else LTFT adjustment" storageaddress="0x101EA" />
-   <table name="Idle LTFT Low Limit" storageaddress="0x101ED" />
-   <table name="Idle LTFT High Limit" storageaddress="0x101EC" />
-   <table name="Min load for low flow LTFT adjust" storageaddress="0x101E0" />
-   <table name="Max load for low flow LTFT adjust" storageaddress="0x101DE" />
-   <table name="Min load for high flow LTFT adjust" storageaddress="0x101E4" />
-   <table name="Maximum low flow LTFT" storageaddress="0x101EE" />
-   <table name="Minimum low flow LTFT" storageaddress="0x101EF" />
-   <table name="Maximum high flow LTFT" storageaddress="0x101F0" />
-   <table name="Minimum high flow LTFT" storageaddress="0x101F1" />
-   <table name="Tip-in throttle rate activation threshold (trans_delta_tp_hi)" storageaddress="0x10180" />
-   <table name="Tip-out throttle rate activation threshold (trans_delta_tp_low)" storageaddress="0x10184" />
-   <table name="Tip-in throttle rate upper limit (trans_delta_tp_limit_hi)" storageaddress="0x1017E" />
-   <table name="Tip-out throttle rate lower limit (trans_delta_tp_limit_low)" storageaddress="0x10182" />
-   <table name="Tip-in magnitude reduction period (period_trans_delta_tp_reduc)" storageaddress="0x1017C" />
-   <table name="Tip-out magnitude reduction period (period_trans_delta_tp_inc)" storageaddress="0x1017D" />
-   <table name="Tip-in magnitude reduction step size (trans_delta_tp_reduc)" storageaddress="0x10984">
-    <table type="Y Axis" storageaddress="0x10974" />
+   <table name="Idle LTFT Low Limit else P0172" storageaddress="0x2C93" />
+   <table name="Idle LTFT High Limit else P0171" storageaddress="0x2C92" />
+   <table name="Idle LTFT Adjust Stepsize (I_lrn_step)" storageaddress="0x00BD" />
+   <table name="Idle LTFT Adjust Engine Speed Threshold" storageaddress="0x01D8" />
+   <table name="Idle LTFT Maximum MAF Threshold" storageaddress="0x01D6" />
+   <table name="Low Flow LTFT Minimum MAF Threshold" storageaddress="0x01DC" />
+   <table name="Low Flow LTFT Maximum MAF Threshold" storageaddress="0x01DA" />
+   <table name="High Flow LTFT Minimum MAF Threshold" storageaddress="0x01E2" />
+   <table name="Minimum coolant temperature for LTFT adjust" storageaddress="0x01E6" />
+   <table name="Minimum air temperature for LTFT adjust" storageaddress="0x0188" />
+   <table name="Minimum ambient pressure for LTFT adjust" storageaddress="0x01A8" />
+   <table name="Minimum fuel level for LTFT adjust" storageaddress="0x0189" />
+   <table name="Delay between LTFT adjustment" storageaddress="0x01E7" />
+   <table name="Maximum avg STFT else LTFT adjustment" storageaddress="0x01E8" />
+   <table name="Minimum avg STFT else LTFT adjustment" storageaddress="0x01EA" />
+   <table name="Idle LTFT Low Limit" storageaddress="0x01ED" />
+   <table name="Idle LTFT High Limit" storageaddress="0x01EC" />
+   <table name="Min load for low flow LTFT adjust" storageaddress="0x01E0" />
+   <table name="Max load for low flow LTFT adjust" storageaddress="0x01DE" />
+   <table name="Min load for high flow LTFT adjust" storageaddress="0x01E4" />
+   <table name="Maximum low flow LTFT" storageaddress="0x01EE" />
+   <table name="Minimum low flow LTFT" storageaddress="0x01EF" />
+   <table name="Maximum high flow LTFT" storageaddress="0x01F0" />
+   <table name="Minimum high flow LTFT" storageaddress="0x01F1" />
+   <table name="Tip-in throttle rate activation threshold (trans_delta_tp_hi)" storageaddress="0x0180" />
+   <table name="Tip-out throttle rate activation threshold (trans_delta_tp_low)" storageaddress="0x0184" />
+   <table name="Tip-in throttle rate upper limit (trans_delta_tp_limit_hi)" storageaddress="0x017E" />
+   <table name="Tip-out throttle rate lower limit (trans_delta_tp_limit_low)" storageaddress="0x0182" />
+   <table name="Tip-in magnitude reduction period (period_trans_delta_tp_reduc)" storageaddress="0x017C" />
+   <table name="Tip-out magnitude reduction period (period_trans_delta_tp_inc)" storageaddress="0x017D" />
+   <table name="Tip-in magnitude reduction step size (trans_delta_tp_reduc)" storageaddress="0x0984">
+    <table type="Y Axis" storageaddress="0x0974" />
    </table>
-   <table name="Tip-out magnitude reduction step size (trans_delta_tp_inc)" storageaddress="0x10924">
-    <table type="Y Axis" storageaddress="0x10914" />
+   <table name="Tip-out magnitude reduction step size (trans_delta_tp_inc)" storageaddress="0x0924">
+    <table type="Y Axis" storageaddress="0x0914" />
    </table>
-   <table name="Open Loop: Scaling factor for all open loop fueling corrections (C_TtoF)" storageaddress="0x1017A" />
-   <table name="Open Loop: Tip-in neutral gear correction (C_gear_0)" storageaddress="0x10051" />
-   <table name="Open Loop: Tip-in 1st gear correction (C_gear_1)" storageaddress="0x10052" />
-   <table name="Open Loop: Tip-in 2nd gear correction (C_gear_2)" storageaddress="0x10053" />
-   <table name="Open Loop: Tip-in 3rd gear correction (C_gear_3)" storageaddress="0x10054" />
-   <table name="Open Loop: Tip-in 4th gear correction (C_gear_4)" storageaddress="0x10055" />
-   <table name="Open Loop: Tip-in 5th gear correction (C_gear_5)" storageaddress="0x10056" />
-   <table name="Open Loop: Tip-in 6th gear correction (C_gear_6)" storageaddress="0x100B1" />
-   <table name="Open Loop: Tip-in engine speed correction (C_rpm-in)" storageaddress="0x10904">
-    <table type="Y Axis" storageaddress="0x108F4" />
+   <table name="Open Loop: Scaling factor for all open loop fueling corrections (C_TtoF)" storageaddress="0x017A" />
+   <table name="Open Loop: Tip-in neutral gear correction (C_gear_0)" storageaddress="0x0051" />
+   <table name="Open Loop: Tip-in 1st gear correction (C_gear_1)" storageaddress="0x0052" />
+   <table name="Open Loop: Tip-in 2nd gear correction (C_gear_2)" storageaddress="0x0053" />
+   <table name="Open Loop: Tip-in 3rd gear correction (C_gear_3)" storageaddress="0x0054" />
+   <table name="Open Loop: Tip-in 4th gear correction (C_gear_4)" storageaddress="0x0055" />
+   <table name="Open Loop: Tip-in 5th gear correction (C_gear_5)" storageaddress="0x0056" />
+   <table name="Open Loop: Tip-in 6th gear correction (C_gear_6)" storageaddress="0x00B1" />
+   <table name="Open Loop: Tip-in engine speed correction (C_rpm-in)" storageaddress="0x0904">
+    <table type="Y Axis" storageaddress="0x08F4" />
    </table>
-   <table name="Open Loop: Tip-in coolant temperature correction (C_cool't-in)" storageaddress="0x10944">
-    <table type="Y Axis" storageaddress="0x10934" />
+   <table name="Open Loop: Tip-in coolant temperature correction (C_cool't-in)" storageaddress="0x0944">
+    <table type="Y Axis" storageaddress="0x0934" />
    </table>
-   <table name="Open Loop: Tip-out engine speed correction (C_rpm-out)" storageaddress="0x10964">
-    <table type="Y Axis" storageaddress="0x10954" />
+   <table name="Open Loop: Tip-out engine speed correction (C_rpm-out)" storageaddress="0x0964">
+    <table type="Y Axis" storageaddress="0x0954" />
    </table>
-   <table name="Open Loop: Tip-out coolant temperature correction (C_cool't-out)" storageaddress="0x109A4">
-    <table type="Y Axis" storageaddress="0x10994" />
+   <table name="Open Loop: Tip-out coolant temperature correction (C_cool't-out)" storageaddress="0x09A4">
+    <table type="Y Axis" storageaddress="0x0994" />
    </table>
-   <table name="DFSO: minimum engine runtime to allow activation" storageaddress="0x1019D" />
-   <table name="DFSO: minimum engine speed for activation" storageaddress="0x10194" />
-   <table name="DFSO: maximum engine speed for deactivation" storageaddress="0x10196" />
-   <table name="DFSO: minimum coolant temperature to allow activation" storageaddress="0x10198" />
-   <table name="DFSO: maximum coolant temperature for deactivation" storageaddress="0x10199" />
-   <table name="DFSO: minimum vehicle speed to allow activation" storageaddress="0x1008C" />
-   <table name="DFSO: maximum vehicle speed for deactivation" storageaddress="0x1008D" />
-   <table name="DFSO: maximum throttle position for activation" storageaddress="0x10193" />
-   <table name="DFSO: minimum throttle position for deactivation" storageaddress="0x10192" />
-   <table name="DFSO: activation delay to allow gear shift" storageaddress="0x1004B" />
-   <table name="Open Loop: reduction scaling factor for catalyst reactivation (C_react-reduc)" storageaddress="0x1019C" />
-   <table name="Open Loop: Catalyst reactivation after DFSO fuel pulse correction (T_angle)" storageaddress="0x10338" />
-   <table name="P0562 system voltage low" storageaddress="0x1307B" />
-   <table name="P0563 system voltage high" storageaddress="0x1307A" />
-   <table name="P0463 fuel level sensor circuit high input" storageaddress="0x13078" />
-   <table name="P0462 fuel level sensor circuit low input" storageaddress="0x13077" />
-   <table name="P0453 Evaporative Emission System Pressure Sensor/Switch High" storageaddress="0x1306E" />
-   <table name="P0452 Evaporative Emission System Pressure Sensor/Switch Low" storageaddress="0x1306D" />
-   <table name="P0101 Mass or Volume Air Flow Circuit Range/Performance" storageaddress="0x1301F" />
-   <table name="P0102 Mass or Volume Air Flow Circuit Low Input" storageaddress="0x1301D" />
-   <table name="P0103 Mass or Volume Air Flow Circuit High Input" storageaddress="0x1301E" />
-   <table name="P0118 Engine Coolant Temperature Circuit High Input" storageaddress="0x1300B" />
-   <table name="P0117 Engine Coolant Temperature Circuit Low Input" storageaddress="0x1300A" />
-   <table name="P0116 Engine Coolant Temperature Circuit Range/Performance Problem" storageaddress="0x13009" />
-   <table name="P0113 Intake Air Temperature Circuit High Input" storageaddress="0x13007" />
-   <table name="P0112 Intake Air Temperature Circuit Low Input" storageaddress="0x13006" />
-   <table name="P0111 Intake Air Temperature Sensor 1 Circuit Range/Performance" storageaddress="0x13005" />
-   <table name="P0138 O2 Sensor Circuit High Voltage (Post Catalyst)" storageaddress="0x13019" />
-   <table name="P0137 O2 Sensor Circuit High Voltage (Post Catalyst)" storageaddress="0x13018" />
-   <table name="P0132 O2 Sensor Circuit High Voltage (Pre Catalyst)" storageaddress="0x13013" />
-   <table name="P0131 O2 Sensor Circuit Low Voltage (Pre Catalyst)" storageaddress="0x13012" />
-   <table name="P0106 Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance" storageaddress="0x13001" />
-   <table name="P0108 Manifold Absolute Pressure/Barometric Pressure Circuit High Input" storageaddress="0x13003" />
-   <table name="P0107 Manifold Absolute Pressure/Barometric Pressure Circuit Low Input" storageaddress="0x13002" />
-   <table name="P0121 Throttle Position Sensor 'A' Circuit Range/Performance" storageaddress="0x1300D" />
-   <table name="P0123 Throttle Position Sensor 'A' Circuit High" storageaddress="0x1300F" />
-   <table name="P0122 Throttle Position Sensor 'A' Circuit Low" storageaddress="0x1300E" />
-   <table name="P0328 Knock Sensor 1 Circuit High" storageaddress="0x1304B" />
-   <table name="P0327 Knock Sensor 1 Circuit Low" storageaddress="0x1304A" />
-   <table name="P0076 Intake Valve Control Solenoid Circuit Low" storageaddress="0x1302D" />
-   <table name="P0077 Intake Valve Control Solenoid Circuit High" storageaddress="0x1302E" />
-   <table name="P0480 Fan 1 Control Circuit" storageaddress="0x1306F" />
-   <table name="P0481 Fan 2 Control Circuit" storageaddress="0x13070" />
-   <table name="P0508 Idle Air Control System Circuit Low" storageaddress="0x13087" />
-   <table name="P0509 Idle Air Control System Circuit High" storageaddress="0x13088" />
-   <table name="P0627 Fuel Pump Control Circuit /Open" storageaddress="0x13039" />
-   <table name="P0204 Injector Circuit/Open - Cylinder 4" storageaddress="0x13032" />
-   <table name="P0203 Injector Circuit/Open - Cylinder 3" storageaddress="0x13031" />
-   <table name="P0202 Injector Circuit/Open - Cylinder 2" storageaddress="0x13030" />
-   <table name="P0135 O2 Sensor Heater Circuit (Pre Catalyst)" storageaddress="0x13016" />
-   <table name="P0141 O2 Sensor Heater Circuit (Post Catalyst)" storageaddress="0x1301C" />
-   <table name="P0201 Injector Circuit/Open - Cylinder 1" storageaddress="0x1302F" />
-   <table name="P0445 Evaporative Emission System Purge Control Valve Circuit Shorted" storageaddress="0x13067" />
-   <table name="P0444 Evaporative Emission System Purge Control Circuit Open" storageaddress="0x13066" />
-   <table name="P0447 Evaporative Emission System Vent Control Circuit Open" storageaddress="0x13069" />
-   <table name="P0448 Evaporative Emission System Vent Control Circuit Shorted" storageaddress="0x1306A" />
-   <table name="P0646 A/C Clutch Relay Control Circuit Low" storageaddress="0x1307E" />
-   <table name="P0647 A/C Clutch Relay Control Circuit High" storageaddress="0x1307F" />
-   <table name="P2602 Coolant Pump Control Circuit Low" storageaddress="0x1308A" />
-   <table name="P2603 Coolant Pump Control Circuit High" storageaddress="0x1308B" />
-   <table name="P2648 A Rocker Arm Actuator Control Circuit Low" storageaddress="0x13073" />
-   <table name="P2649 A Rocker Arm Actuator Control Circuit High" storageaddress="0x13074" />
-   <table name="P0351 Ignition Coil A Primary/Secondary Circuit" storageaddress="0x1303A" />
-   <table name="P0352 Ignition Coil B Primary/Secondary Circuit" storageaddress="0x1303B" />
-   <table name="P0353 Ignition Coil C Primary/Secondary Circuit" storageaddress="0x1303C" />
-   <table name="P0354 Ignition Coil D Primary/Secondary Circuit" storageaddress="0x1303D" />
-   <table name="P0420 Catalyst System Efficiency Below Threshold" storageaddress="0x13058" />
-   <table name="P0171 System Too Lean" storageaddress="0x1302A" />
-   <table name="P0172 System Too Rich" storageaddress="0x1302B" />
-   <table name="P0133 O2 Sensor Circuit Slow Response (Pre Catalyst)" storageaddress="0x13014" />
-   <table name="P0134 O2 Sensor Circuit No Activity Detected (Pre Catalyst)" storageaddress="0x13015" />
-   <table name="P0139 O2 Sensor Circuit Slow Response (Post Catalyst)" storageaddress="0x1301A" />
-   <table name="P0140 O2 Sensor Circuit No Activity Detected (Post Catalyst)" storageaddress="0x1301B" />
-   <table name="P0335 Crankshaft Position Sensor A Circuit Range/Performance" storageaddress="0x1304C" />
-   <table name="P0500 Vehicle Speed Sensor A" storageaddress="0x13080" />
-   <table name="P0340 Camshaft Position Sensor A Circuit" storageaddress="0x1304D" />
-   <table name="P0461 Fuel Level Sensor A Circuit Range/Performance" storageaddress="0x13076" />
-   <table name="P0451 Evaporative Emission System Pressure Sensor/Switch Range/Performance" storageaddress="0x1306C" />
-   <table name="P0506 Idle Air Control System RPM Lower Than Expected" storageaddress="0x13081" />
-   <table name="P0507 Idle Air Control System RPM Higher Than Expected" storageaddress="0x13082" />
-   <table name="P0011 Camshaft Position - Timing Over-Advanced or System Performance" storageaddress="0x1308C" />
-   <table name="P0012 Camshaft Position - Timing Over-Retarded" storageaddress="0x1308D" />
-   <table name="P2646 A Rocker Arm Actuator System Performance or Stuck Off" storageaddress="0x13071" />
-   <table name="P2647 A Rocker Arm Actuator System Performance or Stuck On" storageaddress="0x13072" />
-   <table name="P0300 Random/Multiple Cylinder Misfire Detected" storageaddress="0x1303F" />
-   <table name="P0301 Cylinder 1 Misfire Detected" storageaddress="0x13040" />
-   <table name="P0302 Cylinder 2 Misfire Detected" storageaddress="0x13041" />
-   <table name="P0303 Cylinder 3 Misfire Detected" storageaddress="0x13042" />
-   <table name="P0304 Cylinder 4 Misfire Detected" storageaddress="0x13043" />
-   <table name="P1301 Misfire level causing emissions increase" storageaddress="0x1304E" />
-   <table name="P1302 Misfire level causing catalyst system damage" storageaddress="0x1304F" />
-   <table name="P0442 Evaporative Emission System Leak Detected (small leak)" storageaddress="0x13064" />
-   <table name="P0455 Evaporative Emission System Leak Detected (large leak)" storageaddress="0x13090" />
-   <table name="P0456 Evaporative Emission System Leak Detected (very small leak)" storageaddress="0x13091" />
-   <table name="P0441 Evaporative Emission System Incorrect Purge Flow" storageaddress="0x13063" />
-   <table name="P0446 Evaporative Emission System Vent Control Circuit" storageaddress="0x13068" />
-   <table name="P0601 Checksum" storageaddress="0x1308E" />
-   <table name="P0606 Watchdog" storageaddress="0x1308F" />
-   <table name="P0128 Coolant Thermostat (Coolant Temperature Below Thermostat Regulating Temperature)" storageaddress="0x13011" />
-   <table name="Fuel Injection Crank Angle Target" storageaddress="0x11514">
-    <table type="X Axis" storageaddress="0x11504" />
-    <table type="Y Axis" storageaddress="0x1150C" />
+   <table name="DFSO: minimum engine runtime to allow activation" storageaddress="0x019D" />
+   <table name="DFSO: minimum engine speed for activation" storageaddress="0x0194" />
+   <table name="DFSO: maximum engine speed for deactivation" storageaddress="0x0196" />
+   <table name="DFSO: minimum coolant temperature to allow activation" storageaddress="0x0198" />
+   <table name="DFSO: maximum coolant temperature for deactivation" storageaddress="0x0199" />
+   <table name="DFSO: minimum vehicle speed to allow activation" storageaddress="0x008C" />
+   <table name="DFSO: maximum vehicle speed for deactivation" storageaddress="0x008D" />
+   <table name="DFSO: maximum throttle position for activation" storageaddress="0x0193" />
+   <table name="DFSO: minimum throttle position for deactivation" storageaddress="0x0192" />
+   <table name="DFSO: activation delay to allow gear shift" storageaddress="0x004B" />
+   <table name="Open Loop: reduction scaling factor for catalyst reactivation (C_react-reduc)" storageaddress="0x019C" />
+   <table name="Open Loop: Catalyst reactivation after DFSO fuel pulse correction (T_angle)" storageaddress="0x0338" />
+   <table name="P0562 system voltage low" storageaddress="0x307B" />
+   <table name="P0563 system voltage high" storageaddress="0x307A" />
+   <table name="P0463 fuel level sensor circuit high input" storageaddress="0x3078" />
+   <table name="P0462 fuel level sensor circuit low input" storageaddress="0x3077" />
+   <table name="P0453 Evaporative Emission System Pressure Sensor/Switch High" storageaddress="0x306E" />
+   <table name="P0452 Evaporative Emission System Pressure Sensor/Switch Low" storageaddress="0x306D" />
+   <table name="P0101 Mass or Volume Air Flow Circuit Range/Performance" storageaddress="0x301F" />
+   <table name="P0102 Mass or Volume Air Flow Circuit Low Input" storageaddress="0x301D" />
+   <table name="P0103 Mass or Volume Air Flow Circuit High Input" storageaddress="0x301E" />
+   <table name="P0118 Engine Coolant Temperature Circuit High Input" storageaddress="0x300B" />
+   <table name="P0117 Engine Coolant Temperature Circuit Low Input" storageaddress="0x300A" />
+   <table name="P0116 Engine Coolant Temperature Circuit Range/Performance Problem" storageaddress="0x3009" />
+   <table name="P0113 Intake Air Temperature Circuit High Input" storageaddress="0x3007" />
+   <table name="P0112 Intake Air Temperature Circuit Low Input" storageaddress="0x3006" />
+   <table name="P0111 Intake Air Temperature Sensor 1 Circuit Range/Performance" storageaddress="0x3005" />
+   <table name="P0138 O2 Sensor Circuit High Voltage (Post Catalyst)" storageaddress="0x3019" />
+   <table name="P0137 O2 Sensor Circuit High Voltage (Post Catalyst)" storageaddress="0x3018" />
+   <table name="P0132 O2 Sensor Circuit High Voltage (Pre Catalyst)" storageaddress="0x3013" />
+   <table name="P0131 O2 Sensor Circuit Low Voltage (Pre Catalyst)" storageaddress="0x3012" />
+   <table name="P0106 Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance" storageaddress="0x3001" />
+   <table name="P0108 Manifold Absolute Pressure/Barometric Pressure Circuit High Input" storageaddress="0x3003" />
+   <table name="P0107 Manifold Absolute Pressure/Barometric Pressure Circuit Low Input" storageaddress="0x3002" />
+   <table name="P0121 Throttle Position Sensor 'A' Circuit Range/Performance" storageaddress="0x300D" />
+   <table name="P0123 Throttle Position Sensor 'A' Circuit High" storageaddress="0x300F" />
+   <table name="P0122 Throttle Position Sensor 'A' Circuit Low" storageaddress="0x300E" />
+   <table name="P0328 Knock Sensor 1 Circuit High" storageaddress="0x304B" />
+   <table name="P0327 Knock Sensor 1 Circuit Low" storageaddress="0x304A" />
+   <table name="P0076 Intake Valve Control Solenoid Circuit Low" storageaddress="0x302D" />
+   <table name="P0077 Intake Valve Control Solenoid Circuit High" storageaddress="0x302E" />
+   <table name="P0480 Fan 1 Control Circuit" storageaddress="0x306F" />
+   <table name="P0481 Fan 2 Control Circuit" storageaddress="0x3070" />
+   <table name="P0508 Idle Air Control System Circuit Low" storageaddress="0x3087" />
+   <table name="P0509 Idle Air Control System Circuit High" storageaddress="0x3088" />
+   <table name="P0627 Fuel Pump Control Circuit /Open" storageaddress="0x3039" />
+   <table name="P0204 Injector Circuit/Open - Cylinder 4" storageaddress="0x3032" />
+   <table name="P0203 Injector Circuit/Open - Cylinder 3" storageaddress="0x3031" />
+   <table name="P0202 Injector Circuit/Open - Cylinder 2" storageaddress="0x3030" />
+   <table name="P0135 O2 Sensor Heater Circuit (Pre Catalyst)" storageaddress="0x3016" />
+   <table name="P0141 O2 Sensor Heater Circuit (Post Catalyst)" storageaddress="0x301C" />
+   <table name="P0201 Injector Circuit/Open - Cylinder 1" storageaddress="0x302F" />
+   <table name="P0445 Evaporative Emission System Purge Control Valve Circuit Shorted" storageaddress="0x3067" />
+   <table name="P0444 Evaporative Emission System Purge Control Circuit Open" storageaddress="0x3066" />
+   <table name="P0447 Evaporative Emission System Vent Control Circuit Open" storageaddress="0x3069" />
+   <table name="P0448 Evaporative Emission System Vent Control Circuit Shorted" storageaddress="0x306A" />
+   <table name="P0646 A/C Clutch Relay Control Circuit Low" storageaddress="0x307E" />
+   <table name="P0647 A/C Clutch Relay Control Circuit High" storageaddress="0x307F" />
+   <table name="P2602 Coolant Pump Control Circuit Low" storageaddress="0x308A" />
+   <table name="P2603 Coolant Pump Control Circuit High" storageaddress="0x308B" />
+   <table name="P2648 A Rocker Arm Actuator Control Circuit Low" storageaddress="0x3073" />
+   <table name="P2649 A Rocker Arm Actuator Control Circuit High" storageaddress="0x3074" />
+   <table name="P0351 Ignition Coil A Primary/Secondary Circuit" storageaddress="0x303A" />
+   <table name="P0352 Ignition Coil B Primary/Secondary Circuit" storageaddress="0x303B" />
+   <table name="P0353 Ignition Coil C Primary/Secondary Circuit" storageaddress="0x303C" />
+   <table name="P0354 Ignition Coil D Primary/Secondary Circuit" storageaddress="0x303D" />
+   <table name="P0420 Catalyst System Efficiency Below Threshold" storageaddress="0x3058" />
+   <table name="P0171 System Too Lean" storageaddress="0x302A" />
+   <table name="P0172 System Too Rich" storageaddress="0x302B" />
+   <table name="P0133 O2 Sensor Circuit Slow Response (Pre Catalyst)" storageaddress="0x3014" />
+   <table name="P0134 O2 Sensor Circuit No Activity Detected (Pre Catalyst)" storageaddress="0x3015" />
+   <table name="P0139 O2 Sensor Circuit Slow Response (Post Catalyst)" storageaddress="0x301A" />
+   <table name="P0140 O2 Sensor Circuit No Activity Detected (Post Catalyst)" storageaddress="0x301B" />
+   <table name="P0335 Crankshaft Position Sensor A Circuit Range/Performance" storageaddress="0x304C" />
+   <table name="P0500 Vehicle Speed Sensor A" storageaddress="0x3080" />
+   <table name="P0340 Camshaft Position Sensor A Circuit" storageaddress="0x304D" />
+   <table name="P0461 Fuel Level Sensor A Circuit Range/Performance" storageaddress="0x3076" />
+   <table name="P0451 Evaporative Emission System Pressure Sensor/Switch Range/Performance" storageaddress="0x306C" />
+   <table name="P0506 Idle Air Control System RPM Lower Than Expected" storageaddress="0x3081" />
+   <table name="P0507 Idle Air Control System RPM Higher Than Expected" storageaddress="0x3082" />
+   <table name="P0011 Camshaft Position - Timing Over-Advanced or System Performance" storageaddress="0x308C" />
+   <table name="P0012 Camshaft Position - Timing Over-Retarded" storageaddress="0x308D" />
+   <table name="P2646 A Rocker Arm Actuator System Performance or Stuck Off" storageaddress="0x3071" />
+   <table name="P2647 A Rocker Arm Actuator System Performance or Stuck On" storageaddress="0x3072" />
+   <table name="P0300 Random/Multiple Cylinder Misfire Detected" storageaddress="0x303F" />
+   <table name="P0301 Cylinder 1 Misfire Detected" storageaddress="0x3040" />
+   <table name="P0302 Cylinder 2 Misfire Detected" storageaddress="0x3041" />
+   <table name="P0303 Cylinder 3 Misfire Detected" storageaddress="0x3042" />
+   <table name="P0304 Cylinder 4 Misfire Detected" storageaddress="0x3043" />
+   <table name="P1301 Misfire level causing emissions increase" storageaddress="0x304E" />
+   <table name="P1302 Misfire level causing catalyst system damage" storageaddress="0x304F" />
+   <table name="P0442 Evaporative Emission System Leak Detected (small leak)" storageaddress="0x3064" />
+   <table name="P0455 Evaporative Emission System Leak Detected (large leak)" storageaddress="0x3090" />
+   <table name="P0456 Evaporative Emission System Leak Detected (very small leak)" storageaddress="0x3091" />
+   <table name="P0441 Evaporative Emission System Incorrect Purge Flow" storageaddress="0x3063" />
+   <table name="P0446 Evaporative Emission System Vent Control Circuit" storageaddress="0x3068" />
+   <table name="P0601 Checksum" storageaddress="0x308E" />
+   <table name="P0606 Watchdog" storageaddress="0x308F" />
+   <table name="P0128 Coolant Thermostat (Coolant Temperature Below Thermostat Regulating Temperature)" storageaddress="0x3011" />
+   <table name="Fuel Injection Crank Angle Target" storageaddress="0x1514">
+    <table type="X Axis" storageaddress="0x1504" />
+    <table type="Y Axis" storageaddress="0x150C" />
    </table>
-   <table name="Spark firing length battery voltage correction" storageaddress="0x115BC">
-    <table type="X Axis" storageaddress="0x115AC" />
-    <table type="Y Axis" storageaddress="0x115B4" />
+   <table name="Spark firing length battery voltage correction" storageaddress="0x15BC">
+    <table type="X Axis" storageaddress="0x15AC" />
+    <table type="Y Axis" storageaddress="0x15B4" />
    </table>
-   <table name="Time after startup to use cranking ignition advance" storageaddress="0x10046" />
-   <table name="Cranking ignition advance (A_cranking)" storageaddress="0x102D0">
-    <table type="Y Axis" storageaddress="0x102C8" />
+   <table name="Time after startup to use cranking ignition advance" storageaddress="0x0046" />
+   <table name="Cranking ignition advance (A_cranking)" storageaddress="0x02D0">
+    <table type="Y Axis" storageaddress="0x02C8" />
    </table>
-   <table name="Throttle position maximum threshold to use idle ignition advance" storageaddress="0x10172" />
-   <table name="Engine speed above idle target maximum threshold to use idle ignition advance" storageaddress="0x10173" />
-   <table name="Engine speed above idle target minimum threshold to use idle ignition advance-idle drop catch" storageaddress="0x101A0" />
-   <table name="Delta engine speed minimum threshold to use idle ignition advance-idle drop catch" storageaddress="0x1019E" />
-   <table name="Idle ignition advance-idle drop catch (A_idle-catch)" storageaddress="0x10045" />
-   <table name="Idle ignition advance A/C-on correction (A_A/C)" storageaddress="0x100AF" />
-   <table name="Idle ignition advance coolant temperature correction (A_c)" storageaddress="0x108A4">
-    <table type="Y Axis" storageaddress="0x10894" />
+   <table name="Throttle position maximum threshold to use idle ignition advance" storageaddress="0x0172" />
+   <table name="Engine speed above idle target maximum threshold to use idle ignition advance" storageaddress="0x0173" />
+   <table name="Engine speed above idle target minimum threshold to use idle ignition advance-idle drop catch" storageaddress="0x01A0" />
+   <table name="Delta engine speed minimum threshold to use idle ignition advance-idle drop catch" storageaddress="0x019E" />
+   <table name="Idle ignition advance-idle drop catch (A_idle-catch)" storageaddress="0x0045" />
+   <table name="Idle ignition advance A/C-on correction (A_A/C)" storageaddress="0x00AF" />
+   <table name="Idle ignition advance coolant temperature correction (A_c)" storageaddress="0x08A4">
+    <table type="Y Axis" storageaddress="0x0894" />
    </table>
-   <table name="Vehicle speed above which to use alternate idle ignition advance target idle correction" storageaddress="0x10171" />
-   <table name="Idle ignition advance offset from target idle correction - below spd thresh (A_it)" storageaddress="0x108C4">
-    <table type="Y Axis" storageaddress="0x108B4" />
+   <table name="Vehicle speed above which to use alternate idle ignition advance target idle correction" storageaddress="0x0171" />
+   <table name="Idle ignition advance offset from target idle correction - below spd thresh (A_it)" storageaddress="0x08C4">
+    <table type="Y Axis" storageaddress="0x08B4" />
    </table>
-   <table name="Idle ignition advance offset from target idle correction - above spd thresh (A_it)" storageaddress="0x1035A">
-    <table type="Y Axis" storageaddress="0x1034A" />
+   <table name="Idle ignition advance offset from target idle correction - above spd thresh (A_it)" storageaddress="0x035A">
+    <table type="Y Axis" storageaddress="0x034A" />
    </table>
-   <table name="Idle ignition advance intake air temperature correction (A_iat)" storageaddress="0x108E4">
-    <table type="Y Axis" storageaddress="0x108D4" />
+   <table name="Idle ignition advance intake air temperature correction (A_iat)" storageaddress="0x08E4">
+    <table type="Y Axis" storageaddress="0x08D4" />
    </table>
-   <table name="Idle ignition advance rate of change of engine speed correction (A_es)" storageaddress="0x11FBC">
-    <table type="Y Axis" storageaddress="0x11FAC" />
+   <table name="Idle ignition advance rate of change of engine speed correction (A_es)" storageaddress="0x1FBC">
+    <table type="Y Axis" storageaddress="0x1FAC" />
    </table>
-   <table name="Deceleration fuel shutoff ignition advance (A_DFSO)" storageaddress="0x1004F" />
-   <table name="Minimum allowable ignition advance" storageaddress="0x100B0" />
-   <table name="Maximum engine-off coolant temperature for cumulative MAF correction of primary ignition advance" storageaddress="0x1004E" />
-   <table name="Minimum engine-off coolant temperature for cumulative MAF correction of primary ignition advance" storageaddress="0x1004D" />
-   <table name="Maximum throttle position for cumulative MAF correction of primary ignition advance" storageaddress="0x10058" />
-   <table name="Cumulative MAF correction for primary speed-load ignition advance (c_mr)" storageaddress="0x115A4">
-    <table type="Y Axis" storageaddress="0x1159C" />
+   <table name="Deceleration fuel shutoff ignition advance (A_DFSO)" storageaddress="0x004F" />
+   <table name="Minimum allowable ignition advance" storageaddress="0x00B0" />
+   <table name="Maximum engine-off coolant temperature for cumulative MAF correction of primary ignition advance" storageaddress="0x004E" />
+   <table name="Minimum engine-off coolant temperature for cumulative MAF correction of primary ignition advance" storageaddress="0x004D" />
+   <table name="Maximum throttle position for cumulative MAF correction of primary ignition advance" storageaddress="0x0058" />
+   <table name="Cumulative MAF correction for primary speed-load ignition advance (c_mr)" storageaddress="0x15A4">
+    <table type="Y Axis" storageaddress="0x159C" />
    </table>
-   <table name="Primary ignition advance (A_sl)" storageaddress="0x11A7C">
-    <table type="X Axis" storageaddress="0x11A3C" />
-    <table type="Y Axis" storageaddress="0x11A5C" />
+   <table name="Primary ignition advance (A_sl)" storageaddress="0x1A7C">
+    <table type="X Axis" storageaddress="0x1A3C" />
+    <table type="Y Axis" storageaddress="0x1A5C" />
    </table>
-   <table name="Primary ignition advance intake air temperature correction (A_iat)" storageaddress="0x1076C">
-    <table type="Y Axis" storageaddress="0x1075C" />
+   <table name="Primary ignition advance intake air temperature correction (A_iat)" storageaddress="0x076C">
+    <table type="Y Axis" storageaddress="0x075C" />
    </table>
-   <table name="Primary ignition advance coolant temperature coefficient for engine speed correction (C_c)" storageaddress="0x11FA4">
-    <table type="Y Axis" storageaddress="0x11F9C" />
+   <table name="Primary ignition advance coolant temperature coefficient for engine speed correction (C_c)" storageaddress="0x1FA4">
+    <table type="Y Axis" storageaddress="0x1F9C" />
    </table>
-   <table name="Primary ignition advance engine speed correction (A_spd)" storageaddress="0x11F8C">
-    <table type="Y Axis" storageaddress="0x11F7C" />
+   <table name="Primary ignition advance engine speed correction (A_spd)" storageaddress="0x1F8C">
+    <table type="Y Axis" storageaddress="0x1F7C" />
    </table>
-   <table name="Primary ignition advance transient delta throttle position correction (A_delta_tp)" storageaddress="0x11FF4">
-    <table type="Y Axis" storageaddress="0x11FEC" />
+   <table name="Primary ignition advance transient delta throttle position correction (A_delta_tp)" storageaddress="0x1FF4">
+    <table type="Y Axis" storageaddress="0x1FEC" />
    </table>
-   <table name="Ignition advance rate of change" storageaddress="0x10382">
-    <table type="X Axis" storageaddress="0x1036a" />
-    <table type="Y Axis" storageaddress="0x10372" />
+   <table name="Ignition advance rate of change" storageaddress="0x0382">
+    <table type="X Axis" storageaddress="0x036a" />
+    <table type="Y Axis" storageaddress="0x0372" />
    </table>
-   <table name="Knock Signal Baseline Averaging Hysteresis Factor (a_kn)" storageaddress="0x1009B" />
-   <table name="Knock Signal Baseline Averaging - Knock Active Offset (V_kA)" storageaddress="0x1009A" />
-   <table name="Threshold Knock-Active Signal (S_knock-threshold)" storageaddress="0x126CC">
-    <table type="X Axis" storageaddress="0x126BC" />
-    <table type="Y Axis" storageaddress="0x126C4" />
+   <table name="Knock Signal Baseline Averaging Hysteresis Factor (a_kn)" storageaddress="0x009B" />
+   <table name="Knock Signal Baseline Averaging - Knock Active Offset (V_kA)" storageaddress="0x009A" />
+   <table name="Threshold Knock-Active Signal (S_knock-threshold)" storageaddress="0x26CC">
+    <table type="X Axis" storageaddress="0x26BC" />
+    <table type="Y Axis" storageaddress="0x26C4" />
    </table>
-   <table name="Transient Knock Correction (A_transient-knock-corr)" storageaddress="0x12714">
-    <table type="Y Axis" storageaddress="0x1270C" />
+   <table name="Transient Knock Correction (A_transient-knock-corr)" storageaddress="0x2714">
+    <table type="Y Axis" storageaddress="0x270C" />
    </table>
-   <table name="Transient Knock Correction Limit (A_tr-kn-limit)" storageaddress="0x10092" />
-   <table name="Transient Knock Correction Reduction Step (A_kt-reduc)" storageaddress="0x10094" />
-   <table name="Transient Knock Correction Reduction Period (T_kt-reduc)" storageaddress="0x10093" />
-   <table name="Knock Sum Increment Coefficient (C_k-sum)" storageaddress="0x10095" />
-   <table name="Knock Sum Decrement Step (A_k-sum-reduc)" storageaddress="0x10096" />
-   <table name="Knock correction ignition advance (A_ka)" storageaddress="0x1163C">
-    <table type="X Axis" storageaddress="0x115FC" />
-    <table type="Y Axis" storageaddress="0x1161C" />
+   <table name="Transient Knock Correction Limit (A_tr-kn-limit)" storageaddress="0x0092" />
+   <table name="Transient Knock Correction Reduction Step (A_kt-reduc)" storageaddress="0x0094" />
+   <table name="Transient Knock Correction Reduction Period (T_kt-reduc)" storageaddress="0x0093" />
+   <table name="Knock Sum Increment Coefficient (C_k-sum)" storageaddress="0x0095" />
+   <table name="Knock Sum Decrement Step (A_k-sum-reduc)" storageaddress="0x0096" />
+   <table name="Knock correction ignition advance (A_ka)" storageaddress="0x163C">
+    <table type="X Axis" storageaddress="0x15FC" />
+    <table type="Y Axis" storageaddress="0x161C" />
    </table>
-   <table name="Minumum intake air temperature for close loop fueling" storageaddress="0x10070" />
-   <table name="OBD mode 0x2F injector actuation pulse length" storageaddress="0x12cd0" />
-   <table name="OBD mode 0x2F injector actuation session active time" storageaddress="0x12cd2" />
-   <table name="OBD mode 0x2F injector actuation delay between pulses" storageaddress="0x12cce" />
+   <table name="Minumum intake air temperature for close loop fueling" storageaddress="0x0070" />
+   <table name="OBD mode 0x2F injector actuation pulse length" storageaddress="0x2cd0" />
+   <table name="OBD mode 0x2F injector actuation session active time" storageaddress="0x2cd2" />
+   <table name="OBD mode 0x2F injector actuation delay between pulses" storageaddress="0x2cce" />
  </rom>
 </roms>
