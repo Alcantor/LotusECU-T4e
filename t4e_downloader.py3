@@ -218,7 +218,7 @@ if(ecu_op == 'dlc'):
 	print("\nDownload ECU (Cybernet) - Only Calibration")
 	ECUDownload(0x010000, 0x10000, ecu_dir+"/calrom.bin")
 
-if(ecu_op == 'dl'):
+if(ecu_op == 'dlf'):
 	print("\nDownload ECU (Obeisance)")
 	ECUDownload(0x000000, 0x80000, ecu_dir+"/dump.bin")
 
