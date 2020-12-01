@@ -13,9 +13,9 @@ CAN_SFF_MASK = 0x000007FF
 CAN_EFF_MASK = 0x1FFFFFFF
 CAN_ERR_MASK = 0x1FFFFFFF
 
-can_header_fmt = "=IB3x"
-can_header_size = struct.calcsize(can_header_fmt);
-can_frame_size = can_header_size + 8;
+CAN_HDR_FRMT = "=IB3x"
+CAN_HDR_SIZE = struct.calcsize(CAN_HDR_FRMT);
+CAN_FRA_SIZE = CAN_HDR_SIZE + 8;
 
 UC3FMCR_ADDR = 0x2FC800 # Configuration Register
 UC3FCTL_ADDR = 0x2FC808 # High Voltage Control Register
@@ -26,10 +26,10 @@ class ECUException(Exception):
 def ECUReadMemory(address, size):
 	#print("ECU Read "+str(size)+" bytes @ "+hex(address))
 	if(size < 256):
-		cf = struct.pack(can_header_fmt, 0x53, 5)
+		cf = struct.pack(CAN_HDR_FRMT, 0x53, 5)
 		cf += struct.pack(">IB3x", address, size)
 	elif(size < 65536):
-		cf = struct.pack(can_header_fmt, 0x53, 6)
+		cf = struct.pack(CAN_HDR_FRMT, 0x53, 6)
 		cf += struct.pack(">IH2x", address, size)
 	else:
 		raise ECUException("ECU Read too much bytes!")
@@ -38,8 +38,8 @@ def ECUReadMemory(address, size):
 	while(size > 0):
 		try:
 			chunk_size = min(8, size);
-			cf = sock.recv(can_frame_size)
-			data += cf[can_header_size:can_header_size+chunk_size]
+			cf = sock.recv(CAN_FRA_SIZE)
+			data += cf[CAN_HDR_SIZE:CAN_HDR_SIZE+chunk_size]
 			size -= chunk_size
 		except socket.timeout:
 			raise ECUException("ECU Read failed!") from None
@@ -53,13 +53,13 @@ def ECUWriteMemory(address, data, verify = True):
 		ECUWriteMemory(address, data[:2], verify)
 		ECUWriteMemory(address+2, data[2:], verify)
 	elif(len(data) == 4):
-		cf = struct.pack(can_header_fmt, 0x54, 8)
+		cf = struct.pack(CAN_HDR_FRMT, 0x54, 8)
 		cf += struct.pack(">I4s", address, data)
 	elif(len(data) == 2):
-		cf = struct.pack(can_header_fmt, 0x55, 6)
+		cf = struct.pack(CAN_HDR_FRMT, 0x55, 6)
 		cf += struct.pack(">I2s2x", address, data)
 	elif(len(data) == 1):
-		cf = struct.pack(can_header_fmt, 0x56, 5)
+		cf = struct.pack(CAN_HDR_FRMT, 0x56, 5)
 		cf += struct.pack(">I1s3x", address, data)
 	sock.send(cf)
 	if(verify and data != ECUReadMemory(address, len(data))):
