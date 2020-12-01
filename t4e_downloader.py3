@@ -17,6 +17,9 @@ can_header_fmt = "=IB3x"
 can_header_size = struct.calcsize(can_header_fmt);
 can_frame_size = can_header_size + 8;
 
+UC3FMCR_ADDR = 0x2FC800 # Configuration Register
+UC3FCTL_ADDR = 0x2FC808 # High Voltage Control Register
+
 def ECUReadMemory(address, size):
 	#print("ECU Read "+str(size)+" bytes @ "+hex(address))
 	if(size < 256):
@@ -37,7 +40,7 @@ def ECUReadMemory(address, size):
 			return None
 	return data
 
-def ECUWriteMemory(address, data, verify):
+def ECUWriteMemory(address, data, verify = True):
 	if(len(data) < 1 or 4 < len(data)):
 		return False
 	#print("ECU Write "+str(data)+" @ "+hex(address))
@@ -59,107 +62,101 @@ def ECUWriteMemory(address, data, verify):
 	
 def ECUDownload(address, size, filename):
 	print("ECU Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
-	f = open(filename, "wb")
-	while(size > 0):
-		chunk_size = min(128, size);
-		chunk = ECUReadMemory(address, chunk_size)
-		if(chunk == None):
-			print("ECU Download error. Abording")
-			return False
-		if(f.write(chunk) != chunk_size):
-			print("ECU File writing error. Abording!")
-			return False
-		print(".", end="", flush=True) # One dot every 128 Bytes
-		address += chunk_size
-		size -= chunk_size
-	f.close()
-	print()
+	with open(filename,'wb') as f:
+		while(size > 0):
+			chunk_size = min(128, size);
+			chunk = ECUReadMemory(address, chunk_size)
+			if(chunk == None):
+				print("\nECU Download error. Abording")
+				return False
+			if(f.write(chunk) != chunk_size):
+				print("\nECU File writing error. Abording!")
+				return False
+			print(".", end="", flush=True) # One dot every 128 Bytes
+			address += chunk_size
+			size -= chunk_size
+		print()
 	return True
 	
-def ECUVerify(address, data):
-	offset = 0
-	size = len(data)
-	print("ECU Verify "+str(size)+" bytes @ "+hex(address))
-	while(size > 0):
-		chunk_size = min(128, size);
-		chunk = ECUReadMemory(address, chunk_size)
-		if(chunk == None):
-			print("ECU Download error. Abording")
-			return False
-		if(data[offset:offset+chunk_size] != chunk):
-			print("ECU Verify error. Abording")
-			return False
-		print(".", end="", flush=True) # One dot every 128 Bytes
-		address += chunk_size
-		offset += chunk_size
-		size -= chunk_size
-	print()
+def ECUVerify(address, filename):
+	print("ECU Verify "+hex(address)+" from "+filename)
+	with open(filename,'rb') as f:
+		while(True):
+			f_chunk = f.read(128)
+			chunk_size = len(f_chunk)
+			if(chunk_size == 0): break # EOF
+			chunk = ECUReadMemory(address, chunk_size)
+			if(chunk == None):
+				print("\nECU Download error. Abording")
+				return False
+			if(f_chunk != chunk):
+				print("\nECU Verify error. Abording")
+				return False
+			print(".", end="", flush=True) # One dot every 128 Bytes
+			address += chunk_size
+		print()
 	return True
 
-def ECUErase(blockid):
-	UC3FMCR_ADDR = 0x2FC800 # Configuration Register
-	UC3FCTL_ADDR = 0x2FC808 # High Voltage Control Register
-	flash_addr  = 0x010000 * blockid # Block base address
+def ECUUnlock(blockid):
 	flash_bmask = 0x80 >> blockid # Block mask
+	flash_bmask_inv = 0xFF & ~flash_bmask; # Block mask inverted
+	print("Unlock block "+str(blockid))
+	# PROTECT[M]=0 and BLOCK[M]=1
+	return ECUWriteMemory(UC3FMCR_ADDR + 3, bytes([flash_bmask_inv])) \
+		and ECUWriteMemory(UC3FCTL_ADDR + 2, bytes([flash_bmask]))
+
+def ECULock():
+	print("Lock block "+str(blockid))
+	# PROTECT[all]=1 and BLOCK[all]=0
+	return ECUWriteMemory(UC3FMCR_ADDR + 3, b'\xFF') \
+		and ECUWriteMemory(UC3FCTL_ADDR + 2, b'\x00')
+
+def ECUErase(blockid):
+	address  = 0x010000 * blockid # Block base address
 	print("Erase block "+str(blockid))
-	# PROTECT[M]=0
-	r = ECUWriteMemory(UC3FMCR_ADDR + 3, bytes([0xFF & ~flash_bmask]), True)
-	if(r == None): return False
-	# BLOCK[M]=1
-	r = ECUWriteMemory(UC3FCTL_ADDR + 2, bytes([flash_bmask]), True)
-	if(r == None): return False
 	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x06', False) # PE=1 and SES=1
-	ECUWriteMemory(flash_addr, b'\xFF\xFF\xFF\xFF', False) # Interlock
+	ECUWriteMemory(address, b'\xFF\xFF\xFF\xFF', False) # Interlock
 	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x07', False) # EHV=1
 	while(ECUReadMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x80): pass # Wait on HVS=0
 	pegood = True if(ECUReadMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x40) else False
 	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x00', False) # PE=0 SES=0 EHV=0
 	return pegood
 	
-def ECUProgram(blockid, data):
-	UC3FMCR_ADDR = 0x2FC800 # Configuration Register
-	UC3FCTL_ADDR = 0x2FC808 # High Voltage Control Register
-	flash_addr  = 0x010000 * blockid # Block base address
-	flash_bmask = 0x80 >> blockid # Block mask
-	if(len(data) % 4 > 0):
-		print("WARNING: Data has been padded with 0xFF")
-		data += b'\xFF\xFF\xFF\xFF'[(len(data)%4):]
-	if(len(data) > 0x010000):
-		print("ERROR: Too much data")
-		return False
-	print("Write block "+str(blockid))
-	# PROTECT[M]=0
-	r = ECUWriteMemory(UC3FMCR_ADDR + 3, bytes([0xFF & ~flash_bmask]), True)
-	if(r == None): return False
-	# BLOCK[M]=1
-	r = ECUWriteMemory(UC3FCTL_ADDR + 2, bytes([flash_bmask]), True)
-	if(r == None): return False
+def ECUProgram(blockid, filename):
+	address  = 0x010000 * blockid # Block base address
+	print("Write block "+str(blockid)+" from "+filename)
 	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x02', False) # PE=0 and SES=1
-	for i in range(0, len(data), 4):
-		ECUWriteMemory(flash_addr+i, data[i:i+4], False) # Interlock
-		ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x03', False) # EHV=1
-		while(ECUReadMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x80): pass # Wait on HVS=0
-		pegood = True if(ECUReadMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x40) else False
-		ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x02', False) # EHV=0
-		if(not pegood): break
-		if(i % 128 == 0): print(".", end="", flush=True) # One dot every 128 Bytes
-	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x00', False) # SES=1
+	with open(filename,'rb') as f:
+		while(True):
+			chunk = f.read(4)
+			chunk_size = len(chunk)
+			if(chunk_size == 0): break # EOF
+			ECUWriteMemory(address, chunk, False) # Interlock
+			ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x03', False) # EHV=1
+			while(ECUReadMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x80): pass # Wait on HVS=0
+			pegood = True if(ECUReadMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x40) else False
+			ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x02', False) # EHV=0
+			if(not pegood): break
+			if(i % 128 == 0): print(".", end="", flush=True) # One dot every 128 Bytes
+			address += chunk_size
+	ECUWriteMemory(UC3FCTL_ADDR + 3, b'\x00', False) # SES=0
 	print()
 	return pegood
 	
 def ECUUpload(blockid, filename):
-	f = open(filename, "rb")
-	data = f.read()
-	f.close()
-	address = 0x010000 * blockid
-	print("ECU Upload "+str(len(data))+" bytes @ block"+hex(address)+" from "+filename)
+	if(not ECUUnlock(blockid)):
+		print("Unlock failed!")
+		return False
 	if(not ECUErase(blockid)):
 		print("Erase failed!")
 		return False
-	if(not ECUProgram(blockid, data)):
+	if(not ECUProgram(blockid, filename)):
 		print("Program failed!")
 		return False
-	if(not ECUVerify(address, data)):
+	if(not ECULock()):
+		print("Lock failed!")
+		return False
+	if(not ECUVerify(address, filename)):
 		print("Verify failed!")
 		return False
 	return True
@@ -180,8 +177,8 @@ ap.add_argument(
 	"-o",
 	"--operation",
 	required=True,
-	help="The action to do: dl -> Download like Cybernet, dlc -> Download only the calibration, dlf -> Dowload like Obeisance, upc -> Upload the calibration",
-	choices=["dl", "dlc", "dlf", "upc"]
+	help="The action to do: dl -> Download like Cybernet, dlc -> Download only the calibration, dlf -> Dowload like Obeisance, upc -> Upload the calibration, vc -> Verify the calibration",
+	choices=["dl", "dlc", "dlf", "upc", "vc"]
 )
 ap.add_argument(
 	"-D",
@@ -226,6 +223,10 @@ if(ecu_op == 'upc'):
 	# DANGEROUS never tested!
 	print("\nUpload ECU Calibration")
 	ECUUpload(1, ecu_dir+"/calrom.bin")
+
+if(ecu_op == 'vc'):
+	print("\nVerify ECU Calibration")
+	ECUVerify(0x010000, ecu_dir+"/calrom.bin")
 
 print("Done")
 
