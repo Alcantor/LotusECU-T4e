@@ -70,7 +70,7 @@ def ECUDownload(address, size, filename):
 				print("\nECU Download error. Abording")
 				return False
 			if(f.write(chunk) != chunk_size):
-				print("\nECU File writing error. Abording!")
+				print("\nECU File writing error @ "+hex(address)+". Abording!")
 				return False
 			print(".", end="", flush=True) # One dot every 128 Bytes
 			address += chunk_size
@@ -79,7 +79,7 @@ def ECUDownload(address, size, filename):
 	return True
 	
 def ECUVerify(address, filename):
-	print("ECU Verify "+hex(address)+" from "+filename)
+	print("ECU Verify @ "+hex(address)+" from "+filename)
 	with open(filename,'rb') as f:
 		while(True):
 			f_chunk = f.read(128)
@@ -90,7 +90,7 @@ def ECUVerify(address, filename):
 				print("\nECU Download error. Abording")
 				return False
 			if(f_chunk != chunk):
-				print("\nECU Verify error. Abording")
+				print("\nECU Verify error @ "+hex(address)+". Abording")
 				return False
 			print(".", end="", flush=True) # One dot every 128 Bytes
 			address += chunk_size
@@ -106,7 +106,7 @@ def ECUUnlock(blockid):
 		and ECUWriteMemory(UC3FCTL_ADDR + 2, bytes([flash_bmask]))
 
 def ECULock():
-	print("Lock block "+str(blockid))
+	print("Lock block")
 	# PROTECT[all]=1 and BLOCK[all]=0
 	return ECUWriteMemory(UC3FMCR_ADDR + 3, b'\xFF') \
 		and ECUWriteMemory(UC3FCTL_ADDR + 2, b'\x00')
@@ -156,7 +156,7 @@ def ECUUpload(blockid, filename):
 	if(not ECULock()):
 		print("Lock failed!")
 		return False
-	if(not ECUVerify(address, filename)):
+	if(not ECUVerify(0x010000 * blockid, filename)):
 		print("Verify failed!")
 		return False
 	return True
