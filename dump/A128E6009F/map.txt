@@ -1,12 +1,18 @@
 0x02AF88: TouCAN Receive Function
-????? Function: PID: 0x51 Payload: ???? (4 or 6 Bytes Length)
-????? Function: PID: 0x52 Payload: ???? (4 or 7 Bytes Length)
-Read  Function: PID: 0x53 Payload: 32bits address (big-endian) + 1 Byte Size
-Read  Function: PID: 0x53 Payload: 32bits address (big-endian) + 2 Bytes Size
-Write Function: PID: 0x54 Payload: 32bits address (big-endian) + 4 Bytes Data
-Write Function: PID: 0x55 Payload: 32bits address (big-endian) + 2 Bytes Data
-Write Function: PID: 0x56 Payload: 32bits address (big-endian) + 1 Byte Data
-????? Function: PID: 0x57 Payload: ????
+Read  Word Function: PID: 0x50 Payload: 32bits address (big-endian)
+Read  Half Function: PID: 0x51 Payload: 32bits address (big-endian)
+Read  Byte Function: PID: 0x52 Payload: 32bits address (big-endian)
+Read  Data Function: PID: 0x53 Payload: 32bits address (big-endian) + 1 Byte Size
+Read  Data Function: PID: 0x53 Payload: 32bits address (big-endian) + 2 Bytes Size
+
+Write Word Function: PID: 0x54 Payload: 32bits address (big-endian) + 4 Bytes Data
+Write Half Function: PID: 0x55 Payload: 32bits address (big-endian) + 2 Bytes Data
+Write Byte Function: PID: 0x56 Payload: 32bits address (big-endian) + 1 Byte Data
+Write Data Function: PID: 0x57 Payload: 32bits address (big-endian) + 1 Byte Size
+Write Data Function: PID: 0x57 Payload: Data (1-8 Bytes) until size = 0
+
+Read  ???? Function: PID: 0x51 Payload: ???? (6 Bytes Length)
+Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
 
 0x3F974C 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
 
