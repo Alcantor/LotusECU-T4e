@@ -17,9 +17,6 @@ CAN_HDR_FRMT = "=IB3x"
 CAN_HDR_SIZE = struct.calcsize(CAN_HDR_FRMT);
 CAN_FRA_SIZE = CAN_HDR_SIZE + 8;
 
-UC3FMCR_ADDR = 0x2FC800 # Configuration Register
-UC3FCTL_ADDR = 0x2FC808 # High Voltage Control Register
-
 class ECUException(Exception):
 	pass
 
@@ -50,43 +47,76 @@ class ECU_T4E:
 
 	def readMemory(self, address, size):
 		#self.log("ECU Read "+str(size)+" bytes @ "+hex(address))
-		if(size < 256):
-			cf = struct.pack(CAN_HDR_FRMT, 0x53, 5)
-			cf += struct.pack(">IB3x", address, size)
-		elif(size < 65536):
-			cf = struct.pack(CAN_HDR_FRMT, 0x53, 6)
-			cf += struct.pack(">IH2x", address, size)
-		else:
-			raise ECUException("ECU Read too much bytes!")
-		self.sock.send(cf)
-		data = bytearray()
-		while(size > 0):
-			try:
-				chunk_size = min(8, size);
+		try:
+			if  (size == 4):
+				cf = struct.pack(CAN_HDR_FRMT, 0x50, 4)
+				cf += struct.pack(">I4x", address)
+				self.sock.send(cf)
 				cf = self.sock.recv(CAN_FRA_SIZE)
-				data += cf[CAN_HDR_SIZE:CAN_HDR_SIZE+chunk_size]
-				size -= chunk_size
-			except socket.timeout:
-				raise ECUException("ECU Read failed!") from None
-		return data
+				id, dlc, data = struct.unpack(CAN_HDR_FRMT+"4s4x", cf)
+				if(dlc != 4): ECUException("Unexpected answer!")
+			elif(size == 2):
+				cf = struct.pack(CAN_HDR_FRMT, 0x51, 4)
+				cf += struct.pack(">I4x", address)
+				self.sock.send(cf)
+				cf = self.sock.recv(CAN_FRA_SIZE)
+				id, dlc, data = struct.unpack(CAN_HDR_FRMT+"2s6x", cf)
+				if(dlc != 2): ECUException("Unexpected answer!")
+			elif(size == 1):
+				cf = struct.pack(CAN_HDR_FRMT, 0x52, 4)
+				cf += struct.pack(">I4x", address)
+				self.sock.send(cf)
+				cf = self.sock.recv(CAN_FRA_SIZE)
+				id, dlc, data = struct.unpack(CAN_HDR_FRMT+"1s7x", cf)
+				if(dlc != 1): ECUException("Unexpected answer!")
+			elif(size < 256):
+				cf = struct.pack(CAN_HDR_FRMT, 0x53, 5)
+				cf += struct.pack(">IB3x", address, size)
+				self.sock.send(cf)
+				data = bytearray()
+				while(size > 0):
+					chunk_size = min(8, size);
+					cf = self.sock.recv(CAN_FRA_SIZE)
+					id, dlc, chunk = struct.unpack(CAN_HDR_FRMT+"%ds%dx" \
+						% (chunk_size, 8 - chunk_size), cf)
+					if(dlc != chunk_size): ECUException("Unexpected answer!")
+					data += chunk
+					size -= chunk_size
+			else:
+				raise ECUException("ECU Read too much bytes!")
+			return data
+		except socket.timeout:
+			raise ECUException("ECU Read failed!") from None
 
 	def writeMemory(self, address, data, verify = True):
-		if(len(data) < 1 or 4 < len(data)):
-			raise ECUException("ECU Write too much bytes!")
 		#self.log("ECU Write "+str(data)+" @ "+hex(address))
-		if  (len(data) == 3):
-			self.writeMemory(address, data[:2], verify)
-			self.writeMemory(address+2, data[2:], verify)
-		elif(len(data) == 4):
+		if  (len(data) == 4):
 			cf = struct.pack(CAN_HDR_FRMT, 0x54, 8)
-			cf += struct.pack(">I4s", address, data)
+			cf += struct.pack(">I4s0x", address, data)
+			self.sock.send(cf)
 		elif(len(data) == 2):
 			cf = struct.pack(CAN_HDR_FRMT, 0x55, 6)
 			cf += struct.pack(">I2s2x", address, data)
+			self.sock.send(cf)
 		elif(len(data) == 1):
 			cf = struct.pack(CAN_HDR_FRMT, 0x56, 5)
 			cf += struct.pack(">I1s3x", address, data)
-		self.sock.send(cf)
+			self.sock.send(cf)
+		elif(len(data) < 256):
+			size = len(data)
+			offset = 0
+			cf = struct.pack(CAN_HDR_FRMT, 0x57, 5)
+			cf += struct.pack(">IB3x", address, size)
+			self.sock.send(cf)
+			while(size > 0):
+				chunk_size = min(8, size);
+				cf = struct.pack(CAN_HDR_FRMT+"%ds%dx" % (chunk_size, 8 - chunk_size), \
+					0x57, chunk_size, data[offset:offset+chunk_size])
+				self.sock.send(cf)
+				size -= chunk_size
+				offset += chunk_size
+		else:
+			raise ECUException("ECU Write too much bytes!")
 		if(verify and data != self.readMemory(address, len(data))):
 			raise ECUException("ECU Write failed!")
 
@@ -116,58 +146,36 @@ class ECU_T4E:
 				address += chunk_size
 			self.progress_end()
 
-	def unlock(self, blockid):
-		flash_bmask = 0x80 >> blockid # Block mask
-		flash_bmask_inv = 0xFF & ~flash_bmask; # Block mask inverted
-		self.log("ECU Unlock block "+str(blockid))
-		# PROTECT[M]=0 and BLOCK[M]=1
-		self.writeMemory(UC3FMCR_ADDR + 3, bytes([flash_bmask_inv]))
-		self.writeMemory(UC3FCTL_ADDR + 2, bytes([flash_bmask]))
-
-	def lock(self):
-		self.log("ECU Lock block")
-		# PROTECT[all]=1 and BLOCK[all]=0
-		self.writeMemory(UC3FMCR_ADDR + 3, b'\xFF')
-		self.writeMemory(UC3FCTL_ADDR + 2, b'\x00')
-
-	def erase(self, blockid):
-		address  = 0x010000 * blockid # Block base address
-		self.log("ECU Erase block "+str(blockid))
-		self.writeMemory(UC3FCTL_ADDR + 3, b'\x06', False) # PE=1 and SES=1
-		self.writeMemory(address, b'\xFF\xFF\xFF\xFF', False) # Interlock
-		self.writeMemory(UC3FCTL_ADDR + 3, b'\x07', False) # EHV=1
-		while(self.readMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x80): pass # Wait on HVS=0
-		pegood = True if(self.readMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x40) else False
-		self.writeMemory(UC3FCTL_ADDR + 3, b'\x00', False) # PE=0 SES=0 EHV=0
-		if(not pegood): raise ECUException("ECU Erase failed!")
-
-	def program(self, blockid, filename):
-		address  = 0x010000 * blockid # Block base address
-		self.log("ECU Program block "+str(blockid)+" from "+filename)
-		self.writeMemory(UC3FCTL_ADDR + 3, b'\x02', False) # PE=0 and SES=1
+	def upload(self, address, filename):
+		size = os.path.getsize(filename)
+		self.log("ECU Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename)
 		with open(filename,'rb') as f:
 			while(True):
-				chunk = f.read(4)
+				chunk = f.read(128)
 				chunk_size = len(chunk)
 				if(chunk_size == 0): break # EOF
-				self.writeMemory(address, chunk, False) # Interlock
-				self.writeMemory(UC3FCTL_ADDR + 3, b'\x03', False) # EHV=1
-				while(self.readMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x80): pass # Wait on HVS=0
-				pegood = True if(self.readMemory(UC3FCTL_ADDR + 0, 1)[0] & 0x40) else False
-				self.writeMemory(UC3FCTL_ADDR + 3, b'\x02', False) # EHV=0
-				if(not pegood): break
-				if(address % 128 == 0): self.progress() # One dot every 128 Bytes
+				self.writeMemory(address, chunk)
+				self.progress() # One dot every 128 Bytes
 				address += chunk_size
-			self.writeMemory(UC3FCTL_ADDR + 3, b'\x00', False) # SES=0
-			if(not pegood): raise ECUException("ECU Program failed!")
 			self.progress_end()
 
-	def upload(self, blockid, filename):
-		self.unlock(blockid)
-		self.erase(blockid)
-		self.program(blockid, filename)
-		self.lock()
-		self.verify(0x010000 * blockid, filename)
+	def inject(self, freeram_address, filename, stackblr_address):
+		self.upload(freeram_address, filename)
+		value = self.readMemory(stackblr_address, 4)
+		print("Previous return address 0x"+value.hex())
+		self.writeMemory(stackblr_address, struct.pack(">I", freeram_address), False)
+		
+	def test(self, freeram_address):
+		# Word
+		self.writeMemory(freeram_address, b'\xDE\xAD\xBE\xEF')
+		# 3 Bytes
+		self.writeMemory(freeram_address, b'\x11\x22\x33')
+		# Half
+		self.writeMemory(freeram_address, b'\xAA\x55')
+		# Byte
+		self.writeMemory(freeram_address, b'\x10')
+		# Much more
+		self.writeMemory(freeram_address, b'Hello world')
 
 if __name__ == "__main__":
 	print("Stupid dumper for Lotus T4e ECU\n")
@@ -187,9 +195,10 @@ if __name__ == "__main__":
 			"dl -> Download like Cybernet,"
 			"dlc -> Download only the calibration,"
 			"dlf -> Dowload like Obeisance,"
-			"upc -> Upload the calibration,"
-			"vc -> Verify the calibration",
-		choices=["dl", "dlc", "dlf", "upc", "vc"]
+			"ifp -> Inject Flash Program,"
+			"vc -> Verify the calibration,"
+			"t -> Tests",
+		choices=["dl", "dlc", "dlf", "ifp", "vc", "t"]
 	)
 	ap.add_argument(
 		"-D",
@@ -213,7 +222,7 @@ if __name__ == "__main__":
 		t4e.download(0x020000, 0x60000, ecu_dir+"/prog.bin")
 		t4e.download(0x2F8000, 0x00800, ecu_dir+"/decram.bin")
 		t4e.download(0x3F8000, 0x08000, ecu_dir+"/calram.bin")
-		
+
 	if(ecu_op == 'dlc'):
 		print("\nDownload ECU (Cybernet) - Only Calibration")
 		t4e.download(0x010000, 0x10000, ecu_dir+"/calrom.bin")
@@ -222,14 +231,17 @@ if __name__ == "__main__":
 		print("\nDownload ECU (Obeisance)")
 		t4e.download(0x000000, 0x80000, ecu_dir+"/dump.bin")
 
-	if(ecu_op == 'upc'):
-		# DANGEROUS never tested!
-		print("\nUpload ECU Calibration")
-		t4e.upload(1, ecu_dir+"/calrom.bin")
+	if(ecu_op == 'ifp'):
+		print("\nInject Flash Program")
+		t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3F8000 + 0x7FDC)
 
 	if(ecu_op == 'vc'):
 		print("\nVerify ECU Calibration")
 		t4e.verify(0x010000, ecu_dir+"/calrom.bin")
+
+	if(ecu_op == 't'):
+		print("\nTest ECU Read/Write")
+		t4e.test(0x3FE748)
 
 	print("Done")
 
