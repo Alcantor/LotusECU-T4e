@@ -9,9 +9,10 @@ TLE6220 Quad Low-Side Switch
 MPC563 Main CPU (PowerPC Core) - 512kb Flash, 32Kb SRAM
 
 Memory Map:
-0x000000, 0x10000, Bootloader
+0x000000, 0x04000, Bootloader stage 1
+0x004000, 0x0C000, Bootloader stage 2 (CRC at 0xFFFE)
 0x010000, 0x10000, Calibration (Maps)
 0x020000, 0x60000, Program
-0x2F8000, 0x00800, 2 KByte DecRAM (Decompression RAM)
-0x3F8000, 0x08000, 32 KByte CalRAM
+0x2F8000, 0x00800, 2 KByte DecRAM (Decompression RAM) - RAM is powered separately (ECU Correction Values)
+0x3F8000, 0x08000, 32 KByte CalRAM - Main RAM
 

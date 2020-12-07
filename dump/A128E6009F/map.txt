@@ -25,3 +25,4 @@ Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
 Bootloader:
 0x00423C Subroutine: Wait on 0030601E (Loop 5000x), return true or false
 
+Free RAM: 0x3FE748 - 0x3FEFFF (2231 bytes)
