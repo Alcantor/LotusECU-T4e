@@ -21,6 +21,15 @@ class ECUException(Exception):
 	pass
 
 class ECU_T4E:
+	zones = [
+		("ROM Boot Loader", 0x000000, 0x10000, "bootldr.bin"),
+		("ROM Calibration", 0x010000, 0x10000, "calrom.bin"),
+		("ROM Program"    , 0x020000, 0x60000, "prog.bin"),
+		("RAM Persistant" , 0x2F8000, 0x00800, "decram.bin"),
+		("RAM Main"       , 0x3F8000, 0x08000, "calram.bin"),
+		("ROM Full"       , 0x000000, 0x80000, "dump.bin")
+	]
+
 	# Override it if needed
 	def log(self, msg):
 		print(msg)
@@ -34,11 +43,9 @@ class ECU_T4E:
 		print()
 
 	def openCAN(self, can_if):
-		self.log("Configure "+can_if+" @ 1 Mbit/s")
+		self.log("Open "+can_if+" @ 1 Mbit/s")
 		os.system("ip link set "+can_if+" down")
 		os.system("ip link set "+can_if+" up type can bitrate 1000000 restart-ms 50 loopback off")
-
-		self.log("Open "+can_if)
 		self.sock = socket.socket(socket.AF_CAN,socket.SOCK_RAW,socket.CAN_RAW);
 		self.sock.setsockopt(socket.SOL_CAN_RAW, socket.CAN_RAW_FILTER, \
 			struct.pack("=II",0x7A0, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG))
@@ -193,22 +200,22 @@ if __name__ == "__main__":
 	ap.add_argument(
 		"-d",
 		"--device",
-		required=True,
-		help="The CAN-Bus device to use."
+		required=False,
+		help="The CAN-Bus device to use.",
+		default="can0"
 	)
 	ap.add_argument(
 		"-o",
 		"--operation",
-		required=True,
+		required=False,
 		help=
-			"The action to do:"
-			"dl -> Download like Cybernet,"
-			"dlc -> Download only the calibration,"
-			"dlf -> Dowload like Obeisance,"
-			"ifp -> Inject Flash Program,"
-			"vc -> Verify the calibration,"
+			"The action to do: "
+			"dl -> Download, "
+			"v -> Verify, "
+			"ifp -> Inject Flash Program, "
 			"t -> Tests",
-		choices=["dl", "dlc", "dlf", "ifp", "vc", "t"]
+		choices=["dl", "v", "ifp", "t"],
+		default="dl"
 	)
 	ap.add_argument(
 		"-D",
@@ -217,40 +224,64 @@ if __name__ == "__main__":
 		help="Dump directory",
 		default="."
 	)
+	ap.add_argument(
+		"-z",
+		"--zone",
+		type=int,
+		required=False,
+		help="Specify a zone",
+		choices=range(0, len(ECU_T4E.zones)),
+		default=None
+	)
+	ap.add_argument(
+		"-lz",
+		"--listzone",
+		action='store_true',
+		required=False,
+		help="List the availables zones",
+		default=False
+	)
 	args = vars(ap.parse_args())
 	can_if = args['device']
 	ecu_op = args['operation']
 	ecu_dir = args['directory']
+	if(args['zone'] == None):
+		ecu_zones = range(0, 5)
+	else:
+		ecu_zones = (args['zone'],)
+	if(args['listzone']):
+		print("Zones ECU")
+		for i in range(0, len(ECU_T4E.zones)):
+			print("%i: %s" % (i, ECU_T4E.zones[i][0]))
+		sys.exit(0)
 
 	t4e = ECU_T4E();
 	t4e.openCAN(can_if)
+	print()
 
 	if(ecu_op == 'dl'):
-		print("\nDownload ECU (Cybernet)")
-		t4e.download(0x000000, 0x10000, ecu_dir+"/bootldr.bin")
-		t4e.download(0x010000, 0x10000, ecu_dir+"/calrom.bin")
-		t4e.download(0x020000, 0x60000, ecu_dir+"/prog.bin")
-		t4e.download(0x2F8000, 0x00800, ecu_dir+"/decram.bin")
-		t4e.download(0x3F8000, 0x08000, ecu_dir+"/calram.bin")
+		print("Download ECU")
+		for i in ecu_zones:
+			t4e.download(
+				ECU_T4E.zones[i][1],
+				ECU_T4E.zones[i][2],
+				ecu_dir+"/"+ECU_T4E.zones[i][3]
+			)
 
-	if(ecu_op == 'dlc'):
-		print("\nDownload ECU (Cybernet) - Only Calibration")
-		t4e.download(0x010000, 0x10000, ecu_dir+"/calrom.bin")
-
-	if(ecu_op == 'dlf'):
-		print("\nDownload ECU (Obeisance)")
-		t4e.download(0x000000, 0x80000, ecu_dir+"/dump.bin")
+	if(ecu_op == 'v'):
+		print("Verify ECU")
+		for i in ecu_zones:
+			t4e.verify(
+				ECU_T4E.zones[i][1],
+				ecu_dir+"/"+ECU_T4E.zones[i][3]
+			)
 
 	if(ecu_op == 'ifp'):
-		print("\nInject Flash Program")
-		t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3F8000 + 0x7FDC)
-
-	if(ecu_op == 'vc'):
-		print("\nVerify ECU Calibration")
-		t4e.verify(0x010000, ecu_dir+"/calrom.bin")
+		print("Inject Flash Program")
+		t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3FFFDC)
 
 	if(ecu_op == 't'):
-		print("\nTest ECU Read/Write")
+		print("Test ECU Read/Write")
 		t4e.test(0x3FE748)
 
 	print("Done")

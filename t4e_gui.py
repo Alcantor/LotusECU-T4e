@@ -56,27 +56,29 @@ class t4e_window(Gtk.Window):
 
 		vbox.pack_start(self.t4e.getProgressBar(), True, True, 0)
 
-		button = Gtk.Button.new_with_label("Download Bootloader")
-		button.connect("clicked", self.download, (0x000000, 0x10000, "bootldr.bin"))
-		vbox.pack_start(button, True, True, 0)
+		store_zones = Gtk.ListStore(str, int, int, str)
+		for zone in ECU_T4E.zones:
+			store_zones.append(zone)
 
-		button = Gtk.Button.new_with_label("Download Calibration")
-		button.connect("clicked", self.download, (0x010000, 0x10000, "calrom.bin"))
-		vbox.pack_start(button, True, True, 0)
+		hbox = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL)
+		vbox.pack_start(hbox, True, True, 0)
 
-		button = Gtk.Button.new_with_label("Download Prog")
-		button.connect("clicked", self.download, (0x020000, 0x60000, "prog.bin"))
-		vbox.pack_start(button, True, True, 0)
+		self.combo_zones = Gtk.ComboBox.new_with_model(store_zones)
+		renderer_text = Gtk.CellRendererText()
+		self.combo_zones.pack_start(renderer_text, True)
+		self.combo_zones.add_attribute(renderer_text, "text", 0)
+		self.combo_zones.set_active(1)
+		hbox.pack_start(self.combo_zones, True, True, 0)
 
-		button = Gtk.Button.new_with_label("Download DecRAM")
-		button.connect("clicked", self.download, (0x2F8000, 0x00800, "decram.bin"))
-		vbox.pack_start(button, True, True, 0)
+		button = Gtk.Button.new_with_label("Download")
+		button.connect("clicked", self.download)
+		hbox.pack_start(button, True, True, 0)
 
-		button = Gtk.Button.new_with_label("Download CalRAM")
-		button.connect("clicked", self.download, (0x3F8000, 0x08000, "calram.bin"))
-		vbox.pack_start(button, True, True, 0)
+		button = Gtk.Button.new_with_label("Verify")
+		button.connect("clicked", self.verify)
+		hbox.pack_start(button, True, True, 0)
 
-		button = Gtk.Button.new_with_label("Inject Flasher")
+		button = Gtk.Button.new_with_label("Inject Flasher Program")
 		button.connect("clicked", self.inject)
 		vbox.pack_start(button, True, True, 0)
 
@@ -94,19 +96,27 @@ class t4e_window(Gtk.Window):
 		dialog.run()
 		dialog.destroy()
 
-	def download_thread(self, address, size, filename):
+	def threaded_action(self, fnct, params):
 		try:
-			self.t4e.download(address, size, filename)
+			fnct(*params)
 		except Exception as e:
-			GLib.idle_add(self.display_error, "Failed to download", str(e))
-			
-	def download(self, button, userdata):
+			GLib.idle_add(self.display_error, "Error!", str(e))
+
+	def add_filters(self, dialog):
+		filter_bin = Gtk.FileFilter()
+		filter_bin.set_name("BIN files")
+		filter_bin.add_mime_type("application/octet-stream")
+		dialog.add_filter(filter_bin)
+
+	def download(self, button):
+		zones = self.combo_zones.get_model()
+		zone = zones[self.combo_zones.get_active_iter()]
 		dialog = Gtk.FileChooserDialog(
 			title="Please choose a file",
 			parent=self,
 			action=Gtk.FileChooserAction.SAVE,
 		)
-		dialog.set_filename(userdata[2])
+		dialog.set_filename(zone[3])
 		dialog.set_do_overwrite_confirmation(True);
 		dialog.add_buttons(
 			Gtk.STOCK_CANCEL,
@@ -118,26 +128,39 @@ class t4e_window(Gtk.Window):
 		response = dialog.run()
 		if(response == Gtk.ResponseType.OK):
 			threading.Thread(
-				target=self.download_thread,
-				args=(userdata[0], userdata[1], dialog.get_filename())
+				target=self.threaded_action,
+				args=(self.t4e.download, (zone[1], zone[2], dialog.get_filename()))
 			).start()
 		dialog.destroy()
 
-	def add_filters(self, dialog):
-		filter_bin = Gtk.FileFilter()
-		filter_bin.set_name("BIN files")
-		filter_bin.add_mime_type("application/octet-stream")
-		dialog.add_filter(filter_bin)
-
-	def inject_thread(self):
-		try:
-			self.t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3F8000 + 0x7FDC)
-		except Exception as e:
-			GLib.idle_add(self.display_error, "Failed to inject", str(e))
+	def verify(self, button):
+		zones = self.combo_zones.get_model()
+		zone = zones[self.combo_zones.get_active_iter()]
+		dialog = Gtk.FileChooserDialog(
+			title="Please choose a file",
+			parent=self,
+			action=Gtk.FileChooserAction.OPEN,
+		)
+		dialog.set_filename(zone[3])
+		dialog.add_buttons(
+			Gtk.STOCK_CANCEL,
+			Gtk.ResponseType.CANCEL,
+			Gtk.STOCK_OPEN,
+			Gtk.ResponseType.OK,
+		)
+		self.add_filters(dialog)
+		response = dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			threading.Thread(
+				target=self.threaded_action,
+				args=(self.t4e.verify, (zone[1], dialog.get_filename()))
+			).start()
+		dialog.destroy()
 
 	def inject(self, button):
 		threading.Thread(
-			target=self.inject_thread
+			target=self.threaded_action,
+			args=(self.t4e.inject, (0x3FE748, "injection/deadloop.bin", 0x3FFFDC))
 		).start()
 
 win = t4e_window()
