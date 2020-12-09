@@ -38,11 +38,11 @@ _start:
 	#
 	# Echo - Payload will be sended back
 	#   DATA  : 00 XX XX XX XX XX XX XX
-	#   RETURN: XX XX XX XX XX XX XX
+	#   RETURN: 00 XX XX XX XX XX XX XX
 	#
 	# Read Word - Read 4 Bytes
 	#   DATA  : 01 AA AA AA
-	#   RETURN: 02 DD DD DD DD
+	#   RETURN: 01 DD DD DD DD
 	#
 	# Write Word - Write 4 Bytes
 	#   DATA  : 02 AA AA AA DD DD DD DD
@@ -104,7 +104,7 @@ endloop:
 	addi	%r0, 0, -0x55C7 # 0xAA39
 	sth	%r0, -0x3FF2(3) # 0x2FC00E SWSR Register
 
-	/* Has been data receive */
+	/* Has been data received */
 	lhz	%r0, 0x71F0(3)
 	rlwinm	%r4, 0, 0,24,27 # Mask Code
 	cmplwi	%r4, 0x20 # Buffer Full
@@ -136,15 +136,39 @@ end_command_0x00:
 	/* Read command 0x01 */
 	cmplwi	%r5, 0x01
 	bne	end_command_0x01
-	#TODO
+	cmplwi	%r4, 4
+	bne	endloop # DLC is not 4
+	lbz	%r0, 0x71F7(3)
+	slw	%r0, 0, 16
+	lhz	%r6, 0x71F8(3)
+	or	%r6, 0, 6
+	lwz	%r0, 0(6) # Read
+	li	%r6, 0x80 # Buffer not ready + DLC = 0
+	sth	%r6, 0x7100(3) # 0x307100 TouCAN A Buffer 0
+	stb	%r5, 0x7106(3)
+	stw	%r0, 0x7107(3) # Unaligned word could be bogus???
+	li	%r6, 0xC6 # Buffer ready + DLC = 5
+	sth	%r6, 0x7100(3)
 	bl	endloop
 end_command_0x01:
 
 	/* Write command 0x02 */
 	cmplwi	%r5, 0x02
 	bne	end_command_0x02
-	#TODO
+	cmplwi	%r4, 8
+	bne	endloop # DLC is not 8
 	bl	endloop
+	lbz	%r0, 0x71F7(3)
+	slw	%r0, 0, 16
+	lhz	%r6, 0x71F8(3)
+	or	%r6, 0, 6
+	lwz	%r0, 0x71FA(3)
+	stw	%r0, 0(6) # Write
+	li	%r6, 0x80 # Buffer not ready + DLC = 0
+	sth	%r6, 0x7100(3) # 0x307100 TouCAN A Buffer 0
+	stb	%r5, 0x7106(3)
+	li	%r6, 0xC1 # Buffer ready + DLC = 1
+	sth	%r6, 0x7100(3)
 end_command_0x02:
 
 	/* Erase command 0x03 */
@@ -177,11 +201,8 @@ end_command_0x06:
 
 	/* Reset command 0x07 */
 	cmplwi	%r5, 0x07
-	bne	end_command_0x07
-	#TODO
-	bl	endloop
-end_command_0x07:
-
-	/* Endless loop */
-	bl	endloop
+	bne	endloop
+	cmplwi	%r4, 1
+	bne	endloop # DLC is not 1
+	ba	0x1000
 
