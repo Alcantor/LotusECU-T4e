@@ -204,5 +204,5 @@ end_command_0x06:
 	bne	endloop
 	cmplwi	%r4, 1
 	bne	endloop # DLC is not 1
-	ba	0x1000
+	ba	0x100
 
