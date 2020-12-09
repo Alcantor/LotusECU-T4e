@@ -12,7 +12,7 @@ class ECU_T4E_GUI(ECU_T4E):
 		self.sbcontext = self.statusbar.get_context_id("t4e")
 
 	def log(self, msg):
-		 GLib.idle_add(self.statusbar.push, self.sbcontext, msg)
+		GLib.idle_add(self.statusbar.push, self.sbcontext, msg)
 
 	def progress(self):
 		self.bytes_transfered += 128
