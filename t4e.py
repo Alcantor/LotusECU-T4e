@@ -140,7 +140,8 @@ class ECU_T4E:
 			self.progress_end()
 
 	def verify(self, address, filename):
-		self.log("ECU Verify @ "+hex(address)+" from "+filename)
+		size = os.path.getsize(filename)
+		self.log("ECU Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename)
 		with open(filename,'rb') as f:
 			while(True):
 				f_chunk = f.read(128)
@@ -279,6 +280,7 @@ if __name__ == "__main__":
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
 		t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3FFFDC)
+		#t4e.inject(0x3FE748, "injection/flasher.bin", 0x3FFFDC)
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")

@@ -13,7 +13,7 @@ _start:
 
 	/* Send "Hello!" trough CAN-Bus */
 	li	%r0, 0x80 # Buffer not ready + DLC = 0
-	sth	%r0, 0x7100(3) # 0x307100 TouCAN A Tx Buffer 1
+	sth	%r0, 0x7100(3) # 0x307100 TouCAN A Tx Buffer 0
 
 	lis	%r0, 0xF400@ha # Destination address 0x7A0 << 5
 	addi	%r0, 0, 0xF400@l

@@ -86,6 +86,10 @@ _start:
 	sth	%r0, 0x71E0(3) # 0x3071E0 TouCAN A Buffer 14
 	sth	%r0, 0x71F0(3) # 0x3071F0 TouCAN A Buffer 15
 
+	/* Disable Receive interrupt */
+	sth	%r0, 0x70A2(3) # 0x3070A2 IMASK_A Register
+	sth	%r0, 0x70A4(3) # 0x3070A4 IFLAG_A Register
+
 	/* Configure receive address 0x60 */
 	lis	%r0, 0xFFE0 # Reception Mask 0x7FF << 21
 	stw	%r0, 0x7098(3) # 0x307098 Rx15MSK_A Register
@@ -116,7 +120,7 @@ has_data:
 	/* DLC > 0 */
 	rlwinm	%r4, 0, 0,28,31 # Mask Length
 	cmplwi	%r4, 0
-	beq	endloop # DLC is 0
+	beq	clear_buffer # DLC is 0
 
 	/* Echo command 0x00 */
 	lbz	%r5, 0x71F6(3)
@@ -130,14 +134,14 @@ has_data:
 	stw	%r0, 0x710A(3)
 	ori	%r0, 4, 0xC0 # Buffer ready + Copy DLC
 	sth	%r0, 0x7100(3)
-	bl	endloop
+	bl	clear_buffer
 end_command_0x00:
 
 	/* Read command 0x01 */
 	cmplwi	%r5, 0x01
 	bne	end_command_0x01
 	cmplwi	%r4, 4
-	bne	endloop # DLC is not 4
+	bne	clear_buffer # DLC is not 4
 	lbz	%r0, 0x71F7(3)
 	slw	%r0, 0, 16
 	lhz	%r6, 0x71F8(3)
@@ -149,15 +153,14 @@ end_command_0x00:
 	stw	%r0, 0x7107(3) # Unaligned word could be bogus???
 	li	%r6, 0xC6 # Buffer ready + DLC = 5
 	sth	%r6, 0x7100(3)
-	bl	endloop
+	bl	clear_buffer
 end_command_0x01:
 
 	/* Write command 0x02 */
 	cmplwi	%r5, 0x02
 	bne	end_command_0x02
 	cmplwi	%r4, 8
-	bne	endloop # DLC is not 8
-	bl	endloop
+	bne	clear_buffer # DLC is not 8
 	lbz	%r0, 0x71F7(3)
 	slw	%r0, 0, 16
 	lhz	%r6, 0x71F8(3)
@@ -169,40 +172,49 @@ end_command_0x01:
 	stb	%r5, 0x7106(3)
 	li	%r6, 0xC1 # Buffer ready + DLC = 1
 	sth	%r6, 0x7100(3)
+	bl	clear_buffer
 end_command_0x02:
 
 	/* Erase command 0x03 */
 	cmplwi	%r5, 0x03
 	bne	end_command_0x03
 	#TODO
-	bl	endloop
+	bl	clear_buffer
 end_command_0x03:
 
 	/* Start command 0x04 */
 	cmplwi	%r5, 0x04
 	bne	end_command_0x04
 	#TODO
-	bl	endloop
+	bl	clear_buffer
 end_command_0x04:
 
 	/* Program command 0x05 */
 	cmplwi	%r5, 0x05
 	bne	end_command_0x05
 	#TODO
-	bl	endloop
+	bl	clear_buffer
 end_command_0x05:
 
 	/* Stop command 0x06 */
 	cmplwi	%r5, 0x06
 	bne	end_command_0x06
 	#TODO
-	bl	endloop
+	bl	clear_buffer
 end_command_0x06:
 
 	/* Reset command 0x07 */
 	cmplwi	%r5, 0x07
-	bne	endloop
+	bne	end_command_0x07
 	cmplwi	%r4, 1
-	bne	endloop # DLC is not 1
+	bne	clear_buffer # DLC is not 1
 	ba	0x100
+end_command_0x07:
+
+clear_buffer:
+	li	%r0, 0x40 # Buffer activated
+	sth	%r0, 0x71F0(3)
+
+	/* Endless loop */
+	bl	endloop
 
