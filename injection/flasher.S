@@ -11,26 +11,6 @@ _start:
 	stw	%r0, -0x3FB8(3) # 0x2FC048 SIMASK2 Register
 	stw	%r0, -0x3FB4(3) # 0x2FC04C SIMASK3 Register
 
-	/* Send "Hello!" trough CAN-Bus */
-	li	%r0, 0x80 # Buffer not ready + DLC = 0
-	sth	%r0, 0x7100(3) # 0x307100 TouCAN A Buffer 0
-
-	lis	%r0, 0xF400@ha # Destination address 0x7A0 << 5
-	addi	%r0, 0, 0xF400@l
-	sth	%r0, 0x7102(3)
-
-	li	%r0, 0x4865 # Data: "He"
-	sth	%r0, 0x7106(3)
-
-	li	%r0, 0x6C6C # Data: "ll"
-	sth	%r0, 0x7108(3)
-
-	li	%r0, 0x6F21 # Data: "o!"
-	sth	%r0, 0x710A(3)
-
-	li	%r0, 0xC6 # Buffer ready + DLC = 6
-	sth	%r0, 0x7100(3)
-
 	# CAN-Bus Message for Flasher
 	#
 	# PID:        0x60
@@ -68,8 +48,33 @@ _start:
 	#   DATA  : 07
 	#   RETURN: N/A
 
-	/* Disable buffer 1-15 */
+	/* TouCAN A Soft-Reset */
+	lhz	%r0, 0x7080(3) # 0x307080 CANMCR_A Register
+	ori	%r0, %r0, 0x200 # Set bit SOFTRST
+	sth	%r0, 0x7080(3)
+wait_reset_toucan:
+	lhz	%r0, 0x7080(3)
+	rlwinm	%r0, %r0, 0,22,22 # Mask on bit SOFTRST
+	cmplwi	%r0, 0
+	bne	wait_reset_toucan
+
+	/* TouCAN A Configure */
+	/* 28 MHz / (PSEG1+1+PSEG2+1) / (PRESDIV+1) = 1 Mbit/s */
+	li	%r0, 0x00
+	stb	%r0, 0x7086(3) # 0x307086 CANCTRL0_A Register
+
+	li	%r0, 0x04 # PROPSEG = 4
+	stb	%r0, 0x7087(3) # 0x307087 CANCTRL1_A Register
+
+	li	%r0, 0xF6 # RJW = 3, PSEG1 = 6, PSEG2 = 6
+	stb	%r0, 0x7089(3) # 0x307089 CANCTRL2_A Register
+
+	li	%r0, 1
+	stb	%r0, 0x7088(3) # 0x307088 PRESDIV_A Register
+
+	/* Disable buffer 0-15 */
 	li	%r0, 0x00 # Buffer disabled
+	sth	%r0, 0x7100(3) # 0x307110 TouCAN A Buffer 0
 	sth	%r0, 0x7110(3) # 0x307110 TouCAN A Buffer 1
 	sth	%r0, 0x7120(3) # 0x307120 TouCAN A Buffer 2
 	sth	%r0, 0x7130(3) # 0x307130 TouCAN A Buffer 3
@@ -86,10 +91,6 @@ _start:
 	sth	%r0, 0x71E0(3) # 0x3071E0 TouCAN A Buffer 14
 	sth	%r0, 0x71F0(3) # 0x3071F0 TouCAN A Buffer 15
 
-	/* Disable Receive interrupt */
-	sth	%r0, 0x70A2(3) # 0x3070A2 IMASK_A Register
-	sth	%r0, 0x70A4(3) # 0x3070A4 IFLAG_A Register
-
 	/* Configure receive address 0x60 */
 	lis	%r0, 0xFFE0 # Reception Mask 0x7FF << 21
 	stw	%r0, 0x7098(3) # 0x307098 Rx15MSK_A Register
@@ -98,8 +99,39 @@ _start:
 	sth	%r0, 0x71F2(3)
 
 	li	%r0, 0x40 # Buffer activated
-	sth	%r0, 0x71F0(3)
+	sth	%r0, 0x71F0(3) # 0x3071F0 TouCAN A Buffer 15
 
+	/* TouCAN A Start */
+	lhz	%r0, 0x7080(3) # 0x307080 CANMCR_A Register
+	rlwinm	%r0, %r0, 0,20,18 # Clear bit HALT
+	sth	%r0, 0x7080(3)
+
+	/* TouCAN A wait ready */
+wait_ready_toucan:
+	lhz	%r0, 0x7480(3)
+	rlwinm	%r0, %r0, 0,20,20 # Mask on bit NOTRDY
+	cmpwi	%r0, 0
+	bne	wait_ready_toucan
+
+	/* Send "Hello!" trough CAN-Bus */
+	li	%r0, 0x80 # Buffer not ready + DLC = 0
+	sth	%r0, 0x7100(3) # 0x307100 TouCAN A Buffer 0
+
+	lis	%r0, 0xF400@ha # Destination address 0x7A0 << 5
+	addi	%r0, 0, 0xF400@l
+	sth	%r0, 0x7102(3)
+
+	li	%r0, 0x4865 # Data: "He"
+	sth	%r0, 0x7106(3)
+
+	li	%r0, 0x6C6C # Data: "ll"
+	sth	%r0, 0x7108(3)
+
+	li	%r0, 0x6F21 # Data: "o!"
+	sth	%r0, 0x710A(3)
+
+	li	%r0, 0xC6 # Buffer ready + DLC = 6
+	sth	%r0, 0x7100(3)
 endloop:
 	/* Retrigger Watchdog */
 	li	%r0, 0x556C
