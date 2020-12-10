@@ -4,7 +4,6 @@
 # sudo ip link add dev can0 type vcan
 
 import os, sys, socket, struct, argparse
-from t4e import ECU_T4E
 
 CAN_EFF_FLAG = 0x80000000
 CAN_RTR_FLAG = 0x40000000
@@ -22,6 +21,13 @@ class FlasherException(Exception):
 	pass
 
 class Flasher:
+	blocks = [
+		("Flash Boot Loader", 0x80, 0x000000, 0x10000, "bootldr.bin"),
+		("Flash Calibration", 0x40, 0x010000, 0x10000, "calrom.bin"),
+		("Flash Program"    , 0x3F, 0x020000, 0x60000, "prog.bin"),
+		("Flash Full"       , 0xFF, 0x000000, 0x80000, "dump.bin")
+	]
+
 	# Override it if needed
 	def log(self, msg):
 		print(msg)
@@ -148,6 +154,7 @@ if __name__ == "__main__":
 		"-d",
 		"--device",
 		required=False,
+		type=str,
 		help="The CAN-Bus device to use.",
 		default="can0"
 	)
@@ -155,51 +162,50 @@ if __name__ == "__main__":
 		"-o",
 		"--operation",
 		required=False,
+		type=str,
 		help=
 			"The action to do: "
 			"dl -> Download, "
 			"v -> Verify, "
-			"ifp -> Inject Flash Program, "
+			"vfp -> Verify Flash Program, "
 			"t -> Tests",
-		choices=["dl", "v", "ifp", "t"],
+		choices=["dl", "v", "vfp", "t"],
 		default="dl"
 	)
 	ap.add_argument(
 		"-D",
 		"--directory",
 		required=False,
+		type=str,
 		help="Dump directory",
 		default="."
 	)
 	ap.add_argument(
-		"-z",
-		"--zone",
+		"-b",
+		"--block",
+		nargs='*',
 		type=int,
-		required=False,
-		help="Specify a zone",
-		choices=range(0, len(ECU_T4E.zones)),
-		default=None
+		help="Specify a block",
+		choices=range(0, len(Flasher.blocks)),
+		default=(1,)
 	)
 	ap.add_argument(
-		"-lz",
-		"--listzone",
+		"-lb",
+		"--listblock",
 		action='store_true',
 		required=False,
-		help="List the availables zones",
+		help="List the availables blocks",
 		default=False
 	)
 	args = vars(ap.parse_args())
 	can_if = args['device']
 	ecu_op = args['operation']
 	ecu_dir = args['directory']
-	if(args['zone'] == None):
-		ecu_zones = range(0, 5)
-	else:
-		ecu_zones = (args['zone'],)
-	if(args['listzone']):
-		print("Zones ECU")
-		for i in range(0, len(ECU_T4E.zones)):
-			print("%i: %s" % (i, ECU_T4E.zones[i][0]))
+	ecu_blocks = args['block']
+	if(args['listblock']):
+		print("Blocks ECU")
+		for i in range(0, len(Flasher.blocks)):
+			print("%i: %s" % (i, Flasher.blocks[i][0]))
 		sys.exit(0)
 
 	fl = Flasher();
@@ -208,19 +214,19 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'dl'):
 		print("Download ECU")
-		for i in ecu_zones:
+		for i in ecu_blocks:
 			fl.download(
-				ECU_T4E.zones[i][1],
-				ECU_T4E.zones[i][2],
-				ecu_dir+"/"+ECU_T4E.zones[i][3]
+				Flasher.blocks[i][1],
+				Flasher.blocks[i][2],
+				ecu_dir+"/"+Flasher.blocks[i][4]
 			)
 
 	if(ecu_op == 'v'):
 		print("Verify ECU")
-		for i in ecu_zones:
+		for i in ecu_blocks:
 			fl.verify(
-				ECU_T4E.zones[i][1],
-				ecu_dir+"/"+ECU_T4E.zones[i][3]
+				Flasher.blocks[i][1],
+				ecu_dir+"/"+Flasher.blocks[i][4]
 			)
 
 	if(ecu_op == 't'):
