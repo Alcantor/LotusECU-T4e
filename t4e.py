@@ -182,7 +182,6 @@ class ECU_T4E:
 		except socket.timeout:
 			raise ECUException("Injection failed!") from None
 
-		
 	def test(self, freeram_address):
 		# Word
 		self.writeMemory(freeram_address, b'\xDE\xAD\xBE\xEF')
@@ -202,6 +201,7 @@ if __name__ == "__main__":
 		"-d",
 		"--device",
 		required=False,
+		type=str,
 		help="The CAN-Bus device to use.",
 		default="can0"
 	)
@@ -209,6 +209,7 @@ if __name__ == "__main__":
 		"-o",
 		"--operation",
 		required=False,
+		type=str,
 		help=
 			"The action to do: "
 			"dl -> Download, "
@@ -222,17 +223,18 @@ if __name__ == "__main__":
 		"-D",
 		"--directory",
 		required=False,
+		type=str,
 		help="Dump directory",
 		default="."
 	)
 	ap.add_argument(
 		"-z",
 		"--zone",
+		nargs='*',
 		type=int,
-		required=False,
 		help="Specify a zone",
 		choices=range(0, len(ECU_T4E.zones)),
-		default=None
+		default=range(0, 5)
 	)
 	ap.add_argument(
 		"-lz",
@@ -246,10 +248,7 @@ if __name__ == "__main__":
 	can_if = args['device']
 	ecu_op = args['operation']
 	ecu_dir = args['directory']
-	if(args['zone'] == None):
-		ecu_zones = range(0, 5)
-	else:
-		ecu_zones = (args['zone'],)
+	ecu_zones = args['zone']
 	if(args['listzone']):
 		print("Zones ECU")
 		for i in range(0, len(ECU_T4E.zones)):

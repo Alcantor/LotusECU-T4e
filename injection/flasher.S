@@ -29,16 +29,16 @@ _start:
 	#   RETURN: 02
 	#
 	# Erase Block
-	#   DATA  : 03 MM MM
-	#   RETURN: 03
+	#   DATA  : 03 MM MM (MM => Blocks Mask)
+	#   RETURN: 03 0G (G => PEGOOD)
 	#
 	# Start Block Programming
-	#   DATA  : 04 MM MM
+	#   DATA  : 04 MM MM (MM => Blocks Mask)
 	#   RETURN: 04
 	#
 	# Program Block - Program 4 Bytes
 	#   DATA  : 05 AA AA AA DD DD DD DD 
-	#   RETURN: 05
+	#   RETURN: 05 0G (G => PEGOOD)
 	#
 	# Stop Block Programming
 	#   DATA  : 06
