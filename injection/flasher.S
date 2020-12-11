@@ -86,7 +86,7 @@ loop_disable:
 	lis	%r0, 0xFFE0 # Reception Mask 0x7FF << 21
 	stw	%r0, 0x7090(3) # 0x307090 RxGMSK_A
 
-	/* TouCAN A Configure receive address 0x60 */
+	/* TouCAN A Configure RX Buffer 0 */
 	li	%r0, 0xC00 # Reception address 0x60 << 5
 	sth	%r0, 0x7102(3) # 0x307102 MBBUFF0_A - ID_HIGH
 
@@ -210,8 +210,6 @@ end_command_0x01:
 	cmplwi	%r4, 8
 	bne	loop_main # DLC is not 8
 	stw	%r6, 0(8) # Write
-	li	%r0, 0x80 # Buffer not ready + DLC = 0
-	sth	%r0, 0x71D0(3) # 0x3071D0 TouCAN A Buffer 13
 	stb	%r7, 0x71D6(3)
 	li	%r0, 0xE1 # Buffer ready + DLC = 1
 	sth	%r0, 0x71D0(3)
