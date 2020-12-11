@@ -139,13 +139,17 @@ class Flasher:
 				address += 4
 			self.progress_end()
 
+	def program(self, block_mask, address, filename):
+		self.log("Unimplemented")
 		
 	def test(self, freeram_address):
 		self.echo(b'Hi ;-)')
 		test = b'\xDE\xAD\xBE\xEF'
 		self.writeWord(freeram_address, test)
 		if(test != self.readWord(freeram_address)):
-			raise ECUException("Flasher Test failed!")
+			raise ECUException("Word readback failed!")
+		self.upload(freeram_address, "injection/deadloop.bin")
+		self.verify(freeram_address, "injection/deadloop.bin")
 
 if __name__ == "__main__":
 	print("Stupid flasher for Lotus T4e ECU\n")
@@ -167,7 +171,8 @@ if __name__ == "__main__":
 			"The action to do: "
 			"dl -> Download, "
 			"v -> Verify, "
-			"vfp -> Verify Flash Program, "
+			"vfp -> Verify Flasher Program, "
+			"p -> Verify Flash Program, "
 			"t -> Tests",
 		choices=["dl", "v", "vfp", "t"],
 		default="dl"
@@ -216,8 +221,8 @@ if __name__ == "__main__":
 		print("Download ECU")
 		for i in ecu_blocks:
 			fl.download(
-				Flasher.blocks[i][1],
 				Flasher.blocks[i][2],
+				Flasher.blocks[i][3],
 				ecu_dir+"/"+Flasher.blocks[i][4]
 			)
 
@@ -225,7 +230,20 @@ if __name__ == "__main__":
 		print("Verify ECU")
 		for i in ecu_blocks:
 			fl.verify(
+				Flasher.blocks[i][2],
+				ecu_dir+"/"+Flasher.blocks[i][4]
+			)
+
+	if(ecu_op == 'vfp'):
+		print("Verify Flasher Program")
+		fl.verify(0x3FF000,"injection/flasher.bin")
+
+	if(ecu_op == 'p'):
+		print("Program ECU")
+		for i in ecu_blocks:
+			fl.program(
 				Flasher.blocks[i][1],
+				Flasher.blocks[i][2],
 				ecu_dir+"/"+Flasher.blocks[i][4]
 			)
 

@@ -246,7 +246,7 @@ class t4e_window(Gtk.Window):
 		threading.Thread(
 			target=self.threaded_action,
 			args=(
-				self.t4e.inject, (0x3FE748, "injection/deadloop.bin", 0x3FFFDC),
+				self.t4e.smart_inject, ("injection/flasher.bin"),
 				self.flasher_buttons, (True,),
 				self.t4e_buttons, (True,)
 			)

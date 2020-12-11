@@ -182,6 +182,10 @@ class ECU_T4E:
 		except socket.timeout:
 			raise ECUException("Injection failed!") from None
 
+	def smart_inject(self, filename):
+		# TODO: Make it smart!
+		self.inject(0x3FF000, filename, 0x3FFFDC)
+
 	def test(self, freeram_address):
 		# Word
 		self.writeMemory(freeram_address, b'\xDE\xAD\xBE\xEF')
@@ -278,12 +282,12 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
-		#t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3FFFDC)
-		t4e.inject(0x3FE748, "injection/flasher.bin", 0x3FFFDC)
+		#t4e.smart_inject("injection/deadloop.bin")
+		t4e.smart_inject("injection/flasher.bin")
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")
-		t4e.test(0x3FE748)
+		t4e.test(0x3FF000)
 
 	print("Done")
 

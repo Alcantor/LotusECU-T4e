@@ -46,7 +46,7 @@ _start:
 	#
 	# Reset:
 	#   DATA  : 07
-	#   RETURN: N/A
+	#   RETURN: 07
 
 	/* TouCAN A Soft-Reset */
 	lhz	%r0, 0x7080(3) # 0x307080 CANMCR_A
@@ -127,6 +127,7 @@ wait_ready:
 
 	li	%r0, 0xE6 # Buffer ready + DLC = 6
 	sth	%r0, 0x71D0(3)
+
 loop_main:
 	/* Retrigger Watchdog */
 	li	%r0, 0x556C
@@ -184,11 +185,12 @@ wait_busy:
 	/* Echo command 0x00 */
 	cmplwi	%r7, 0x00
 	bne	end_command_0x00
+	/* Answer */
 	stw	%r5, 0x71D6(3)
 	stw	%r6, 0x71DA(3)
 	ori	%r0, 4, 0xE0 # Buffer ready + Copy DLC
 	sth	%r0, 0x71D0(3)
-	bl	loop_main
+	b	loop_main
 end_command_0x00:
 
 	/* Read command 0x01 */
@@ -196,12 +198,13 @@ end_command_0x00:
 	bne	end_command_0x01
 	cmplwi	%r4, 4
 	bne	loop_main # DLC is not 4
-	lwz	%r8, 0(8) # Read
+	lwz	%r0, 0(8) # Read
+	/* Answer */
 	stb	%r7, 0x71D6(3)
-	stw	%r8, 0x71D7(3)
+	stw	%r0, 0x71D7(3)
 	li	%r0, 0xE5 # Buffer ready + DLC = 5
 	sth	%r0, 0x71D0(3)
-	bl	loop_main
+	b	loop_main
 end_command_0x01:
 
 	/* Write command 0x02 */
@@ -210,10 +213,8 @@ end_command_0x01:
 	cmplwi	%r4, 8
 	bne	loop_main # DLC is not 8
 	stw	%r6, 0(8) # Write
-	stb	%r7, 0x71D6(3)
-	li	%r0, 0xE1 # Buffer ready + DLC = 1
-	sth	%r0, 0x71D0(3)
-	bl	loop_main
+	bl	sub_answer1
+	b	loop_main
 end_command_0x02:
 
 	/* Erase command 0x03 */
@@ -221,18 +222,75 @@ end_command_0x02:
 	bne	end_command_0x03
 	cmplwi	%r4, 2
 	bne	loop_main # DLC is not 2
-	/* Unlock */
-	stb	%r9, -0x37F6(3) # 0x2FC80A UC3FCTL - Block
-	nand	%r0, 9, 9 # Invert
-	stb	%r0, -0x37FD(3) # 0x2FC803 UC3FMCR - Protect
-	/* Erase */
+	bl	sub_unlock
+	/* Start erase sequence */
 	li	%r0, 0x06 # CSC=0, HSUS=0, PE=1, SES=1 and EHV=0
 	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
-	stw	%r0, 0(0) # Interlock (Dummy write to the flash) # TODO: Should it be in the block?
+	/* Erase */
+	stw	%r0, 0(0) # Erase Interlock (Dummy write to the flash) # TODO: Should it be in the block?
 	li	%r0, 0x07 # CSC=0, HSUS=0, PE=1, SES=1 and EHV=1
 	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
-wait_hvs:
-	/* Erase could be long -> Retrigger Watchdog */
+	bl	sub_wait_hvs_and_answer
+	bl	sub_finish_and_lock
+	b	loop_main
+end_command_0x03:
+
+	/* Start command 0x04 */
+	cmplwi	%r7, 0x04
+	bne	end_command_0x04
+	cmplwi	%r4, 2
+	bne	loop_main # DLC is not 2
+	bl	sub_unlock
+	/* Start program sequence */
+	li	%r0, 0x02 # CSC=0, HSUS=0, PE=0, SES=1 and EHV=0
+	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
+	bl	sub_answer1
+	b	loop_main
+end_command_0x04:
+
+	/* Program command 0x05 */
+	cmplwi	%r7, 0x05
+	bne	end_command_0x05
+	cmplwi	%r4, 8
+	bne	loop_main # DLC is not 8
+	/* Program */
+	stw	%r6, 0(8) # Write Interlock
+	li	%r0, 0x03 # CSC=0, HSUS=0, PE=0, SES=1 and EHV=1
+	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
+	bl	sub_wait_hvs_and_answer
+	/* Remove EHV */
+	li	%r0, 0x02 # CSC=0, HSUS=0, PE=0, SES=1 and EHV=0
+	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
+	b	loop_main
+end_command_0x05:
+
+	/* Stop command 0x06 */
+	cmplwi	%r7, 0x06
+	bne	end_command_0x06
+	cmplwi	%r4, 1
+	bne	loop_main # DLC is not 1
+	bl	sub_finish_and_lock
+	bl	sub_answer1
+	b	loop_main
+end_command_0x06:
+
+	/* Reset command 0x07 */
+	cmplwi	%r7, 0x07
+	bne	loop_main
+	cmplwi	%r4, 1
+	bne	loop_main # DLC is not 1
+	bl	sub_answer1
+	ba	0x100
+
+sub_unlock:
+	/* Unlock */
+	sth	%r9, -0x37F7(3) # 0x2FC809 UC3FCTL - SBBlock + Block
+	nand	%r0, 9, 9 # Invert
+	stb	%r0, -0x37FD(3) # 0x2FC803 UC3FMCR - Protect
+	blr
+
+sub_wait_hvs_and_answer:
+	/* Erase or program could be long -> Retrigger Watchdog */
 	li	%r0, 0x556C
 	sth	%r0, -0x3FF2(3) # 0x2FC00E SWSR
 	lis	%r0, 1
@@ -242,53 +300,28 @@ wait_hvs:
 	lbz	%r0, -0x37F8(3) # 0x2FC808 UC3FCTL - Bit 0-8
 	rlwinm	%r0, 0, 0,24,24 # Mask on bit HVS
 	cmplwi	%r0, 0x0
-	bne	wait_hvs
-	/* Get PEGOOD */
+	bne	sub_wait_hvs_and_answer
+	/* Get PEGOOD and Answer */
 	lbz	%r0, -0x37F8(3) # 0x2FC808 UC3FCTL - Bit 0-8
 	rlwinm	%r0, 0, 26,31,31 # Mask on bit PEGOOD
 	stb	%r7, 0x71D6(3)
 	stb	%r0, 0x71D7(3)
 	li	%r0, 0xE2 # Buffer ready + DLC = 2
 	sth	%r0, 0x71D0(3)
+	blr
+
+sub_finish_and_lock:
 	/* Finish + Lock */
-	li	%r0, 0x00 # Block=0x00, CSC=0, HSUS=0, PE=0, SES=0 and EHV=0
+	li	%r0, 0x0000 # Block=0x00, CSC=0, HSUS=0, PE=0, SES=0 and EHV=0
 	sth	%r0, -0x37F6(3) # 0x2FC80A UC3FCTL - Block + Bit 24-31
 	li	%r0, 0xFF
 	stb	%r0, -0x37FD(3) # 0x2FC803 UC3FMCR - Protect
-	bl	loop_main
-end_command_0x03:
+	blr
 
-	/* Start command 0x04 */
-	cmplwi	%r7, 0x04
-	bne	end_command_0x04
-	cmplwi	%r4, 2
-	bne	loop_main # DLC is not 2
-	#TODO
-	bl	loop_main
-end_command_0x04:
-
-	/* Program command 0x05 */
-	cmplwi	%r7, 0x05
-	bne	end_command_0x05
-	cmplwi	%r4, 8
-	bne	loop_main # DLC is not 8
-	#TODO
-	bl	loop_main
-end_command_0x05:
-
-	/* Stop command 0x06 */
-	cmplwi	%r7, 0x06
-	bne	end_command_0x06
-	cmplwi	%r4, 1
-	bne	loop_main # DLC is not 1
-	#TODO
-	bl	loop_main
-end_command_0x06:
-
-	/* Reset command 0x07 */
-	cmplwi	%r7, 0x07
-	bne	loop_main
-	cmplwi	%r4, 1
-	bne	loop_main # DLC is not 1
-	ba	0x100
+sub_answer1:
+	/* Answer just with the command byte */
+	stb	%r7, 0x71D6(3)
+	li	%r0, 0xE1 # Buffer ready + DLC = 1
+	sth	%r0, 0x71D0(3)
+	blr
 
