@@ -133,7 +133,7 @@ class Flasher:
 		with open(filename,'rb') as f:
 			while(True):
 				chunk = f.read(4)
-				if(len(f_chunk) != 4): break # EOF
+				if(len(chunk) != 4): break # EOF
 				self.writeWord(address, chunk)
 				self.progress() # One dot every 4 Bytes
 				address += 4

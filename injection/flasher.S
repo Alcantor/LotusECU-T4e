@@ -93,9 +93,6 @@ loop_disable:
 	li	%r0, 0x40 # Buffer activated and free
 	sth	%r0, 0x7100(3) # 0x307100 MBBUFF0_A
 
-	li	%r0, 0x1 # TODO: Is that really needed ? Try 0
-	sth	%r0, 0x70A2(3) # 0x3070A2 IMASK
-
 	/* TouCAN A Start */
 	lhz	%r0, 0x7080(3) # 0x307080 CANMCR_A
 	rlwinm	%r0, %r0, 0,20,18 # Clear bit HALT
