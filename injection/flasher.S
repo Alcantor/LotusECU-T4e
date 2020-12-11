@@ -144,7 +144,7 @@ loop_main:
 	/* Read Buffer Status (Lock buffer) */
 wait_busy:
 	lhz	%r0, 0x7100(3) # 0x307100 MBBUFF0_A Control/Status
-	rlwinm	%r4, 0, 0,27,27 # Mask on busy bit
+	rlwinm	%r4, 0, 0,27,27 # Mask on bit BUSY
 	cmplwi	%r4, 0x0
 	bne	wait_busy
 
@@ -226,10 +226,33 @@ end_command_0x02:
 	nand	%r0, 9, 9 # Invert
 	stb	%r0, -0x37FD(3) # 0x2FC803 UC3FMCR - Protect
 	/* Erase */
-	#TODO
-	/* Lock */
-	li	%r0, 0	
-	stb	%r0, -0x37F6(3) # 0x2FC80A UC3FCTL - Block
+	li	%r0, 0x06 # CSC=0, HSUS=0, PE=1, SES=1 and EHV=0
+	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
+	stw	%r0, 0(0) # Interlock (Dummy write to the flash) # TODO: Should it be in the block?
+	li	%r0, 0x07 # CSC=0, HSUS=0, PE=1, SES=1 and EHV=1
+	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
+wait_hvs:
+	/* Erase could be long -> Retrigger Watchdog */
+	li	%r0, 0x556C
+	sth	%r0, -0x3FF2(3) # 0x2FC00E SWSR
+	lis	%r0, 1
+	addi	%r0, 0, -0x55C7 # 0xAA39
+	sth	%r0, -0x3FF2(3) # 0x2FC00E SWSR
+	/* Wait */
+	lbz	%r0, -0x37F8(3) # 0x2FC808 UC3FCTL - Bit 0-8
+	rlwinm	%r0, 0, 0,24,24 # Mask on bit HVS
+	cmplwi	%r0, 0x0
+	bne	wait_hvs
+	/* Get PEGOOD */
+	lbz	%r0, -0x37F8(3) # 0x2FC808 UC3FCTL - Bit 0-8
+	rlwinm	%r0, 0, 26,31,31 # Mask on bit PEGOOD
+	stb	%r7, 0x71D6(3)
+	stb	%r0, 0x71D7(3)
+	li	%r0, 0xE2 # Buffer ready + DLC = 2
+	sth	%r0, 0x71D0(3)
+	/* Finish + Lock */
+	li	%r0, 0x00 # Block=0x00, CSC=0, HSUS=0, PE=0, SES=0 and EHV=0
+	sth	%r0, -0x37F6(3) # 0x2FC80A UC3FCTL - Block + Bit 24-31
 	li	%r0, 0xFF
 	stb	%r0, -0x37FD(3) # 0x2FC803 UC3FMCR - Protect
 	bl	loop_main
