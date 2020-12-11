@@ -278,8 +278,8 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
-		t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3FFFDC)
-		#t4e.inject(0x3FE748, "injection/flasher.bin", 0x3FFFDC)
+		#t4e.inject(0x3FE748, "injection/deadloop.bin", 0x3FFFDC)
+		t4e.inject(0x3FE748, "injection/flasher.bin", 0x3FFFDC)
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")
