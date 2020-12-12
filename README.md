@@ -1,6 +1,6 @@
 # Lotus T4e Flasher
 
-## Discleimer
+## Disclaimer
 
 ***Use it at your own RISK.***
 
@@ -52,8 +52,8 @@ trough the OBD Port.
 	To 3: Tune your engine!
 	To 4: Install the flasher into the RAM *
 	To 5: Verify the flasher itself.
-	To 6: Erase the calibration block **[UNTESTED YET]**
-	To 7: Program the calibration block **[UNTESTED YET]**
+	To 6: Erase the calibration block ***[UNTESTED YET]***
+	To 7: Program the calibration block ***[UNTESTED YET]***
 	To 8: Verify the calibration block
 	To 9: Reset
 
