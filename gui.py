@@ -124,18 +124,21 @@ class t4e_window(Gtk.Window):
 		self.combo_blocks.add_attribute(renderer_text, "text", 0)
 		self.combo_blocks.set_active(1)
 		hbox2.pack_start(self.combo_blocks, True, True, 0)
+		self.button_e = Gtk.Button.new_with_label("Erase")
+		self.button_e.connect("clicked", self.erase)
+		hbox2.pack_start(self.button_e, True, True, 0)
 		self.button_pg = Gtk.Button.new_with_label("Program")
-		#self.button_pg.connect("clicked", self.download)
+		self.button_pg.connect("clicked", self.program)
 		hbox2.pack_start(self.button_pg, True, True, 0)
 		self.button_v2 = Gtk.Button.new_with_label("Verify")
-		#self.button_v2.connect("clicked", self.verify)
+		self.button_v2.connect("clicked", self.verify2)
 		hbox2.pack_start(self.button_v2, True, True, 0)
 		vbox2.pack_start(hbox2, True, True, 0)
 		self.button_vfp = Gtk.Button.new_with_label("Verify Flasher Program")
-		#self.button_vfp.connect("clicked", self.inject)
+		self.button_vfp.connect("clicked", self.inject_verify)
 		vbox2.pack_start(self.button_vfp, True, True, 0)
 		self.button_reset = Gtk.Button.new_with_label("Reset ECU")
-		#self.button_reset.connect("clicked", self.reset)
+		self.button_reset.connect("clicked", self.reset)
 		vbox2.pack_start(self.button_reset, True, True, 0)
 		frame_flasher = Gtk.Frame(label="CAN Flasher (Not Safe)")
 		frame_flasher.add(vbox2)
@@ -150,6 +153,7 @@ class t4e_window(Gtk.Window):
 		self.button_ifp.set_sensitive(sensitive)
 
 	def flasher_buttons(self, sensitive):
+		self.button_e.set_sensitive(sensitive)
 		self.button_pg.set_sensitive(sensitive)
 		self.button_v2.set_sensitive(sensitive)
 		self.button_vfp.set_sensitive(sensitive)
@@ -246,9 +250,101 @@ class t4e_window(Gtk.Window):
 		threading.Thread(
 			target=self.threaded_action,
 			args=(
-				self.t4e.smart_inject, ("injection/flasher.bin"),
+				self.t4e.smart_inject, ("injection/flasher.bin",),
 				self.flasher_buttons, (True,),
 				self.t4e_buttons, (True,)
+			)
+		).start()
+
+	def erase(self, button):
+		blocks = self.combo_blocks.get_model()
+		block = blocks[self.combo_blocks.get_active_iter()]
+		self.flasher_buttons(False)
+		threading.Thread(
+			target=self.threaded_action,
+			args=(
+				self.flasher.eraseBlock, (block[1],),
+				self.flasher_buttons, (True,),
+				self.flasher_buttons, (True,)
+			)
+		).start()
+
+	def program(self, button):
+		blocks = self.combo_blocks.get_model()
+		block = blocks[self.combo_blocks.get_active_iter()]
+		dialog = Gtk.FileChooserDialog(
+			title="Please choose a file",
+			parent=self,
+			action=Gtk.FileChooserAction.OPEN,
+		)
+		dialog.set_filename(block[4])
+		dialog.add_buttons(
+			Gtk.STOCK_CANCEL,
+			Gtk.ResponseType.CANCEL,
+			Gtk.STOCK_OPEN,
+			Gtk.ResponseType.OK,
+		)
+		self.add_filters(dialog)
+		response = dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			self.flasher_buttons(False)
+			threading.Thread(
+				target=self.threaded_action,
+				args=(
+					self.flasher.program, (block[1], block[2], dialog.get_filename()),
+					self.flasher_buttons, (True,),
+					self.flasher_buttons, (True,)
+				)
+			).start()
+
+	def verify2(self, button):
+		blocks = self.combo_blocks.get_model()
+		block = blocks[self.combo_blocks.get_active_iter()]
+		dialog = Gtk.FileChooserDialog(
+			title="Please choose a file",
+			parent=self,
+			action=Gtk.FileChooserAction.OPEN,
+		)
+		dialog.set_filename(block[4])
+		dialog.add_buttons(
+			Gtk.STOCK_CANCEL,
+			Gtk.ResponseType.CANCEL,
+			Gtk.STOCK_OPEN,
+			Gtk.ResponseType.OK,
+		)
+		self.add_filters(dialog)
+		response = dialog.run()
+		if(response == Gtk.ResponseType.OK):
+			self.flasher_buttons(False)
+			threading.Thread(
+				target=self.threaded_action,
+				args=(
+					self.flasher.verify, (block[2], dialog.get_filename()),
+					self.flasher_buttons, (True,),
+					self.flasher_buttons, (True,)
+				)
+			).start()
+		dialog.destroy()
+
+	def inject_verify(self, button):
+		self.flasher_buttons(False)
+		threading.Thread(
+			target=self.threaded_action,
+			args=(
+				self.flasher.verify, (0x3FF000, "injection/flasher.bin"),
+				self.flasher_buttons, (True,),
+				self.flasher_buttons, (True,)
+			)
+		).start()
+
+	def reset(self, button):
+		self.flasher_buttons(False)
+		threading.Thread(
+			target=self.threaded_action,
+			args=(
+				self.flasher.resetECU, (),
+				self.t4e_buttons, (True,),
+				self.flasher_buttons, (True,)
 			)
 		).start()
 

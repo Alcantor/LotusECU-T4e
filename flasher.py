@@ -65,7 +65,7 @@ class Flasher:
 			if(dlc != echo_len+1 or rcmd != cmd or rdata != data):
 				FlasherException("Unexpected answer!")
 		except socket.timeout:
-			raise FlasherException("Flasher Echo failed!") from None
+			raise FlasherException("Echo failed!") from None
 
 	def readWord(self, address):
 		#self.log("Flasher Read Word @ "+hex(address))
@@ -80,7 +80,7 @@ class Flasher:
 				FlasherException("Unexpected answer!")
 			return data
 		except socket.timeout:
-			raise FlasherException("Flasher Read Word failed!") from None
+			raise FlasherException("Read Word failed!") from None
 
 	def writeWord(self, address, data):
 		#self.log("Flasher Write Word @ "+hex(address))
@@ -94,7 +94,76 @@ class Flasher:
 			if(dlc != 1 or rcmd != cmd):
 				FlasherException("Unexpected answer!")
 		except socket.timeout:
-			raise FlasherException("Flasher Write Word failed!") from None
+			raise FlasherException("Write Word failed!") from None
+
+	def eraseBlock(self, blocks_mask):
+		#self.log("Flasher Erase Block BM: "+hex(blocks_mask))
+		try:
+			cmd = 0x03
+			cf = struct.pack(CAN_HDR_FRMT+"BB6x", 0x60, 2, cmd, blocks_mask)
+			self.sock.send(cf)
+			cf = self.sock.recv(CAN_FRA_SIZE)
+			id, dlc, rcmd, pegood = struct.unpack(CAN_HDR_FRMT+"BB6x", cf)
+			if(dlc != 2 or rcmd != cmd):
+				FlasherException("Unexpected answer!")
+			if(pegood != 1):
+				FlasherException("No PEGOOD!")
+		except socket.timeout:
+			raise FlasherException("Erase Block failed!") from None
+
+	def startProgramBlock(self, blocks_mask):
+		#self.log("Flasher Start Program Block BM: "+hex(blocks_mask))
+		try:
+			cmd = 0x04
+			cf = struct.pack(CAN_HDR_FRMT+"BB6x", 0x60, 2, cmd, blocks_mask)
+			self.sock.send(cf)
+			cf = self.sock.recv(CAN_FRA_SIZE)
+			id, dlc, rcmd = struct.unpack(CAN_HDR_FRMT+"B7x", cf)
+			if(dlc != 1 or rcmd != cmd):
+				FlasherException("Unexpected answer!")
+		except socket.timeout:
+			raise FlasherException("Start Program Block failed!") from None
+
+	def programBlockWord(self, address, data):
+		#self.log("Flasher Program Block Word @ "+hex(address)))
+		try:
+			cmd = 0x05
+			cf = struct.pack(CAN_HDR_FRMT, 0x60, 8)
+			cf += struct.pack(">I4s", (cmd<<24) | address, data)
+			self.sock.send(cf)
+			id, dlc, rcmd, pegood = struct.unpack(CAN_HDR_FRMT+"BB6x", cf)
+			if(dlc != 2 or rcmd != cmd):
+				FlasherException("Unexpected answer!")
+			if(pegood != 1):
+				FlasherException("No PEGOOD!")
+		except socket.timeout:
+			raise FlasherException("Program Block Word failed!") from None
+
+	def stopProgramBlock(self):
+		#self.log("Flasher Stop Program Block")
+		try:
+			cmd = 0x06
+			cf = struct.pack(CAN_HDR_FRMT+"B7x", 0x60, 1, cmd)
+			self.sock.send(cf)
+			cf = self.sock.recv(CAN_FRA_SIZE)
+			id, dlc, rcmd = struct.unpack(CAN_HDR_FRMT+"B7x", cf)
+			if(dlc != 1 or rcmd != cmd):
+				FlasherException("Unexpected answer!")
+		except socket.timeout:
+			raise FlasherException("Stop Program Block failed!") from None
+
+	def resetECU(self):
+		#self.log("Flasher reset ECU")
+		try:
+			cmd = 0x07
+			cf = struct.pack(CAN_HDR_FRMT+"B7x", 0x60, 1, cmd)
+			self.sock.send(cf)
+			cf = self.sock.recv(CAN_FRA_SIZE)
+			id, dlc, rcmd = struct.unpack(CAN_HDR_FRMT+"B7x", cf)
+			if(dlc != 1 or rcmd != cmd):
+				FlasherException("Unexpected answer!")
+		except socket.timeout:
+			raise FlasherException("Reset ECU failed!") from None
 
 	def download(self, address, size, filename):
 		self.log("Flasher Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
@@ -120,7 +189,7 @@ class Flasher:
 				if(len(f_chunk) != 4): break # EOF
 				chunk = self.readWord(address)
 				if(f_chunk != chunk):
-					raise ECUException("Flasher Verify failed!")
+					raise FlasherException("Flasher Verify failed!")
 				self.progress() # One dot every 4 Bytes
 				address += 4
 			self.progress_end()
@@ -140,16 +209,41 @@ class Flasher:
 			self.progress_end()
 
 	def program(self, block_mask, address, filename):
-		self.log("Unimplemented")
-		
+		size = os.path.getsize(filename)
+		self.log("Flasher Program "+str(size)+" bytes @ "+hex(address)+" from "+filename)
+		if(size % 4 != 0):
+			raise FlasherException("Size is not a multiple of 4")
+		with open(filename,'rb') as f:
+			self.startProgramBlock(block_mask)
+			while(True):
+				chunk = f.read(4)
+				if(len(chunk) != 4): break # EOF
+				self.programBlockWord(address, chunk)
+				self.progress() # One dot every 4 Bytes
+				address += 4
+			self.stopProgramBlock()
+			self.progress_end()
+
 	def test(self, freeram_address):
 		self.echo(b'Hi ;-)')
 		test = b'\xDE\xAD\xBE\xEF'
 		self.writeWord(freeram_address, test)
 		if(test != self.readWord(freeram_address)):
-			raise ECUException("Word readback failed!")
+			raise FlasherException("Word readback failed!")
 		self.upload(freeram_address, "injection/deadloop.bin")
 		self.verify(freeram_address, "injection/deadloop.bin")
+
+	def testFlash(self):
+		blank = b'\xFF\xFF\xFF\xFF'
+		test = b'\xDE\xAD\xBE\xEF'
+		addr = 0x1FFF0
+		if(blank != self.readWord(addr)):
+			raise FlasherException("Cannot test here!")
+		self.startProgramBlock(0x40)
+		self.programBlockWord(addr, test)
+		self.stopProgramBlock()
+		if(test != self.readWord(addr)):
+			raise FlasherException("Word readback failed!")
 
 if __name__ == "__main__":
 	print("Stupid flasher for Lotus T4e ECU\n")
@@ -172,9 +266,11 @@ if __name__ == "__main__":
 			"dl -> Download, "
 			"v -> Verify, "
 			"vfp -> Verify Flasher Program, "
-			"p -> Verify Flash Program, "
+			"e -> Erase Flash, "
+			"p -> Program Flash, "
+			"r -> Rest ECU, "
 			"t -> Tests",
-		choices=["dl", "v", "vfp", "t"],
+		choices=["dl", "v", "vfp", "e", "p", "r", "t"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -238,14 +334,24 @@ if __name__ == "__main__":
 		print("Verify Flasher Program")
 		fl.verify(0x3FF000,"injection/flasher.bin")
 
+	if(ecu_op == 'e'):
+		print("Erase ECU Flash")
+		for i in ecu_blocks:
+			print("Erase "+Flasher.blocks[i][0])
+			fl.eraseBlock(Flasher.blocks[i][1])
+
 	if(ecu_op == 'p'):
-		print("Program ECU")
+		print("Program ECU Flash")
 		for i in ecu_blocks:
 			fl.program(
 				Flasher.blocks[i][1],
 				Flasher.blocks[i][2],
 				ecu_dir+"/"+Flasher.blocks[i][4]
 			)
+
+	if(ecu_op == 'r'):
+		print("Reset ECU")
+		fl.resetECU()
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")
