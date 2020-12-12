@@ -58,6 +58,7 @@ trough the OBD Port.
 	To 9: Reset
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
+
 *: Only tested with "BCroftT4E070 01/11/2005 Lotus EngV0078" yet.
 
 ## Live tuning.
