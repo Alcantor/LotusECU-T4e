@@ -224,7 +224,7 @@ end_command_0x02:
 	li	%r0, 0x06 # CSC=0, HSUS=0, PE=1, SES=1 and EHV=0
 	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
 	/* Erase */
-	stw	%r0, 0(0) # Erase Interlock (Dummy write to the flash) # TODO: Should it be in the block?
+	stw	%r0, 0(0) # Erase Interlock (Dummy write to the flash)
 	li	%r0, 0x07 # CSC=0, HSUS=0, PE=1, SES=1 and EHV=1
 	stb	%r0, -0x37F5(3) # 0x2FC80B UC3FCTL - Bit 24-31
 	bl	sub_wait_hvs_and_answer
