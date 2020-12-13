@@ -149,7 +149,7 @@ class ECU_T4E:
 				if(chunk_size == 0): break # EOF
 				chunk = self.readMemory(address, chunk_size)
 				if(f_chunk != chunk):
-					raise ECUException("ECU Verify failed!")
+					raise ECUException("ECU Verify failed! @ "+hex(address))
 				self.progress() # One dot every 128 Bytes
 				address += chunk_size
 			self.progress_end()
@@ -181,10 +181,6 @@ class ECU_T4E:
 				self.log("We have the control of the ECU!")
 		except socket.timeout:
 			raise ECUException("Injection failed!") from None
-
-	def smart_inject(self, filename):
-		# TODO: Make it smart!
-		self.inject(0x3FF000, filename, 0x3FFFDC)
 
 	def test(self, freeram_address):
 		# Word
@@ -282,8 +278,8 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
-		#t4e.smart_inject("injection/deadloop.bin")
-		t4e.smart_inject("injection/flasher.bin")
+		#t4e.inject(0x3FF000, "injection/deadloop.bin", 0x3FFFDC)
+		t4e.inject(0x3FF000, "injection/flasher.bin", 0x3FFFDC)
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")

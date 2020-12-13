@@ -29,14 +29,14 @@ class ECU_T4E_GUI(ECU_T4E):
 		super().download(address, size, filename)
 
 	def verify(self, address, filename):
-		GLib.idle_add(self.entry.set_progress_fraction, 0)
 		self.bytes_total = os.path.getsize(filename)
+		GLib.idle_add(self.entry.set_progress_fraction, 0)
 		self.bytes_transfered = 0
 		super().verify(address, filename)
 
 	def upload(self, address, filename):
-		GLib.idle_add(self.entry.set_progress_fraction, 0)
 		self.bytes_total = os.path.getsize(filename)
+		GLib.idle_add(self.entry.set_progress_fraction, 0)
 		self.bytes_transfered = 0
 		super().upload(address, filename)
 
@@ -59,17 +59,24 @@ class Flasher_GUI(Flasher):
 	def progress_end(self):
 		GLib.idle_add(self.entry.set_progress_fraction, 1.0)
 
-	def verify(self, address, filename):
+	def eraseBlock(self, blocks_desc, blocks_mask):
+		self.log("Erase " + blocks_desc)
 		GLib.idle_add(self.entry.set_progress_fraction, 0)
+		super().eraseBlock(blocks_mask)
+		GLib.idle_add(self.entry.set_progress_fraction, 1.0)
+		
+	def verify(self, address, filename):
 		self.bytes_total = os.path.getsize(filename)
+		GLib.idle_add(self.entry.set_progress_fraction, 0)
 		self.bytes_transfered = 0
 		super().verify(address, filename)
 
-	def program(self, address, filename):
-		GLib.idle_add(self.entry.set_progress_fraction, 0)
+	def program(self, block_mask, address, filename):
 		self.bytes_total = os.path.getsize(filename)
-		self.bytes_transfered = 0
-		super().upload(address, filename)
+		for i in range(0, 5):
+			GLib.idle_add(self.entry.set_progress_fraction, 0)
+			self.bytes_transfered = 0
+			super().program(block_mask, address, filename)
 
 	def getProgressBar(self):
 		return self.entry
@@ -127,7 +134,7 @@ class t4e_window(Gtk.Window):
 		self.button_e = Gtk.Button.new_with_label("Erase")
 		self.button_e.connect("clicked", self.erase)
 		hbox2.pack_start(self.button_e, True, True, 0)
-		self.button_pg = Gtk.Button.new_with_label("Program")
+		self.button_pg = Gtk.Button.new_with_label("Program (x5)")
 		self.button_pg.connect("clicked", self.program)
 		hbox2.pack_start(self.button_pg, True, True, 0)
 		self.button_v2 = Gtk.Button.new_with_label("Verify")
@@ -250,7 +257,7 @@ class t4e_window(Gtk.Window):
 		threading.Thread(
 			target=self.threaded_action,
 			args=(
-				self.t4e.smart_inject, ("injection/flasher.bin",),
+				self.t4e.inject, (0x3FF000, "injection/flasher.bin", 0x3FFFDC),
 				self.flasher_buttons, (True,),
 				self.t4e_buttons, (True,)
 			)
@@ -263,7 +270,7 @@ class t4e_window(Gtk.Window):
 		threading.Thread(
 			target=self.threaded_action,
 			args=(
-				self.flasher.eraseBlock, (block[1],),
+				self.flasher.eraseBlock, (block[0],block[1],),
 				self.flasher_buttons, (True,),
 				self.flasher_buttons, (True,)
 			)
@@ -296,6 +303,7 @@ class t4e_window(Gtk.Window):
 					self.flasher_buttons, (True,)
 				)
 			).start()
+		dialog.destroy()
 
 	def verify2(self, button):
 		blocks = self.combo_blocks.get_model()

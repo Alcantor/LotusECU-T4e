@@ -52,14 +52,14 @@ trough the OBD Port.
 	To 3: Tune your engine!
 	To 4: Install the flasher into the RAM *
 	To 5: Verify the flasher itself.
-	To 6: Erase the calibration block ***[UNTESTED YET]***
-	To 7: Program the calibration block ***[UNTESTED YET]***
+	To 6: Erase the calibration block *** [TESTED] ***
+	To 7: Program the calibration block *** [QUIRK: Need 3-4 Cycles to work] ***
 	To 8: Verify the calibration block
 	To 9: Reset
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
-*: Only tested with "BCroftT4E070 01/11/2005 Lotus EngV0078" yet.
+*: Tested with "BCroftT4E070 01/11/2005 Lotus EngV0078" and "BCroftT4E090 14/07/2006 Lotus EngV0093" yet.
 
 ## Live tuning.
 

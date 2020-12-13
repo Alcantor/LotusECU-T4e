@@ -189,10 +189,23 @@ class Flasher:
 				if(len(f_chunk) != 4): break # EOF
 				chunk = self.readWord(address)
 				if(f_chunk != chunk):
-					raise FlasherException("Flasher Verify failed!")
+					raise FlasherException("Flasher Verify failed! @ "+hex(address))
 				self.progress() # One dot every 4 Bytes
 				address += 4
 			self.progress_end()
+
+	def verify_blank(self, address, size):
+		self.log("Flasher Verify Blank "+str(size)+" bytes @ "+hex(address))
+		if(size % 4 != 0):
+			raise FlasherException("Size is not a multiple of 4")
+		while(size > 0):
+			chunk = self.readWord(address)
+			if(b'\xFF\xFF\xFF\xFF' != chunk):
+				raise FlasherException("Flasher Verify Blank failed!")
+			self.progress() # One dot every 4 Bytes
+			address += 4
+			size -= 4
+		self.progress_end()
 
 	def upload(self, address, filename):
 		size = os.path.getsize(filename)
@@ -237,12 +250,16 @@ class Flasher:
 		blank = b'\xFF\xFF\xFF\xFF'
 		test = b'\xDE\xAD\xBE\xEF'
 		addr = 0x1FFF0
-		if(blank != self.readWord(addr)):
+		data = self.readWord(addr)
+		print(data)
+		if(blank != data):
 			raise FlasherException("Cannot test here!")
 		self.startProgramBlock(0x40)
 		self.programBlockWord(addr, test)
 		self.stopProgramBlock()
-		if(test != self.readWord(addr)):
+		data = self.readWord(addr)
+		if(test != data):
+			print("Hu?:"+str(data))
 			raise FlasherException("Word readback failed!")
 
 if __name__ == "__main__":
@@ -265,12 +282,13 @@ if __name__ == "__main__":
 			"The action to do: "
 			"dl -> Download, "
 			"v -> Verify, "
+			"vb -> Verify blank, "
 			"vfp -> Verify Flasher Program, "
 			"e -> Erase Flash, "
 			"p -> Program Flash, "
 			"r -> Rest ECU, "
 			"t -> Tests",
-		choices=["dl", "v", "vfp", "e", "p", "r", "t"],
+		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "t"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -330,6 +348,14 @@ if __name__ == "__main__":
 				ecu_dir+"/"+Flasher.blocks[i][4]
 			)
 
+	if(ecu_op == 'vb'):
+		print("Verify Blank ECU")
+		for i in ecu_blocks:
+			fl.verify_blank(
+				Flasher.blocks[i][2],
+				Flasher.blocks[i][3]
+			)
+
 	if(ecu_op == 'vfp'):
 		print("Verify Flasher Program")
 		fl.verify(0x3FF000,"injection/flasher.bin")
@@ -355,6 +381,7 @@ if __name__ == "__main__":
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")
+		#fl.testFlash()
 		fl.test(0x3F8000)
 
 	print("Done")
