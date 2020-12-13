@@ -76,3 +76,5 @@ a web browser.
 
 For that use "startweb.sh" script.
 
+![alt text](https://github.com/Alcantor/LotusECU-T4e/raw/master/documentation/Usage/GUI.png "GUI Demo")
+
