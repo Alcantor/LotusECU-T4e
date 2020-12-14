@@ -1,21 +1,6 @@
 #!/usr/bin/python3
 
-# Emulation of can bus if needed
-# sudo ip link add dev can0 type vcan
-
-import os, sys, socket, struct, argparse
-
-CAN_EFF_FLAG = 0x80000000
-CAN_RTR_FLAG = 0x40000000
-CAN_ERR_FLAG = 0x20000000
-
-CAN_SFF_MASK = 0x000007FF
-CAN_EFF_MASK = 0x1FFFFFFF
-CAN_ERR_MASK = 0x1FFFFFFF
-
-CAN_HDR_FRMT = "=IB3x"
-CAN_HDR_SIZE = struct.calcsize(CAN_HDR_FRMT);
-CAN_FRA_SIZE = CAN_HDR_SIZE + 8;
+import os, sys, can, argparse
 
 class ECUException(Exception):
 	pass
@@ -42,84 +27,99 @@ class ECU_T4E:
 	def progress_end(self):
 		print()
 
-	def openCAN(self, can_if):
-		self.log("Open "+can_if+" @ 1 Mbit/s")
-		os.system("ip link set "+can_if+" down")
-		os.system("ip link set "+can_if+" up type can bitrate 1000000 restart-ms 50 loopback off")
-		self.sock = socket.socket(socket.AF_CAN,socket.SOCK_RAW,socket.CAN_RAW);
-		self.sock.setsockopt(socket.SOL_CAN_RAW, socket.CAN_RAW_FILTER, \
-			struct.pack("=II",0x7A0, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG))
-		self.sock.bind((can_if,))
-		self.sock.settimeout(1.0)
+	def openCAN(self, interface, channel):
+		self.bus = can.Bus(
+			interface = interface,
+			channel = channel,
+			can_filters = [{"can_id": 0x7A0, "can_mask": 0x7FF }],
+			bitrate = 1000000
+		)
+
+	def closeCAN():
+		self.bus.shutdown()
 
 	def readMemory(self, address, size):
 		#self.log("ECU Read "+str(size)+" bytes @ "+hex(address))
-		try:
-			if  (size == 4):
-				cf = struct.pack(CAN_HDR_FRMT, 0x50, 4)
-				cf += struct.pack(">I4x", address)
-				self.sock.send(cf)
-				cf = self.sock.recv(CAN_FRA_SIZE)
-				id, dlc, data = struct.unpack(CAN_HDR_FRMT+"4s4x", cf)
-				if(dlc != 4): ECUException("Unexpected answer!")
-			elif(size == 2):
-				cf = struct.pack(CAN_HDR_FRMT, 0x51, 4)
-				cf += struct.pack(">I4x", address)
-				self.sock.send(cf)
-				cf = self.sock.recv(CAN_FRA_SIZE)
-				id, dlc, data = struct.unpack(CAN_HDR_FRMT+"2s6x", cf)
-				if(dlc != 2): ECUException("Unexpected answer!")
-			elif(size == 1):
-				cf = struct.pack(CAN_HDR_FRMT, 0x52, 4)
-				cf += struct.pack(">I4x", address)
-				self.sock.send(cf)
-				cf = self.sock.recv(CAN_FRA_SIZE)
-				id, dlc, data = struct.unpack(CAN_HDR_FRMT+"1s7x", cf)
-				if(dlc != 1): ECUException("Unexpected answer!")
-			elif(size < 256):
-				cf = struct.pack(CAN_HDR_FRMT, 0x53, 5)
-				cf += struct.pack(">IB3x", address, size)
-				self.sock.send(cf)
-				data = bytearray()
-				while(size > 0):
-					chunk_size = min(8, size);
-					cf = self.sock.recv(CAN_FRA_SIZE)
-					id, dlc, chunk = struct.unpack(CAN_HDR_FRMT+"%ds%dx" \
-						% (chunk_size, 8 - chunk_size), cf)
-					if(dlc != chunk_size): ECUException("Unexpected answer!")
-					data += chunk
-					size -= chunk_size
-			else:
-				raise ECUException("ECU Read too much bytes!")
-			return data
-		except socket.timeout:
-			raise ECUException("ECU Read failed!") from None
+		if  (size == 4):
+			msg = can.Message(
+				arbitration_id = 0x50,
+				data = address.to_bytes(4, "big")
+			)
+			self.bus.send(msg)
+			msg = self.bus.recv(timeout=1.0)
+			if(msg == None): raise ECUException("ECU Read Word failed!")
+			if(msg.dlc != 4): raise ECUException("Unexpected answer!")
+			data = msg.data
+		elif(size == 2):
+			msg = can.Message(
+				arbitration_id = 0x51,
+				data = address.to_bytes(4, "big")
+			)
+			self.bus.send(msg)
+			msg = self.bus.recv(timeout=1.0)
+			if(msg == None): raise ECUException("ECU Read Half failed!")
+			if(msg.dlc != 2): raise ECUException("Unexpected answer!")
+			data = msg.data
+		elif(size == 1):
+			msg = can.Message(
+				arbitration_id = 0x52,
+				data = address.to_bytes(4, "big")
+			)
+			self.bus.send(msg)
+			msg = self.bus.recv(timeout=1.0)
+			if(msg == None): raise ECUException("ECU Read Byte failed!")
+			if(msg.dlc != 1): raise ECUException("Unexpected answer!")
+			data = msg.data
+		elif(size < 256):
+			msg = can.Message(
+				arbitration_id = 0x53,
+				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
+			)
+			self.bus.send(msg)
+			data = bytearray()
+			while(size > 0):
+				chunk_size = min(8, size);
+				msg = self.bus.recv(timeout=1.0)
+				if(msg == None): raise ECUException("ECU Read Buffer failed!")
+				if(msg.dlc != chunk_size): raise ECUException("Unexpected answer!")
+				data += chunk
+				size -= chunk_size
+		else:
+			raise ECUException("ECU Read too much bytes!")
+		return data
 
 	def writeMemory(self, address, data, verify = True):
 		#self.log("ECU Write "+str(data)+" @ "+hex(address))
 		if  (len(data) == 4):
-			cf = struct.pack(CAN_HDR_FRMT, 0x54, 8)
-			cf += struct.pack(">I4s0x", address, data)
-			self.sock.send(cf)
+			msg = can.Message(
+				arbitration_id = 0x54,
+				data = address.to_bytes(4, "big") + data
+			)
+			self.bus.send(msg)
 		elif(len(data) == 2):
-			cf = struct.pack(CAN_HDR_FRMT, 0x55, 6)
-			cf += struct.pack(">I2s2x", address, data)
-			self.sock.send(cf)
+			msg = can.Message(
+				arbitration_id = 0x55,
+				data = address.to_bytes(4, "big") + data
+			)
+			self.bus.send(msg)
 		elif(len(data) == 1):
-			cf = struct.pack(CAN_HDR_FRMT, 0x56, 5)
-			cf += struct.pack(">I1s3x", address, data)
-			self.sock.send(cf)
+			msg = can.Message(
+				arbitration_id = 0x56,
+				data = address.to_bytes(4, "big") + data
+			)
+			self.bus.send(msg)
 		elif(len(data) < 256):
 			size = len(data)
 			offset = 0
-			cf = struct.pack(CAN_HDR_FRMT, 0x57, 5)
-			cf += struct.pack(">IB3x", address, size)
-			self.sock.send(cf)
+			msg = can.Message(
+				arbitration_id = 0x57,
+				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
+			)
+			self.bus.send(msg)
 			while(size > 0):
-				chunk_size = min(8, size);
-				cf = struct.pack(CAN_HDR_FRMT+"%ds%dx" % (chunk_size, 8 - chunk_size), \
-					0x57, chunk_size, data[offset:offset+chunk_size])
-				self.sock.send(cf)
+				chunk_size = min(8, size)
+				msg.data = data[offset:offset+chunk_size]
+				self.bus.send(msg)
 				size -= chunk_size
 				offset += chunk_size
 		else:
@@ -171,16 +171,13 @@ class ECU_T4E:
 		self.upload(freeram_address, filename)
 		value = self.readMemory(stackblr_address, 4)
 		self.log("Previous return address 0x"+value.hex())
-		self.writeMemory(stackblr_address, struct.pack(">I", freeram_address), False)
-		try:
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, data = struct.unpack(CAN_HDR_FRMT+"6s2x", cf)
-			if(dlc != 6 or data != b'Hello!'):
-				raise ECUException("Unexpected answer!")
-			else:
-				self.log("We have the control of the ECU!")
-		except socket.timeout:
-			raise ECUException("Injection failed!") from None
+		self.writeMemory(stackblr_address, freeram_address.to_bytes(4, "big"), False)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise ECUException("Injection failed!")
+		if(msg.dlc != 6 or msg.data != b'Hello!'):
+			raise ECUException("Unexpected answer!")
+		else:
+			self.log("We have the control of the ECU!")
 
 	def test(self, freeram_address):
 		# Word
@@ -198,12 +195,20 @@ if __name__ == "__main__":
 	print("Stupid dumper for Lotus T4e ECU\n")
 	ap = argparse.ArgumentParser()
 	ap.add_argument(
+		"-i",
+		"--interface",
+		required=False,
+		type=str,
+		help="The CAN-Bus interface to use.",
+		default="ixxat"
+	)
+	ap.add_argument(
 		"-d",
 		"--device",
 		required=False,
 		type=str,
 		help="The CAN-Bus device to use.",
-		default="can0"
+		default="0"
 	)
 	ap.add_argument(
 		"-o",
@@ -245,7 +250,8 @@ if __name__ == "__main__":
 		default=False
 	)
 	args = vars(ap.parse_args())
-	can_if = args['device']
+	can_if = args['interface']
+	can_ch = args['device']
 	ecu_op = args['operation']
 	ecu_dir = args['directory']
 	ecu_zones = args['zone']
@@ -256,7 +262,7 @@ if __name__ == "__main__":
 		sys.exit(0)
 
 	t4e = ECU_T4E();
-	t4e.openCAN(can_if)
+	t4e.openCAN(can_if, can_ch)
 	print()
 
 	if(ecu_op == 'dl'):
@@ -285,5 +291,5 @@ if __name__ == "__main__":
 		print("Test ECU Read/Write")
 		t4e.test(0x3FF000)
 
+	t4e.closeCAN()
 	print("Done")
-

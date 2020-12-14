@@ -14,7 +14,7 @@ It's heaveliy based on the work of [Obeisance] and [Cybernet].
 [Cybernet]: https://www.lotustalk.com/threads/t4e-ecu-editor-preview.372258/
 
 I didn't have a Arduino with a CAN-Shield but I have an USB-to-CAN Adapter.
-So I made my own Python-Script (Linux Only) to make the dump. It sould also work
+So I made my own Python-Script (Linux and Windows) to make the dump. It sould also work
 with a RaspberryPi and a CAN-Shield (SocketCAN Driver).
 
 After that I've realized that the Calibration ROM located at 0x10000 looks like
@@ -36,6 +36,16 @@ through K-Line. Can someone confirm me this? I didn't take the time to disassemb
 the bootloader yet.
 
 Anyway I am doing it through CAN-Bus.
+
+## Prerequisite
+
+	- [Python3][python3]
+	- [python-can][python-can] module
+	- A compatible [CAN-BUS adapter][adapter]
+
+[python3]: https://www.python.org/download/releases/3.0/
+[python-can]: https://python-can.readthedocs.io/en/master/installation.html
+[adapter]: https://python-can.readthedocs.io/en/master/interfaces.html
 
 ## Files
 
@@ -64,7 +74,7 @@ Anyway I am doing it through CAN-Bus.
 	To 5: Verify the flasher itself.
 	To 6: Erase the calibration block. *** [TESTED] ***
 	To 7: Verify the erasure.
-	To 8: Program the calibration block. *** [QUIRK: Need 3-4 Cycles to work] ***
+	To 8: Program the calibration block. *** [UNTESTED] ***
 	To 9: Verify the calibration block.
 	To 10: Reset.
 

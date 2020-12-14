@@ -1,21 +1,6 @@
 #!/usr/bin/python3
 
-# Emulation of can bus if needed
-# sudo ip link add dev can0 type vcan
-
-import os, sys, socket, struct, argparse
-
-CAN_EFF_FLAG = 0x80000000
-CAN_RTR_FLAG = 0x40000000
-CAN_ERR_FLAG = 0x20000000
-
-CAN_SFF_MASK = 0x000007FF
-CAN_EFF_MASK = 0x1FFFFFFF
-CAN_ERR_MASK = 0x1FFFFFFF
-
-CAN_HDR_FRMT = "=IB3x"
-CAN_HDR_SIZE = struct.calcsize(CAN_HDR_FRMT);
-CAN_FRA_SIZE = CAN_HDR_SIZE + 8;
+import os, sys, can, argparse
 
 class FlasherException(Exception):
 	pass
@@ -40,130 +25,127 @@ class Flasher:
 	def progress_end(self):
 		print()
 
-	def openCAN(self, can_if):
-		self.log("Open "+can_if+" @ 1 Mbit/s")
-		os.system("ip link set "+can_if+" down")
-		os.system("ip link set "+can_if+" up type can bitrate 1000000 restart-ms 50 loopback off")
-		self.sock = socket.socket(socket.AF_CAN,socket.SOCK_RAW,socket.CAN_RAW);
-		self.sock.setsockopt(socket.SOL_CAN_RAW, socket.CAN_RAW_FILTER, \
-			struct.pack("=II",0x7A0, CAN_SFF_MASK | CAN_EFF_FLAG | CAN_RTR_FLAG))
-		self.sock.bind((can_if,))
-		self.sock.settimeout(1.0)
+	def openCAN(self, interface, channel):
+		self.bus = can.Bus(
+			interface = interface,
+			channel = channel,
+			can_filters = [{"can_id": 0x7A0, "can_mask": 0x7FF }],
+			bitrate = 1000000
+		)
+
+	def closeCAN():
+		self.bus.shutdown()
 
 	def echo(self, data):
 		#self.log("Flasher Echo "+data)
-		echo_len = len(data)
-		if(echo_len > 7):
+		if(len(data) > 7):
 			raise FlasherException("Echo too big")
-		try:
-			cmd = 0x00
-			fmt = CAN_HDR_FRMT+"B%ds%dx" % (echo_len, 7 - echo_len)
-			cf = struct.pack(fmt, 0x60, echo_len+1, cmd, data)
-			self.sock.send(cf)
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, rcmd, rdata = struct.unpack(fmt, cf)
-			if(dlc != echo_len+1 or rcmd != cmd or rdata != data):
-				FlasherException("Unexpected answer!")
-		except socket.timeout:
-			raise FlasherException("Echo failed!") from None
+		cmd = 0x00
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + data
+		)
+		self.bus.send(msg)
+		rmsg = self.bus.recv(timeout=1.0)
+		if(rmsg == None): raise FlasherException("Echo failed!")
+		if(rmsg.data != msg.data):
+			raise FlasherException("Unexpected answer!")
 
 	def readWord(self, address):
 		#self.log("Flasher Read Word @ "+hex(address))
-		try:
-			cmd = 0x01
-			cf = struct.pack(CAN_HDR_FRMT, 0x60, 4)
-			cf += struct.pack(">I4x", (cmd<<24) | address)
-			self.sock.send(cf)
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, rcmd, data = struct.unpack(CAN_HDR_FRMT+"B4s3x", cf)
-			if(dlc != 5 or rcmd != cmd):
-				FlasherException("Unexpected answer!")
-			return data
-		except socket.timeout:
-			raise FlasherException("Read Word failed!") from None
+		cmd = 0x01
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Read Word failed!")
+		if(msg.dlc != 5 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
+		return msg.data[1:]
 
 	def writeWord(self, address, data):
 		#self.log("Flasher Write Word @ "+hex(address))
-		try:
-			cmd = 0x02
-			cf = struct.pack(CAN_HDR_FRMT, 0x60, 8)
-			cf += struct.pack(">I4s", (cmd<<24) | address, data)
-			self.sock.send(cf)
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, rcmd = struct.unpack(CAN_HDR_FRMT+"B7x", cf)
-			if(dlc != 1 or rcmd != cmd):
-				FlasherException("Unexpected answer!")
-		except socket.timeout:
-			raise FlasherException("Write Word failed!") from None
+		cmd = 0x02
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Write Word failed!")
+		if(msg.dlc != 1 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
 
 	def eraseBlock(self, blocks_mask):
 		#self.log("Flasher Erase Block BM: "+hex(blocks_mask))
-		try:
-			cmd = 0x03
-			cf = struct.pack(CAN_HDR_FRMT+"BB6x", 0x60, 2, cmd, blocks_mask)
-			self.sock.send(cf)
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, rcmd, pegood = struct.unpack(CAN_HDR_FRMT+"BB6x", cf)
-			if(dlc != 2 or rcmd != cmd):
-				FlasherException("Unexpected answer!")
-			if(pegood != 1):
-				FlasherException("No PEGOOD!")
-		except socket.timeout:
-			raise FlasherException("Erase Block failed!") from None
+		cmd = 0x03
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=5.0)
+		if(msg == None): raise FlasherException("Erase Block failed!")
+		if(msg.dlc != 2 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
+		if(msg.data[1] != 1):
+			raise FlasherException("No PEGOOD!")
 
 	def startProgramBlock(self, blocks_mask):
 		#self.log("Flasher Start Program Block BM: "+hex(blocks_mask))
-		try:
-			cmd = 0x04
-			cf = struct.pack(CAN_HDR_FRMT+"BB6x", 0x60, 2, cmd, blocks_mask)
-			self.sock.send(cf)
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, rcmd = struct.unpack(CAN_HDR_FRMT+"B7x", cf)
-			if(dlc != 1 or rcmd != cmd):
-				FlasherException("Unexpected answer!")
-		except socket.timeout:
-			raise FlasherException("Start Program Block failed!") from None
+		cmd = 0x04
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Start Program Block failed!")
+		if(msg.dlc != 1 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
 
 	def programBlockWord(self, address, data):
 		#self.log("Flasher Program Block Word @ "+hex(address)))
-		try:
-			cmd = 0x05
-			cf = struct.pack(CAN_HDR_FRMT, 0x60, 8)
-			cf += struct.pack(">I4s", (cmd<<24) | address, data)
-			self.sock.send(cf)
-			id, dlc, rcmd, pegood = struct.unpack(CAN_HDR_FRMT+"BB6x", cf)
-			if(dlc != 2 or rcmd != cmd):
-				FlasherException("Unexpected answer!")
-			if(pegood != 1):
-				FlasherException("No PEGOOD!")
-		except socket.timeout:
-			raise FlasherException("Program Block Word failed!") from None
+		cmd = 0x05
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Erase Block failed!")
+		if(msg.dlc != 2 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
+		if(msg.data[1] != 1):
+			raise FlasherException("No PEGOOD!")
 
 	def stopProgramBlock(self):
 		#self.log("Flasher Stop Program Block")
-		try:
-			cmd = 0x06
-			cf = struct.pack(CAN_HDR_FRMT+"B7x", 0x60, 1, cmd)
-			self.sock.send(cf)
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, rcmd = struct.unpack(CAN_HDR_FRMT+"B7x", cf)
-			if(dlc != 1 or rcmd != cmd):
-				FlasherException("Unexpected answer!")
-		except socket.timeout:
-			raise FlasherException("Stop Program Block failed!") from None
+		cmd = 0x06
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big")
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Stop Program Block failed!")
+		if(msg.dlc != 1 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
 
 	def resetECU(self):
 		#self.log("Flasher reset ECU")
-		try:
-			cmd = 0x07
-			cf = struct.pack(CAN_HDR_FRMT+"B7x", 0x60, 1, cmd)
-			self.sock.send(cf)
-			cf = self.sock.recv(CAN_FRA_SIZE)
-			id, dlc, rcmd = struct.unpack(CAN_HDR_FRMT+"B7x", cf)
-			if(dlc != 1 or rcmd != cmd):
-				FlasherException("Unexpected answer!")
-		except socket.timeout:
-			raise FlasherException("Reset ECU failed!") from None
+		cmd = 0x07
+		msg = can.Message(
+			arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big")
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Reset ECU failed!")
+		if(msg.dlc != 1 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
 
 	def download(self, address, size, filename):
 		self.log("Flasher Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
@@ -266,12 +248,20 @@ if __name__ == "__main__":
 	print("Stupid flasher for Lotus T4e ECU\n")
 	ap = argparse.ArgumentParser()
 	ap.add_argument(
+		"-i",
+		"--interface",
+		required=False,
+		type=str,
+		help="The CAN-Bus interface to use.",
+		default="ixxat"
+	)
+	ap.add_argument(
 		"-d",
 		"--device",
 		required=False,
 		type=str,
 		help="The CAN-Bus device to use.",
-		default="can0"
+		default="0"
 	)
 	ap.add_argument(
 		"-o",
@@ -317,7 +307,8 @@ if __name__ == "__main__":
 		default=False
 	)
 	args = vars(ap.parse_args())
-	can_if = args['device']
+	can_if = args['interface']
+	can_ch = args['device']
 	ecu_op = args['operation']
 	ecu_dir = args['directory']
 	ecu_blocks = args['block']
@@ -328,7 +319,7 @@ if __name__ == "__main__":
 		sys.exit(0)
 
 	fl = Flasher();
-	fl.openCAN(can_if)
+	fl.openCAN(can_if, can_ch)
 	print()
 
 	if(ecu_op == 'dl'):
@@ -384,5 +375,5 @@ if __name__ == "__main__":
 		#fl.testFlash()
 		fl.test(0x3F8000)
 
+	fl.closeCAN()
 	print("Done")
-
