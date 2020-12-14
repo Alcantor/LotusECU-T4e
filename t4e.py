@@ -32,18 +32,18 @@ class ECU_T4E:
 		self.bus = can.Bus(
 			interface = interface,
 			channel = channel,
-			can_filters = [{"can_id": 0x7A0, "can_mask": 0x7FF }],
+			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
 			bitrate = 1000000
 		)
 
-	def closeCAN():
+	def closeCAN(self):
 		self.bus.shutdown()
 
 	def readMemory(self, address, size):
 		#self.log("ECU Read "+str(size)+" bytes @ "+hex(address))
 		if  (size == 4):
 			msg = can.Message(
-				arbitration_id = 0x50,
+				is_extended_id = False,	arbitration_id = 0x50,
 				data = address.to_bytes(4, "big")
 			)
 			self.bus.send(msg)
@@ -53,7 +53,7 @@ class ECU_T4E:
 			data = msg.data
 		elif(size == 2):
 			msg = can.Message(
-				arbitration_id = 0x51,
+				is_extended_id = False,	arbitration_id = 0x51,
 				data = address.to_bytes(4, "big")
 			)
 			self.bus.send(msg)
@@ -63,7 +63,7 @@ class ECU_T4E:
 			data = msg.data
 		elif(size == 1):
 			msg = can.Message(
-				arbitration_id = 0x52,
+				is_extended_id = False,	arbitration_id = 0x52,
 				data = address.to_bytes(4, "big")
 			)
 			self.bus.send(msg)
@@ -73,7 +73,7 @@ class ECU_T4E:
 			data = msg.data
 		elif(size < 256):
 			msg = can.Message(
-				arbitration_id = 0x53,
+				is_extended_id = False,	arbitration_id = 0x53,
 				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
 			)
 			self.bus.send(msg)
@@ -83,7 +83,7 @@ class ECU_T4E:
 				msg = self.bus.recv(timeout=1.0)
 				if(msg == None): raise ECUException("ECU Read Buffer failed!")
 				if(msg.dlc != chunk_size): raise ECUException("Unexpected answer!")
-				data += chunk
+				data += msg.data
 				size -= chunk_size
 		else:
 			raise ECUException("ECU Read too much bytes!")
@@ -93,19 +93,19 @@ class ECU_T4E:
 		#self.log("ECU Write "+str(data)+" @ "+hex(address))
 		if  (len(data) == 4):
 			msg = can.Message(
-				arbitration_id = 0x54,
+				is_extended_id = False,	arbitration_id = 0x54,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
 		elif(len(data) == 2):
 			msg = can.Message(
-				arbitration_id = 0x55,
+				is_extended_id = False,	arbitration_id = 0x55,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
 		elif(len(data) == 1):
 			msg = can.Message(
-				arbitration_id = 0x56,
+				is_extended_id = False,	arbitration_id = 0x56,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
@@ -113,13 +113,16 @@ class ECU_T4E:
 			size = len(data)
 			offset = 0
 			msg = can.Message(
-				arbitration_id = 0x57,
+				is_extended_id = False,	arbitration_id = 0x57,
 				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
 			)
 			self.bus.send(msg)
 			while(size > 0):
 				chunk_size = min(8, size)
-				msg.data = data[offset:offset+chunk_size]
+				msg = can.Message(
+					is_extended_id = False,	arbitration_id = 0x57,
+					data = data[offset:offset+chunk_size]
+				)
 				self.bus.send(msg)
 				size -= chunk_size
 				offset += chunk_size
@@ -201,7 +204,7 @@ if __name__ == "__main__":
 		required=False,
 		type=str,
 		help="The CAN-Bus interface to use.",
-		default="ixxat"
+		default="socketcan"
 	)
 	ap.add_argument(
 		"-d",
@@ -209,7 +212,7 @@ if __name__ == "__main__":
 		required=False,
 		type=str,
 		help="The CAN-Bus device to use.",
-		default="0"
+		default="can0"
 	)
 	ap.add_argument(
 		"-o",

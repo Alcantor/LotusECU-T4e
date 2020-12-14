@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, threading
+import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
@@ -13,7 +13,7 @@ binary_file = [("Binary File", "*.bin")]
 class ECU_T4E_GUI(ECU_T4E):
 	def __init__(self, master):
 		self.master = master
-		self.progress = ttk.Progressbar(master, orient=tk.HORIZONTAL, length=100, mode='determinate')
+		self.progressbar = ttk.Progressbar(master, orient=tk.HORIZONTAL, length=100, mode='determinate')
 		self.textEntry = tk.StringVar()
 		self.entry = tk.Entry(master, state=tk.DISABLED, textvariable = self.textEntry)
 
@@ -24,35 +24,35 @@ class ECU_T4E_GUI(ECU_T4E):
 	def progress(self):
 		self.bytes_transfered += 128
 		fraction = self.bytes_transfered/self.bytes_total
-		self.progress['value'] = fraction*100
+		self.progressbar['value'] = fraction*100
 		self.master.update_idletasks()
 
 	def progress_end(self):
-		self.progress['value'] = 100
+		self.progressbar['value'] = 100
 		self.master.update_idletasks()
 
 	def download(self, address, size, filename):
-		self.progress['value'] = 0
+		self.progressbar['value'] = 0
 		self.bytes_total = size
 		self.bytes_transfered = 0
 		super().download(address, size, filename)
 
 	def verify(self, address, filename):
 		self.bytes_total = os.path.getsize(filename)
-		self.progress['value'] = 0
+		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
 		super().verify(address, filename)
 
 	def upload(self, address, filename):
 		self.bytes_total = os.path.getsize(filename)
-		self.progress['value'] = 0
+		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
 		super().upload(address, filename)
 
 class Flasher_GUI(Flasher):
 	def __init__(self, master):
 		self.master = master
-		self.progress = ttk.Progressbar(master, orient=tk.HORIZONTAL, length=100, mode='determinate')
+		self.progressbar = ttk.Progressbar(master, orient=tk.HORIZONTAL, length=100, mode='determinate')
 		self.textEntry = tk.StringVar()
 		self.entry = tk.Entry(master, state=tk.DISABLED, textvariable = self.textEntry)
 
@@ -63,29 +63,29 @@ class Flasher_GUI(Flasher):
 	def progress(self):
 		self.bytes_transfered += 4
 		fraction = self.bytes_transfered/self.bytes_total
-		self.progress['value'] = fraction*100
+		self.progressbar['value'] = fraction*100
 		self.master.update_idletasks()
 
 	def progress_end(self):
-		self.progress['value'] = 100
+		self.progressbar['value'] = 100
 		self.master.update_idletasks()
 
 	def eraseBlock(self, blocks_desc, blocks_mask):
 		self.log("Erase " + blocks_desc)
-		self.progress['value'] = 0
+		self.progressbar['value'] = 0
 		super().eraseBlock(blocks_mask)
 		self.master.update_idletasks()
-		self.progress['value'] = 100
+		self.progressbar['value'] = 100
 		
 	def verify(self, address, filename):
 		self.bytes_total = os.path.getsize(filename)
-		self.progress['value'] = 0
+		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
 		super().verify(address, filename)
 
 	def program(self, block_mask, address, filename):
 		self.bytes_total = os.path.getsize(filename)
-		self.progress['value'] = 0
+		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
 		super().program(block_mask, address, filename)
 
@@ -100,8 +100,8 @@ class t4e_window():
 		t4e_frame.grid_columnconfigure(0, weight = 1)
 
 		self.t4e = ECU_T4E_GUI(t4e_frame)
-		self.t4e.openCAN("virtual", 0)
-		self.t4e.progress.grid(column=0, row=0, columnspan=4, sticky="EW")
+		self.t4e.openCAN("socketcan", "can0")
+		self.t4e.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
 		self.t4e.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
 		self.combo_zones = ttk.Combobox(t4e_frame, state="readonly", values = [z[0] for z in ECU_T4E.zones])
@@ -124,7 +124,7 @@ class t4e_window():
 		self.flasher = Flasher_GUI(fl_frame)
 		#self.flasher.openCAN("virtual", 0)
 		self.flasher.bus = self.t4e.bus
-		self.flasher.progress.grid(column=0, row=0, columnspan=4, sticky="EW")
+		self.flasher.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
 		self.flasher.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
 		self.button_vfp = tk.Button(fl_frame, text="Verify Flasher Program", command=self.inject_verify)
@@ -143,7 +143,7 @@ class t4e_window():
 		self.button_v2 = tk.Button(fl_frame, text="Verify", command=self.verify2)
 		self.button_v2.grid(column=3, row=3)
 
-		self.button_reset = tk.Button(fl_frame, text="Reset ECU", command=self.inject_verify)
+		self.button_reset = tk.Button(fl_frame, text="Reset ECU", command=self.reset)
 		self.button_reset.grid(column=0, row=4, columnspan=4, sticky='EW')
 
 		self.flasher_buttons(tk.DISABLED)
@@ -241,7 +241,7 @@ class t4e_window():
 		if(answer):
 			self.flasher_buttons(tk.DISABLED)
 			try:
-				self.flasher.verify(block[2], dialog.get_filename())
+				self.flasher.verify(block[2], answer)
 			except Exception as e:
 				messagebox.showerror(master=self.master, title="Error!", message=str(e))
 			self.flasher_buttons(tk.NORMAL)
@@ -258,10 +258,10 @@ class t4e_window():
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.flasher.resetECU()
-			self.flasher_buttons(tk.NORMAL)
+			self.t4e_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
-			self.t4e_buttons(tk.NORMAL)
+			self.flasher_buttons(tk.NORMAL)
 
 root = tk.Tk()
 app = t4e_window(root)

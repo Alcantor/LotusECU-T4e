@@ -30,11 +30,11 @@ class Flasher:
 		self.bus = can.Bus(
 			interface = interface,
 			channel = channel,
-			can_filters = [{"can_id": 0x7A0, "can_mask": 0x7FF }],
+			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
 			bitrate = 1000000
 		)
 
-	def closeCAN():
+	def closeCAN(self):
 		self.bus.shutdown()
 
 	def echo(self, data):
@@ -43,7 +43,7 @@ class Flasher:
 			raise FlasherException("Echo too big")
 		cmd = 0x00
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + data
 		)
 		self.bus.send(msg)
@@ -56,7 +56,7 @@ class Flasher:
 		#self.log("Flasher Read Word @ "+hex(address))
 		cmd = 0x01
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
 		)
 		self.bus.send(msg)
@@ -70,7 +70,7 @@ class Flasher:
 		#self.log("Flasher Write Word @ "+hex(address))
 		cmd = 0x02
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
 		)
 		self.bus.send(msg)
@@ -83,7 +83,7 @@ class Flasher:
 		#self.log("Flasher Erase Block BM: "+hex(blocks_mask))
 		cmd = 0x03
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
 		)
 		self.bus.send(msg)
@@ -98,7 +98,7 @@ class Flasher:
 		#self.log("Flasher Start Program Block BM: "+hex(blocks_mask))
 		cmd = 0x04
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
 		)
 		self.bus.send(msg)
@@ -111,7 +111,7 @@ class Flasher:
 		#self.log("Flasher Program Block Word @ "+hex(address)))
 		cmd = 0x05
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
 		)
 		self.bus.send(msg)
@@ -126,7 +126,7 @@ class Flasher:
 		#self.log("Flasher Stop Program Block")
 		cmd = 0x06
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big")
 		)
 		self.bus.send(msg)
@@ -139,7 +139,7 @@ class Flasher:
 		#self.log("Flasher reset ECU")
 		cmd = 0x07
 		msg = can.Message(
-			arbitration_id = 0x60,
+			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big")
 		)
 		self.bus.send(msg)
@@ -232,7 +232,7 @@ class Flasher:
 	def testFlash(self):
 		blank = b'\xFF\xFF\xFF\xFF'
 		test = b'\xDE\xAD\xBE\xEF'
-		addr = 0x1FFF0
+		addr = 0x1FFE0
 		data = self.readWord(addr)
 		print(data)
 		if(blank != data):
@@ -254,7 +254,7 @@ if __name__ == "__main__":
 		required=False,
 		type=str,
 		help="The CAN-Bus interface to use.",
-		default="ixxat"
+		default="socketcan"
 	)
 	ap.add_argument(
 		"-d",
@@ -262,7 +262,7 @@ if __name__ == "__main__":
 		required=False,
 		type=str,
 		help="The CAN-Bus device to use.",
-		default="0"
+		default="can0"
 	)
 	ap.add_argument(
 		"-o",
