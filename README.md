@@ -39,13 +39,11 @@ Anyway I am doing it through CAN-Bus.
 
 ## Prerequisite
 
-	- [Python3][python3]
-	- [python-can][python-can] module
-	- A compatible [CAN-BUS adapter][adapter]
+The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BUS adapter].
 
-[python3]: https://www.python.org/download/releases/3.0/
+[Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
-[adapter]: https://python-can.readthedocs.io/en/master/interfaces.html
+[CAN-BUS adapter]: https://python-can.readthedocs.io/en/master/interfaces.html
 
 ## Files
 
@@ -72,7 +70,7 @@ Anyway I am doing it through CAN-Bus.
 	To 3: Tune your engine!
 	To 4: Install the flasher into the RAM. *
 	To 5: Verify the flasher itself.
-	To 6: Erase the calibration block. *** [TESTED] ***
+	To 6: Erase the calibration block. *** [UNTESTED] ***
 	To 7: Verify the erasure.
 	To 8: Program the calibration block. *** [UNTESTED] ***
 	To 9: Verify the calibration block.
