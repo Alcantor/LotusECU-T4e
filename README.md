@@ -26,7 +26,16 @@ I've figured out how to write to the RAM but not to the Flash.
 
 Well If I can write to the RAM, I'am allowed to upload my own program. That's
 what I've done. So I've write a small CAN-Bus Flasher to write to the Flash
-trough the OBD Port.
+through the OBD Port.
+
+## Original Method
+
+I'am not sure how "others" are doing the flashing. After reading some posts of
+Cybernet, I'have the feeling that an encrypted Bootloader can do the flashing
+through K-Line. Can someone confirm me this? I didn't take the time to disassemble
+the bootloader yet.
+
+Anyway I am doing it through CAN-Bus.
 
 ## Files
 
@@ -43,19 +52,21 @@ trough the OBD Port.
 	4. ./t4e.py -o ifp
 	5. ./flasher.py -o vfp
 	6. ./flasher.py -o e -b 1
-	7. ./flasher.py -o p -b 1
-	8. ./flasher.py -o v -b 1
-	9. ./flasher.py -o r
+	7. ./flasher.py -o vb -b 1
+	8. ./flasher.py -o p -b 1
+	9. ./flasher.py -o v -b 1
+	10. ./flasher.py -o r
 
 	To 1: Download the ECU like cybernet does.
 	To 2: Backup, backup, backup...
 	To 3: Tune your engine!
-	To 4: Install the flasher into the RAM *
+	To 4: Install the flasher into the RAM. *
 	To 5: Verify the flasher itself.
-	To 6: Erase the calibration block *** [TESTED] ***
-	To 7: Program the calibration block *** [QUIRK: Need 3-4 Cycles to work] ***
-	To 8: Verify the calibration block
-	To 9: Reset
+	To 6: Erase the calibration block. *** [TESTED] ***
+	To 7: Verify the erasure.
+	To 8: Program the calibration block. *** [QUIRK: Need 3-4 Cycles to work] ***
+	To 9: Verify the calibration block.
+	To 10: Reset.
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
@@ -68,6 +79,24 @@ maps are copied into the RAM.
 
 It would need another software for that, which will use t4e.py as library to
 access RAM.
+
+## Safe Usage
+
+Your really need to understand how this work to be able to use the flasher
+(flasher.py) safely.
+
+	1. The RAM will be lost at power cut off or reset.
+	2. The flasher needs to be installed in RAM.
+	3. To install the flasher in the RAM, the Main Program is needed.
+	4. To start the Main Program, a Bootloader is needed.
+
+So if you erase the Main Program and cut the power off, don't expect to be able
+to restore your ECU with that program.
+
+Use the verify function before resetting the ECU! If your programming a Bootloader
+or a Main Program, be sure that the files are good and valid.
+
+*Note: The Main Program seems to be OK without Calibration.*
 
 ## GUI
 
