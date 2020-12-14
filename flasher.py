@@ -116,7 +116,7 @@ class Flasher:
 		)
 		self.bus.send(msg)
 		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Erase Block failed!")
+		if(msg == None): raise FlasherException("Program Block Word failed!")
 		if(msg.dlc != 2 or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
 		if(msg.data[1] != 1):
@@ -184,7 +184,7 @@ class Flasher:
 		while(size > 0):
 			chunk = self.readWord(address)
 			if(b'\xFF\xFF\xFF\xFF' != chunk):
-				raise FlasherException("Flasher Verify Blank failed!")
+				raise FlasherException("Flasher Verify Blank failed! @ "+hex(address))
 			self.progress() # One dot every 4 Bytes
 			address += 4
 			size -= 4

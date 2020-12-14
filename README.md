@@ -4,6 +4,8 @@
 
 ***Use it at your own RISK.***
 
+***I've only tested the flashing to the calibration!***
+
 ## Introduction
 
 This is my attempt to tune my Lotus Exige S2.
@@ -70,9 +72,9 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 	To 3: Tune your engine!
 	To 4: Install the flasher into the RAM. *
 	To 5: Verify the flasher itself.
-	To 6: Erase the calibration block. *** [UNTESTED] ***
+	To 6: Erase the calibration block. *** [TESTED x1] ***
 	To 7: Verify the erasure.
-	To 8: Program the calibration block. *** [UNTESTED] ***
+	To 8: Program the calibration block. *** [TESTED x1] ***
 	To 9: Verify the calibration block.
 	To 10: Reset.
 
@@ -108,10 +110,7 @@ or a Main Program, be sure that the files are good and valid.
 
 ## GUI
 
-Your could install the software into a Raspberry PI and access the GUI with
-a web browser.
-
-For that use "startweb.sh" script.
+The GUI has no device option. Please edit the "gui.py" for your device!
 
 ![alt text](https://github.com/Alcantor/LotusECU-T4e/raw/master/documentation/Usage/GUI.png "GUI Demo")
 
