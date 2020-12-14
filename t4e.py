@@ -28,6 +28,7 @@ class ECU_T4E:
 		print()
 
 	def openCAN(self, interface, channel):
+		self.log("Open CAN "+interface+" "+str(channel)+" @ 1 Mbit/s")
 		self.bus = can.Bus(
 			interface = interface,
 			channel = channel,
