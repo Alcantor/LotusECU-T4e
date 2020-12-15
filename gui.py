@@ -205,6 +205,12 @@ class t4e_window():
 
 	def erase(self):
 		block = Flasher.blocks[self.combo_blocks.current()]
+		answer = messagebox.askquestion(
+			parent = self.master,
+			title = 'Be careful!',
+			message = 'Do you really want to erase?\n\n'+block[0]
+		)
+		if(answer != 'yes'): return
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.flasher.eraseBlock(block[0],block[1])
@@ -214,6 +220,12 @@ class t4e_window():
 
 	def program(self):
 		block = Flasher.blocks[self.combo_blocks.current()]
+		answer = messagebox.askquestion(
+			parent = self.master,
+			title = 'Be careful!',
+			message = 'Do you really want to program?\n\n'+block[0]
+		)
+		if(answer != 'yes'): return
 		answer = filedialog.askopenfilename(
 			parent = self.master,
 			initialdir = os.getcwd(),
@@ -255,6 +267,12 @@ class t4e_window():
 		self.flasher_buttons(tk.NORMAL)
 
 	def reset(self):
+		answer = messagebox.askquestion(
+			parent = self.master,
+			title = 'Be careful!',
+			message = 'Do you really want to reset?'
+		)
+		if(answer != 'yes'): return
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.flasher.resetECU()
