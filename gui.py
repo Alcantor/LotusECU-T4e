@@ -19,17 +19,17 @@ class ECU_T4E_GUI(ECU_T4E):
 
 	def log(self, msg):
 		self.textEntry.set(msg)
-		self.master.update_idletasks()
+		self.master.update()
 
 	def progress(self):
 		self.bytes_transfered += 128
 		fraction = self.bytes_transfered/self.bytes_total
 		self.progressbar['value'] = fraction*100
-		self.master.update_idletasks()
+		self.master.update()
 
 	def progress_end(self):
 		self.progressbar['value'] = 100
-		self.master.update_idletasks()
+		self.master.update()
 
 	def download(self, address, size, filename):
 		self.progressbar['value'] = 0
@@ -58,23 +58,23 @@ class Flasher_GUI(Flasher):
 
 	def log(self, msg):
 		self.textEntry.set(msg)
-		self.master.update_idletasks()
+		self.master.update()
 
 	def progress(self):
 		self.bytes_transfered += 4
 		fraction = self.bytes_transfered/self.bytes_total
 		self.progressbar['value'] = fraction*100
-		self.master.update_idletasks()
+		self.master.update()
 
 	def progress_end(self):
 		self.progressbar['value'] = 100
-		self.master.update_idletasks()
+		self.master.update()
 
 	def eraseBlock(self, blocks_desc, blocks_mask):
 		self.log("Erase " + blocks_desc)
 		self.progressbar['value'] = 0
 		super().eraseBlock(blocks_mask)
-		self.master.update_idletasks()
+		self.master.update()
 		self.progressbar['value'] = 100
 		
 	def verify(self, address, filename):
