@@ -90,27 +90,27 @@ class ECU_T4E:
 		return data
 
 	def writeMemory(self, address, data, verify = True):
+		size = len(data)
 		#self.log("ECU Write "+str(data)+" @ "+hex(address))
-		if  (len(data) == 4):
+		if  (size == 4):
 			msg = can.Message(
 				is_extended_id = False,	arbitration_id = 0x54,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
-		elif(len(data) == 2):
+		elif(size == 2):
 			msg = can.Message(
 				is_extended_id = False,	arbitration_id = 0x55,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
-		elif(len(data) == 1):
+		elif(size == 1):
 			msg = can.Message(
 				is_extended_id = False,	arbitration_id = 0x56,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
-		elif(len(data) < 256):
-			size = len(data)
+		elif(size < 256):
 			offset = 0
 			msg = can.Message(
 				is_extended_id = False,	arbitration_id = 0x57,
