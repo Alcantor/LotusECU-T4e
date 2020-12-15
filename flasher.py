@@ -277,7 +277,7 @@ if __name__ == "__main__":
 			"vfp -> Verify Flasher Program, "
 			"e -> Erase Flash, "
 			"p -> Program Flash, "
-			"r -> Rest ECU, "
+			"r -> Reset ECU, "
 			"t -> Tests",
 		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "t"],
 		default="dl"
