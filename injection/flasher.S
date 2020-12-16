@@ -16,7 +16,7 @@ _start:
 	# PID:        0x60
 	# RETURN PID: 0x7A0
 	#
-	# Echo - Payload will be sended back
+	# Echo - Payload will be sended back (and stop countdown)
 	#   DATA  : 00 XX XX XX XX XX XX XX
 	#   RETURN: 00 XX XX XX XX XX XX XX
 	#
@@ -44,8 +44,8 @@ _start:
 	#   DATA  : 06
 	#   RETURN: 06
 	#
-	# Reset:
-	#   DATA  : 07
+	# Branch:
+	#   DATA  : 07 AA AA AA
 	#   RETURN: 07
 
 	/* TouCAN A Soft-Reset */
@@ -113,19 +113,28 @@ wait_ready:
 	addi	%r0, 0, 0xF400@l
 	sth	%r0, 0x71D2(3) # 0x3071D2 MBBUFF13_A - ID_HIGH
 
-	li	%r0, 0x4865 # Data: "He"
+	li	%r0, 0x4869 # Data: "Hi" -> Hello
 	sth	%r0, 0x71D6(3)
 
-	li	%r0, 0x6C6C # Data: "ll"
+	li	%r0, 0x466C # Data: "Fl" -> Flasher
 	sth	%r0, 0x71D8(3)
 
-	li	%r0, 0x6F21 # Data: "o!"
+	li	%r0, 0x5631 # Data: "V1" -> Version 1
 	sth	%r0, 0x71DA(3)
 
 	li	%r0, 0xE6 # Buffer ready + DLC = 6
 	sth	%r0, 0x71D0(3)
 
+	# Count down from 0x80000 then boot stage II
+	lis	%r10, 0x8
+	li	%r11, -1 # Decrement
 loop_main:
+	add	%r10, 10, 11
+	cmpwi	%r10, 0x0
+	bne	continue
+	ba	0x004000
+continue:
+
 	/* Retrigger Watchdog */
 	li	%r0, 0x556C
 	sth	%r0, -0x3FF2(3) # 0x2FC00E SWSR
@@ -187,6 +196,8 @@ wait_busy:
 	stw	%r6, 0x71DA(3)
 	ori	%r0, 4, 0xE0 # Buffer ready + Copy DLC
 	sth	%r0, 0x71D0(3)
+	/* Stop the countdown */
+	li	%r11, 0
 	b	loop_main
 end_command_0x00:
 
@@ -277,10 +288,11 @@ end_command_0x06:
 	/* Reset command 0x07 */
 	cmplwi	%r7, 0x07
 	bne	loop_main
-	cmplwi	%r4, 1
-	bne	loop_main # DLC is not 1
+	cmplwi	%r4, 4
+	bne	loop_main # DLC is not 4
 	bl	sub_answer1
-	ba	0x100
+	mtlr	%r8
+	blr
 
 sub_unlock:
 	/* Unlock */

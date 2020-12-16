@@ -37,7 +37,7 @@ class Flasher:
 	def closeCAN(self):
 		self.bus.shutdown()
 
-	def echo(self, data):
+	def echo(self, data=b''):
 		#self.log("Flasher Echo "+data)
 		if(len(data) > 7):
 			raise FlasherException("Echo too big")
@@ -135,16 +135,16 @@ class Flasher:
 		if(msg.dlc != 1 or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
 
-	def resetECU(self):
-		#self.log("Flasher reset ECU")
+	def branch(self, address):
+		#self.log("Flasher branch to "+hex(address))
 		cmd = 0x07
 		msg = can.Message(
 			is_extended_id = False,	arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big")
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
 		)
 		self.bus.send(msg)
 		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Reset ECU failed!")
+		if(msg == None): raise FlasherException("Branch failed!")
 		if(msg.dlc != 1 or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
 
@@ -369,7 +369,7 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'r'):
 		print("Reset ECU")
-		fl.resetECU()
+		fl.branch(0x100)
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")

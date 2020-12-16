@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os, sys, can, argparse
+from flasher import Flasher
 
 class ECUException(Exception):
 	pass
@@ -178,9 +179,12 @@ class ECU_T4E:
 		self.writeMemory(stackblr_address, freeram_address.to_bytes(4, "big"), False)
 		msg = self.bus.recv(timeout=1.0)
 		if(msg == None): raise ECUException("Injection failed!")
-		if(msg.dlc != 6 or msg.data != b'Hello!'):
+		if(msg.dlc != 6 or msg.data != b'HiFlV1'):
 			raise ECUException("Unexpected answer!")
 		else:
+			fl = Flasher()
+			fl.bus = self.bus
+			fl.echo()
 			self.log("We have the control of the ECU!")
 
 	def test(self, freeram_address):

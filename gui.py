@@ -275,7 +275,7 @@ class t4e_window():
 		if(answer != 'yes'): return
 		self.flasher_buttons(tk.DISABLED)
 		try:
-			self.flasher.resetECU()
+			self.flasher.branch(0x100)
 			self.t4e_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
