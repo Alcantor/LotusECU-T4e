@@ -7,6 +7,6 @@ And/Or that the flasher does not restore the interrupts.
 
 And I'am not sure that the bootloader are exchangeable.
 
-I have a BDM programmer but no software... Have you one?
+I have needed to restore the ECU with a BDM programmer after that.
 
 Oh and the flasher do the flashing on the bootloader very well ;-)
