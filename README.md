@@ -8,7 +8,7 @@
 
 ## Introduction
 
-This is my attempt to tune my Lotus Exige S2.
+This is my attempt to tune my Lotus Exige S2 (T4e ECU White Dash).
 
 It's heaveliy based on the work of [Obeisance] and [Cybernet].
 
@@ -30,14 +30,30 @@ Well If I can write to the RAM, I'am allowed to upload my own program. That's
 what I've done. So I've write a small CAN-Bus Flasher to write to the Flash
 through the OBD Port.
 
+## Licensing
+
+Under [CC-NC-SA].
+
+[CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
 ## Original Method
 
 I'am not sure how "others" are doing the flashing. After reading some posts of
-Cybernet, I'have the feeling that an encrypted Bootloader can do the flashing
-through K-Line. Can someone confirm me this? I didn't take the time to disassemble
-the bootloader yet.
+Cybernet, I'have the feeling that the Bootloader on White Dash cars can do some
+loading/flashing trough K-Line. I didn't take the time to disassemble the
+bootloader yet.
 
-Anyway I am doing it through CAN-Bus.
+And from BOE FastWorks Software:
+> The initial flash takes a while since it rewriting the firmware in the ECU.
+> This one took me maybe 5-10 minutes total. In which you are turning the ignition on and off.
+> Once you get passed that one, writing a "tune" only takes about 20 seconds.
+
+Hum, turning on/off the car and so long... They are probably patching the bootloader
+trough K-Line. Once patched, it will go quicker because they are using the CAN-Bus.
+
+Anyway I am doing it through CAN-Bus only, leaving the bootloader as is. In
+contrario I'am using a little hack which is not guaranteed to work on all
+software versions of the ECU.
 
 ## Prerequisite
 
