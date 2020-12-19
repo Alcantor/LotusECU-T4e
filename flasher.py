@@ -278,8 +278,9 @@ if __name__ == "__main__":
 			"e -> Erase Flash, "
 			"p -> Program Flash, "
 			"r -> Reset ECU, "
+			"b -> Bootstrap from Stage 1.5, "
 			"t -> Tests",
-		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "t"],
+		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -366,6 +367,16 @@ if __name__ == "__main__":
 				Flasher.blocks[i][2],
 				ecu_dir+"/"+Flasher.blocks[i][4]
 			)
+
+	if(ecu_op == 'b'):
+		print("Bootstrap - Put IGN yet.")
+		msg = fl.bus.recv(timeout=20.0)
+		if(msg == None): raise ECUException("Too long!")
+		if(msg.dlc != 6 or msg.data != b'HiFlV1'):
+			raise ECUException("Unexpected answer!")
+		else:
+			fl.echo()
+			fl.log("We have the control of the ECU!")
 
 	if(ecu_op == 'r'):
 		print("Reset ECU")

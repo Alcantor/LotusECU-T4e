@@ -98,13 +98,6 @@ loop_disable:
 	rlwinm	%r0, %r0, 0,20,18 # Clear bit HALT
 	sth	%r0, 0x7080(3)
 
-	/* TouCAN A wait ready */
-wait_ready:
-	lhz	%r0, 0x7480(3) # 0x307080 CANMCR_A
-	rlwinm	%r0, %r0, 0,20,20 # Mask on bit NOTRDY
-	cmpwi	%r0, 0
-	bne	wait_ready
-
 	/* TouCAN A Send "Hello!" */
 	li	%r0, 0x80 # Buffer not ready + DLC = 0
 	sth	%r0, 0x71D0(3) # 0x3071D0 MBBUFF13_A
@@ -125,7 +118,7 @@ wait_ready:
 	li	%r0, 0xE6 # Buffer ready + DLC = 6
 	sth	%r0, 0x71D0(3)
 
-	# Count down from 0x80000 then boot stage II
+	/* Count down from 0x80000 then boot stage II */
 	lis	%r10, 0x8
 	li	%r11, -1 # Decrement
 loop_main:

@@ -27,6 +27,7 @@ new_branch = ppc_ba_opcode(s15_offset)
 # Build the new bootloader with a integrated CAN-Bus flasher
 print("Stage 1.5 builder...")
 print("Merge "+s15_file+" and "+inp_file+" into "+out_file)
+blank = b"\xFF\xFF\xFF\xFF"
 offset = 0
 with open(s15_file,'rb') as fs15, open(inp_file,'rb') as finp, open(out_file,'wb') as fout:
 	while(True):
@@ -40,6 +41,8 @@ with open(s15_file,'rb') as fs15, open(inp_file,'rb') as finp, open(out_file,'wb
 		else:
 			chunk2 = fs15.read(4)
 			chunk2_size = len(chunk2)
+			if(chunk[0:chunk2_size] != blank[0:chunk2_size]):
+				raise Exception("Not enough free space!")
 			chunk = chunk2 + chunk[chunk2_size:4]
 		fout.write(chunk)
 		offset += chunk_size
