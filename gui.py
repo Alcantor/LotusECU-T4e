@@ -133,7 +133,7 @@ class t4e_window():
 		self.flasher.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
 		self.flasher.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
-		self.button_b = tk.Button(fl_frame, text="Bootstrap", command=self.bootstrap)
+		self.button_b = tk.Button(fl_frame, text="Bootstrap (60 sec.)", command=self.bootstrap)
 		self.button_b.grid(column=0, row=2, columnspan=4, sticky='EW')
 
 		self.button_vfp = tk.Button(fl_frame, text="Verify Flasher Program", command=self.inject_verify)

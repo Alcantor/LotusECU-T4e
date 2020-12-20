@@ -4,8 +4,6 @@
 
 ***Use it at your own RISK.***
 
-***I've only tested the flashing to the calibration!***
-
 ## Introduction
 
 This is my attempt to tune my Lotus Exige S2 (T4e ECU White Dash).
@@ -88,15 +86,15 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 	To 3: Tune your engine!
 	To 4: Install the flasher into the RAM. *
 	To 5: Verify the flasher itself.
-	To 6: Erase the calibration block. *** [TESTED x1] ***
+	To 6: Erase the calibration block. *** [TESTED] ***
 	To 7: Verify the erasure.
-	To 8: Program the calibration block. *** [TESTED x1] ***
+	To 8: Program the calibration block. *** [TESTED] ***
 	To 9: Verify the calibration block.
 	To 10: Reset.
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
-*: Tested with "BCroftT4E070 01/11/2005 Lotus EngV0078" and "BCroftT4E090 14/07/2006 Lotus EngV0093" yet.
+*: Tested with "BCroftT4E070 01/11/2005 Lotus EngV0078", "BCroftT4E090 14/07/2006 Lotus EngV0091" and "BCroftT4E090 14/07/2006 Lotus EngV0093" yet.
 
 ## Live tuning.
 
