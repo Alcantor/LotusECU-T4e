@@ -143,10 +143,6 @@ class Flasher:
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
 		)
 		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Branch failed!")
-		if(msg.dlc != 1 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
 
 	def download(self, address, size, filename):
 		self.log("Flasher Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
@@ -220,6 +216,16 @@ class Flasher:
 			self.stopProgramBlock()
 			self.progress_end()
 
+	def bootstrap(self, timeout=60.0):
+		self.log("Flasher Bootstrap")
+		msg = self.bus.recv(timeout=timeout)
+		if(msg == None): raise FlasherException("Time out!")
+		if(msg.dlc != 6 or msg.data != b'HiFlV1'):
+			raise FlasherException("Unexpected answer!")
+		else:
+			self.echo()
+			self.log("We have the control of the ECU!")
+
 	def test(self, freeram_address):
 		self.echo(b'Hi ;-)')
 		test = b'\xDE\xAD\xBE\xEF'
@@ -279,8 +285,9 @@ if __name__ == "__main__":
 			"p -> Program Flash, "
 			"r -> Reset ECU, "
 			"b -> Bootstrap from Stage 1.5, "
+			"bm -> Bootstrap from Stage 1.5 and move to ram, "
 			"t -> Tests",
-		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t"],
+		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "bm", "t"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -369,18 +376,22 @@ if __name__ == "__main__":
 			)
 
 	if(ecu_op == 'b'):
-		print("Bootstrap - Put IGN yet.")
-		msg = fl.bus.recv(timeout=20.0)
-		if(msg == None): raise ECUException("Too long!")
-		if(msg.dlc != 6 or msg.data != b'HiFlV1'):
-			raise ECUException("Unexpected answer!")
-		else:
-			fl.echo()
-			fl.log("We have the control of the ECU!")
+		print("Turn IGN on with 60sec.")
+		fl.bootstrap()
+		print("DO NOT USE TO FLASH THE BOOTLOADER (use bm option for that)!")
+
+	if(ecu_op == 'bm'):
+		print("Turn IGN on with 60sec.")
+		fl.bootstrap()
+		# Move the flasher to the RAM to be able to reflash the bootloader
+		fl.upload(0x3FF000,"injection/flasher.bin")
+		fl.verify(0x3FF000,"injection/flasher.bin")
+		fl.branch(0x3FF000)
+		fl.bootstrap(1.0)
 
 	if(ecu_op == 'r'):
-		print("Reset ECU")
-		fl.branch(0x100)
+		print("Reset ECU - Reboot to stage I")
+		fl.branch(0x2000)
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")

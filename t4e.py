@@ -174,18 +174,11 @@ class ECU_T4E:
 
 	def inject(self, freeram_address, filename, stackblr_address):
 		self.upload(freeram_address, filename)
-		value = self.readMemory(stackblr_address, 4)
-		self.log("Previous return address 0x"+value.hex())
 		self.writeMemory(stackblr_address, freeram_address.to_bytes(4, "big"), False)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise ECUException("Injection failed!")
-		if(msg.dlc != 6 or msg.data != b'HiFlV1'):
-			raise ECUException("Unexpected answer!")
-		else:
-			fl = Flasher()
-			fl.bus = self.bus
-			fl.echo()
-			self.log("We have the control of the ECU!")
+		fl = Flasher()
+		fl.bus = self.bus
+		fl.log = self.log
+		fl.bootstrap(timeout=1.0)
 
 	def test(self, freeram_address):
 		# Word

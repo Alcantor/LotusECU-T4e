@@ -83,6 +83,12 @@ class Flasher_GUI(Flasher):
 		self.bytes_transfered = 0
 		super().verify(address, filename)
 
+	def upload(self, address, filename):
+		self.bytes_total = os.path.getsize(filename)
+		self.progressbar['value'] = 0
+		self.bytes_transfered = 0
+		super().upload(address, filename)
+
 	def program(self, block_mask, address, filename):
 		self.bytes_total = os.path.getsize(filename)
 		self.progressbar['value'] = 0
@@ -127,24 +133,27 @@ class t4e_window():
 		self.flasher.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
 		self.flasher.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
+		self.button_b = tk.Button(fl_frame, text="Bootstrap", command=self.bootstrap)
+		self.button_b.grid(column=0, row=2, columnspan=4, sticky='EW')
+
 		self.button_vfp = tk.Button(fl_frame, text="Verify Flasher Program", command=self.inject_verify)
-		self.button_vfp.grid(column=0, row=2, columnspan=4, sticky='EW')
+		self.button_vfp.grid(column=0, row=3, columnspan=4, sticky='EW')
 
 		self.combo_blocks = ttk.Combobox(fl_frame, state="readonly", values = [b[0] for b in Flasher.blocks])
 		self.combo_blocks.current(1)
-		self.combo_blocks.grid(column=0, row=3, sticky="EW")
+		self.combo_blocks.grid(column=0, row=4, sticky="EW")
 
 		self.button_e = tk.Button(fl_frame, text="Erase", command=self.erase)
-		self.button_e.grid(column=1, row=3)
+		self.button_e.grid(column=1, row=4)
 
 		self.button_pg = tk.Button(fl_frame, text="Program", command=self.program)
-		self.button_pg.grid(column=2, row=3)
+		self.button_pg.grid(column=2, row=4)
 
 		self.button_v2 = tk.Button(fl_frame, text="Verify", command=self.verify2)
-		self.button_v2.grid(column=3, row=3)
+		self.button_v2.grid(column=3, row=4)
 
 		self.button_reset = tk.Button(fl_frame, text="Reset ECU", command=self.reset)
-		self.button_reset.grid(column=0, row=4, columnspan=4, sticky='EW')
+		self.button_reset.grid(column=0, row=5, columnspan=4, sticky='EW')
 
 		self.flasher_buttons(tk.DISABLED)
 
@@ -152,6 +161,7 @@ class t4e_window():
 		self.button_dl['state'] = state
 		self.button_v['state'] = state
 		self.button_ifp['state'] = state
+		self.button_b['state'] = state
 
 	def flasher_buttons(self, state):
 		self.button_e['state'] = state
@@ -202,6 +212,29 @@ class t4e_window():
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
 			self.t4e_buttons(tk.NORMAL)
+
+	def bootstrap(self):
+		self.t4e_buttons(tk.DISABLED)
+		self.flasher_buttons(tk.DISABLED)
+		try:
+			self.flasher.bootstrap()
+			# Move the flasher to the RAM to be able to reflash the bootloader
+			self.flasher.upload(0x3FF000,"injection/flasher.bin")
+			self.flasher.verify(0x3FF000,"injection/flasher.bin")
+			self.flasher.branch(0x3FF000)
+			self.flasher.bootstrap(1.0)
+			self.flasher_buttons(tk.NORMAL)
+		except Exception as e:
+			messagebox.showerror(master=self.master, title="Error!", message=str(e))
+			self.t4e_buttons(tk.NORMAL)
+
+	def inject_verify(self):
+		self.flasher_buttons(tk.DISABLED)
+		try:
+			self.flasher.verify(0x3FF000, "injection/flasher.bin")
+		except Exception as e:
+			messagebox.showerror(master=self.master, title="Error!", message=str(e))
+		self.flasher_buttons(tk.NORMAL)
 
 	def erase(self):
 		block = Flasher.blocks[self.combo_blocks.current()]
@@ -258,14 +291,6 @@ class t4e_window():
 				messagebox.showerror(master=self.master, title="Error!", message=str(e))
 			self.flasher_buttons(tk.NORMAL)
 
-	def inject_verify(self):
-		self.flasher_buttons(tk.DISABLED)
-		try:
-			self.flasher.verify(0x3FF000, "injection/flasher.bin")
-		except Exception as e:
-			messagebox.showerror(master=self.master, title="Error!", message=str(e))
-		self.flasher_buttons(tk.NORMAL)
-
 	def reset(self):
 		answer = messagebox.askquestion(
 			parent = self.master,
@@ -275,7 +300,7 @@ class t4e_window():
 		if(answer != 'yes'): return
 		self.flasher_buttons(tk.DISABLED)
 		try:
-			self.flasher.branch(0x100)
+			self.flasher.branch(0x2000)
 			self.t4e_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))

@@ -12,7 +12,7 @@ def ppc_ba_opcode(jump_addr):
 # Files
 s15_file = "../injection/flasher.bin"
 inp_file = "../dump/ALS3M0240J/bootldr.bin"
-out_file = "bootldr_flasher.bin"
+out_file = "bootldr.bin"
 
 # Free space in Bootloader Stage I where to insert the stage 1.5 (the flasher)
 s15_offset = 0x3000

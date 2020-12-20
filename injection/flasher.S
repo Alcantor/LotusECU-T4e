@@ -46,7 +46,7 @@ _start:
 	#
 	# Branch:
 	#   DATA  : 07 AA AA AA
-	#   RETURN: 07
+	#   RETURN: N/A
 
 	/* TouCAN A Soft-Reset */
 	lhz	%r0, 0x7080(3) # 0x307080 CANMCR_A
@@ -118,8 +118,8 @@ loop_disable:
 	li	%r0, 0xE6 # Buffer ready + DLC = 6
 	sth	%r0, 0x71D0(3)
 
-	/* Count down from 0x80000 then boot stage II */
-	lis	%r10, 0x8
+	/* Count down from 0x40000 then boot stage II */
+	lis	%r10, 0x4 # Approx. 500ms
 	li	%r11, -1 # Decrement
 loop_main:
 	add	%r10, 10, 11
@@ -283,7 +283,6 @@ end_command_0x06:
 	bne	loop_main
 	cmplwi	%r4, 4
 	bne	loop_main # DLC is not 4
-	bl	sub_answer1
 	mtlr	%r8
 	blr
 
