@@ -17,20 +17,20 @@ This is a RISKY operation, I would not recommend to make it, except if you are
 planning to make patch/modification of the main program.
 
 	1. ./t4e.py -o ifp
-	5. ./flasher.py -o vfp
-	6. ./flasher.py -o e -b 0
-	7. ./flasher.py -o vb -b 0
-	8. ./flasher.py -o p -b 0 -D stage15
-	9. ./flasher.py -o v -b 0 -D stage15
-	10. ./flasher.py -o r
+	2. ./flasher.py -o vfp
+	3. ./flasher.py -o e -b 0
+	4. ./flasher.py -o vb -b 0
+	5. ./flasher.py -o p -b 0 -D stage15
+	6. ./flasher.py -o v -b 0 -D stage15
+	7. ./flasher.py -o r
 
 	To 1: Install the flasher into the RAM.
-	To 1: Verify the flasher itself.
-	To 1: Erase the bootloader block. *** [TESTED] ***
-	To 7: Verify the erasure.
-	To 8: Program the bootloader block. *** [TESTED] ***
-	To 9: Verify the bootloader block.
-	To 10: Reset.
+	To 2: Verify the flasher itself.
+	To 3: Erase the bootloader block. *** [TESTED] ***
+	To 4: Verify the erasure.
+	To 5: Program the bootloader block. *** [TESTED] ***
+	To 6: Verify the bootloader block.
+	To 7: Reset.
 
 ## Usage example
 
