@@ -101,12 +101,24 @@ class t4e_window():
 		master.title('T4e ECU')
 		master.resizable(0, 0)
 
+		can_frame = tk.LabelFrame(master, text="CAN Device")
+		can_frame.grid(column=0, row=0, sticky="EW")
+		can_frame.grid_columnconfigure(0, weight = 1)
+
+		self.combo_interface = ttk.Combobox(can_frame, state="readonly", values = ["socketcan", "ixxat", "serial"])
+		self.combo_interface.current(0)
+		self.combo_interface.grid(column=0, row=0, sticky="EW")
+
+		self.string_channel = tk.StringVar()
+		self.string_channel.set("can0")
+		self.entry_channel = tk.Entry(can_frame, textvariable = self.string_channel)
+		self.entry_channel.grid(column=1, row=0, sticky="EW")
+
 		t4e_frame = tk.LabelFrame(master, text="T4e ECU Communication (Safe)")
-		t4e_frame.grid(column=0, row=0, sticky="EW")
+		t4e_frame.grid(column=0, row=1, sticky="EW")
 		t4e_frame.grid_columnconfigure(0, weight = 1)
 
 		self.t4e = ECU_T4E_GUI(t4e_frame)
-		self.t4e.openCAN("socketcan", "can0")
 		self.t4e.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
 		self.t4e.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
@@ -124,16 +136,14 @@ class t4e_window():
 		self.button_ifp.grid(column=0, row=3, columnspan=3, sticky='EW')
 
 		fl_frame = tk.LabelFrame(master, text="CAN Flasher (Not Safe)")
-		fl_frame.grid(column=0, row=1, sticky="EW")
+		fl_frame.grid(column=0, row=2, sticky="EW")
 		fl_frame.grid_columnconfigure(0, weight = 1)
 
 		self.flasher = Flasher_GUI(fl_frame)
-		#self.flasher.openCAN("virtual", 0)
-		self.flasher.bus = self.t4e.bus
 		self.flasher.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
 		self.flasher.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
-		self.button_b = tk.Button(fl_frame, text="Bootstrap (60 sec.)", command=self.bootstrap)
+		self.button_b = tk.Button(fl_frame, text="Bootstrap from Stage 1.5 (60 sec.)", command=self.bootstrap)
 		self.button_b.grid(column=0, row=2, columnspan=4, sticky='EW')
 
 		self.button_vfp = tk.Button(fl_frame, text="Verify Flasher Program", command=self.inject_verify)
@@ -170,6 +180,17 @@ class t4e_window():
 		self.button_vfp['state'] = state
 		self.button_reset['state'] = state
 
+	def openCAN(self):
+		self.combo_interface['state'] = tk.DISABLED
+		self.entry_channel['state'] = tk.DISABLED
+		self.t4e.openCAN(self.combo_interface.get(), self.string_channel.get())
+		self.flasher.bus = self.t4e.bus
+
+	def closeCAN(self):
+		self.t4e.closeCAN()
+		self.combo_interface['state'] = tk.NORMAL
+		self.entry_channel['state'] = tk.NORMAL
+
 	def download(self):
 		zone = ECU_T4E.zones[self.combo_zones.current()]
 		answer = filedialog.asksaveasfilename(
@@ -182,9 +203,11 @@ class t4e_window():
 		if(answer):
 			self.t4e_buttons(tk.DISABLED)
 			try:
+				self.openCAN()
 				self.t4e.download(zone[1], zone[2], answer)
 			except Exception as e:
 				messagebox.showerror(master=self.master, title="Error!", message=str(e))
+			self.closeCAN()
 			self.t4e_buttons(tk.NORMAL)
 
 	def verify(self):
@@ -199,24 +222,29 @@ class t4e_window():
 		if(answer):
 			self.t4e_buttons(tk.DISABLED)
 			try:
+				self.openCAN()
 				self.t4e.verify(zone[1], answer)
 			except Exception as e:
 				messagebox.showerror(master=self.master, title="Error!", message=str(e))
+			self.closeCAN()
 			self.t4e_buttons(tk.NORMAL)
 
 	def inject(self):
 		self.t4e_buttons(tk.DISABLED)
 		try:
+			self.openCAN()
 			self.t4e.inject(0x3FF000, "injection/flasher.bin", 0x3FFFDC)
 			self.flasher_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
 			self.t4e_buttons(tk.NORMAL)
+		self.closeCAN()
 
 	def bootstrap(self):
 		self.t4e_buttons(tk.DISABLED)
 		self.flasher_buttons(tk.DISABLED)
 		try:
+			self.openCAN()
 			self.flasher.bootstrap()
 			# Move the flasher to the RAM to be able to reflash the bootloader
 			self.flasher.upload(0x3FF000,"injection/flasher.bin")
@@ -227,13 +255,16 @@ class t4e_window():
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
 			self.t4e_buttons(tk.NORMAL)
+		self.closeCAN()
 
 	def inject_verify(self):
 		self.flasher_buttons(tk.DISABLED)
 		try:
+			self.openCAN()
 			self.flasher.verify(0x3FF000, "injection/flasher.bin")
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
+		self.closeCAN()
 		self.flasher_buttons(tk.NORMAL)
 
 	def erase(self):
@@ -246,9 +277,11 @@ class t4e_window():
 		if(answer != 'yes'): return
 		self.flasher_buttons(tk.DISABLED)
 		try:
+			self.openCAN()
 			self.flasher.eraseBlock(block[0],block[1])
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
+		self.closeCAN()
 		self.flasher_buttons(tk.NORMAL)
 
 	def program(self):
@@ -269,9 +302,11 @@ class t4e_window():
 		if(answer):
 			self.flasher_buttons(tk.DISABLED)
 			try:
+				self.openCAN()
 				self.flasher.program(block[1], block[2], answer)
 			except Exception as e:
 				messagebox.showerror(master=self.master, title="Error!", message=str(e))
+			self.closeCAN()
 			self.flasher_buttons(tk.NORMAL)
 
 	def verify2(self):
@@ -286,9 +321,11 @@ class t4e_window():
 		if(answer):
 			self.flasher_buttons(tk.DISABLED)
 			try:
+				self.openCAN()
 				self.flasher.verify(block[2], answer)
 			except Exception as e:
 				messagebox.showerror(master=self.master, title="Error!", message=str(e))
+			self.closeCAN()
 			self.flasher_buttons(tk.NORMAL)
 
 	def reset(self):
@@ -300,11 +337,13 @@ class t4e_window():
 		if(answer != 'yes'): return
 		self.flasher_buttons(tk.DISABLED)
 		try:
+			self.openCAN()
 			self.flasher.branch(0x2000)
 			self.t4e_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
 			self.flasher_buttons(tk.NORMAL)
+		self.closeCAN()
 
 root = tk.Tk()
 app = t4e_window(root)

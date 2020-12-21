@@ -124,7 +124,13 @@ or a Main Program, be sure that the files are good and valid.
 
 ## GUI
 
-The GUI has no device option. Please edit the "gui.py" for your device!
+The simple GUI...
 
 ![alt text](https://github.com/Alcantor/LotusECU-T4e/raw/master/documentation/Usage/GUI.png "GUI Demo")
+
+## RomRaider
+
+You have to open the "calrom.bin" file of your dump.
+
+![alt text](https://github.com/Alcantor/LotusECU-T4e/raw/master/documentation/Usage/RomRaider.png "Tune Demo")
 
