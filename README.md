@@ -70,6 +70,7 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 
 ## Command line example
 
+	0. sudo ip link set can0 up type can bitrate 1000000
 	1. ./t4y.py -o dl -z 0 1 2 3 4
 	2. cp calrom.bin calrom.ori.bin
 	3. [Modify calrom.bin with RomRaider]
@@ -81,6 +82,7 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 	9. ./flasher.py -o v -b 1
 	10. ./flasher.py -o r
 
+	To 0: Turn CAN-Bus on [Linux/SocketCAN Only]
 	To 1: Download the ECU like cybernet does.
 	To 2: Backup, backup, backup...
 	To 3: Tune your engine!
