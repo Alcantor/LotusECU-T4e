@@ -1,4 +1,4 @@
-0x02AF88: TouCAN Receive Function
+0x02AF88: TouCAN B Receive Function
 Read  Word Function: PID: 0x50 Payload: 32bits address (big-endian)
 Read  Half Function: PID: 0x51 Payload: 32bits address (big-endian)
 Read  Byte Function: PID: 0x52 Payload: 32bits address (big-endian)
@@ -14,16 +14,21 @@ Write Data Function: PID: 0x57 Payload: Data (1-8 Bytes) until size = 0
 Read  ???? Function: PID: 0x51 Payload: ???? (6 Bytes Length)
 Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
 
+0x023234: Main Loop
+0x03E624: Rebuild DECRAM Data
+0x04BEFC: OBD Command (L-Kine)
+0x06492C: OBD Mode 22 Enhanced Data
+0x0738D4: OBD Reset Learn Table
+
+
 0x3F974C 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
 
 0x3FD64C 16 Bits RPM Variable
-0x3F9587 Selenoid Output
+0x3F9587 Selenoid Output Variable
 
 @0x03BCC8:
- 0x010206 Value not in XML Def (if rpm < 4300 then put a flag in 0x3F9587)
- 0x01020C Value not in XML Def (if rpm > 4500 then clear a flag in 0x3F9587)
-
-Bootloader:
-0x00423C Subroutine: Wait on 0030601E (Loop 5000x), return true or false
+ 0x0206 Value not in XML Def (if rpm < 4300 then put a flag in 0x3F9587)
+ 0x0208 Value not in XML Def (if rpm > 4500 then clear a flag in 0x3F9587)
 
 Free RAM: 0x3FE748 - 0x3FEFFF (2231 bytes)
+
