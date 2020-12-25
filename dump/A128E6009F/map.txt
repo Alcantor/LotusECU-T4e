@@ -17,6 +17,7 @@ Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
 0x3F974C 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
 
 0x3FD64C 16 Bits RPM Variable
+0x3F9587 Selenoid Output
 
 @0x03BCC8:
  0x010206 Value not in XML Def (if rpm < 4300 then put a flag in 0x3F9587)

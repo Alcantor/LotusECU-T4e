@@ -35,6 +35,7 @@ revision log
 0.0.0.15 01-19-19 add LTFT adjustment parameters for the T4
 0.0.0.16 05-24-20 add OBD mode 0x2F timer adjustment parameters and minimum intake air temperature for closed loop fueling for T4
 0.0.0.17 11-28-20 add T4e, NEED TO BE CHECKED (by alcantor)
+0.0.0.18 12-25-20 add ACIS Airbox Flap Table (by alcantor)
 
 -->
 
@@ -793,6 +794,20 @@ revision log
     <data>Evaluate misfire conditions when at least this far below redline</data>
    </table>
    <description>Engine speed is compared to this offset beyond redline.</description>
+  </table>
+  <table type="2D" name="Open ACIS Airbox Flap Threshold" category="Miscellaneous - Thresholds" storagetype="uint16" endian="big" sizey="1" userlevel="1">
+   <scaling units="rpm" expression="x" to_byte="x" format="#" fineincrement="10" coarseincrement="100" />
+   <table type="Static Y Axis" name="Engine speed" sizey="1">
+    <data>Engine speed above which deactivate the selenoid (Open the flap)</data>
+   </table>
+   <description>The flap on the original airbox.</description>
+  </table>
+  <table type="2D" name="Close ACIS Airbox Flap Threshold" category="Miscellaneous - Thresholds" storagetype="uint16" endian="big" sizey="1" userlevel="1">
+   <scaling units="rpm" expression="x" to_byte="x" format="#" fineincrement="10" coarseincrement="100" />
+   <table type="Static Y Axis" name="Engine speed" sizey="1">
+    <data>Engine speed below which activate the selenoid (Close the flap)</data>
+   </table>
+   <description>The flap on the original airbox.</description>
   </table>
   <table type="2D" name="Cranking Injector Pulse Length Coolant Temperature Compensation (I_cool't_temp)" category="Injector Control" storagetype="uint8" endian="big" sizey="16" userlevel="4">
    <scaling units="Additional pulse length in microseconds" expression="x*256" to_byte="x/256" format="#.##" fineincrement="10" coarseincrement="100" />
@@ -3030,6 +3045,8 @@ revision log
     <table type="Y Axis" storageaddress="0x71F34" />
    </table>
    <table name="Engine Speed Redline Offset To Evaluate Misfire" storageaddress="0x70128" />
+   <table name="Open ACIS Airbox Flap Threshold" storageaddress="0x70208" />
+   <table name="Close ACIS Airbox Flap Threshold" storageaddress="0x70206" />
    <table name="Base Fuel Injector Pulse Length Intake Air Temperature Correction (C_a)" storageaddress="0x7074C">
     <table type="Y Axis" storageaddress="0x7073C" />
    </table>
@@ -3426,6 +3443,8 @@ revision log
     <table type="Y Axis" storageaddress="0x71F34" />
    </table>
    <table name="Engine Speed Redline Offset To Evaluate Misfire" storageaddress="0x70128" />
+   <table name="Open ACIS Airbox Flap Threshold" storageaddress="0x70208" />
+   <table name="Close ACIS Airbox Flap Threshold" storageaddress="0x70206" />
    <table name="Base Fuel Injector Pulse Length Intake Air Temperature Correction (C_a)" storageaddress="0x7074C">
     <table type="Y Axis" storageaddress="0x7073C" />
    </table>
@@ -3824,6 +3843,8 @@ revision log
     <table type="Y Axis" storageaddress="0x31F34" />
    </table>
    <table name="Engine Speed Redline Offset To Evaluate Misfire" storageaddress="0x30128" />
+   <table name="Open ACIS Airbox Flap Threshold" storageaddress="0x30208" />
+   <table name="Close ACIS Airbox Flap Threshold" storageaddress="0x30206" />
    <table name="Base Fuel Injector Pulse Length Intake Air Temperature Correction (C_a)" storageaddress="0x3074C">
     <table type="Y Axis" storageaddress="0x3073C" />
    </table>
@@ -4322,6 +4343,8 @@ revision log
     <table type="Y Axis" storageaddress="0x1F34" />
    </table>
    <table name="Engine Speed Redline Offset To Evaluate Misfire" storageaddress="0x0128" />
+   <table name="Open ACIS Airbox Flap Threshold" storageaddress="0x0208" />
+   <table name="Close ACIS Airbox Flap Threshold" storageaddress="0x0206" />
    <table name="Base Fuel Injector Pulse Length Intake Air Temperature Correction (C_a)" storageaddress="0x074C">
     <table type="Y Axis" storageaddress="0x073C" />
    </table>
