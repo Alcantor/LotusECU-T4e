@@ -9,9 +9,12 @@ def ppc_ba_opcode(jump_addr):
 	opcode[3] |= jump_addr & 0xFC
 	return opcode
 
+# Bootloader from ALS3M0240J seems ugly. Look at 0x400 for example.
+# Bootloader A128E6009F and ALS3M0244F are identical except the ID and CRC.
+
 # Files
 s15_file = "../injection/flasher.bin"
-inp_file = "../dump/ALS3M0240J/bootldr.bin"
+inp_file = "../dump/A128E6009F/bootldr.bin"
 out_file = "bootldr.bin"
 
 # Free space in Bootloader Stage I where to insert the stage 1.5 (the flasher)

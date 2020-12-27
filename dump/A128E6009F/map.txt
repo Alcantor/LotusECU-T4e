@@ -24,7 +24,8 @@ Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
 0x3F974C 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
 
 0x3F9587 8 Bits Selenoid Output Variable
-0x3FD4FE 16 Bits Oil Pressure Analog Input (0 -> 1024, 0 -> 5V, Cluster Oil Light Threshold at < 0x200 = < 2.5V)
+0x304A8A 16 Bits ADC Oil Pressure
+0x3FD4FE 16 Bits Oil Pressure Analog Variable (0 -> 1024, 0 -> 5V, Cluster Oil Light Threshold at < 0x200 = < 2.5V)
 0x3FD64C 16 Bits RPM Variable
 
 @0x03BCC8:

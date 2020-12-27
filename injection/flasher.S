@@ -98,7 +98,7 @@ loop_disable:
 	rlwinm	%r0, %r0, 0,20,18 # Clear bit HALT
 	sth	%r0, 0x7080(3)
 
-	/* TouCAN A Send "Hello!" */
+	/* TouCAN A Send "HiFlV1" */
 	li	%r0, 0x80 # Buffer not ready + DLC = 0
 	sth	%r0, 0x71D0(3) # 0x3071D0 MBBUFF13_A
 
