@@ -232,24 +232,8 @@ class Flasher:
 		self.writeWord(freeram_address, test)
 		if(test != self.readWord(freeram_address)):
 			raise FlasherException("Word readback failed!")
-		self.upload(freeram_address, "injection/deadloop.bin")
-		self.verify(freeram_address, "injection/deadloop.bin")
-
-	def testFlash(self):
-		blank = b'\xFF\xFF\xFF\xFF'
-		test = b'\xDE\xAD\xBE\xEF'
-		addr = 0x1FFE0
-		data = self.readWord(addr)
-		print(data)
-		if(blank != data):
-			raise FlasherException("Cannot test here!")
-		self.startProgramBlock(0x40)
-		self.programBlockWord(addr, test)
-		self.stopProgramBlock()
-		data = self.readWord(addr)
-		if(test != data):
-			print("Hu?:"+str(data))
-			raise FlasherException("Word readback failed!")
+		self.upload(freeram_address, "injection/flasher.bin")
+		self.verify(freeram_address, "injection/flasher.bin")
 
 if __name__ == "__main__":
 	print("Stupid flasher for Lotus T4e ECU\n")
@@ -395,7 +379,6 @@ if __name__ == "__main__":
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")
-		#fl.testFlash()
 		fl.test(0x3F8000)
 
 	fl.closeCAN()
