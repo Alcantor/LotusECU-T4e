@@ -1,2 +1,10 @@
 0x02802C: TouCAN Receive Function
 
+0x3F9330 Copy of Calibration (Maps)
+
+0x3F92CF 8 Bits Selenoid Output Variable
+0x304A8A 16 Bits ADC Oil Pressure
+0x3FD0E4 16 Bits Oil Pressure Analog Variable (0 -> 1024, 0 -> 5V, Cluster Oil Light Threshold at < 0x200 = < 2.5V)
+0x3FD230 16 Bits RPM Variable
+
+0x39690 - 0x3978C: ACIS Aibox Flap Function
