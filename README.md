@@ -100,7 +100,7 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 
 ## Live tuning.
 
-It's possible to make modifications on running engine for test, because some
+It's possible to make modifications on running engine for test, because the
 maps are copied into the RAM.
 
 It would need another software for that, which will use t4e.py as library to

@@ -1,6 +1,6 @@
 0x02802C: TouCAN Receive Function
 
-0x3F9330 Copy of Calibration (Maps)
+0x3F9330, Size 0xF23*4+4-2+2=0x3C90 (@ 0x02D5E0) Copy of Calibration (Maps)
 
 0x3F92CF 8 Bits Selenoid Output Variable
 0x304A8A 16 Bits ADC Oil Pressure

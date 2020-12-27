@@ -21,7 +21,7 @@ Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
 0x06492C: OBD Mode 22 Enhanced Data
 0x0738D4: OBD Reset Learn Table
 
-0x3F974C 0x03CA0, Copy of Calibration (Maps) (0x400000-0x3F974C=0x08B4)
+0x3F974C, Size 0xF27*4+4-2+2=0x3CA0 (@ 0x02FB58) Copy of Calibration (Maps)
 
 0x3F9587 8 Bits Selenoid Output Variable
 0x304A8A 16 Bits ADC Oil Pressure
