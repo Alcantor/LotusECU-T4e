@@ -123,7 +123,7 @@ loop_disable:
 	li	%r11, -1 # Decrement
 loop_main:
 	add	%r10, 10, 11
-	cmpwi	%r10, 0x0
+	cmplwi	%r10, 0x0
 	bne	continue
 	ba	0x004000
 continue:
@@ -278,7 +278,7 @@ end_command_0x05:
 	b	loop_main
 end_command_0x06:
 
-	/* Reset command 0x07 */
+	/* Branch command 0x07 */
 	cmplwi	%r7, 0x07
 	bne	loop_main
 	cmplwi	%r4, 4
