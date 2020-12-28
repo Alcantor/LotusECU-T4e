@@ -3,7 +3,7 @@
 
 _start:
 	/* Always 0x40 in r3 to minimize code footprint */
-	lis	%r4, 0x40
+	lis	%r3, 0x40
 
 	/* OBD Override */
 	addi	%r4, 3, -0x256C # 0x3FDA94, Specific to each version!!!
