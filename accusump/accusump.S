@@ -33,7 +33,7 @@ normal:
 	srwi	%r6, 6, 2 /* From 11 Bits to 8 Bits value (Divide by 4) */
 
 	/* r7 the selenoid output pointer */
-	addi	%r7, 7, -0x6D31 # 0x3F92CF, Specific to each version!!!
+	addi	%r7, 3, -0x6D31 # 0x3F92CF, Specific to each version!!!
 
 	/* r8 Counter */
 	li	%r8, 8
