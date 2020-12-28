@@ -9,7 +9,7 @@ The flasher will be installed at 0x3000 between the Stage I and Stage II.
 ## Files
 
 	build.py: Build the file "bootldr.bin"
-	bootldr.bin: Bootloader from ALS3M0240J with the flasher in it.
+	bootldr.bin: Bootloader from A128E6009F with the flasher in it.
 
 ## Installation example
 
