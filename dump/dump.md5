@@ -13,5 +13,5 @@ ba4a624b033f5fc686d4979308819b5b  A128E6009F/calrom.bin
 f52dde26272bec3135e8f73c7365b9d5  ALS3M0244F/calrom.bin
 d76ea22ce55f76f22419aa1d427ce43f  ALS3M0244F/decram.bin
 33ca75a8f6db4386f005337fe7df1473  ALS3M0244F/prog.bin
-f05ae808513d0c04f9b41dd884178bce  ../stage15/bootldr.bin
-008ca40a0e62da3fd88ecb0351a4be5b  ../injection/flasher.bin
+0ea41f08ff3ee8af64dd30f5d5377cc4  ../stage15/bootldr.bin
+16454249445402b6ae1dc7ab9595d01f  ../injection/flasher.bin

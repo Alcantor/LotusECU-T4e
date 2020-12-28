@@ -289,7 +289,7 @@ end_command_0x06:
 sub_unlock:
 	/* Unlock */
 	sth	%r9, -0x37F7(3) # 0x2FC809 UC3FCTL - SBBlock + Block
-	nand	%r0, 9, 9 # Invert
+	not	%r0, 9
 	stb	%r0, -0x37FD(3) # 0x2FC803 UC3FMCR - Protect
 	blr
 
