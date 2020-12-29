@@ -11,7 +11,7 @@ def ppc_cmplwi_opcode(register, immediate):
 
 # Files
 acc_file = "accusump.bin"
-inp_file = "../dump/ALS3M0244F/prog.bin" # You cannot change this file without adapting accusump.S and the acis_offsets variable
+inp_file = "../dump/ALS3M0244F/prog.bin" # You cannot change this file without adapting accusump.S, the acis_offsets and oilw_offset variables.
 out_file = "prog.bin"
 
 # ACIS Control function to replace with the accusump control
@@ -60,7 +60,6 @@ table_default = bytes([
 # Build the new calibration with the accusump default table
 print("Accusump calibration builder...")
 print("Add accusump table from  "+inp_file+" into "+out_file)
-blank = b"\xFF\xFF\xFF\xFF"
 offset = 0
 with open(inp_file,'rb') as finp, open(out_file,'wb') as fout:
 	while(True):
@@ -68,8 +67,10 @@ with open(inp_file,'rb') as finp, open(out_file,'wb') as fout:
 		chunk_size = len(chunk)
 		if(chunk_size == 0): break # EOF
 		if(table_offsets[0] <= offset and offset < table_offsets[1]):
+			if(chunk[0:chunk_size] != blank[0:chunk_size]):
+				raise Exception("Not enough free space!")
 			i = offset-table_offsets[0]
-			chunk = table_default[i:i+4]
+			chunk = table_default[i:i+chunk_size]
 		fout.write(chunk)
 		offset += chunk_size
 
