@@ -37,6 +37,8 @@ from your separate gauge, or from another sensors (MAP, TPS or MAF).
 	- The [Depo-Racing 4in1 gauge] use a 0-5 Volts max 10 bar oil pressure sensor (3 pins Delphi plug).
 	- The standard oil pressure switch has a threshold at ???.
 
+[Depo-Racing 4in1 gauge]:https://www.elise-shop.com/high-precision-60mm-boost-oiltemp-oil-pressure-gauge-p-502177.html
+
 ## Formula
 
 For common 10 bar oil pressure sensor.
@@ -47,8 +49,6 @@ For common 10 bar oil pressure sensor.
 	-  8 Bits Sample to Pressure in bar: p = 0.050585938 * s - 1.295
 	- Pressure in bar to 11 Bits Sample: s = (p + 1.295) / 0.012646484
 	- Pressure in bar to  8 Bits Sample: s = (p + 1.295) / 0.050585938
-
-[Depo-Racing 4in1 gauge]:https://www.elise-shop.com/high-precision-60mm-boost-oiltemp-oil-pressure-gauge-p-502177.html
 
 ## Teaser
 
