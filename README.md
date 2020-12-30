@@ -28,6 +28,15 @@ Well If I can write to the RAM, I'am allowed to upload my own program. That's
 what I've done. So I've write a small CAN-Bus Flasher to write to the Flash
 through the OBD Port.
 
+My final goal was to control my accusump with the T4e ECU, that was not possible
+without patching the main program. See folder [accusump].
+
+To be able to patch the main program more safely I've includer the flasher into
+the bootloader. See folder [stage15].
+
+[accusump]:https://github.com/Alcantor/LotusECU-T4e/tree/master/accusump
+[stage15]:https://github.com/Alcantor/LotusECU-T4e/tree/master/stage15
+
 ## Licensing
 
 Under [CC-NC-SA].

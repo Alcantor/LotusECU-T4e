@@ -22,7 +22,7 @@ acis_offsets = (0x19690, 0x19790)
 # We need to patch that too.
 oilw_offset = 0x194EC
 oilw_default = ppc_cmplwi_opcode(0, 0x200) # Threshold at 2.5 V
-oilw_new = ppc_cmplwi_opcode(0, 0x100) # Threshold at 2.5 bar? (1024/10*2.5)
+oilw_new = ppc_cmplwi_opcode(0, 0x100) # Threshold at 1.94 bar?
 
 # Build the new program with the accusump control
 print("Accusump control builder...")
@@ -54,7 +54,7 @@ out_file = "calrom.bin"
 table_offsets = (0x3CA0, 0x3CB0)
 table_default = bytes([
 	0x05, 0x0A, 0x0F, 0x14, 0x19, 0x1E, 0x23, 0x28, # RPM
-	0x40, 0x4D, 0x59, 0x66, 0x73, 0x80, 0xCC, 0xCC  # Pressure
+	0x4C, 0x55, 0x5F, 0x68, 0x73, 0x7C, 0xB8, 0xB8  # Pressure
 ])
 
 # Build the new calibration with the accusump default table
