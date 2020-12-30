@@ -13,15 +13,17 @@ control my accusump.
 
 ## Files
 
-	build.py: Build the file "prog.bin" and "calrom.bin"
-	prog.bin: Patched program from ALS3M0244F with the accusump control in it.
-	calrom.bin: Patched calibration from A128E6009F with the accusump table in it.
-	T4_defs_plust4e.patch: Patch for the XML-Definition to edit the table in RomRaider.
+ Files                 | Description
+ ----------------------|------------
+ build.py              | Build the file "prog.bin" and "calrom.bin".
+ prog.bin              | Patched program from ALS3M0244F with the accusump control in it.
+ calrom.bin            | Patched calibration from A128E6009F with the accusump table in it.
+ T4_defs_plust4e.patch | Patch for the XML-Definition to edit the table in RomRaider.
 
 ## Hardware
 
-	1. Replace the original oil pressure switch with an analog one.
-	2. Connect the accusump selenoid on the ACIS Airbox Flap connector.
+ 1. Replace the original oil pressure switch with an analog one.
+ 2. Connect the accusump selenoid on the ACIS Airbox Flap connector.
 
 The original oil pressure switch only have one wire for the signal. Analog
 oil pressure sensor often needs a GND and a 5 Volts wires, the 5 Volts could be
@@ -31,24 +33,24 @@ from your separate gauge, or from another sensors (MAP, TPS or MAF).
 
 ## Hardware Specifications
 
-	- The selenoid of the accusump needs 600 mA.
-	- The selenoid driver (L9822E) of the T4e can provide 750 mA continuously and 1050 mA for high inrush currents.
-	- The selenoid driver (L9822E) has a short circuit protection.
-	- The [Depo Racing 4in1 gauge][1] use a 0-5 Volts max 10 bar oil pressure sensor (3 pins Delphi plug).
-	- The standard oil pressure switch has a threshold at ???.
+ - The selenoid of the accusump needs 600 mA.
+ - The selenoid driver (L9822E) of the T4e can provide 750 mA continuously and 1050 mA for high inrush currents.
+ - The selenoid driver (L9822E) has a short circuit protection.
+ - The [Depo Racing 4in1 gauge] use a 0-5 Volts max 10 bar oil pressure sensor (3 pins Delphi plug).
+ - The standard oil pressure switch has a threshold at ???.
 
-[1]: https://www.elise-shop.com/high-precision-60mm-boost-oiltemp-oil-pressure-gauge-p-502177.html
+[Depo Racing 4in1 gauge]: https://www.elise-shop.com/high-precision-60mm-boost-oiltemp-oil-pressure-gauge-p-502177.html
 
 ## Formula
 
 For common 10 bar oil pressure sensor.
 
-	- Oil pressure sensor formula: p = 2.59 * U - 1.295 (p: bar, U: Volts)
-	- ADC 10 Bits: U = 5/1024 * s
-	- 10 Bits Sample to Pressure in bar: p = 0.012646484 * s - 1.295
-	-  8 Bits Sample to Pressure in bar: p = 0.050585938 * s - 1.295
-	- Pressure in bar to 10 Bits Sample: s = (p + 1.295) / 0.012646484
-	- Pressure in bar to  8 Bits Sample: s = (p + 1.295) / 0.050585938
+ - Oil pressure sensor formula: p = 2.59 * U - 1.295 (p: bar, U: Volts)
+ - ADC 10 Bits: U = 5/1024 * s
+ - 10 Bits Sample to Pressure in bar: p = 0.012646484 * s - 1.295
+ -  8 Bits Sample to Pressure in bar: p = 0.050585938 * s - 1.295
+ - Pressure in bar to 10 Bits Sample: s = (p + 1.295) / 0.012646484
+ - Pressure in bar to  8 Bits Sample: s = (p + 1.295) / 0.050585938
 
 ## Teaser
 

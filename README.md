@@ -72,36 +72,38 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 
 ## Files
 
-	t4e.py: Program to talk to the original Software (Read/Write RAM)
-	flasher.py: Program to talk to the flasher Software (Read/Write RAM+Flash)
-	injection/flasher.bin: CAN-Bus Flasher for the MPC563
-	gui.py: Graphical interface for both t4e.py and flasher.py
+ Files                 | Description
+ ----------------------|------------
+ t4e.py                | Program to talk to the original Software (Read/Write RAM)
+ flasher.py            | Program to talk to the flasher Software (Read/Write RAM+Flash)
+ injection/flasher.bin | CAN-Bus Flasher for the MPC563
+ gui.py                | Graphical interface for both t4e.py and flasher.py
 
 ## Command line example
 
-	0. sudo ip link set can0 up type can bitrate 1000000
-	1. ./t4y.py -o dl -z 0 1 2 3 4
-	2. cp calrom.bin calrom.ori.bin
-	3. [Modify calrom.bin with RomRaider]
-	4. ./t4e.py -o ifp
-	5. ./flasher.py -o vfp
-	6. ./flasher.py -o e -b 1
-	7. ./flasher.py -o vb -b 1
-	8. ./flasher.py -o p -b 1
-	9. ./flasher.py -o v -b 1
-	10. ./flasher.py -o r
+    0. sudo ip link set can0 up type can bitrate 1000000
+    1. ./t4y.py -o dl -z 0 1 2 3 4
+    2. cp calrom.bin calrom.ori.bin
+    3. [Modify calrom.bin with RomRaider]
+    4. ./t4e.py -o ifp
+    5. ./flasher.py -o vfp
+    6. ./flasher.py -o e -b 1
+    7. ./flasher.py -o vb -b 1
+    8. ./flasher.py -o p -b 1
+    9. ./flasher.py -o v -b 1
+    10. ./flasher.py -o r
 
-	To 0: Turn CAN-Bus on [Linux/SocketCAN Only]
-	To 1: Download the ECU like cybernet does.
-	To 2: Backup, backup, backup...
-	To 3: Tune your engine!
-	To 4: Install the flasher into the RAM. *
-	To 5: Verify the flasher itself.
-	To 6: Erase the calibration block. *** [TESTED] ***
-	To 7: Verify the erasure.
-	To 8: Program the calibration block. *** [TESTED] ***
-	To 9: Verify the calibration block.
-	To 10: Reset.
+    To 0: Turn CAN-Bus on [Linux/SocketCAN Only]
+    To 1: Download the ECU like cybernet does.
+    To 2: Backup, backup, backup...
+    To 3: Tune your engine!
+    To 4: Install the flasher into the RAM. *
+    To 5: Verify the flasher itself.
+    To 6: Erase the calibration block. *** [TESTED] ***
+    To 7: Verify the erasure.
+    To 8: Program the calibration block. *** [TESTED] ***
+    To 9: Verify the calibration block.
+    To 10: Reset.
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
@@ -120,10 +122,10 @@ access RAM.
 Your really need to understand how this work to be able to use the flasher
 (flasher.py) safely.
 
-	1. The RAM will be lost at power cut off or reset.
-	2. The flasher needs to be installed in RAM.
-	3. To install the flasher in the RAM, the Main Program is needed.
-	4. To start the Main Program, a Bootloader is needed.
+ 1. The RAM will be lost at power cut off or reset.
+ 2. The flasher needs to be installed in RAM.
+ 3. To install the flasher in the RAM, the Main Program is needed.
+ 4. To start the Main Program, a Bootloader is needed.
 
 So if you erase the Main Program and cut the power off, don't expect to be able
 to restore your ECU with that program.
