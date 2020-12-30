@@ -30,7 +30,7 @@ normal:
 	/* r6 the oil pressure */
 	addi	%r6, 3, -0x2F1C # 0x3FD0E4, Specific to each version!!!
 	lhz	%r6, 0(6)
-	srwi	%r6, 6, 2 /* From 11 Bits to 8 Bits value (Divide by 4) */
+	srwi	%r6, 6, 2 /* From 10 Bits to 8 Bits value (Divide by 4) */
 
 	/* r7 the selenoid output pointer */
 	addi	%r7, 3, -0x6D31 # 0x3F92CF, Specific to each version!!!

@@ -34,20 +34,20 @@ from your separate gauge, or from another sensors (MAP, TPS or MAF).
 	- The selenoid of the accusump needs 600 mA.
 	- The selenoid driver (L9822E) of the T4e can provide 750 mA continuously and 1050 mA for high inrush currents.
 	- The selenoid driver (L9822E) has a short circuit protection.
-	- The [Depo-Racing 4in1 gauge] use a 0-5 Volts max 10 bar oil pressure sensor (3 pins Delphi plug).
+	- The [Depo-Racing 4in1 gauge][1] use a 0-5 Volts max 10 bar oil pressure sensor (3 pins Delphi plug).
 	- The standard oil pressure switch has a threshold at ???.
 
-[Depo-Racing 4in1 gauge]:https://www.elise-shop.com/high-precision-60mm-boost-oiltemp-oil-pressure-gauge-p-502177.html
+[1]:https://www.elise-shop.com/high-precision-60mm-boost-oiltemp-oil-pressure-gauge-p-502177.html
 
 ## Formula
 
 For common 10 bar oil pressure sensor.
 
 	- Oil pressure sensor formula: p = 2.59 * U - 1.295 (p: bar, U: Volts)
-	- ADC 11 Bits: U = 5/1024 * SAMPLE
-	- 11 Bits Sample to Pressure in bar: p = 0.012646484 * s - 1.295
+	- ADC 10 Bits: U = 5/1024 * s
+	- 10 Bits Sample to Pressure in bar: p = 0.012646484 * s - 1.295
 	-  8 Bits Sample to Pressure in bar: p = 0.050585938 * s - 1.295
-	- Pressure in bar to 11 Bits Sample: s = (p + 1.295) / 0.012646484
+	- Pressure in bar to 10 Bits Sample: s = (p + 1.295) / 0.012646484
 	- Pressure in bar to  8 Bits Sample: s = (p + 1.295) / 0.050585938
 
 ## Teaser
