@@ -1,11 +1,11 @@
 Hardware (Thanks Cybernet):
 
-L9612 K Line Transceiver
+L9613 K Line Transceiver
 L9822EPD Octal Serial Solenoids
 MC68HC908JL8 CPU HC08 comp.
-MC33394FS CAN Transceiver & Power Mgmt
+SC33394FDH CAN Transceiver & Power Mgmt
 MPX4001A Pressure Sensor
-TLE6220 Quad Low-Side Switch
+TLE6220GP Quad Low-Side Switch
 MPC563 Main CPU (PowerPC Core) - 512kb Flash, 32Kb SRAM
 
 Memory Map:
