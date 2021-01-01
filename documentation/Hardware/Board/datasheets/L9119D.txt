@@ -1,0 +1,23 @@
+L9119D
+
+From Cybernet:
+
+> i was able to map out all the parts but one - and that is an "ST L9119D"
+> (20pin SOP) - seems to have an SPI bus, and seems to talk to the mosfets that
+> control the ignition. I mailed ST micro, but they immediadly accused me of
+> reverse engineering and told me i wont get any details (bad luck i guess),
+> i found a brazilian website that sell those (ECU repair shop) but they also
+> told me they dont have any specs, and said its very hard to get those.
+> Forget google and co, nothing comes up except chinese resellers.
+> Thats why im trying my luck here - so if anyone has any insight what this
+> device does and/or datasheets that would be cool.
+
+From Obeisance:
+
+> cybernet found this as a knock sensor interface chip.
+
+Pin 7 - /CS -> MPC536 SPI PCS2
+Pin 8 - SDI
+Pin 9 - SCLK
+Pin 10 - SDO
+
