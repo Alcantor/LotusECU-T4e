@@ -24,8 +24,8 @@ normal:
 	/* r5 the RPM */
 	addi	%r5, 3, -0x2DD0 # 0x3FD230, Specific to each version!!!
 	lhz	%r5, 0(5)
-	li	%r0, 100
-	divwu	%r5, 5, 0 /* Divide RPM by 100 */
+	li	%r0, 50
+	divwu	%r5, 5, 0 /* Divide RPM by 50 */
 
 	/* r6 the oil pressure */
 	addi	%r6, 3, -0x2F1C # 0x3FD0E4, Specific to each version!!!
