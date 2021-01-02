@@ -34,3 +34,6 @@ Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
 
 Free RAM: 0x3FE748 - 0x3FEFFF (2231 bytes)
 
+Extract main loop:
+ powerpc-linux-gnu-objdump -b binary -m powerpc -M ppc32 -EB --adjust-vma=0x20000 --start-address=0x23444 --stop-address=0x23574 -D prog.bin > mainloop.S
+
