@@ -37,7 +37,7 @@ from your separate gauge, or from another sensors (MAP, TPS or MAF).
  - The selenoid driver (L9822E) of the T4e can provide 750 mA continuously and 1050 mA for high inrush currents.
  - The selenoid driver (L9822E) has a short circuit protection.
  - The [Depo Racing 4in1 gauge] use a 0-5 Volts max 10 bar oil pressure sensor (3 pins Delphi plug).
- - The standard oil pressure switch has a threshold at ???.
+ - The standard oil pressure switch has a threshold at 0.2 bar.
 
 [Depo Racing 4in1 gauge]: https://www.elise-shop.com/high-precision-60mm-boost-oiltemp-oil-pressure-gauge-p-502177.html
 
