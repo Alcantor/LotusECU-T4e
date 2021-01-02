@@ -23,7 +23,7 @@ control my accusump.
 ## Hardware
 
  1. Replace the original oil pressure switch with an analog one.
- 2. Connect the accusump selenoid on the ACIS Airbox Flap connector.
+ 2. Connect the accusump selenoid on the ACIS Airbox Flap connector (2 pins Sumitomo plug).
 
 The original oil pressure switch only have one wire for the signal. Analog
 oil pressure sensor often needs a GND and a 5 Volts wires, the 5 Volts could be
