@@ -91,11 +91,11 @@ class CRC16Reflect(CRC):
 			self.table[i] = c
 		# Backward table
 		for i in range(0,256):
-			self.table_reverse[self.table[i]>>8] = i
+			self.table_reverse[self.table[i] >> 8] = i
 	def update_byte(self, byte):
 		self.crc = self.table[(self.crc & 0xFF) ^ byte] ^ (self.crc >> 8)
 	def update_byte_reverse(self, byte):
-		i = self.table_reverse[self.crc>>8]
+		i = self.table_reverse[self.crc >> 8]
 		self.crc = (i ^ byte) | ((self.table[i] ^ self.crc) << 8)
 		self.crc &= 0xFFFF
 	def reflect(p):
@@ -136,11 +136,11 @@ class CRC32Reflect(CRC):
 			self.table[i] = c
 		# Backward table
 		for i in range(0,256):
-			self.table_reverse[self.table[i]>>24] = i
+			self.table_reverse[self.table[i] >> 24] = i
 	def update_byte(self, byte):
 		self.crc = self.table[(self.crc & 0xFF) ^ byte] ^ (self.crc >> 8)
 	def update_byte_reverse(self, byte):
-		i = self.table_reverse[self.crc>>24]
+		i = self.table_reverse[self.crc >> 24]
 		self.crc = (i ^ byte) | ((self.table[i] ^ self.crc) << 8)
 		self.crc &= 0xFFFFFFFF
 	def reflect(p):
