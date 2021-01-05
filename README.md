@@ -82,33 +82,37 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 
 ## Command line example
 
-    0. sudo ip link set can0 up type can bitrate 1000000
-    1. ./t4y.py -o dl -z 0 1 2 3 4
-    2. cp calrom.bin calrom.ori.bin
-    3. [Modify calrom.bin with RomRaider]
-    4. ./t4e.py -o ifp
-    5. ./flasher.py -o vfp
-    6. ./flasher.py -o e -b 1
-    7. ./flasher.py -o vb -b 1
-    8. ./flasher.py -o p -b 1
-    9. ./flasher.py -o v -b 1
-    10. ./flasher.py -o r
+    1. sudo ip link set can0 up type can bitrate 1000000
+    2. ./t4y.py -o dl -z 0 1 2 3 4
+    3. cp calrom.bin calrom.ori.bin
+    4. [Modify calrom.bin with RomRaider]
+    5. ./sign.py sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
+    6. ./t4e.py -o ifp
+    7. ./flasher.py -o vfp
+    8. ./flasher.py -o e -b 1
+    9. ./flasher.py -o vb -b 1
+    10. ./flasher.py -o p -b 1
+    11. ./flasher.py -o v -b 1
+    12. ./flasher.py -o r
 
-    To 0: Turn CAN-Bus on [Linux/SocketCAN Only]
-    To 1: Download the ECU like cybernet does.
-    To 2: Backup, backup, backup...
-    To 3: Tune your engine!
-    To 4: Install the flasher into the RAM. *
-    To 5: Verify the flasher itself.
-    To 6: Erase the calibration block. *** [TESTED] ***
-    To 7: Verify the erasure.
-    To 8: Program the calibration block. *** [TESTED] ***
-    To 9: Verify the calibration block.
-    To 10: Reset.
+    To 1: Turn CAN-Bus on [Linux/SocketCAN Only]
+    To 2: Download the ECU like cybernet does.
+    To 3: Backup, backup, backup...
+    To 4: Tune your engine!
+    To 5: Sign the calibration with a fake date to match the original CRC. **
+    To 6: Install the flasher into the RAM. *
+    To 7: Verify the flasher itself.
+    To 8: Erase the calibration block. *** [TESTED] ***
+    To 9: Verify the erasure.
+    To 10: Program the calibration block. *** [TESTED] ***
+    To 11: Verify the calibration block.
+    To 12: Reset.
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
 *: Tested with "BCroftT4E070 01/11/2005 Lotus EngV0078", "BCroftT4E090 14/07/2006 Lotus EngV0091" and "BCroftT4E090 14/07/2006 Lotus EngV0093" yet.
+
+**: Old version like "BCroftT4E070 01/11/2005 Lotus EngV0078" does not check the CRC at all.
 
 ## Live tuning.
 
