@@ -8,9 +8,13 @@ import os
 class CRC:
 	def __init__(self, initvalue):
 		self.table = [0] * 256
+		# Table reverse contains only one solution.
+		# TODO: Make table_reverse a 2D array to contain all solutions.
 		self.table_reverse = [0] * 256
-		self.initvalue = initvalue
+		self.set_initvalue(initvalue)
 		self.reset()
+	def set_initvalue(self, initvalue):
+		self.initvalue = initvalue
 	def reset(self):
 		self.crc = self.initvalue
 	def update(self, data):

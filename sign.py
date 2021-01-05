@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import datetime
+import sys, datetime
 from crc import CRC16Reflect
 
 charset = "ISO-8859-15"
@@ -28,7 +28,7 @@ def sign_calrom(ori_file, inp_file, out_file, name_sign):
 	name_sign = name_sign.encode(charset)
 	size_sign = 0x20
 	size_rest = 0x3C8E-size_sign
-	date_size = 19
+	size_date = 19
 	with open(ori_file,'rb') as fori:
 		# Read the original signature
 		ori_sign = fori.read(size_sign)
@@ -41,27 +41,31 @@ def sign_calrom(ori_file, inp_file, out_file, name_sign):
 	with open(inp_file,'rb') as finp:
 		# Ignore the signature in the modified calibration
 		finp.seek(size_sign)
+		# Read the rest of the modified calibration
 		inp_rest = finp.read(size_rest)
 		crc.update_reverse(inp_rest)
-		# Space padding
-		size_space = size_sign - date_size - len(name_sign)
-		for i in range(0, size_space):
-			crc.update_reverse(b" ")
-		crc_sign = crc.get()
-		crc.reset()
+		# Read the free space
 		inp_free = finp.read()
+	# Space padding
+	if(len(name_sign) > (size_sign - size_date)):
+		raise Exception("Signature is too long")
+	size_space = size_sign - size_date - len(name_sign)
+	for i in range(0, size_space): crc.update_reverse(b" ")
+	crc_sign = crc.get()
+	crc.reset()
+	# Magic
+	crc.update(name_sign)
+	crc.set_initvalue(crc.get())
+	date_sign = random_date_for_crc(crc, crc_sign)
+	print("New signature: "+(name_sign+date_sign).decode(charset))
+	print(" --> THIS IS A FAKE DATE TO MATCH THE ORIGINAL CRC")
 	with open(out_file,'wb') as fout:
 		# Write the new signature
 		fout.write(name_sign)
-		crc.update(name_sign)
-		crc.initvalue = crc.get()
-		date_sign = random_date_for_crc(crc, crc_sign)
 		fout.write(date_sign)
-		print("New signature: "+(name_sign+date_sign).decode(charset))
-		print(" --> THIS IS A FAKE DATE TO MATCH THE ORIGINAL CRC")
 		# Write the space padding
-		for i in range(0, size_space):
-			fout.write(b" ")
+		for i in range(0, size_space): fout.write(b" ")
+		# Write the rest of the calibration
 		fout.write(inp_rest)
 		# Copy free space
 		fout.write(inp_free)
@@ -73,18 +77,28 @@ def search_calrom_cpmlwi(cal_file, prog_file):
 		print("Calibration CRC: "+hex(crc.get()))
 	opcode = ppc_cmplwi_opcode(0, crc.get())
 	offset = 0
-	with open("dump/ALS3M0244F/prog.bin", 'rb') as fprg:
+	with open(prog_file, 'rb') as fprg:
 		while(True):
 			chunk = fprg.read(4)
 			chunk_size = len(chunk)
 			if(chunk_size == 0): break # EOF
 			if(chunk == opcode):
 				print("CRC cmplwi offset in "+prog_file+": "+hex(offset))
+				return
 			offset += chunk_size
+		print("CRC not found in "+prog_file)
 
-if __name__ == "__main__":	
-	#crc = CRC16Normal(0x1021, initvalue=0x0123) # CRC for bootloader (not working yet), LUT is correct
-	
-	sign_calrom("dump/ALS3M0244F/calrom.bin", "calrom.bin", "calrom2.bin", "ALCANTOR ")
-	search_calrom_cpmlwi("calrom2.bin", "dump/ALS3M0244F/prog.bin")
+if __name__ == "__main__":
+	print("CRC tool for Lotus T4e ECU\n")
+	if  (len(sys.argv) >= 6 and sys.argv[1] == "sign_calrom"):
+		sign_calrom(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]+" ")
+	elif(len(sys.argv) >= 4 and sys.argv[1] == "search_crc_prog"):
+		search_calrom_cpmlwi(sys.argv[2], sys.argv[3])
+	else:
+		print("usage:")
+		print("\t"+sys.argv[0]+" sign_calrom ORIGINAL_CALROM MODIFIED_CALROM OUTFILE SIGNATURE")
+		print("\t"+sys.argv[0]+" search_crc_prog ORIGINAL_CALROM ORIGINAL_PROG")
+
+	# CRC for bootloader (not working yet), LUT is correct
+	# crc = CRC16Normal(0x1021, initvalue=0x0123)
 
