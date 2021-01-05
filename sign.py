@@ -14,7 +14,7 @@ def ppc_cmplwi_opcode(register, immediate):
 
 def random_date_for_crc(crcclass, crc):
 	date = datetime.datetime.now()
-	onesecond= datetime.timedelta(seconds=1)
+	onesecond = datetime.timedelta(seconds=1)
 	while(True):
 		crcclass.reset()
 		data = date.strftime("%m-%d-%Y %H:%M:%S").encode(charset)
