@@ -61,7 +61,7 @@ end_command_0x06:
 	cmplwi	%r24, 8
 	bne	no_answer # DLC is not 8
 	/* Program */
-	stw	%r15, 0(17) # Write Interlock
+	stw	%r22, 0(20) # Write Interlock
 	li	%r0, 0x03 # CSC=0, HSUS=0, PE=0, SES=1 and EHV=1
 	stb	%r0, -0x37F5(30) # 0x2FC80B UC3FCTL - Bit 24-31
 	bl	sub_wait_hvs_and_answer
