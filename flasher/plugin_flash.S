@@ -108,7 +108,7 @@ sub_wait_hvs_and_answer:
 	bne	sub_wait_hvs_and_answer
 	/* Get PEGOOD and Answer */
 	lbz	%r0, -0x37F8(30) # 0x2FC808 UC3FCTL - Bit 0-8
-	rlwimi	%r23, 0, 10,15,15 # r23 = (r23 & 0xFFFEFFFF) | ((r0 << 10) & 0x00010000)
+	rlwimi	%r23, 0, 10,8,15 # r23 = (r23 & 0xFF00FFFF) | ((r0 << 10) & 0x00FF0000)
 	li	%r24, 2 # Answer 2 bytes
 	blr
 
