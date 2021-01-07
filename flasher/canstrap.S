@@ -55,7 +55,7 @@ wait_reset:
 	sth	%r0, 0x7086(30) # 0x307086 CANCTRL0_A + CANCTRL1_A
 
 	li	%r0, 0x01F6 # PRESDIV = 1 , RJW = 3, PSEG1 = 6, PSEG2 = 6
-	sth	%r0, 0x7089(30) # 0x307088 PRESDIV_A + CANCTRL2_A
+	sth	%r0, 0x7088(30) # 0x307088 PRESDIV_A + CANCTRL2_A
 
 	/* TouCAN A Disable all buffers */
 	li	%r0, 0
