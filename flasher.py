@@ -79,9 +79,31 @@ class Flasher:
 		if(msg.dlc != 1 or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
 
+	def branch(self, address, param = b''):
+		#self.log("Flasher Branch @ "+hex(address))
+		cmd = 0x03
+		msg = can.Message(
+			is_extended_id = False,	arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + param
+		)
+		self.bus.send(msg)
+
+	def plugin(self, address):
+		#self.log("Flasher run Plugin @ "+hex(address))
+		cmd = 0x04
+		msg = can.Message(
+			is_extended_id = False,	arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Run Plugin failed!")
+		if(msg.dlc != 1 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
+
 	def eraseBlock(self, blocks_mask):
 		#self.log("Flasher Erase Block BM: "+hex(blocks_mask))
-		cmd = 0x03
+		cmd = 0x05
 		msg = can.Message(
 			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
@@ -96,7 +118,7 @@ class Flasher:
 
 	def startProgramBlock(self, blocks_mask):
 		#self.log("Flasher Start Program Block BM: "+hex(blocks_mask))
-		cmd = 0x04
+		cmd = 0x06
 		msg = can.Message(
 			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
@@ -109,7 +131,7 @@ class Flasher:
 
 	def programBlockWord(self, address, data):
 		#self.log("Flasher Program Block Word @ "+hex(address)))
-		cmd = 0x05
+		cmd = 0x07
 		msg = can.Message(
 			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
@@ -124,7 +146,7 @@ class Flasher:
 
 	def stopProgramBlock(self):
 		#self.log("Flasher Stop Program Block")
-		cmd = 0x06
+		cmd = 0x08
 		msg = can.Message(
 			is_extended_id = False,	arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big")
@@ -134,15 +156,6 @@ class Flasher:
 		if(msg == None): raise FlasherException("Stop Program Block failed!")
 		if(msg.dlc != 1 or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
-
-	def branch(self, address):
-		#self.log("Flasher branch to "+hex(address))
-		cmd = 0x07
-		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
-		)
-		self.bus.send(msg)
 
 	def download(self, address, size, filename):
 		self.log("Flasher Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
@@ -216,11 +229,11 @@ class Flasher:
 			self.stopProgramBlock()
 			self.progress_end()
 
-	def bootstrap(self, timeout=60.0):
-		self.log("Flasher Bootstrap")
+	def canstrap(self, timeout=60.0):
+		self.log("Flasher Canstrap")
 		msg = self.bus.recv(timeout=timeout)
 		if(msg == None): raise FlasherException("Time out!")
-		if(msg.dlc != 6 or msg.data != b'HiFlV1'):
+		if(msg.dlc != 6 or msg.data != b'HiCsV1'):
 			raise FlasherException("Unexpected answer!")
 		else:
 			self.echo()
@@ -232,8 +245,8 @@ class Flasher:
 		self.writeWord(freeram_address, test)
 		if(test != self.readWord(freeram_address)):
 			raise FlasherException("Word readback failed!")
-		self.upload(freeram_address, "injection/flasher.bin")
-		self.verify(freeram_address, "injection/flasher.bin")
+		self.upload(freeram_address, "flasher/canstrap.bin")
+		self.verify(freeram_address, "flasher/canstrap.bin")
 
 if __name__ == "__main__":
 	print("Stupid flasher for Lotus T4e ECU\n")
@@ -268,10 +281,9 @@ if __name__ == "__main__":
 			"e -> Erase Flash, "
 			"p -> Program Flash, "
 			"r -> Reset ECU, "
-			"b -> Bootstrap from Stage 1.5, "
-			"bm -> Bootstrap from Stage 1.5 and move to ram, "
+			"b -> (Boot) Canstrap from Stage 1.5, "
 			"t -> Tests",
-		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "bm", "t"],
+		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -342,7 +354,8 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'vfp'):
 		print("Verify Flasher Program")
-		fl.verify(0x3FF000,"injection/flasher.bin")
+		fl.verify(0x3FF000,"flasher/canstrap.bin")
+		fl.verify(0x3FF200,"flasher/plugin_flash.bin")
 
 	if(ecu_op == 'e'):
 		print("Erase ECU Flash")
@@ -361,17 +374,15 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'b'):
 		print("Turn IGN on with 60sec.")
-		fl.bootstrap()
-		print("DO NOT USE TO FLASH THE BOOTLOADER (use bm option for that)!")
-
-	if(ecu_op == 'bm'):
-		print("Turn IGN on with 60sec.")
-		fl.bootstrap()
+		fl.canstrap()
 		# Move the flasher to the RAM to be able to reflash the bootloader
-		fl.upload(0x3FF000,"injection/flasher.bin")
-		fl.verify(0x3FF000,"injection/flasher.bin")
+		fl.upload(0x3FF000,"flasher/canstrap.bin")
 		fl.branch(0x3FF000)
-		fl.bootstrap(1.0)
+		fl.canstrap(1.0)
+		fl.upload(0x3FF200,"flasher/plugin_flash.bin")
+		fl.plugin(0x3FF200)
+		fl.verify(0x3FF000,"flasher/canstrap.bin")
+		fl.verify(0x3FF200,"flasher/plugin_flash.bin")
 
 	if(ecu_op == 'r'):
 		print("Reset ECU - Reboot to stage I")

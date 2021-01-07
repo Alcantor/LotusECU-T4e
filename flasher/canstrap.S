@@ -51,16 +51,11 @@ wait_reset:
 
 	/* TouCAN A Configure */
 	/* 28 MHz / (PSEG1+1+PSEG2+1) / (PRESDIV+1) = 1 Mbit/s */
-	stb	%r31, 0x7086(30) # 0x307086 CANCTRL0_A
+	li	%r0, 0x0004 # PROPSEG = 4
+	sth	%r0, 0x7086(30) # 0x307086 CANCTRL0_A + CANCTRL1_A
 
-	li	%r0, 0x04 # PROPSEG = 4
-	stb	%r0, 0x7087(30) # 0x307087 CANCTRL1_A
-
-	li	%r0, 0xF6 # RJW = 3, PSEG1 = 6, PSEG2 = 6
-	stb	%r0, 0x7089(30) # 0x307089 CANCTRL2_A
-
-	li	%r0, 1
-	stb	%r0, 0x7088(30) # 0x307088 PRESDIV_A
+	li	%r0, 0x01F6 # PRESDIV = 1 , RJW = 3, PSEG1 = 6, PSEG2 = 6
+	sth	%r0, 0x7089(30) # 0x307088 PRESDIV_A + CANCTRL2_A
 
 	/* TouCAN A Disable all buffers */
 	li	%r0, 0
@@ -97,10 +92,8 @@ loop_disable:
 
 	li	%r0, 0x4869 # Data: "Hi" -> Hello
 	sth	%r0, 0x71D6(30)
-
-	li	%r0, 0x466C # Data: "Bs" -> Canstrap
+	li	%r0, 0x466C # Data: "Cs" -> Canstrap
 	sth	%r0, 0x71D8(30)
-
 	li	%r0, 0x5631 # Data: "V1" -> Version 1
 	sth	%r0, 0x71DA(30)
 
@@ -135,14 +128,14 @@ wait_busy:
 	cmplwi	%r3, 0x0
 	bne	wait_busy
 
-	/* DLC in %r13 */
-	rlwinm	%r13, 0, 0,28,31 # Mask Length
+	/* DLC in %r24 */
+	rlwinm	%r24, 0, 0,28,31 # Mask Length
 
-	/* Byte 0-3 in %r14 */
-	lwz	%r14, 0x7106(30)
+	/* Bytes 0-3 in %r23 */
+	lwz	%r23, 0x7106(30)
 
-	/* Byte 4-7 in %r15 */
-	lwz	%r15, 0x710A(30)
+	/* Bytes 4-7 in %r22 */
+	lwz	%r22, 0x710A(30)
 
 	/* Clear RX buffer */
 	li	%r0, 0x40 # Buffer activated and free
@@ -151,85 +144,85 @@ wait_busy:
 	sth	%r31, 0x70A4(30) # 0x3070A4 IFLAG
 
 	/* DLC == 0 break */
-	cmplwi	%r13, 0
+	cmplwi	%r24, 0
 	beq	loop_main # DLC is 0
 
-	/* Command in %r16 */
-	rlwinm	%r16, 14, 8,24,31 # r16 = (r14 >> 24) & 0xFF
+	/* Command in %r21 */
+	rlwinm	%r21, 23, 8,24,31 # r21 = (r23 >> 24) & 0xFF
 
-	/* Address in %r17 */
-	rlwinm	%r17, 14, 0,8,31 # r17 = r14 & 0xFFFFFF
+	/* Address in %r20 */
+	rlwinm	%r20, 23, 0,8,31 # r20 = r23 & 0xFFFFFF
 
 	/* Lock TX Buffer 13 */
 	li	%r0, 0x80 # Buffer not ready + DLC = 0
 	sth	%r0, 0x71D0(30) # 0x3071D0 TouCAN A Buffer 13
 
 	/* Echo command 0x00 */
-	cmplwi	%r16, 0x00
+	cmplwi	%r21, 0x00
 	bne	end_command_0x00
-	/* Answer */
-	stw	%r14, 0x71D6(30)
-	stw	%r15, 0x71DA(30)
-	ori	%r0, 13, 0xE0 # Buffer ready + Copy DLC
-	sth	%r0, 0x71D0(30)
 	/* Stop the countdown */
 	li	%r25, 0
-	b	loop_main
+	b	answer
 end_command_0x00:
 
 	/* Read command 0x01 */
-	cmplwi	%r16, 0x01
+	cmplwi	%r21, 0x01
 	bne	end_command_0x01
-	cmplwi	%r13, 4
+	cmplwi	%r24, 4
 	bne	loop_main # DLC is not 4
-	lwz	%r0, 0(17) # Read
-	/* Answer */
-	stb	%r16, 0x71D6(30)
-	stw	%r0, 0x71D7(30)
-	li	%r0, 0xE5 # Buffer ready + DLC = 5
-	sth	%r0, 0x71D0(30)
-	b	loop_main
+	li	%r24, 5 # Answer 5 bytes
+	lwz	%r0, 0(20) # Read
+	rlwimi	%r23, 0, 24,8,31 # r23 = (r23 & 0xFF000000) | ((r0 >> 8) & 0x00FFFFFF)
+	rlwinm	%r22, 0, 24,0,7 # r22 = (r0 << 24) & 0xFF000000
+	b	answer
 end_command_0x01:
 
 	/* Write command 0x02 */
-	cmplwi	%r16, 0x02
+	cmplwi	%r21, 0x02
 	bne	end_command_0x02
-	cmplwi	%r13, 8
+	cmplwi	%r24, 8
 	bne	loop_main # DLC is not 8
-	stw	%r15, 0(17) # Write
-	bl	sub_answer1
-	b	loop_main
+	li	%r24, 1 # Answer 1 byte
+	stw	%r22, 0(20) # Write
+	b	answer
 end_command_0x02:
 
 	/* Branch command 0x03 */
-	cmplwi	%r16, 0x03
+	cmplwi	%r21, 0x03
 	bne	end_command_0x03
-	cmplwi	%r13, 4
+	cmplwi	%r24, 4
 	blt	loop_main # DLC is < 4
-	mtctr	%r17
-	bctrl	# Optional parameter in %r15
+	li	%r24, 0 # Answer 0 byte, expect if function overwrite %r24
+	mtctr	%r20
+	bctrl	# Optional parameter in %r22
+	b	answer
 end_command_0x03:
 
 	/* Plugin command 0x04 */
-	cmplwi	%r16, 0x04
+	cmplwi	%r21, 0x04
 	bne	end_command_0x04
-	cmplwi	%r13, 4
+	cmplwi	%r24, 4
 	bne	loop_main # DLC is not 4
-	mr	%r27, %r17
-	bl	sub_answer1
+	li	%r24, 1 # Answer 1 byte
+	mr	%r27, %r20
+	b	answer
 end_command_0x04:
 
 	/* Run plugin */
 	cmplwi	%r27, -1
-	beq	loop_main # No plugin
+	beq	loop_main # No plugin installed
 	mtctr	%r27
 	bctrl
-	b	loop_main
 
-sub_answer1:
-	/* Answer just with the command byte */
-	stb	%r16, 0x71D6(30)
-	li	%r0, 0xE1 # Buffer ready + DLC = 1
+answer:
+	/* If DLC is 0, do not answer */
+	cmplwi	%r24, 0
+	beq	loop_main
+
+	/* Answer (echo if no modification to %r24, %r23, %r22) */
+	stw	%r23, 0x71D6(30)
+	stw	%r22, 0x71DA(30)
+	ori	%r0, 24, 0xE0 # Buffer ready + DLC
 	sth	%r0, 0x71D0(30)
-	blr
+	b	loop_main
 

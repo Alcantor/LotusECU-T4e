@@ -1,14 +1,11 @@
 AS=powerpc-linux-gnu-as
 LD=powerpc-linux-gnu-ld
 
+all: canstrap.bin plugin_flash.bin plugin_eeprom.bin
+
 %.o: %.S
 	$(AS) -a32 -be -o $@ $^
 
-all: flasher.bin deadloop.bin
-
-flasher.bin: flasher.o
-	$(LD) -Ttext 0 --oformat binary -o $@ $^
-     
-deadloop.bin: deadloop.o
+%.bin: %.o
 	$(LD) -Ttext 0 --oformat binary -o $@ $^
 
