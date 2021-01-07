@@ -14,16 +14,17 @@ _start:
 	#   RETURN: 10
 
 	/* Read SPI EEPROM command 0x09 */
-	cmplwi	%r16, 0x09
+	cmplwi	%r21, 0x09
 	bne	end_command_0x09
-	cmplwi	%r13, 4
-	bne	loop_main	# DLC is not 4
+	cmplwi	%r24, 4
+	bne	no_answer # DLC is not 4
+	li	%r24, 1 # Answer 5 bytes
 
 	/* Assign pin for SPI */
 	li	%r0, 0x7B # Pins PCS3,2,1,0,MOSI,MISO for SPI
-	stb	%r0, 0x5016(3) # 0x305016 PQSPAR
+	stb	%r0, 0x5016(30) # 0x305016 PQSPAR
 	li	%r0, 0x7E # Pins PCS3,2,1,0,MOSI as outputs
-	stb	%r0, 0x5017(3) # 0x305017 DDRQST
+	stb	%r0, 0x5017(30) # 0x305017 DDRQST
 
 	/* Configure TPU CH14 as discrete output */
 	li	%r0, 0x02 # Discrete output
@@ -48,9 +49,9 @@ _start:
 	li	%r0, 0x03 # EEPROM Read command
 	sth	%r0, 0x5180(30)
 	clrlwi  %r0, 0, 24
-	srwi	%r0, 17, 8 # EEPROM Address HIGH
+	srwi	%r0, 20, 8 # EEPROM Address HIGH
 	sth	%r0, 0x5182(30)
-	rlwinm	%r0, 17, 0,24,31 # EEPROM Address LOW
+	rlwinm	%r0, 20, 0,24,31 # EEPROM Address LOW
 	sth	%r0, 0x5184(30)
 	li	%r0, 0 # EEPROM place holder for response (4x)
 	sth	%r0, 0x5186(30)
@@ -84,36 +85,33 @@ _start:
 	bl	set_tpu_b_15_12
 
 	/* Answer */
-	stb	%r7, 0x71D6(30)
-	lhz	%r0, 0x5140(30) # Receive RAM 0x305140-0x30517F - Byte 0
-	stb	%r0, 0x71D7(30)
-	lhz	%r0, 0x5142(30) # Receive RAM 0x305140-0x30517F - Byte 1
-	stb	%r0, 0x71D8(30)
-	lhz	%r0, 0x5144(30) # Receive RAM 0x305140-0x30517F - Byte 2
-	stb	%r0, 0x71D9(30)
-	lhz	%r0, 0x5146(30) # Receive RAM 0x305140-0x30517F - Byte 3
-	stb	%r0, 0x71DA(30)
-	li	%r0, 0xE5 # Buffer ready + DLC = 5
-	sth	%r0, 0x71D0(30)
-	b	loop_main
+	lhz	%r0, 0x5140(30)  # Receive RAM 0x305140-0x30517F - Byte 0
+	rlwimi	%r23, 0, 16,8,15 # r23 = (r23 & 0xFF00FFFF) | ((r0 << 16) & 0x00FF0000)
+	lhz	%r0, 0x5142(30)  # Receive RAM 0x305140-0x30517F - Byte 1
+	rlwimi	%r23, 0, 8,16,23 # r23 = (r23 & 0xFFFF00FF) | ((r0 <<  8) & 0x0000FF00)
+	lhz	%r0, 0x5144(30)  # Receive RAM 0x305140-0x30517F - Byte 2
+	rlwimi	%r23, 0, 0,16,23 # r23 = (r23 & 0xFFFFFF00) | ((r0 <<  0) & 0x000000FF)
+	lhz	%r0, 0x5146(30)  # Receive RAM 0x305140-0x30517F - Byte 3
+	rlwinm	%r22, 0, 24,0,7  # r22 = (r0 << 24) & 0xFF000000
+	b	answer
 end_command_0x09:
 
 	/* Write SPI EEPROM command 0x0A */
-	cmplwi	%r16, 0x0A
+	cmplwi	%r21, 0x0A
 	bne	end_command_0x0A
-	cmplwi	%r13, 8
-	bne	loop_main # DLC is not 8
+	cmplwi	%r24, 8
+	bne	no_answer # DLC is not 8
+	li	%r24, 1 # Answer 1 byte
 
-	# TODO: Write %r15 into %r17
+	# TODO: Write %r22 into %r20
 
-	/* Answer just with the command byte */
-	stb	%r7, 0x71D6(30)
-	li	%r0, 0xE1 # Buffer ready + DLC = 1
-	sth	%r0, 0x71D0(30)
-	b	loop_main
+	b	answer
 end_command_0x0A:
 
-loop_main:
+no_answer:
+	li	%r24, 0
+answer:
+	/* Restore return address */
 	mtlr	%r3
 	blr
 
