@@ -385,8 +385,8 @@ if __name__ == "__main__":
 		fl.verify(0x3FF200,"flasher/plugin_flash.bin")
 
 	if(ecu_op == 'r'):
-		print("Reset ECU - Reboot to stage I")
-		fl.branch(0x2000)
+		print("Reset ECU - Reboot to stage II")
+		fl.branch(0x4000)
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")

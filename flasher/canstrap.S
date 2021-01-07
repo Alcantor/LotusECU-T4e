@@ -62,7 +62,7 @@ wait_reset:
 loop_disable:
 	add	%r3, 30, 0
 	sth	%r31, 0x7100(3) # 0x3071x0 MBBUFFx_A
-	addi	%r0, 0, 0x10
+	add	%r0, 0, 0x10
 	cmplwi	%r0, 0xF0
 	ble	loop_disable
 
@@ -92,7 +92,7 @@ loop_disable:
 
 	li	%r0, 0x4869 # Data: "Hi" -> Hello
 	sth	%r0, 0x71D6(30)
-	li	%r0, 0x466C # Data: "Cs" -> Canstrap
+	li	%r0, 0x4373 # Data: "Cs" -> Canstrap
 	sth	%r0, 0x71D8(30)
 	li	%r0, 0x5631 # Data: "V1" -> Version 1
 	sth	%r0, 0x71DA(30)
