@@ -47,11 +47,11 @@ end_command_0x05:
 	bne	end_command_0x06
 	cmplwi	%r24, 2
 	bne	no_answer # DLC is not 2
+	li	%r24, 1 # Answer 1 byte
 	bl	sub_unlock
 	/* Start program sequence */
 	li	%r0, 0x02 # CSC=0, HSUS=0, PE=0, SES=1 and EHV=0
 	stb	%r0, -0x37F5(30) # 0x2FC80B UC3FCTL - Bit 24-31
-	li	%r24, 1 # Just echo the command byte
 	b	answer
 end_command_0x06:
 
@@ -76,8 +76,8 @@ end_command_0x07:
 	bne	end_command_0x08
 	cmplwi	%r24, 1
 	bne	no_answer # DLC is not 1
+	li	%r24, 1 # Answer 1 byte
 	bl	sub_finish_and_lock
-	li	%r24, 1 # Just echo the command byte
 	b	answer
 end_command_0x08:
 
@@ -107,8 +107,8 @@ sub_wait_hvs_and_answer:
 	bne	sub_wait_hvs_and_answer
 	/* Get PEGOOD and Answer */
 	lbz	%r0, -0x37F8(30) # 0x2FC808 UC3FCTL - Bit 0-8
+	rlwimi	%r23, 0, 10,15,15 # r23 = (r23 & 0xFFFEFFFF) | ((r0 << 10) & 0x00010000)
 	li	%r24, 2 # Answer 2 bytes
-	rlwinm	%r23, 0, 10,15,15 # Mask on bit PEGOOD
 	blr
 
 sub_finish_and_lock:
