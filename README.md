@@ -76,7 +76,7 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
  ----------------------|------------
  t4e.py                | Program to talk to the original Software (Read/Write RAM)
  flasher.py            | Program to talk to the flasher Software (Read/Write RAM+Flash)
- injection/flasher.bin | CAN-Bus Flasher for the MPC563
+ flasher/*.bin         | CAN-Bus Flasher for the MPC563
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
 
