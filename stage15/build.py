@@ -13,7 +13,7 @@ def ppc_ba_opcode(jump_addr):
 # Bootloader A128E6009F and ALS3M0244F are identical except the ID and CRC.
 
 # Files
-s15_file = "../injection/flasher.bin"
+s15_file = "../flasher/canstrap.bin"
 inp_file = "../dump/A128E6009F/bootldr.bin"
 out_file = "bootldr.bin"
 

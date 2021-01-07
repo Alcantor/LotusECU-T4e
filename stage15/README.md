@@ -1,17 +1,19 @@
 ## Introduction
 
-This is a bootloader with the flasher included. At every boot the startup sequence
+This is a bootloader with the CANstrap included. At every boot the startup sequence
 will be delayed from approximately 500ms, so you have a chance to stop and get in
 before the main program take the hand.
 
-The flasher will be installed at 0x3000 between the Stage I and Stage II.
+The CANstrap will be installed at 0x3000 between the Stage I and Stage II.
+
+The default K-Line recovery routine of the whitedash is preserved.
 
 ## Files
 
  Files                 | Description
  ----------------------|------------
  build.py              | Build the file "bootldr.bin"
- bootldr.bin           | Bootloader from A128E6009F with the flasher in it.
+ bootldr.bin           | Bootloader from A128E6009F with the CANstrap in it.
 
 ## Installation example
 
