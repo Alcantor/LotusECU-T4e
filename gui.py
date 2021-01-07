@@ -233,7 +233,7 @@ class t4e_window():
 		self.t4e_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.t4e.inject(0x3FF000, "injection/flasher.bin", 0x3FFFDC)
+			self.t4e.inject(0x3FF000, "flasher/canstrap.bin", 0x3FFFDC)
 			self.flasher_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
@@ -245,12 +245,15 @@ class t4e_window():
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.flasher.bootstrap()
+			self.flasher..canstrap()
 			# Move the flasher to the RAM to be able to reflash the bootloader
-			self.flasher.upload(0x3FF000,"injection/flasher.bin")
-			self.flasher.verify(0x3FF000,"injection/flasher.bin")
-			self.flasher.branch(0x3FF000)
-			self.flasher.bootstrap(1.0)
+			self.flasher..upload(0x3FF000,"flasher/canstrap.bin")
+			self.flasher..branch(0x3FF000)
+			self.flasher..canstrap(1.0)
+			self.flasher..upload(0x3FF200,"flasher/plugin_flash.bin")
+			self.flasher..plugin(0x3FF200)
+			self.flasher..verify(0x3FF000,"flasher/canstrap.bin")
+			self.flasher..verify(0x3FF200,"flasher/plugin_flash.bin")
 			self.flasher_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
@@ -261,7 +264,8 @@ class t4e_window():
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.flasher.verify(0x3FF000, "injection/flasher.bin")
+			self.flasher.verify(0x3FF000,"flasher/canstrap.bin")
+			self.flasher.verify(0x3FF200,"flasher/plugin_flash.bin")
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
 		self.closeCAN()
@@ -338,7 +342,7 @@ class t4e_window():
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.flasher.branch(0x2000)
+			self.flasher.branch(0x4000)
 			self.t4e_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
