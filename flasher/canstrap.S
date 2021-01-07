@@ -207,7 +207,7 @@ end_command_0x02:
 	cmplwi	%r13, 4
 	blt	loop_main # DLC is < 4
 	mtctr	%r17
-	bctrl	# Optional parameter in %r6
+	bctrl	# Optional parameter in %r15
 end_command_0x03:
 
 	/* Plugin command 0x04 */
