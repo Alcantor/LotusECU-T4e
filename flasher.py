@@ -245,8 +245,13 @@ class Flasher:
 		self.writeWord(freeram_address, test)
 		if(test != self.readWord(freeram_address)):
 			raise FlasherException("Word readback failed!")
-		self.upload(freeram_address, "flasher/canstrap.bin")
-		self.verify(freeram_address, "flasher/canstrap.bin")
+		self.upload(freeram_address, "flasher/func_test.bin")
+		self.verify(freeram_address, "flasher/func_test.bin")
+		self.branch(freeram_address, b'Helo')
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Test failed!")
+		if(msg.dlc != 8 or msg.data != b'Helo\x01\x02\x03\x04'):
+			raise FlasherException("Unexpected answer!")
 
 if __name__ == "__main__":
 	print("Stupid flasher for Lotus T4e ECU\n")

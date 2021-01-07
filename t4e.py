@@ -175,13 +175,6 @@ class ECU_T4E:
 	def inject(self, freeram_address, filename, stackblr_address):
 		self.upload(freeram_address, filename)
 		self.writeMemory(stackblr_address, freeram_address.to_bytes(4, "big"), False)
-		fl = Flasher()
-		fl.bus = self.bus
-		fl.log = self.log
-		fl.canstrap(timeout=1.0)
-		# Install the flasher plugin
-		fl.upload(freeram_address+0x200, "flasher/plugin_flash.bin")
-		fl.plugin(freeram_address+0x200)
 
 	def test(self, freeram_address):
 		# Word
@@ -289,6 +282,13 @@ if __name__ == "__main__":
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
 		t4e.inject(0x3FF000, "flasher/canstrap.bin", 0x3FFFDC)
+		fl = Flasher()
+		fl.bus = t4e.bus
+		fl.log = t4e.log
+		fl.canstrap(timeout=1.0)
+		# Install the flasher plugin
+		fl.upload(0x3FF200, "flasher/plugin_flash.bin")
+		fl.plugin(0x3FF200)
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")

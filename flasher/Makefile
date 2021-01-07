@@ -1,7 +1,7 @@
 AS=powerpc-linux-gnu-as
 LD=powerpc-linux-gnu-ld
 
-all: canstrap.bin plugin_flash.bin plugin_eeprom.bin
+all: canstrap.bin plugin_flash.bin plugin_eeprom.bin func_test.bin
 
 %.o: %.S
 	$(AS) -a32 -be -o $@ $^
