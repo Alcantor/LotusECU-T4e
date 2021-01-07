@@ -84,6 +84,7 @@ end_command_0x08:
 no_answer:
 	li	%r24, 0
 answer:
+	/* Restore return address */
 	mtlr	%r3
 	blr
 
@@ -114,8 +115,8 @@ sub_wait_hvs_and_answer:
 sub_finish_and_lock:
 	/* Finish + Lock */
 	li	%r0, 0x0000 # Block=0x00, CSC=0, HSUS=0, PE=0, SES=0 and EHV=0
-	sth	%r0, -0x37F6(3) # 0x2FC80A UC3FCTL - Block + Bit 24-31
+	sth	%r0, -0x37F6(30) # 0x2FC80A UC3FCTL - Block + Bit 24-31
 	li	%r0, 0xFF
-	stb	%r0, -0x37FD(3) # 0x2FC803 UC3FMCR - Protect
+	stb	%r0, -0x37FD(30) # 0x2FC803 UC3FMCR - Protect
 	blr
 
