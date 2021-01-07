@@ -153,10 +153,6 @@ wait_busy:
 	/* Address in %r20 */
 	rlwinm	%r20, 23, 0,8,31 # r20 = r23 & 0xFFFFFF
 
-	/* Lock TX Buffer 13 */
-	li	%r0, 0x80 # Buffer not ready + DLC = 0
-	sth	%r0, 0x71D0(30) # 0x3071D0 TouCAN A Buffer 13
-
 	/* Echo command 0x00 */
 	cmplwi	%r21, 0x00
 	bne	end_command_0x00
@@ -220,6 +216,8 @@ answer:
 	beq	loop_main
 
 	/* Answer (echo if no modification to %r24, %r23, %r22) */
+	li	%r0, 0x80 # Buffer not ready + DLC = 0
+	sth	%r0, 0x71D0(30) # 0x3071D0 TouCAN A Buffer 13
 	stw	%r23, 0x71D6(30)
 	stw	%r22, 0x71DA(30)
 	ori	%r0, 24, 0xE0 # Buffer ready + DLC
