@@ -44,7 +44,7 @@ class ECU_T4E:
 		#self.log("ECU Read "+str(size)+" bytes @ "+hex(address))
 		if  (size == 4):
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x50,
+				is_extended_id = False, arbitration_id = 0x50,
 				data = address.to_bytes(4, "big")
 			)
 			self.bus.send(msg)
@@ -54,7 +54,7 @@ class ECU_T4E:
 			data = msg.data
 		elif(size == 2):
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x51,
+				is_extended_id = False, arbitration_id = 0x51,
 				data = address.to_bytes(4, "big")
 			)
 			self.bus.send(msg)
@@ -64,7 +64,7 @@ class ECU_T4E:
 			data = msg.data
 		elif(size == 1):
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x52,
+				is_extended_id = False, arbitration_id = 0x52,
 				data = address.to_bytes(4, "big")
 			)
 			self.bus.send(msg)
@@ -74,7 +74,7 @@ class ECU_T4E:
 			data = msg.data
 		elif(size < 256):
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x53,
+				is_extended_id = False, arbitration_id = 0x53,
 				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
 			)
 			self.bus.send(msg)
@@ -95,33 +95,33 @@ class ECU_T4E:
 		#self.log("ECU Write "+str(data)+" @ "+hex(address))
 		if  (size == 4):
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x54,
+				is_extended_id = False, arbitration_id = 0x54,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
 		elif(size == 2):
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x55,
+				is_extended_id = False, arbitration_id = 0x55,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
 		elif(size == 1):
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x56,
+				is_extended_id = False, arbitration_id = 0x56,
 				data = address.to_bytes(4, "big") + data
 			)
 			self.bus.send(msg)
 		elif(size < 256):
 			offset = 0
 			msg = can.Message(
-				is_extended_id = False,	arbitration_id = 0x57,
+				is_extended_id = False, arbitration_id = 0x57,
 				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
 			)
 			self.bus.send(msg)
 			while(size > 0):
 				chunk_size = min(8, size)
 				msg = can.Message(
-					is_extended_id = False,	arbitration_id = 0x57,
+					is_extended_id = False, arbitration_id = 0x57,
 					data = data[offset:offset+chunk_size]
 				)
 				self.bus.send(msg)

@@ -43,7 +43,7 @@ class Flasher:
 			raise FlasherException("Echo too big")
 		cmd = 0x00
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + data
 		)
 		self.bus.send(msg)
@@ -56,7 +56,7 @@ class Flasher:
 		#self.log("Flasher Read Word @ "+hex(address))
 		cmd = 0x01
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
 		)
 		self.bus.send(msg)
@@ -70,7 +70,7 @@ class Flasher:
 		#self.log("Flasher Write Word @ "+hex(address))
 		cmd = 0x02
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
 		)
 		self.bus.send(msg)
@@ -83,7 +83,7 @@ class Flasher:
 		#self.log("Flasher Branch @ "+hex(address))
 		cmd = 0x03
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + param
 		)
 		self.bus.send(msg)
@@ -92,7 +92,7 @@ class Flasher:
 		#self.log("Flasher run Plugin @ "+hex(address))
 		cmd = 0x04
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
 		)
 		self.bus.send(msg)
@@ -105,7 +105,7 @@ class Flasher:
 		#self.log("Flasher Erase Block BM: "+hex(blocks_mask))
 		cmd = 0x05
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
 		)
 		self.bus.send(msg)
@@ -120,7 +120,7 @@ class Flasher:
 		#self.log("Flasher Start Program Block BM: "+hex(blocks_mask))
 		cmd = 0x06
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
 		)
 		self.bus.send(msg)
@@ -133,7 +133,7 @@ class Flasher:
 		#self.log("Flasher Program Block Word @ "+hex(address)))
 		cmd = 0x07
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
 		)
 		self.bus.send(msg)
@@ -148,7 +148,7 @@ class Flasher:
 		#self.log("Flasher Stop Program Block")
 		cmd = 0x08
 		msg = can.Message(
-			is_extended_id = False,	arbitration_id = 0x60,
+			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big")
 		)
 		self.bus.send(msg)
@@ -157,13 +157,28 @@ class Flasher:
 		if(msg.dlc != 1 or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
 
-	def download(self, address, size, filename):
+	def readEEPROMWord(self, address):
+		#self.log("Flasher EEPROM Read Word @ "+hex(address))
+		cmd = 0x09
+		msg = can.Message(
+			is_extended_id = False, arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Read EEPROM Word failed!")
+		if(msg.dlc != 5 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
+		return msg.data[1:]
+
+	def download(self, address, size, filename, read_fnct=None):
+		if(not read_fnct): read_fnct = self.readWord
 		self.log("Flasher Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
 		if(size % 4 != 0):
 			raise FlasherException("Size is not a multiple of 4")
 		with open(filename,'wb') as f:
 			while(size > 0):
-				chunk = self.readWord(address)
+				chunk = read_fnct(address)
 				f.write(chunk)
 				self.progress() # One dot every 4 Bytes
 				address += 4
@@ -287,8 +302,9 @@ if __name__ == "__main__":
 			"p -> Program Flash, "
 			"r -> Reset ECU, "
 			"b -> (Boot) Canstrap from Stage 1.5, "
-			"t -> Tests",
-		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t"],
+			"t -> Tests,"
+			"dle -> Download EEPROM",
+		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t", "dle"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -396,6 +412,14 @@ if __name__ == "__main__":
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")
 		fl.test(0x3F8000)
+
+	if(ecu_op == 'dle'):
+		print("Read EEPROM")
+		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
+		fl.plugin(0x3FF600)
+		fl.download(0x0, 2048, "eeprom.bin", fl.readEEPROMWord)
+		# Return to the flasher plugin
+		fl.plugin(0x3FF200)
 
 	fl.closeCAN()
 	print("Done")

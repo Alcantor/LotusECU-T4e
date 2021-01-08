@@ -188,7 +188,7 @@ end_command_0x02:
 	bne	end_command_0x03
 	cmplwi	%r24, 4
 	blt	loop_main # DLC is < 4
-	li	%r24, 0 # Answer 0 byte, expect if function overwrite %r24
+	li	%r24, 0 # Answer 0 byte, except if function overwrite %r24
 	mtctr	%r20
 	bctrl	# Optional parameter in %r22
 	b	answer

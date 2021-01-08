@@ -88,16 +88,31 @@ def search_calrom_cpmlwi(cal_file, prog_file):
 			offset += chunk_size
 		print("CRC not found in "+prog_file)
 
+def check_eeprom(eeprom_file):
+	crc = CRC16Reflect(0x8005, initvalue=0x0000) # CRC for EEPROM
+	with open(eeprom_file, 'rb') as feeprom:
+		crc.update(feeprom.read(0x538))
+		print("EEPROM CRC: "+hex(crc.get()))
+		crc2 = int.from_bytes(feeprom.read(4), "big")
+		print("Should be CRC: "+hex(crc2))
+		if(crc.get() == crc2):
+			print("CRC is correct!")
+		else:
+			print("CRC is wrong!")
+
 if __name__ == "__main__":
 	print("CRC tool for Lotus T4e ECU\n")
 	if  (len(sys.argv) >= 6 and sys.argv[1] == "sign_calrom"):
 		sign_calrom(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]+" ")
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "search_crc_prog"):
 		search_calrom_cpmlwi(sys.argv[2], sys.argv[3])
+	elif(len(sys.argv) >= 3 and sys.argv[1] == "check_crc_eeprom"):
+		check_eeprom(sys.argv[2])
 	else:
 		print("usage:")
 		print("\t"+sys.argv[0]+" sign_calrom ORIGINAL_CALROM MODIFIED_CALROM OUTFILE SIGNATURE")
 		print("\t"+sys.argv[0]+" search_crc_prog ORIGINAL_CALROM ORIGINAL_PROG")
+		print("\t"+sys.argv[0]+" check_crc_eeprom EEPROM")
 
 	# CRC for bootloader (not working yet), LUT is correct
 	# crc = CRC16Normal(0x1021, initvalue=0x0123)
