@@ -171,6 +171,19 @@ class Flasher:
 			raise FlasherException("Unexpected answer!")
 		return msg.data[1:]
 
+	def writeEEPROMWord(self, address, data):
+		#self.log("Flasher EEPROM Write Word @ "+hex(address))
+		cmd = 0x0A
+		msg = can.Message(
+			is_extended_id = False, arbitration_id = 0x60,
+			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("Write EEPROM Word failed!")
+		if(msg.dlc != 1 or msg.data[0] != cmd):
+			raise FlasherException("Unexpected answer!")
+
 	def download(self, address, size, filename, read_fnct=None):
 		if(not read_fnct): read_fnct = self.readWord
 		self.log("Flasher Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
@@ -185,28 +198,31 @@ class Flasher:
 				size -= 4
 			self.progress_end()
 
-	def verify(self, address, filename):
-		size = os.path.getsize(filename)
-		self.log("Flasher Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename)
+	def verify(self, address, filename, offset=0, size=None, read_fnct=None):
+		if(not size): size = os.path.getsize(filename)
+		if(not read_fnct): read_fnct = self.readWord
+		self.log("Flasher Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
 		if(size % 4 != 0):
 			raise FlasherException("Size is not a multiple of 4")
 		with open(filename,'rb') as f:
+			f.seek(offset)
 			while(True):
 				f_chunk = f.read(4)
 				if(len(f_chunk) != 4): break # EOF
-				chunk = self.readWord(address)
+				chunk = read_fnct(address)
 				if(f_chunk != chunk):
 					raise FlasherException("Flasher Verify failed! @ "+hex(address))
 				self.progress() # One dot every 4 Bytes
 				address += 4
 			self.progress_end()
 
-	def verify_blank(self, address, size):
+	def verify_blank(self, address, size, read_fnct=None):
+		if(not read_fnct): read_fnct = self.readWord
 		self.log("Flasher Verify Blank "+str(size)+" bytes @ "+hex(address))
 		if(size % 4 != 0):
 			raise FlasherException("Size is not a multiple of 4")
 		while(size > 0):
-			chunk = self.readWord(address)
+			chunk = read_fnct(address)
 			if(b'\xFF\xFF\xFF\xFF' != chunk):
 				raise FlasherException("Flasher Verify Blank failed! @ "+hex(address))
 			self.progress() # One dot every 4 Bytes
@@ -214,35 +230,28 @@ class Flasher:
 			size -= 4
 		self.progress_end()
 
-	def upload(self, address, filename):
-		size = os.path.getsize(filename)
-		self.log("Flasher Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename)
+	def upload(self, address, filename, offset=0, size=None, write_fnct=None):
+		if(not size): size = os.path.getsize(filename)
+		if(not write_fnct): write_fnct = self.writeWord
+		self.log("Flasher Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
 		if(size % 4 != 0):
 			raise FlasherException("Size is not a multiple of 4")
 		with open(filename,'rb') as f:
+			f.seek(offset)
 			while(True):
 				chunk = f.read(4)
 				if(len(chunk) != 4): break # EOF
-				self.writeWord(address, chunk)
+				write_fnct(address, chunk)
 				self.progress() # One dot every 4 Bytes
 				address += 4
 			self.progress_end()
 
-	def program(self, block_mask, address, filename):
-		size = os.path.getsize(filename)
-		self.log("Flasher Program "+str(size)+" bytes @ "+hex(address)+" from "+filename)
-		if(size % 4 != 0):
-			raise FlasherException("Size is not a multiple of 4")
-		with open(filename,'rb') as f:
+	def program(self, block_mask, address, filename, offset=0, size=None):
+		try:
 			self.startProgramBlock(block_mask)
-			while(True):
-				chunk = f.read(4)
-				if(len(chunk) != 4): break # EOF
-				self.programBlockWord(address, chunk)
-				self.progress() # One dot every 4 Bytes
-				address += 4
+			self.upload(address, filename, offset, size, self.programBlockWord)
+		finally:
 			self.stopProgramBlock()
-			self.progress_end()
 
 	def canstrap(self, timeout=60.0):
 		self.log("Flasher Canstrap")
@@ -303,8 +312,10 @@ if __name__ == "__main__":
 			"r -> Reset ECU, "
 			"b -> (Boot) Canstrap from Stage 1.5, "
 			"t -> Tests,"
-			"dle -> Download EEPROM",
-		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t", "dle"],
+			"dle -> Download EEPROM,"
+			"ve -> Verify EEPROM,"
+			"pe -> Program EEPROM",
+		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t", "dle", "ve", "pe"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -414,10 +425,32 @@ if __name__ == "__main__":
 		fl.test(0x3F8000)
 
 	if(ecu_op == 'dle'):
-		print("Read EEPROM")
+		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
+		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
+		print("Read EEPROM (Does not work from stage15)")
 		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF600)
-		fl.download(0x0, 2048, "eeprom.bin", fl.readEEPROMWord)
+		fl.download(0x0, 2048, ecu_dir+"/eeprom.bin", read_fnct=fl.readEEPROMWord)
+		# Return to the flasher plugin
+		fl.plugin(0x3FF200)
+
+	if(ecu_op == 've'):
+		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
+		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
+		print("Verify EEPROM (Does not work from stage15)")
+		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
+		fl.plugin(0x3FF600)
+		fl.verify(0x0, ecu_dir+"/eeprom.bin", read_fnct=fl.readEEPROMWord)
+		# Return to the flasher plugin
+		fl.plugin(0x3FF200)
+
+	if(ecu_op == 'pe'):
+		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
+		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
+		print("Program EEPROM (Does not work from stage15)")
+		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
+		fl.plugin(0x3FF600)
+		fl.upload(0x0, ecu_dir+"/eeprom.bin", write_fnct=fl.writeEEPROMWord)
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
 

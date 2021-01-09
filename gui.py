@@ -77,23 +77,17 @@ class Flasher_GUI(Flasher):
 		self.master.update()
 		self.progressbar['value'] = 100
 		
-	def verify(self, address, filename):
+	def verify(self, address, filename, offset=0, size=None, read_fnct=None):
 		self.bytes_total = os.path.getsize(filename)
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
-		super().verify(address, filename)
+		super().verify(address, filename, offset, size, read_fnct)
 
-	def upload(self, address, filename):
+	def upload(self, address, filename, offset=0, size=None, write_fnct=None):
 		self.bytes_total = os.path.getsize(filename)
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
-		super().upload(address, filename)
-
-	def program(self, block_mask, address, filename):
-		self.bytes_total = os.path.getsize(filename)
-		self.progressbar['value'] = 0
-		self.bytes_transfered = 0
-		super().program(block_mask, address, filename)
+		super().upload(address, filename, offset, size, write_fnct)
 
 class t4e_window():
 	def __init__(self, master):
