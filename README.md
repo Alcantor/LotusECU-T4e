@@ -43,24 +43,29 @@ Under [CC-NC-SA].
 
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-## Original Method
+## Factory Method
 
-I'am not sure how "others" are doing the flashing. After reading some posts of
-Cybernet, I'have the feeling that the Bootloader on White Dash cars can do some
-loading/flashing trough K-Line. I didn't take the time to disassemble the
-bootloader yet.
+The T4e ECU on the Lotus with white dashboard (Instrument Cluster) has a
+booloader which is capable of reprogramming the ECU through the OBD port with
+the old K-Line protocol. It's slow, complicated and not really reliable (I
+assume that's not reliable because BOE doesn't support that method anymore).
+It you want to flash using that method, try the [Daft_LotusT4_OBD].
 
-And from BOE FastWorks Software:
-> The initial flash takes a while since it rewriting the firmware in the ECU.
-> This one took me maybe 5-10 minutes total. In which you are turning the ignition on and off.
-> Once you get passed that one, writing a "tune" only takes about 20 seconds.
+The T4e of the black dashboard cars has another bootloader which does the
+reprogramming with CAN-Bus (500 kbit/s).
 
-Hum, turning on/off the car and so long... They are probably patching the bootloader
-trough K-Line. Once patched, it will go quicker because they are using the CAN-Bus.
+For the white dashboard at least (black dashboard?), there is an access provided
+by the main program trough CAN-BUS (1 Mbit/s).. It's not intended for
+reprogramming the ECU, but with somes hacks it could be use for this purpose.
 
-Anyway I am doing it through CAN-Bus only, leaving the bootloader as is. In
-contrario I'am using a little hack which is not guaranteed to work on all
-software versions of the ECU.
+My little hack is not guaranteed to work on all software versions of the
+ECU but when it works it's very reliable (A good CAN-Bus adapter is mandatory).
+
+If you want more information about the protocol used by the factory bootloader,
+if you want to try it on a black dashboard or if the hack doesn't work,
+please contact me.
+
+[Daft_LotusT4_OBD]: https://github.com/Obeisance/Daft_LotusT4_OBD
 
 ## Prerequisite
 

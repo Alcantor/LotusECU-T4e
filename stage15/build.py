@@ -17,7 +17,7 @@ s15_file = "../flasher/canstrap.bin"
 inp_file = "../dump/A128E6009F/bootldr.bin"
 out_file = "bootldr.bin"
 
-# Free space in Bootloader Stage I where to insert the stage 1.5 (the flasher)
+# Free space in Bootloader Stage I where to insert the stage 1.5 (canStrap)
 s15_offset = 0x3000
 
 # Stage 2 offset

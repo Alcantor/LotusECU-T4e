@@ -2,11 +2,12 @@
 
 This is a bootloader with the CANstrap included. At every boot the startup sequence
 will be delayed from approximately 500ms, so you have a chance to stop and get in
-before the main program take the hand.
+before the main program take the hand. This is very similar to the black dashboard
+bootloader.
 
 The CANstrap will be installed at 0x3000 between the Stage I and Stage II.
 
-The default K-Line recovery routine of the whitedash is preserved.
+The default K-Line recovery routine of the white dashboard bootloader is preserved.
 
 ## Files
 
@@ -48,4 +49,12 @@ other blocks (Calibration and Main) more safely than ever.
 	To 1: Make flasher ready.
 	To 2: Turn the CPU on.
 	To 3: Whatever you want...
+
+## What's risky means...
+
+You're are writing the bootloader, so if it fails the official recovery method
+is also erased. A Lotus dealer won't be able to restore it through the OBD port.
+
+You have to remove your ECU, unglue the cover and reprogram it with a BDM
+programmer.
 
