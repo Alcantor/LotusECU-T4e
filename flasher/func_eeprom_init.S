@@ -1,5 +1,5 @@
 _start:
-	/* This is a initializing code, to be able to used plugin_eeprom from
+	/* This is an initializing code, to be able to use plugin_eeprom from
 	 * stage15. It's complicated because the Chip Select of the EEPROM is
 	 * connected to a TPU pin. A microcode should be loaded to use the TPU.
 	 */

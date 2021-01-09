@@ -49,7 +49,7 @@ The T4e ECU on the Lotus with white dashboard (Instrument Cluster) has a
 booloader which is capable of reprogramming the ECU through the OBD port with
 the old K-Line protocol. It's slow, complicated and not really reliable (I
 assume that's not reliable because BOE doesn't support that method anymore).
-It you want to flash using that method, try the [Daft_LotusT4_OBD].
+If you want to flash using that method, try the [Daft_LotusT4_OBD].
 
 The T4e of the black dashboard cars has another bootloader which does the
 reprogramming with CAN-Bus (500 kbit/s).
