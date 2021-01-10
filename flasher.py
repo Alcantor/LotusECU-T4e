@@ -253,9 +253,9 @@ if __name__ == "__main__":
 			"p -> Program Flash, "
 			"r -> Reset ECU, "
 			"b -> (Boot) Canstrap from Stage 1.5, "
-			"t -> Tests,"
-			"dle -> Download EEPROM,"
-			"ve -> Verify EEPROM,"
+			"t -> Tests, "
+			"dle -> Download EEPROM, "
+			"ve -> Verify EEPROM, "
 			"pe -> Program EEPROM",
 		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t", "dle", "ve", "pe"],
 		default="dl"
