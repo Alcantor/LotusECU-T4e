@@ -369,11 +369,11 @@ if __name__ == "__main__":
 	if(ecu_op == 'dle'):
 		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
 		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
-		#fl.upload(0x3FF900,"flasher/func_eeprom_init.bin")
-		#fl.branch(0x3FF900)
+		#fl.upload(0x3FF600,"flasher/func_eeprom_init.bin")
+		#fl.branch(0x3FF600)
 		print("Read EEPROM (Does not work from stage15)")
-		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
-		fl.plugin(0x3FF600)
+		fl.upload(0x3FF300,"flasher/plugin_eeprom.bin")
+		fl.plugin(0x3FF300)
 		fl.download(0x0, 2048, ecu_dir+"/eeprom.bin", read_fnct=fl.readEEPROMWord)
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
@@ -381,11 +381,11 @@ if __name__ == "__main__":
 	if(ecu_op == 've'):
 		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
 		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
-		#fl.upload(0x3FF900,"flasher/func_eeprom_init.bin")
-		#fl.branch(0x3FF900)
+		#fl.upload(0x3FF600,"flasher/func_eeprom_init.bin")
+		#fl.branch(0x3FF600)
 		print("Verify EEPROM (Does not work from stage15)")
-		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
-		fl.plugin(0x3FF600)
+		fl.upload(0x3FF300,"flasher/plugin_eeprom.bin")
+		fl.plugin(0x3FF300)
 		fl.verify(0x0, ecu_dir+"/eeprom.bin", read_fnct=fl.readEEPROMWord)
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
@@ -393,11 +393,11 @@ if __name__ == "__main__":
 	if(ecu_op == 'pe'):
 		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
 		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
-		#fl.upload(0x3FF900,"flasher/func_eeprom_init.bin")
-		#fl.branch(0x3FF900)
+		#fl.upload(0x3FF600,"flasher/func_eeprom_init.bin")
+		#fl.branch(0x3FF600)
 		print("Program EEPROM (Does not work from stage15)")
-		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
-		fl.plugin(0x3FF600)
+		fl.upload(0x3FF300,"flasher/plugin_eeprom.bin")
+		fl.plugin(0x3FF300)
 		fl.upload(0x0, ecu_dir+"/eeprom.bin", write_fnct=fl.writeEEPROMWord)
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)

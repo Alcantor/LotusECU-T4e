@@ -76,7 +76,7 @@ end_command_0x07:
 	bne	end_command_0x08
 	cmplwi	%r24, 1
 	bne	no_answer # DLC is not 1
-	li	%r24, 1 # Answer 1 byte
+	#li	%r24, 1 # Answer 1 byte
 	bl	sub_finish_and_lock
 	b	answer
 end_command_0x08:
@@ -114,8 +114,8 @@ sub_wait_hvs_and_answer:
 
 sub_finish_and_lock:
 	/* Finish + Lock */
-	li	%r0, 0x0000 # Block=0x00, CSC=0, HSUS=0, PE=0, SES=0 and EHV=0
-	sth	%r0, -0x37F6(30) # 0x2FC80A UC3FCTL - Block + Bit 24-31
+	#li	%r31, 0x0000 # Block=0x00, CSC=0, HSUS=0, PE=0, SES=0 and EHV=0
+	sth	%r31, -0x37F6(30) # 0x2FC80A UC3FCTL - Block + Bit 24-31
 	li	%r0, 0xFF
 	stb	%r0, -0x37FD(30) # 0x2FC803 UC3FMCR - Protect
 	blr

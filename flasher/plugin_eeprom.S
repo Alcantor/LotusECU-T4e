@@ -30,11 +30,11 @@ _start:
 	sth	%r0, 0x5182(30)
 	rlwinm	%r0, 20, 0,24,31 # EEPROM Address LOW
 	sth	%r0, 0x5184(30)
-	li	%r0, 0 # EEPROM place holder for response (4x)
-	sth	%r0, 0x5186(30)
-	sth	%r0, 0x5188(30)
-	sth	%r0, 0x518A(30)
-	sth	%r0, 0x518C(30)
+	#li	%r31, 0 # EEPROM place holder for response (4x)
+	sth	%r31, 0x5186(30)
+	sth	%r31, 0x5188(30)
+	sth	%r31, 0x518A(30)
+	sth	%r31, 0x518C(30)
 
 	/* Fill Command RAM 0x3051C0-0x3051DF */
 	li	%r0, 0xBE # CONT = 1
@@ -80,8 +80,8 @@ status:
 	/* Fill Transmit RAM 0x305180-0x3051BF */
 	li	%r0, 0x05 # EEPROM Read Status Register command
 	sth	%r0, 0x5180(30)
-	li	%r0, 0 # EEPROM place holder for response (1x)
-	sth	%r0, 0x5182(30)
+	#li	%r31, 0 # EEPROM place holder for response (1x)
+	sth	%r31, 0x5182(30)
 
 	/* Fill Command RAM 0x3051C0-0x3051DF */
 	li	%r0, 0xBE # CONT = 1
@@ -119,8 +119,8 @@ status:
 	stb	%r0, 0x51C0(30)
 
 	/* Go */
-	li	%r0, 0x0000 # SPIFIE=0, WREN = 0, WRTO = 0, ENDQP = 0, NEWQP = 0
-	sth	%r0, 0x501C(30) # 0x30501C SPCR2
+	#li	%r31, 0x0000 # SPIFIE=0, WREN = 0, WRTO = 0, ENDQP = 0, NEWQP = 0
+	sth	%r31, 0x501C(30) # 0x30501C SPCR2
 	bl	transmit_spi
 
 	## Write ###############################################################
@@ -174,8 +174,8 @@ status:
 	stb	%r0, 0x51C0(30)
 
 	/* Go */
-	li	%r0, 0x0000 # SPIFIE=0, WREN = 0, WRTO = 0, ENDQP = 0, NEWQP = 0
-	sth	%r0, 0x501C(30) # 0x30501C SPCR2
+	#li	%r31, 0x0000 # SPIFIE=0, WREN = 0, WRTO = 0, ENDQP = 0, NEWQP = 0
+	sth	%r31, 0x501C(30) # 0x30501C SPCR2
 	bl	transmit_spi
 
 	/* Put WP pin high through gpio? Not sure */
