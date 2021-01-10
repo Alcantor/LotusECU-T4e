@@ -46,7 +46,7 @@ Under [CC-NC-SA].
 ## Factory Method
 
 The T4e ECU on the Lotus with white dashboard (Instrument Cluster) has a
-booloader which is capable of reprogramming the ECU through the OBD port with
+bootloader which is capable of reprogramming the ECU through the OBD port with
 the old K-Line protocol. It's slow, complicated and not really reliable (I
 assume that's not reliable because BOE doesn't support that method anymore).
 If you want to flash using that method, try the [Daft_LotusT4_OBD].
@@ -55,7 +55,7 @@ The T4e of the black dashboard cars has another bootloader which does the
 reprogramming with CAN-Bus (500 kbit/s).
 
 For the white dashboard at least (black dashboard?), there is an access provided
-by the main program trough CAN-BUS (1 Mbit/s).. It's not intended for
+by the main program trough CAN-BUS (1 Mbit/s). It's not intended for
 reprogramming the ECU, but with somes hacks it could be use for this purpose.
 
 My little hack is not guaranteed to work on all software versions of the
@@ -149,11 +149,11 @@ or a Main Program, be sure that the files are good and valid.
 
 The simple GUI...
 
-![alt text](https://github.com/Alcantor/LotusECU-T4e/raw/master/documentation/Usage/GUI.png "GUI Demo")
+![alt text](documentation/Usage/GUI.png "GUI Demo")
 
 ## RomRaider
 
 You have to open the "calrom.bin" file of your dump.
 
-![alt text](https://github.com/Alcantor/LotusECU-T4e/raw/master/documentation/Usage/RomRaider.png "Tune Demo")
+![alt text](documentation/Usage/RomRaider.png "Tune Demo")
 
