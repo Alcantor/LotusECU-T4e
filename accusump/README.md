@@ -54,5 +54,5 @@ For common 10 bar oil pressure sensor.
 
 ## Teaser
 
-![alt text](https://github.com/Alcantor/LotusECU-T4e/raw/master/documentation/Usage/accusump/table.png "Accusump in RomRaider")
+![alt text](../documentation/Usage/accusump/table.png "Accusump in RomRaider")
 
