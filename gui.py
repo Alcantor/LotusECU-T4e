@@ -78,13 +78,15 @@ class Flasher_GUI(Flasher):
 		self.progressbar['value'] = 100
 		
 	def verify(self, address, filename, offset=0, size=None, read_fnct=None):
-		self.bytes_total = os.path.getsize(filename)
+		if(not size): size = os.path.getsize(filename) - offset
+		self.bytes_total = size
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
 		super().verify(address, filename, offset, size, read_fnct)
 
 	def upload(self, address, filename, offset=0, size=None, write_fnct=None):
-		self.bytes_total = os.path.getsize(filename)
+		if(not size): size = os.path.getsize(filename) - offset
+		self.bytes_total = size
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
 		super().upload(address, filename, offset, size, write_fnct)

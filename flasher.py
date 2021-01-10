@@ -37,152 +37,92 @@ class Flasher:
 	def closeCAN(self):
 		self.bus.shutdown()
 
-	def echo(self, data=b''):
-		#self.log("Flasher Echo "+data)
-		if(len(data) > 7):
-			raise FlasherException("Echo too big")
-		cmd = 0x00
+	def send(self, cmd, data=b''):
 		msg = can.Message(
 			is_extended_id = False, arbitration_id = 0x60,
 			data = cmd.to_bytes(1, "big") + data
 		)
 		self.bus.send(msg)
-		rmsg = self.bus.recv(timeout=1.0)
-		if(rmsg == None): raise FlasherException("Echo failed!")
-		if(rmsg.data != msg.data):
+
+	def recv(self, cmd, length=0, timeout=1.0):
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise FlasherException("No answer!")
+		if(msg.dlc-1 != length or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
+		return msg.data[1:]
+
+	def echo(self, data=b''):
+		#self.log("Flasher Echo "+data)
+		if(len(data) > 7):
+			raise FlasherException("Echo too big")
+		cmd = 0x00
+		self.send(cmd, data)
+		rdata = self.recv(cmd, len(data))
+		if(rdata != data):
+			raise FlasherException("Unexpected echo!")
 
 	def readWord(self, address):
 		#self.log("Flasher Read Word @ "+hex(address))
 		cmd = 0x01
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Read Word failed!")
-		if(msg.dlc != 5 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
-		return msg.data[1:]
+		self.send(cmd, address.to_bytes(3, "big"))
+		return self.recv(cmd, 4)
 
 	def writeWord(self, address, data):
 		#self.log("Flasher Write Word @ "+hex(address))
 		cmd = 0x02
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Write Word failed!")
-		if(msg.dlc != 1 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
+		self.send(cmd, address.to_bytes(3, "big") + data)
+		self.recv(cmd)
 
 	def branch(self, address, param = b''):
 		#self.log("Flasher Branch @ "+hex(address))
 		cmd = 0x03
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + param
-		)
-		self.bus.send(msg)
+		self.send(cmd, address.to_bytes(3, "big") + param)
 
 	def plugin(self, address):
 		#self.log("Flasher run Plugin @ "+hex(address))
 		cmd = 0x04
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Run Plugin failed!")
-		if(msg.dlc != 1 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
+		self.send(cmd, address.to_bytes(3, "big"))
+		self.recv(cmd)
 
 	def eraseBlock(self, blocks_mask):
 		#self.log("Flasher Erase Block BM: "+hex(blocks_mask))
 		cmd = 0x05
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=5.0)
-		if(msg == None): raise FlasherException("Erase Block failed!")
-		if(msg.dlc != 2 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
-		if(msg.data[1] != 1):
+		self.send(cmd, blocks_mask.to_bytes(1, "big"))
+		pegood = self.recv(cmd, 1, 5.0)
+		if(pegood[0] != 1):
 			raise FlasherException("No PEGOOD!")
 
 	def startProgramBlock(self, blocks_mask):
 		#self.log("Flasher Start Program Block BM: "+hex(blocks_mask))
 		cmd = 0x06
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + blocks_mask.to_bytes(1, "big")
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Start Program Block failed!")
-		if(msg.dlc != 1 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
+		self.send(cmd, blocks_mask.to_bytes(1, "big"))
+		self.recv(cmd)
 
 	def programBlockWord(self, address, data):
 		#self.log("Flasher Program Block Word @ "+hex(address)))
 		cmd = 0x07
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Program Block Word failed!")
-		if(msg.dlc != 2 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
-		if(msg.data[1] != 1):
+		self.send(cmd, address.to_bytes(3, "big") + data)
+		pegood = self.recv(cmd, 1, 1.0)
+		if(pegood[0] != 1):
 			raise FlasherException("No PEGOOD!")
 
 	def stopProgramBlock(self):
 		#self.log("Flasher Stop Program Block")
 		cmd = 0x08
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big")
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Stop Program Block failed!")
-		if(msg.dlc != 1 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
+		self.send(cmd)
+		self.recv(cmd)
 
 	def readEEPROMWord(self, address):
 		#self.log("Flasher EEPROM Read Word @ "+hex(address))
 		cmd = 0x09
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big")
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Read EEPROM Word failed!")
-		if(msg.dlc != 5 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
-		return msg.data[1:]
+		self.send(cmd, address.to_bytes(3, "big"))
+		return self.recv(cmd, 4)
 
 	def writeEEPROMWord(self, address, data):
 		#self.log("Flasher EEPROM Write Word @ "+hex(address))
 		cmd = 0x0A
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + address.to_bytes(3, "big") + data
-		)
-		self.bus.send(msg)
-		msg = self.bus.recv(timeout=1.0)
-		if(msg == None): raise FlasherException("Write EEPROM Word failed!")
-		if(msg.dlc != 1 or msg.data[0] != cmd):
-			raise FlasherException("Unexpected answer!")
+		self.send(cmd, address.to_bytes(3, "big") + data)
+		self.recv(cmd)
 
 	def download(self, address, size, filename, read_fnct=None):
 		if(not read_fnct): read_fnct = self.readWord
@@ -199,14 +139,14 @@ class Flasher:
 			self.progress_end()
 
 	def verify(self, address, filename, offset=0, size=None, read_fnct=None):
-		if(not size): size = os.path.getsize(filename)
+		if(not size): size = os.path.getsize(filename) - offset
 		if(not read_fnct): read_fnct = self.readWord
 		self.log("Flasher Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
 		if(size % 4 != 0):
 			raise FlasherException("Size is not a multiple of 4")
 		with open(filename,'rb') as f:
 			f.seek(offset)
-			while(True):
+			while(size > 0):
 				f_chunk = f.read(4)
 				if(len(f_chunk) != 4): break # EOF
 				chunk = read_fnct(address)
@@ -214,6 +154,7 @@ class Flasher:
 					raise FlasherException("Flasher Verify failed! @ "+hex(address))
 				self.progress() # One dot every 4 Bytes
 				address += 4
+				size -= 4
 			self.progress_end()
 
 	def verify_blank(self, address, size, read_fnct=None):
@@ -231,19 +172,20 @@ class Flasher:
 		self.progress_end()
 
 	def upload(self, address, filename, offset=0, size=None, write_fnct=None):
-		if(not size): size = os.path.getsize(filename)
+		if(not size): size = os.path.getsize(filename) - offset
 		if(not write_fnct): write_fnct = self.writeWord
 		self.log("Flasher Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
 		if(size % 4 != 0):
 			raise FlasherException("Size is not a multiple of 4")
 		with open(filename,'rb') as f:
 			f.seek(offset)
-			while(True):
+			while(size > 0):
 				chunk = f.read(4)
 				if(len(chunk) != 4): break # EOF
 				write_fnct(address, chunk)
 				self.progress() # One dot every 4 Bytes
 				address += 4
+				size -= 4
 			self.progress_end()
 
 	def program(self, block_mask, address, filename, offset=0, size=None):
@@ -427,6 +369,8 @@ if __name__ == "__main__":
 	if(ecu_op == 'dle'):
 		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
 		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
+		#fl.upload(0x3FF900,"flasher/func_eeprom_init.bin")
+		#fl.branch(0x3FF900)
 		print("Read EEPROM (Does not work from stage15)")
 		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF600)
@@ -437,6 +381,8 @@ if __name__ == "__main__":
 	if(ecu_op == 've'):
 		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
 		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
+		#fl.upload(0x3FF900,"flasher/func_eeprom_init.bin")
+		#fl.branch(0x3FF900)
 		print("Verify EEPROM (Does not work from stage15)")
 		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF600)
@@ -447,6 +393,8 @@ if __name__ == "__main__":
 	if(ecu_op == 'pe'):
 		#print("Upload TPU Microcode (EEPROM CS is on TPU)")
 		#fl.upload(0x302000,"dump/A128E6009F/prog.bin", 0x45D20, 0x800)
+		#fl.upload(0x3FF900,"flasher/func_eeprom_init.bin")
+		#fl.branch(0x3FF900)
 		print("Program EEPROM (Does not work from stage15)")
 		fl.upload(0x3FF600,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF600)

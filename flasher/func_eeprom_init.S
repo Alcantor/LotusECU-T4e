@@ -1,3 +1,6 @@
+.section .text
+.globl _start
+
 _start:
 	/* This is an initializing code, to be able to use plugin_eeprom from
 	 * stage15. It's complicated because the Chip Select of the EEPROM is
@@ -5,13 +8,6 @@ _start:
 	 */
 
 	/* THIS DOES NOT WORD YET! */
-
-	/* Read SPI EEPROM command 0x09 */
-	cmplwi	%r21, 0x09
-	bne	end_command_0x09
-	cmplwi	%r24, 4
-	bne	no_answer # DLC is not 4
-	li	%r24, 5 # Answer 5 bytes
 
 	/* Init TPU */
 	li	%r0, 0x0480 # EMU = 1, SUPV = 1
