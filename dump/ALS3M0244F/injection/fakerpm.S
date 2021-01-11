@@ -6,50 +6,50 @@ loop:
 	bla	0x02FC90
 	bla	0x049B24
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x2562 # 0x3FDA9E
-	lbz	%r5, 0(3)
+	addi	%r3, %r3, -0x2562 # 0x3FDA9E
+	lbz	%r5, 0(%r3)
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x6D31 # 0x3F92CF
-	lbz	%r4, 0(3)
+	addi	%r3, %r3, -0x6D31 # 0x3F92CF
+	lbz	%r4, 0(%r3)
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x2561 # 0x3FDA9F
-	lbz	%r0, 0(3)
-	andc	%r0, 4, 0
-	or	%r0, 5, 0
-	clrlwi	%r0, 0, 24
+	addi	%r3, %r3, -0x2561 # 0x3FDA9F
+	lbz	%r0, 0(%r3)
+	andc	%r0, %r4, %r0
+	or	%r0, %r5, %r0
+	clrlwi	%r0, %r0, 24
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x6D31 # 0x3F92CF
-	stb	%r0, 0(3)
+	addi	%r3, %r3, -0x6D31 # 0x3F92CF
+	stb	%r0, 0(%r3)
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x6D31 # 0x3F92CF
-	lbz	%r0, 0(3)
+	addi	%r3, %r3, -0x6D31 # 0x3F92CF
+	lbz	%r0, 0(%r3)
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x6D3C # 0x3F92C4
-	stb	%r0, 0(3)
+	addi	%r3, %r3, -0x6D3C # 0x3F92C4
+	stb	%r0, 0(%r3)
 	li	%r0, 1
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x6D30 # 0x3F92D0
-	stb	%r0, 0(3)
+	addi	%r3, %r3, -0x6D30 # 0x3F92D0
+	stb	%r0, 0(%r3)
 	bla	0x02CE68
 	bla	0x02D350
 	bla	0x02D0C4
 	li	%r0, 0
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x6D30 # 0x3F92D0
-	stb	%r0, 0(3)
+	addi	%r3, %r3, -0x6D30 # 0x3F92D0
+	stb	%r0, 0(%r3)
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x7F28 # 0x3F80D8
-	lbz	%r0, 0(3)
+	addi	%r3, %r3, -0x7F28 # 0x3F80D8
+	lbz	%r0, 0(%r3)
 	cmplwi	%r0, 0xFF
 	beq	jump
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x7F28 # 0x3F80D8
-	lbz	%r3, 0(3)
+	addi	%r3, %r3, -0x7F28 # 0x3F80D8
+	lbz	%r3, 0(%r3)
 	bla	0x041D04
 	li	%r0, 0xFF
 	lis	%r3, 0x40 # '@'
-	addi	%r3, 3, -0x7F28 # 0x3F80D8
-	stb	%r0, 0(3)
+	addi	%r3, %r3, -0x7F28 # 0x3F80D8
+	stb	%r0, 0(%r3)
 jump:
 	bla	0x02FE30
 	bla	0x04B8A8
@@ -60,8 +60,8 @@ jump:
 	# Fake RPM
 	li	%r0, 4000
 	lis	%r3, 0x40
-	addi	%r3, 3, -0x2DD0 # 0x3FD230
-	sth	%r0, 0(3)
+	addi	%r3, %r3, -0x2DD0 # 0x3FD230
+	sth	%r0, 0(%r3)
 
 	bla	0x039874
 	bla	0x030858
