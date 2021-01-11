@@ -111,7 +111,7 @@ answer:
 
 loop_main:
 	/* Count down */
-	add	%r26, 26, 25
+	add	%r26, %r26, %r25
 	cmplwi	%r26, 0x0
 	beqa	0x004000 # Stage II
 
