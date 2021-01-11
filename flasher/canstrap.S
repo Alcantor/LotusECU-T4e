@@ -51,11 +51,9 @@ wait_reset:
 
 	/* TouCAN A Configure */
 	/* 28 MHz / (PSEG1+1+PSEG2+1) / (PRESDIV+1) = 1 Mbit/s */
-	li	%r0, 0x0004 # PROPSEG = 4
-	sth	%r0, 0x7086(%r30) # 0x307086 CANCTRL0_A + CANCTRL1_A
-
-	li	%r0, 0x01F6 # PRESDIV = 1 , RJW = 3, PSEG1 = 6, PSEG2 = 6
-	sth	%r0, 0x7088(%r30) # 0x307088 PRESDIV_A + CANCTRL2_A
+	lis	%r3, 0x0004 # PROPSEG = 4
+	addi	%r0, %r3, 0x01F6 # PRESDIV = 1 , RJW = 3, PSEG1 = 6, PSEG2 = 6
+	stw	%r0, 0x7086(%r30) # 0x307086 CANCTRL0_A + CANCTRL1_A + PRESDIV_A + CANCTRL2_A
 
 	/* TouCAN A Disable all buffers */
 	li	%r3, 0
@@ -71,11 +69,9 @@ loop_disable:
 	stw	%r0, 0x7090(%r30) # 0x307090 RxGMSK_A
 
 	/* TouCAN A Configure RX Buffer 0 */
-	li	%r0, 0xC00 # Reception address 0x60 << 5
-	sth	%r0, 0x7102(%r30) # 0x307102 MBBUFF0_A - ID_HIGH
-
-	li	%r0, 0x40 # Buffer activated and free
-	sth	%r0, 0x7100(%r30) # 0x307100 MBBUFF0_A
+	lis	%r3, 0x40 # Buffer activated and free
+	addi	%r0, %r3, 0xC00 # Reception address 0x60 << 5
+	stw	%r0, 0x7100(%r30) # 0x307100 MBBUFF0_A
 
 	/* TouCAN A Start */
 	lhz	%r0, 0x7080(%r30) # 0x307080 CANMCR_A
@@ -98,11 +94,9 @@ loop_disable:
 
 answer:
 	/* Answer (echo if no modification to %r24, %r23, %r22) */
-	li	%r0, 0x80 # Buffer not ready + DLC = 0
-	sth	%r0, 0x71D0(%r30) # 0x3071D0 TouCAN A Buffer 13
-	lis	%r3, 0xF400@ha # Destination address 0x7A0 << 5
-	addi	%r0, %r3, 0xF400@l
-	sth	%r0, 0x71D2(%r30) # 0x3071D2 MBBUFF13_A - ID_HIGH
+	lis	%r3, 0x80F400@ha # Buffer not ready + DLC = 0 + Address = 0x7A0 << 5
+	addi	%r0, %r3, 0x80F400@l
+	stw	%r0, 0x71D0(%r30) # 0x3071D0 MBBUFF13_A
 	stw	%r23, 0x71D6(%r30)
 	stw	%r22, 0x71DA(%r30)
 	ori	%r0, %r24, 0xE0 # Buffer ready + DLC
