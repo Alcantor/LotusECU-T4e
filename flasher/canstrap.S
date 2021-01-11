@@ -195,7 +195,7 @@ end_command_0x02:
 	li	%r24, 0 # Answer 0 byte, except if function overwrite %r24
 	mtctr	%r20
 	bctrl	# Optional parameter in %r22
-	b	answer_ckeck
+	b	answer_check
 end_command_0x03:
 
 	/* Plugin command 0x04 */
@@ -213,9 +213,9 @@ end_command_0x04:
 	beq	loop_main # No plugin installed
 	mtctr	%r27
 	bctrl
-	#b	answer_ckeck
+	#b	answer_check
 
-answer_ckeck:
+answer_check:
 	/* If DLC is 0, do not answer */
 	cmplwi	%r24, 0
 	beq	loop_main
