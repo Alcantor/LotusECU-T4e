@@ -94,7 +94,20 @@ loop_disable:
 	lis	%r23, 0x48694373@ha # Data: "HiCs" -> Hello Canstrap
 	addi	%r23, %r23, 0x48694373@l
 	lis	%r22, 0x5631 # Data: "V1" -> Version 1
-	b	answer
+	#b	answer
+
+answer:
+	/* Answer (echo if no modification to %r24, %r23, %r22) */
+	li	%r0, 0x80 # Buffer not ready + DLC = 0
+	sth	%r0, 0x71D0(%r30) # 0x3071D0 TouCAN A Buffer 13
+	lis	%r3, 0xF400@ha # Destination address 0x7A0 << 5
+	addi	%r0, %r3, 0xF400@l
+	sth	%r0, 0x71D2(%r30) # 0x3071D2 MBBUFF13_A - ID_HIGH
+	stw	%r23, 0x71D6(%r30)
+	stw	%r22, 0x71DA(%r30)
+	ori	%r0, %r24, 0xE0 # Buffer ready + DLC
+	sth	%r0, 0x71D0(%r30)
+	#b	loop_main
 
 loop_main:
 	/* Count down */
@@ -182,7 +195,7 @@ end_command_0x02:
 	li	%r24, 0 # Answer 0 byte, except if function overwrite %r24
 	mtctr	%r20
 	bctrl	# Optional parameter in %r22
-	b	answer
+	b	answer_ckeck
 end_command_0x03:
 
 	/* Plugin command 0x04 */
@@ -200,21 +213,11 @@ end_command_0x04:
 	beq	loop_main # No plugin installed
 	mtctr	%r27
 	bctrl
+	#b	answer_ckeck
 
-answer:
+answer_ckeck:
 	/* If DLC is 0, do not answer */
 	cmplwi	%r24, 0
 	beq	loop_main
-
-	/* Answer (echo if no modification to %r24, %r23, %r22) */
-	li	%r0, 0x80 # Buffer not ready + DLC = 0
-	sth	%r0, 0x71D0(%r30) # 0x3071D0 TouCAN A Buffer 13
-	lis	%r3, 0xF400@ha # Destination address 0x7A0 << 5
-	addi	%r0, %r3, 0xF400@l
-	sth	%r0, 0x71D2(%r30) # 0x3071D2 MBBUFF13_A - ID_HIGH
-	stw	%r23, 0x71D6(%r30)
-	stw	%r22, 0x71DA(%r30)
-	ori	%r0, %r24, 0xE0 # Buffer ready + DLC
-	sth	%r0, 0x71D0(%r30)
-	b	loop_main
+	b	answer
 
