@@ -13,10 +13,10 @@ ba4a624b033f5fc686d4979308819b5b  A128E6009F/calrom.bin
 f52dde26272bec3135e8f73c7365b9d5  ALS3M0244F/calrom.bin
 d76ea22ce55f76f22419aa1d427ce43f  ALS3M0244F/decram.bin
 33ca75a8f6db4386f005337fe7df1473  ALS3M0244F/prog.bin
-ae82e952cb969bfef8cf14c819c74f20  ../stage15/bootldr.bin
-1b1143558ff8be894be7261299bddd87  ../flasher/canstrap.bin
+e4ccb9cceb27a62fde4977f1abeabcd9  ../stage15/bootldr.bin
+a132bdea535ac9931e50c8f0824720f3  ../flasher/canstrap.bin
 da10b7aa1b9756970fdac6bc46e84dbb  ../flasher/func_test.bin
-63e815c5063fed6b22fd011d8809ef0c  ../flasher/plugin_eeprom.bin
+9f9f7f55dcf77ede2f1f6ae2676f3855  ../flasher/plugin_eeprom.bin
 90a1bd6d02c27d6771db19ea3cb5eef8  ../flasher/plugin_flash.bin
 4e9d2ebd6186d0ec7a47ea8a9c5d2a6f  ../accusump/accusump.bin
 a292af6f1e48240b546cee7c80cfb145  ../accusump/calrom.bin

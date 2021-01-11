@@ -82,30 +82,22 @@ loop_disable:
 	rlwinm	%r0, %r0, 0,20,18 # Clear bit HALT
 	sth	%r0, 0x7080(%r30)
 
-	/* TouCAN A Send "HiCsV1" */
-	li	%r0, 0x80 # Buffer not ready + DLC = 0
-	sth	%r0, 0x71D0(%r30) # 0x3071D0 MBBUFF13_A
-
-	lis	%r3, 0xF400@ha # Destination address 0x7A0 << 5
-	addi	%r0, %r3, 0xF400@l
-	sth	%r0, 0x71D2(%r30) # 0x3071D2 MBBUFF13_A - ID_HIGH
-
-	lis	%r3, 0x48694373@ha # Data: "HiCs" -> Hello Canstrap
-	addi	%r0, %r3, 0x48694373@l
-	stw	%r0, 0x71D6(%r30)
-	lis	%r0, 0x5631 # Data: "V1" -> Version 1
-	stw	%r0, 0x71DA(%r30)
-
-	li	%r0, 0xE6 # Buffer ready + DLC = 6
-	sth	%r0, 0x71D0(%r30)
-
 	/* No plugin */
 	li	%r27, -1
 
 	/* Count down from 0x40000 then boot stage II */
 	lis	%r26, 0x4 # Approx. 500ms
 	li	%r25, -1 # Decrement
+
+	/* Send "HiCsV1" */
+	li	%r24, 6 # Answer 6 bytes
+	lis	%r23, 0x48694373@ha # Data: "HiCs" -> Hello Canstrap
+	addi	%r23, %r23, 0x48694373@l
+	lis	%r22, 0x5631 # Data: "V1" -> Version 1
+	b	answer
+
 loop_main:
+	/* Count down */
 	add	%r26, 26, 25
 	cmplwi	%r26, 0x0
 	beqa	0x004000 # Stage II
@@ -217,6 +209,9 @@ answer:
 	/* Answer (echo if no modification to %r24, %r23, %r22) */
 	li	%r0, 0x80 # Buffer not ready + DLC = 0
 	sth	%r0, 0x71D0(%r30) # 0x3071D0 TouCAN A Buffer 13
+	lis	%r3, 0xF400@ha # Destination address 0x7A0 << 5
+	addi	%r0, %r3, 0xF400@l
+	sth	%r0, 0x71D2(%r30) # 0x3071D2 MBBUFF13_A - ID_HIGH
 	stw	%r23, 0x71D6(%r30)
 	stw	%r22, 0x71DA(%r30)
 	ori	%r0, %r24, 0xE0 # Buffer ready + DLC

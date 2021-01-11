@@ -9,3 +9,6 @@ all: canstrap.bin plugin_flash.bin plugin_eeprom.bin func_eeprom_init.bin func_t
 %.bin: %.o
 	$(LD) -Ttext 0 --oformat binary -o $@ $^
 
+clean:
+	rm -f *.o *.bin
+
