@@ -45,7 +45,7 @@ class Flasher:
 		self.bus.send(msg)
 
 	def recv(self, cmd, length=0, timeout=1.0):
-		msg = self.bus.recv(timeout=1.0)
+		msg = self.bus.recv(timeout)
 		if(msg == None): raise FlasherException("No answer!")
 		if(msg.dlc-1 != length or msg.data[0] != cmd):
 			raise FlasherException("Unexpected answer!")
