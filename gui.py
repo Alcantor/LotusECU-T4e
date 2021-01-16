@@ -101,7 +101,7 @@ class t4e_window():
 		can_frame.grid(column=0, row=0, sticky="EW")
 		can_frame.grid_columnconfigure(0, weight = 1)
 
-		self.combo_interface = ttk.Combobox(can_frame, state="readonly", values = ["socketcan", "ixxat", "serial"])
+		self.combo_interface = ttk.Combobox(can_frame, state="readonly", values = ["socketcan", "ixxat", "serial", "slcan"])
 		self.combo_interface.current(0)
 		self.combo_interface.grid(column=0, row=0, sticky="EW")
 
