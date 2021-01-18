@@ -23,7 +23,7 @@ class BDM_PI:
 	def progress_end(self):
 		print()
 
-	def openGPIO(self, gpio_dsck=4, gpio_dsdi=17, gpio_dsdo=27, hperiod=0):
+	def openGPIO(self, gpio_dsck=4, gpio_dsdi=17, gpio_dsdo=27, hperiod=0.0005):
 		self.log("Open GPIO for BDM operation")
 		self.gpio_dsck = gpio_dsck
 		self.gpio_dsdi = gpio_dsdi
@@ -72,10 +72,14 @@ class BDM_PI:
 		self.io_bytes(b'\x03' + b'\x80')
 		self.io_bytes(b'\x03' + b'\x80')
 
+	def disableWatchdog(self):
+		self.writeWord(0x2FC004, bytes([0x00, 0x00, 0xFF, 0x80]))
+
 	def download(self, address, size, filename):
 		self.log("BDM Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
 		if(size % 4 != 0):
 			raise BDMException("Size is not a multiple of 4")
+		self.disableWatchdog()
 		with open(filename,'wb') as f:
 			while(size > 0):
 				chunk = self.readWord(address)
@@ -90,6 +94,7 @@ class BDM_PI:
 		self.log("BDM Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
 		if(size % 4 != 0):
 			raise BDMException("Size is not a multiple of 4")
+		self.disableWatchdog()
 		with open(filename,'rb') as f:
 			f.seek(offset)
 			while(size > 0):
@@ -108,6 +113,7 @@ class BDM_PI:
 		self.log("BDM Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
 		if(size % 4 != 0):
 			raise BDMException("Size is not a multiple of 4")
+		self.disableWatchdog()
 		with open(filename,'rb') as f:
 			f.seek(offset)
 			while(size > 0):
