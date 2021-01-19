@@ -1,13 +1,8 @@
 #!/usr/bin/python3
 
-import os
-
-def ppc_ba_opcode(jump_addr):
-	opcode     = bytearray([0x48, 0x00, 0x00, 0x02])
-	opcode[1] |= (jump_addr >> 16) & 0xFF
-	opcode[2] |= (jump_addr >>  8) & 0xFF
-	opcode[3] |= jump_addr & 0xFC
-	return opcode
+import sys
+sys.path.insert(0, '..')
+from ppc32 import PPC32
 
 # Bootloader from ALS3M0240J seems ugly. Look at 0x400 for example.
 # Bootloader A128E6009F and ALS3M0244F are identical except the ID and CRC.
@@ -24,8 +19,8 @@ s15_offset = 0x3000
 s02_offset = 0x4000
 
 # Opcode to replace in bootloader
-old_branch = ppc_ba_opcode(s02_offset)
-new_branch = ppc_ba_opcode(s15_offset)
+old_branch = PPC32.ppc_ba(s02_offset)
+new_branch = PPC32.ppc_ba(s15_offset)
 
 # Build the new bootloader with a integrated CAN-Bus flasher
 print("Stage 1.5 builder...")

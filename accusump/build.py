@@ -1,13 +1,8 @@
 #!/usr/bin/python3
 
-import os
-
-def ppc_cmplwi_opcode(register, immediate):
-	opcode     = bytearray([0x28, 0x00, 0x00, 0x00])
-	opcode[1] |= register & 0x1F
-	opcode[2] |= (immediate >>  8) & 0xFF
-	opcode[3] |= immediate & 0xFF
-	return opcode
+import sys
+sys.path.insert(0, '..')
+from ppc32 import PPC32
 
 # Files
 acc_file = "accusump.bin"
@@ -21,8 +16,8 @@ acis_offsets = (0x19690, 0x19790)
 # the oil pressure warning on the cluster will light up constantly!
 # We need to patch that too.
 oilw_offset = 0x194EC
-oilw_default = ppc_cmplwi_opcode(0, 0x200) # Threshold at 2.5 V
-oilw_new = ppc_cmplwi_opcode(0, 0x08D) # Threshold at 0.5 bar?
+oilw_default = PPC32.ppc_cmpli(0, 0x200) # Threshold at 2.5 V
+oilw_new = PPC32.ppc_cmpli(0, 0x08D) # Threshold at 0.5 bar?
 
 # Build the new program with the accusump control
 print("Accusump control builder...")
