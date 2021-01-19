@@ -151,11 +151,13 @@ if __name__ == "__main__":
 		type=str,
 		help=
 			"The action to do: "
+			"pdh -> Pull DSCK high, "
 			"ufp -> Upload Flash Program, "
 			"vfp -> Verify Flash Program, "
 			"sfp -> Start Flash Program, "
+			"rd  -> Release DSCK, "
 			"t -> Tests",
-		choices=["ufp", "vfp", "sfp", "t"],
+		choices=["pdh", "ufp", "vfp", "sfp", "rd", "t"],
 		default="t"
 	)
 	args = vars(ap.parse_args())
@@ -164,8 +166,10 @@ if __name__ == "__main__":
 	bdm = BDM_PI();
 	bdm.openGPIO()
 
-	print("Ready... Power UP the ECU!... Continue in 3 seconds...")
-	time.sleep(3)
+	if(bdm_op == 'pdh'):
+		GPIO.output(bdm.gpio_dsck, True)
+		GPIO.output(bdm.gpio_dsdi, False)
+		print("Ready... You can power UP the ECU yet!")
 
 	if(bdm_op == 'ufp'):
 		print("Upload Flash Program")
@@ -178,6 +182,11 @@ if __name__ == "__main__":
 	if(bdm_op == 'sfp'):
 		print("Start Flash Program")
 		bdm.execute(0x3FF000)
+
+	if(bdm_op == 'rd'):
+		print("ECU will start normally yet!")
+		GPIO.setup(bdm.gpio_dsck, GPIO.IN)
+		GPIO.setup(bdm.gpio_dsdi, GPIO.IN)
 
 	if(bdm_op == 't'):
 		print("Test ECU Read/Write")

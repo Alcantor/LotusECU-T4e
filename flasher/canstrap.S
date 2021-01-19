@@ -14,6 +14,19 @@ _start:
 	stw	%r31, -0x3FB8(%r30) # 0x2FC048 SIMASK2
 	stw	%r31, -0x3FB4(%r30) # 0x2FC04C SIMASK3
 
+	/* Set PPL */
+	/* This is already done by bootloader stage I, but not by BDM */
+	lis	%r0, 0x0090
+	stw	%r0, -0x3D7C(%r30) # 0x2FC284 PLPRCR
+wait_ppl:
+	lwz	%r0, -0x3D7C(%r30)
+	rlwinm	%r0, %r0, 0,15,15 # Mask on bit SPLS
+	cmplwi	%r0, 0
+	beq	wait_ppl
+
+	/* IMB3 frequency is the same as that of the U-bus */
+	stw	%r31, 0x7F80(%r30) # 0x307F80 UMCR
+
 	# CAN-Bus Message
 	#
 	# PID:        0x60
