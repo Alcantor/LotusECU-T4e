@@ -3,6 +3,11 @@
 import os, sys, argparse, time
 import RPi.GPIO as GPIO
 
+# DSCK -> GPIO4  - PIN7 with a 5.6 kOhm resistor
+# GND  -> GND    - PIN9
+# DSDI -> GPIO17 - PIN11
+# DSDO -> GPIO27 - PIN13
+
 # DSCK should be bidirectional
 # Put a 5.6kOhm resistor between the ECU and the Raspberry Pi !!!
 # DSCK is also pulled down with a 10 kOhm resistor on the ECU
