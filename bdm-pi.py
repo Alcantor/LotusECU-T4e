@@ -2,6 +2,7 @@
 
 import os, sys, argparse, time
 import RPi.GPIO as GPIO
+from ppc32 import PPC32
 
 # DSCK -> GPIO4  - PIN7 with a 5.6 kOhm resistor
 # GND  -> GND    - PIN9
@@ -59,33 +60,33 @@ class BDM_PI:
 		return bytes_out
 
 	def readWord(self, address):
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6])) # mfspr   %r30,630
+		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(30, 630))
 		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
-		self.io_bytes(b'\x04' + bytes([0x83, 0xFE, 0x00, 0x00])) # lwz     %r31,0(%r30)
+		self.io_bytes(b'\x04' + PPC32.ppc_lwz(31, 30, 0))
 		self.io_bytes(b'\x03' + b'\x80')
 		self.io_bytes(b'\x03' + b'\x80')
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9B, 0xA6])) # mtspr   630,%r31
-		data = self.io_bytes(b'\x04' + bytes([0x7C, 0x00, 0x00, 0x38]))[1:5] # and     %r0,%r0,%r0
+		self.io_bytes(b'\x04' + PPC32.ppc_mtspr(31, 630))
+		data = self.io_bytes(b'\x04' + PPC32.ppc_and(0, 0, 0))[1:5]
 		return data
 
 	def writeWord(self, address, data):
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9A, 0xA6])) # mfspr   %r31,630
+		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(31, 630))
 		self.io_bytes(b'\x05' + data)
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6])) # mfspr   %r30,630
+		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(30, 630))
 		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
-		self.io_bytes(b'\x04' + bytes([0x93, 0xFE, 0x00, 0x00])) # stw     %r31,0(%r30)
+		self.io_bytes(b'\x04' + PPC32.ppc_stw(31, 30, 0))
 		self.io_bytes(b'\x03' + b'\x80')
 		self.io_bytes(b'\x03' + b'\x80')
 
 	def execute(self, address, msr=0x000003002):
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6])) # mfspr   %r30, 630
+		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(30, 630))
 		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xDA, 0x03, 0xA6])) # mtspr	26, %r30 # Set the program counter by setting SRR0
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9A, 0xA6])) # mfspr   %r31, 630
+		self.io_bytes(b'\x04' + PPC32.ppc_mtspr(30, 26)) # Set the program counter by setting SRR0
+		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(31, 630))
 		self.io_bytes(b'\x05' + msr.to_bytes(4, "big"))
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xFB, 0x03, 0xA6])) # mtspr	27, %r31 # Set SRR1 to desired MSR register
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xD4, 0x22, 0xA6])) # mfspr   %r30, 148 # Read the ECR register to clear out any exceptions
-		self.io_bytes(b'\x04' + bytes([0x4C, 0x00, 0x00, 0x64])) # rfi
+		self.io_bytes(b'\x04' + PPC32.ppc_mtspr(31, 27)) # Set SRR1 to desired MSR register
+		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(30, 148)) # Read the ECR register to clear out any exceptions
+		self.io_bytes(b'\x04' + PPC32.ppc_rfi())
 
 	def disableWatchdog(self):
 		self.writeWord(0x2FC004, bytes([0x00, 0x00, 0xFF, 0x80]))

@@ -2,15 +2,9 @@
 
 import sys, datetime
 from crc import CRC16Reflect
+from ppc32 import PPC32
 
 charset = "ISO-8859-15"
-
-def ppc_cmplwi_opcode(register, immediate):
-	opcode     = bytearray([0x28, 0x00, 0x00, 0x00])
-	opcode[1] |= register & 0x1F
-	opcode[2] |= (immediate >>  8) & 0xFF
-	opcode[3] |= immediate & 0xFF
-	return opcode
 
 def random_date_for_crc(crcclass, crc):
 	date = datetime.datetime.now()
@@ -75,7 +69,7 @@ def search_calrom_cpmlwi(cal_file, prog_file):
 	with open(cal_file, 'rb') as fcal:
 		crc.update(fcal.read(0x3C8E))
 		print("Calibration CRC: "+hex(crc.get()))
-	opcode = ppc_cmplwi_opcode(0, crc.get())
+	opcode = PPC32.ppc_cmpli(0, crc.get())
 	offset = 0
 	with open(prog_file, 'rb') as fprg:
 		while(True):

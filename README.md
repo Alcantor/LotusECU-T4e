@@ -14,8 +14,8 @@ It's heaveliy based on the work of [Obeisance] and [Cybernet].
 [Cybernet]: https://www.lotustalk.com/threads/t4e-ecu-editor-preview.372258/
 
 I didn't have a Arduino with a CAN-Shield but I have an USB-to-CAN Adapter.
-So I made my own Python-Script (Linux and Windows) to make the dump. It sould also work
-with a RaspberryPi and a CAN-Shield (SocketCAN Driver).
+So I made my own Python-Script (Linux and Windows) to make the dump. It should also work
+with a RaspberryPi and a CAN Hat (SocketCAN Driver).
 
 After that I've realized that the Calibration ROM located at 0x10000 looks like
 identical to the T4 ECU at address 0x70000. So I've edited the XML to use the
@@ -86,7 +86,7 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
  sign.py               | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi
 
-## Command line example
+## Command line example (OBD Port)
 
     1. sudo ip link set can0 up type can bitrate 1000000
     2. ./t4y.py -o dl -z 0 1 2 3 4
@@ -130,7 +130,7 @@ access RAM.
 
 ## Safe Usage
 
-Your really need to understand how this work to be able to use the flasher
+You really need to understand how this work to be able to use the flasher
 (flasher.py) safely.
 
  1. The RAM will be lost at power cut off or reset.
@@ -139,7 +139,8 @@ Your really need to understand how this work to be able to use the flasher
  4. To start the Main Program, a Bootloader is needed.
 
 So if you erase the Main Program and cut the power off, don't expect to be able
-to restore your ECU with that program.
+to restore your ECU with that program through the OBD port. You will have to
+save your ECU with the programming (BDM) port on the board.
 
 Use the verify function before resetting the ECU! If your programming a Bootloader
 or a Main Program, be sure that the files are good and valid.
@@ -158,3 +159,29 @@ You have to open the "calrom.bin" file of your dump.
 
 ![alt text](documentation/Usage/RomRaider.png "Tune Demo")
 
+## Command line example (BDM Port)
+
+If your ECU is completely fucked up, or unsupported by the t4e.py script (T4e/T6e ECU Black Dash ?),
+you could use the BDM port with a Raspberry Pi. It's much slower than a true BDM-Programmer but
+if you have a Raspberry Pi laying around, why not.
+
+For that you need to remove you ECU from your car, open it and connect it correctly. It's only
+loading the CAN-Bus Flasher with the BDM Port, so you also need to wire a CAN-Bus adapter.
+
+Those command are for the Raspberry Pi with a CAN Hat.
+
+    1. ./bdm-pi.py -o pdh
+    2. [TURN YOUR ECU ON]
+    3. ./bdm-pi.py -o t
+    4. ./bdm-pi.py -o ufp
+    5. ./flasher.py -o b &
+    6. ./bdm-pi.py -o sfp
+    7. ./flasher.py -o dl
+
+    To 1: Drive the DSCK pin high to enter BDM mode.
+    To 2: Turn the CPU on.
+    To 3: Test the connection by writing/reading a word. If it fail check your connections.
+    To 4: Upload the flasher into the RAM.
+    To 5: Bootstrap: The CAN-Flasher needs a answer within a short time, otherwise it will exit.
+    To 6: Start the flasher.
+    To 7: Download the ECU for example.

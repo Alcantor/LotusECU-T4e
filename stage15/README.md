@@ -56,5 +56,5 @@ You're are writing the bootloader, so if it fails the official recovery method
 is also erased. A Lotus dealer won't be able to restore it through the OBD port.
 
 You have to remove your ECU, unglue the cover and reprogram it with a BDM
-programmer.
+programmer or a Raspberry Pi.
 
