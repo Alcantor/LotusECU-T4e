@@ -54,23 +54,33 @@ class BDM_PI:
 		return bytes_out
 
 	def readWord(self, address):
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6]))
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6])) # mfspr   %r30,630
 		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
-		self.io_bytes(b'\x04' + bytes([0x83, 0xFE, 0x00, 0x00]))
+		self.io_bytes(b'\x04' + bytes([0x83, 0xFE, 0x00, 0x00])) # lwz     %r31,0(%r30)
 		self.io_bytes(b'\x03' + b'\x80')
 		self.io_bytes(b'\x03' + b'\x80')
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9B, 0xA6]))
-		data = self.io_bytes(b'\x04' + bytes([0x7C, 0x00, 0x00, 0x38]))[1:5]
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9B, 0xA6])) # mtspr   630,%r31
+		data = self.io_bytes(b'\x04' + bytes([0x7C, 0x00, 0x00, 0x38]))[1:5] # and     %r0,%r0,%r0
 		return data
 
 	def writeWord(self, address, data):
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9A, 0xA6]))
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9A, 0xA6])) # mfspr   %r31,630
 		self.io_bytes(b'\x05' + data)
-		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6]))
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6])) # mfspr   %r30,630
 		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
-		self.io_bytes(b'\x04' + bytes([0x93, 0xFE, 0x00, 0x00]))
+		self.io_bytes(b'\x04' + bytes([0x93, 0xFE, 0x00, 0x00])) # stw     %r31,0(%r30)
 		self.io_bytes(b'\x03' + b'\x80')
 		self.io_bytes(b'\x03' + b'\x80')
+
+	def execute(self, address, msr=0x000003002):
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xD6, 0x9A, 0xA6])) # mfspr   %r30, 630
+		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xDA, 0x03, 0xA6])) # mtspr	26, %r30 # Set the program counter by setting SRR0
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xF6, 0x9A, 0xA6])) # mfspr   %r31, 630
+		self.io_bytes(b'\x05' + msr.to_bytes(4, "big"))
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xFB, 0x03, 0xA6])) # mtspr	27, %r31 # Set SRR1 to desired MSR register
+		self.io_bytes(b'\x04' + bytes([0x7F, 0xD4, 0x22, 0xA6])) # mfspr   %r30, 148 # Read the ECR register to clear out any exceptions
+		self.io_bytes(b'\x04' + bytes([0x4C, 0x00, 0x00, 0x64])) # rfi
 
 	def disableWatchdog(self):
 		self.writeWord(0x2FC004, bytes([0x00, 0x00, 0xFF, 0x80]))
@@ -167,7 +177,7 @@ if __name__ == "__main__":
 
 	if(bdm_op == 'sfp'):
 		print("Start Flash Program")
-		print("TODO!!!")
+		bdm.execute(0x3FF000)
 
 	if(bdm_op == 't'):
 		print("Test ECU Read/Write")

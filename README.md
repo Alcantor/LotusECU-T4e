@@ -84,6 +84,7 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
  flasher/*.bin         | CAN-Bus Flasher for the MPC563
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
+ bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi
 
 ## Command line example
 
