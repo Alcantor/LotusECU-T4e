@@ -75,11 +75,12 @@ The CANable is very simple to use, but it has a bottleneck with the serial inter
 and does not work well with the "t4e.py" script. In contrario the "flasher.py" works
 flawless (but slowly) with this adapter because it doesn't make bulk read/write. So
 if you still want to use this adapter, use the download function of the "flasher.py"
-and not from the "te4.py".
+and not from the "t4e.py".
 
 The IXXAT USB-to-CAN Adapter is easy to use and reliable but expensive.
 
-The Raspberry-Pi + CAN-Hat is cheap and reliable but more complicated to use.
+The Raspberry-Pi + CAN-Hat is cheap and reliable but more complicated to use (And
+you can use it as a BDM-Programmer).
 
 [Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
