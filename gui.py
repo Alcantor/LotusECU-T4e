@@ -183,9 +183,9 @@ class t4e_window():
 		self.flasher.bus = self.t4e.bus
 
 	def closeCAN(self):
-		self.t4e.closeCAN()
 		self.combo_interface['state'] = tk.NORMAL
 		self.entry_channel['state'] = tk.NORMAL
+		self.t4e.closeCAN()
 
 	def download(self):
 		zone = ECU_T4E.zones[self.combo_zones.current()]

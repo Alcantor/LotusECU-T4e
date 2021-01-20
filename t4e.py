@@ -90,7 +90,7 @@ class ECU_T4E:
 			raise ECUException("ECU Read too much bytes!")
 		return data
 
-	def writeMemory(self, address, data, verify = True):
+	def writeMemory(self, address, data, verify = False):
 		size = len(data)
 		#self.log("ECU Write "+str(data)+" @ "+hex(address))
 		if  (size == 4):
@@ -174,19 +174,19 @@ class ECU_T4E:
 
 	def inject(self, freeram_address, filename, stackblr_address):
 		self.upload(freeram_address, filename)
-		self.writeMemory(stackblr_address, freeram_address.to_bytes(4, "big"), False)
+		self.writeMemory(stackblr_address, freeram_address.to_bytes(4, "big"))
 
 	def test(self, freeram_address):
 		# Word
-		self.writeMemory(freeram_address, b'\xDE\xAD\xBE\xEF')
+		self.writeMemory(freeram_address, b'\xDE\xAD\xBE\xEF', True)
 		# 3 Bytes
-		self.writeMemory(freeram_address, b'\x11\x22\x33')
+		self.writeMemory(freeram_address, b'\x11\x22\x33', True)
 		# Half
-		self.writeMemory(freeram_address, b'\xAA\x55')
+		self.writeMemory(freeram_address, b'\xAA\x55', True)
 		# Byte
-		self.writeMemory(freeram_address, b'\x10')
+		self.writeMemory(freeram_address, b'\x10', True)
 		# Much more
-		self.writeMemory(freeram_address, b'Hello world')
+		self.writeMemory(freeram_address, b'Hello world', True)
 
 if __name__ == "__main__":
 	print("Stupid dumper for Lotus T4e ECU\n")
