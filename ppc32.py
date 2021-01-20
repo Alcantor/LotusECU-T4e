@@ -1,33 +1,20 @@
 #!/usr/bin/python3
 
 class PPC32:
-	def __buildb(opcode, li, aa, lk):
-		r  = opcode << 26
-		r |= li     << 2
-		r |= aa     << 1
-		r |= lk
-		return r.to_bytes(4, "big")
+	def __build1(opcd, li, aa, lk):
+		return (opcd<<26|li<<2|aa<<1|lk).to_bytes(4, "big")
 		
-	def __build2i(opcode, op1, op2, imm):
-		r  = opcode << 26
-		r |= op1    << 21
-		r |= op2    << 16
-		r |= imm
-		return r.to_bytes(4, "big")
+	def __build2(opcd, rSD, rA, uimm):
+		return (opcd<<26|rSD<<21|rA<<16|uimm).to_bytes(4, "big")
 		
-	def __build3(opcode, op1, op2, op3, const):
-		r  = opcode << 26
-		r |= op1    << 21
-		r |= op2    << 16
-		r |= op3    << 11
-		r |= const  <<  1
-		return r.to_bytes(4, "big")
+	def __build3(opcd, rSD, rA, rB, xo):
+		return (opcd<<26|rSD<<21|rA<<16|rB<<11|xo<<1).to_bytes(4,"big")
 
-	def ppc_cmpli(rA, imm):
-		return PPC32.__build2i(10, 0, rA, imm)
+	def ppc_cmpli(rA, uimm):
+		return PPC32.__build2(10, 0, rA, uimm)
 
 	def ppc_ba(addr):
-		return PPC32.__buildb(18, addr >> 2, 1, 0)
+		return PPC32.__build1(18, addr >> 2, 1, 0)
 
 	def ppc_rfi():
 		return PPC32.__build3(19, 0, 0, 0, 50)
@@ -42,10 +29,10 @@ class PPC32:
 		return PPC32.__build3(31, rS, spr & 0x1F, spr >> 5, 467)
 
 	def ppc_lwz(rD, rA, delta):
-		return PPC32.__build2i(32, rD, rA, delta)
+		return PPC32.__build2(32, rD, rA, delta)
 
 	def ppc_stw(rS, rA, delta):
-		return PPC32.__build2i(36, rS, rA, delta)
+		return PPC32.__build2(36, rS, rA, delta)
 
 def print_hex(array):
 	return ' '.join('{:02x}'.format(x) for x in array)

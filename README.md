@@ -168,7 +168,7 @@ if you have a Raspberry Pi laying around, why not.
 For that you need to remove you ECU from your car, open it and connect it correctly. It's only
 loading the CAN-Bus Flasher with the BDM Port, so you also need to wire a CAN-Bus adapter.
 
-Those command are for the Raspberry Pi with a CAN Hat.
+Those commands are for the Raspberry Pi with a CAN Hat.
 
     1. ./bdm-pi.py -o pdh
     2. [TURN YOUR ECU ON]
