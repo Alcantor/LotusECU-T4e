@@ -71,11 +71,14 @@ please contact me.
 
 The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BUS adapter].
 
-The CANable is very simple to use, but it has a bottleneck with the serial interface,
-and does not work well with the "t4e.py" script. In contrario the "flasher.py" works
-flawless (but slowly) with this adapter because it doesn't make bulk read/write. So
-if you still want to use this adapter, use the download function of the "flasher.py"
-and not from the "t4e.py".
+The CANable (with slcan firmware) is very simple to use, but it has a bottleneck
+with the serial interface, and does not work well with the "t4e.py" script.
+In contrario the "flasher.py" works flawless (but slowly) with this adapter
+because it doesn't make bulk read/write. So if you still want to use this adapter,
+use the download function of the "flasher.py" and not from the "t4e.py".
+
+The CANable (with CandleLight firmware) is great but unsupported under Windows yet.
+This could change in a near future (see develop of python-can).
 
 The IXXAT USB-to-CAN Adapter is easy to use and reliable but expensive.
 
@@ -187,7 +190,7 @@ Those commands are for the Raspberry Pi with a CAN Hat.
     4. ./bdm-pi.py -o ufp
     5. ./flasher.py -o b &
     6. ./bdm-pi.py -o sfp
-    7. ./flasher.py -o dl
+    7. ./flasher.py -o dl -b 0,1,2
 
     To 1: Drive the DSCK pin high to enter BDM mode.
     To 2: Turn the CPU on.
