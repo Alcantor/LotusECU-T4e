@@ -95,7 +95,7 @@ you can use it as a BDM-Programmer).
  flasher/*.bin         | CAN-Bus Flasher for the MPC563
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
- bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi
+ bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
 
 ## Command line example (OBD Port)
 
@@ -196,3 +196,9 @@ Those commands are for the Raspberry Pi with a CAN Hat.
     To 5: Bootstrap: The CAN-Flasher needs a answer within a short time, otherwise it will exit.
     To 6: Start the flasher.
     To 7: Download the ECU for example.
+
+## Debugging the MPC 5xx
+
+With a small effort, the "bdm-pi.py" script could implements breakpoint, continue
+und read/write registers functionality.
+

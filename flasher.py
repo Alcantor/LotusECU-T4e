@@ -220,7 +220,7 @@ class Flasher:
 			raise FlasherException("Unexpected answer!")
 
 if __name__ == "__main__":
-	print("Stupid flasher for Lotus T4e ECU\n")
+	print("Flasher for Lotus T4e ECU\n")
 	ap = argparse.ArgumentParser()
 	ap.add_argument(
 		"-i",

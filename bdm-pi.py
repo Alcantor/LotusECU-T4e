@@ -66,8 +66,7 @@ class BDM_PI:
 		self.io_bytes(b'\x03' + b'\x80')
 		self.io_bytes(b'\x03' + b'\x80')
 		self.io_bytes(b'\x04' + PPC32.ppc_mtspr(31, 630))
-		data = self.io_bytes(b'\x04' + PPC32.ppc_and(0, 0, 0))[1:5]
-		return data
+		return self.io_bytes(b'\x04' + PPC32.ppc_and(0, 0, 0))[1:5]
 
 	def writeWord(self, address, data):
 		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(31, 630))
@@ -148,7 +147,7 @@ class BDM_PI:
 			raise BDMException("Word readback failed!")
 
 if __name__ == "__main__":
-	print("Stupid BDM-Programmer for Lotus T4e ECU\n")
+	print("BDM-Programmer for Lotus T4e ECU\n")
 	ap = argparse.ArgumentParser()
 	ap.add_argument(
 		"-o",

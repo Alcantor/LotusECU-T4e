@@ -189,7 +189,7 @@ class ECU_T4E:
 		self.writeMemory(freeram_address, b'Hello world', True)
 
 if __name__ == "__main__":
-	print("Stupid dumper for Lotus T4e ECU\n")
+	print("Dumper for Lotus T4e ECU\n")
 	ap = argparse.ArgumentParser()
 	ap.add_argument(
 		"-i",
