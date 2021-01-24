@@ -90,3 +90,6 @@ class FileProgress:
 				size -= chunk_size
 			self.progress_end()
 
+if __name__ == "__main__":
+	print("Library to upload/download/verify files.")
+
