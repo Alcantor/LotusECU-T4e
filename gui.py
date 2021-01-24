@@ -1,16 +1,17 @@
 #!/usr/bin/python3
 
-import os
+import os, can
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 from t4e import ECU_T4E
 from flasher import Flasher
+from lib.fileprogress import FileProgress
 
 binary_file = [("Binary File", "*.bin")]
 
-class ECU_T4E_GUI(ECU_T4E):
+class FileProgressGui(FileProgress):
 	def __init__(self, master):
 		self.master = master
 		self.progressbar = ttk.Progressbar(master, orient=tk.HORIZONTAL, length=100, mode='determinate')
@@ -22,7 +23,7 @@ class ECU_T4E_GUI(ECU_T4E):
 		self.master.update()
 
 	def progress(self):
-		self.bytes_transfered += 128
+		self.bytes_transfered += self.bytes_step
 		fraction = self.bytes_transfered/self.bytes_total
 		self.progressbar['value'] = fraction*100
 		self.master.update()
@@ -31,65 +32,35 @@ class ECU_T4E_GUI(ECU_T4E):
 		self.progressbar['value'] = 100
 		self.master.update()
 
-	def download(self, address, size, filename):
+	def download(self, address, size, filename, read_fnct, chunk_size, chunk_align):
 		self.progressbar['value'] = 0
 		self.bytes_total = size
 		self.bytes_transfered = 0
-		super().download(address, size, filename)
+		self.bytes_step = chunk_size
+		super().download(address, size, filename, read_fnct, chunk_size, chunk_align)
 
-	def verify(self, address, filename):
-		self.bytes_total = os.path.getsize(filename)
-		self.progressbar['value'] = 0
-		self.bytes_transfered = 0
-		super().verify(address, filename)
-
-	def upload(self, address, filename):
-		self.bytes_total = os.path.getsize(filename)
-		self.progressbar['value'] = 0
-		self.bytes_transfered = 0
-		super().upload(address, filename)
-
-class Flasher_GUI(Flasher):
-	def __init__(self, master):
-		self.master = master
-		self.progressbar = ttk.Progressbar(master, orient=tk.HORIZONTAL, length=100, mode='determinate')
-		self.textEntry = tk.StringVar()
-		self.entry = tk.Entry(master, state=tk.DISABLED, textvariable = self.textEntry)
-
-	def log(self, msg):
-		self.textEntry.set(msg)
-		self.master.update()
-
-	def progress(self):
-		self.bytes_transfered += 4
-		fraction = self.bytes_transfered/self.bytes_total
-		self.progressbar['value'] = fraction*100
-		self.master.update()
-
-	def progress_end(self):
-		self.progressbar['value'] = 100
-		self.master.update()
-
-	def eraseBlock(self, blocks_desc, blocks_mask):
-		self.log("Erase " + blocks_desc)
-		self.progressbar['value'] = 0
-		super().eraseBlock(blocks_mask)
-		self.master.update()
-		self.progressbar['value'] = 100
-		
-	def verify(self, address, filename, offset=0, size=None, read_fnct=None):
+	def verify(self, address, filename, read_fnct, chunk_size, chunk_align, offset=0, size=None):
 		if(not size): size = os.path.getsize(filename) - offset
 		self.bytes_total = size
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
-		super().verify(address, filename, offset, size, read_fnct)
+		self.bytes_step = chunk_size
+		super().verify(address, filename, read_fnct, chunk_size, chunk_align, offset, size)
 
-	def upload(self, address, filename, offset=0, size=None, write_fnct=None):
+	def verify_blank(self, address, size, read_fnct, chunk_size, chunk_align):
+		self.bytes_total = size
+		self.progressbar['value'] = 0
+		self.bytes_transfered = 0
+		self.bytes_step = chunk_size
+		super().verify_blank(address, size, read_fnct, chunk_size, chunk_align)
+
+	def upload(self, address, filename, write_fnct, chunk_size, chunk_align, offset=0, size=None):
 		if(not size): size = os.path.getsize(filename) - offset
 		self.bytes_total = size
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
-		super().upload(address, filename, offset, size, write_fnct)
+		self.bytes_step = chunk_size
+		super().upload(address, filename, write_fnct, chunk_size, chunk_align, offset, size)
 
 class t4e_window():
 	def __init__(self, master):
@@ -114,9 +85,10 @@ class t4e_window():
 		t4e_frame.grid(column=0, row=1, sticky="EW")
 		t4e_frame.grid_columnconfigure(0, weight = 1)
 
-		self.t4e = ECU_T4E_GUI(t4e_frame)
-		self.t4e.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
-		self.t4e.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
+		self.t4e_gui = FileProgressGui(t4e_frame)
+		self.t4e = ECU_T4E(None, self.t4e_gui)
+		self.t4e_gui.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
+		self.t4e_gui.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
 		self.combo_zones = ttk.Combobox(t4e_frame, state="readonly", values = [z[0] for z in ECU_T4E.zones])
 		self.combo_zones.current(1)
@@ -135,9 +107,10 @@ class t4e_window():
 		fl_frame.grid(column=0, row=2, sticky="EW")
 		fl_frame.grid_columnconfigure(0, weight = 1)
 
-		self.flasher = Flasher_GUI(fl_frame)
-		self.flasher.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
-		self.flasher.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
+		self.flasher_gui = FileProgressGui(fl_frame)
+		self.flasher = Flasher(None, self.flasher_gui)
+		self.flasher_gui.progressbar.grid(column=0, row=0, columnspan=4, sticky="EW")
+		self.flasher_gui.entry.grid(column=0, row=1, columnspan=4, sticky="EW")
 
 		self.button_b = tk.Button(fl_frame, text="Bootstrap from Stage 1.5 (60 sec.)", command=self.bootstrap)
 		self.button_b.grid(column=0, row=2, columnspan=4, sticky='EW')
@@ -179,13 +152,19 @@ class t4e_window():
 	def openCAN(self):
 		self.combo_interface['state'] = tk.DISABLED
 		self.entry_channel['state'] = tk.DISABLED
-		self.t4e.openCAN(self.combo_interface.get(), self.string_channel.get())
-		self.flasher.bus = self.t4e.bus
+		self.bus = can.Bus(
+			interface = self.combo_interface.get(),
+			channel = self.string_channel.get(),
+			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
+			bitrate = 1000000
+		)
+		self.t4e.bus = self.bus
+		self.flasher.bus = self.bus
 
 	def closeCAN(self):
 		self.combo_interface['state'] = tk.NORMAL
 		self.entry_channel['state'] = tk.NORMAL
-		self.t4e.closeCAN()
+		self.bus.shutdown()
 
 	def download(self):
 		zone = ECU_T4E.zones[self.combo_zones.current()]
@@ -352,3 +331,4 @@ class t4e_window():
 root = tk.Tk()
 app = t4e_window(root)
 root.mainloop()
+

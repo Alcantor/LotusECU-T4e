@@ -2,7 +2,7 @@
 
 import sys
 sys.path.insert(0, '..')
-from ppc32 import PPC32
+from lib.ppc32 import PPC32
 
 # Files
 acc_file = "accusump.bin"

@@ -2,7 +2,7 @@
 
 import sys
 sys.path.insert(0, '..')
-from ppc32 import PPC32
+from lib.ppc32 import PPC32
 
 # Bootloader from ALS3M0240J seems ugly. Look at 0x400 for example.
 # Bootloader A128E6009F and ALS3M0244F are identical except the ID and CRC.

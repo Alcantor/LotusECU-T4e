@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
-import os, sys, can, argparse
+import sys, can, argparse
+from lib.fileprogress import FileProgress
 from flasher import Flasher
 
 class ECUException(Exception):
@@ -16,32 +17,11 @@ class ECU_T4E:
 		("ROM Full"       , 0x000000, 0x80000, "dump.bin")
 	]
 
-	# Override it if needed
-	def log(self, msg):
-		print(msg)
-
-	# Override it if needed
-	def progress(self):
-		print(".", end="", flush=True)
-
-	# Override it if needed
-	def progress_end(self):
-		print()
-
-	def openCAN(self, interface, channel):
-		self.log("Open CAN "+interface+" "+str(channel)+" @ 1 Mbit/s")
-		self.bus = can.Bus(
-			interface = interface,
-			channel = channel,
-			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
-			bitrate = 1000000
-		)
-
-	def closeCAN(self):
-		self.bus.shutdown()
+	def __init__(self, bus, fp):
+		self.bus = bus
+		self.fp = fp
 
 	def readMemory(self, address, size):
-		#self.log("ECU Read "+str(size)+" bytes @ "+hex(address))
 		if  (size == 4):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x50,
@@ -92,7 +72,6 @@ class ECU_T4E:
 
 	def writeMemory(self, address, data, verify = False):
 		size = len(data)
-		#self.log("ECU Write "+str(data)+" @ "+hex(address))
 		if  (size == 4):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x54,
@@ -133,44 +112,13 @@ class ECU_T4E:
 			raise ECUException("ECU Write failed!")
 
 	def download(self, address, size, filename):
-		self.log("ECU Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
-		with open(filename,'wb') as f:
-			while(size > 0):
-				chunk_size = min(128, size);
-				chunk = self.readMemory(address, chunk_size)
-				f.write(chunk)
-				self.progress() # One dot every 128 Bytes
-				address += chunk_size
-				size -= chunk_size
-			self.progress_end()
+		self.fp.download(address, size, filename, self.readMemory, 128, False)
 
 	def verify(self, address, filename):
-		size = os.path.getsize(filename)
-		self.log("ECU Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename)
-		with open(filename,'rb') as f:
-			while(True):
-				f_chunk = f.read(128)
-				chunk_size = len(f_chunk)
-				if(chunk_size == 0): break # EOF
-				chunk = self.readMemory(address, chunk_size)
-				if(f_chunk != chunk):
-					raise ECUException("ECU Verify failed! @ "+hex(address))
-				self.progress() # One dot every 128 Bytes
-				address += chunk_size
-			self.progress_end()
+		self.fp.verify(address, filename, self.readMemory, 128, False)
 
 	def upload(self, address, filename):
-		size = os.path.getsize(filename)
-		self.log("ECU Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename)
-		with open(filename,'rb') as f:
-			while(True):
-				chunk = f.read(128)
-				chunk_size = len(chunk)
-				if(chunk_size == 0): break # EOF
-				self.writeMemory(address, chunk)
-				self.progress() # One dot every 128 Bytes
-				address += chunk_size
-			self.progress_end()
+		self.fp.upload(address, filename, self.writeMemory, 128, False)
 
 	def inject(self, freeram_address, filename, stackblr_address):
 		self.upload(freeram_address, filename)
@@ -258,8 +206,15 @@ if __name__ == "__main__":
 			print("%i: %s" % (i, ECU_T4E.zones[i][0]))
 		sys.exit(0)
 
-	t4e = ECU_T4E();
-	t4e.openCAN(can_if, can_ch)
+	print("Open CAN "+can_if+" "+str(can_ch)+" @ 1 Mbit/s")
+	bus = can.Bus(
+		interface = can_if,
+		channel = can_ch,
+		can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
+		bitrate = 1000000
+	)
+
+	t4e = ECU_T4E(bus, FileProgress());
 	print()
 
 	if(ecu_op == 'dl'):
@@ -282,10 +237,9 @@ if __name__ == "__main__":
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
 		t4e.inject(0x3FF000, "flasher/canstrap.bin", 0x3FFFDC)
-		fl = Flasher()
-		fl.bus = t4e.bus
-		fl.log = t4e.log
+		fl = Flasher(t4e.bus, t4e.fp)
 		fl.canstrap(timeout=1.0)
+		print("We have the control of the ECU!")
 		# Install the flasher plugin
 		fl.upload(0x3FF200, "flasher/plugin_flash.bin")
 		fl.plugin(0x3FF200)
@@ -294,6 +248,6 @@ if __name__ == "__main__":
 		print("Test ECU Read/Write")
 		t4e.test(0x3FF000)
 
-	t4e.closeCAN()
+	bus.shutdown()
 	print("Done")
 

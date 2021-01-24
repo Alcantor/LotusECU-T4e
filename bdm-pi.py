@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
-import os, sys, argparse, time
+import sys, argparse, time
 import RPi.GPIO as GPIO
-from ppc32 import PPC32
+from lib.fileprogress import FileProgress
+from lib.ppc32 import PPC32
 
 # DSCK -> GPIO4  - PIN7 with a 5.6 kOhm resistor
 # GND  -> GND    - PIN9
@@ -17,20 +18,10 @@ class BDMException(Exception):
 	pass
 
 class BDM_PI:
-	# Override it if needed
-	def log(self, msg):
-		print(msg)
-
-	# Override it if needed
-	def progress(self):
-		print(".", end="", flush=True)
-
-	# Override it if needed
-	def progress_end(self):
-		print()
+	def __init__(self, fp):
+		self.fp = fp
 
 	def openGPIO(self, gpio_dsck=4, gpio_dsdi=17, gpio_dsdo=27, hperiod=0.0005):
-		self.log("Open GPIO for BDM operation")
 		self.gpio_dsck = gpio_dsck
 		self.gpio_dsdi = gpio_dsdi
 		self.gpio_dsdo = gpio_dsdo
@@ -91,56 +82,19 @@ class BDM_PI:
 		self.writeWord(0x2FC004, bytes([0x00, 0x00, 0xFF, 0x80]))
 
 	def download(self, address, size, filename):
-		self.log("BDM Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
-		if(size % 4 != 0):
-			raise BDMException("Size is not a multiple of 4")
 		self.disableWatchdog()
-		with open(filename,'wb') as f:
-			while(size > 0):
-				chunk = self.readWord(address)
-				f.write(chunk)
-				self.progress() # One dot every 4 Bytes
-				address += 4
-				size -= 4
-			self.progress_end()
+		self.fp.download(address, size, filename, self.readWord, 4, True)
 
 	def verify(self, address, filename, offset=0, size=None):
-		if(not size): size = os.path.getsize(filename) - offset
-		self.log("BDM Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
-		if(size % 4 != 0):
-			raise BDMException("Size is not a multiple of 4")
 		self.disableWatchdog()
-		with open(filename,'rb') as f:
-			f.seek(offset)
-			while(size > 0):
-				f_chunk = f.read(4)
-				if(len(f_chunk) != 4): break # EOF
-				chunk = self.readWord(address)
-				if(f_chunk != chunk):
-					raise BDMException("BDM Verify failed! @ "+hex(address))
-				self.progress() # One dot every 4 Bytes
-				address += 4
-				size -= 4
-			self.progress_end()
+		self.fp.verify(address, filename, self.readWord, 4, True, offset, size)
 
 	def upload(self, address, filename, offset=0, size=None):
-		if(not size): size = os.path.getsize(filename) - offset
-		self.log("BDM Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
-		if(size % 4 != 0):
-			raise BDMException("Size is not a multiple of 4")
 		self.disableWatchdog()
-		with open(filename,'rb') as f:
-			f.seek(offset)
-			while(size > 0):
-				chunk = f.read(4)
-				if(len(chunk) != 4): break # EOF
-				self.writeWord(address, chunk)
-				self.progress() # One dot every 4 Bytes
-				address += 4
-				size -= 4
-			self.progress_end()
+		self.fp.upload(address, filename, self.writeWord, 4, True, offset, size)
 
 	def test(self, freeram_address):
+		self.disableWatchdog()
 		test = b'\xDE\xAD\xBE\xEF'
 		self.writeWord(freeram_address, test)
 		if(test != self.readWord(freeram_address)):
@@ -168,7 +122,8 @@ if __name__ == "__main__":
 	args = vars(ap.parse_args())
 	bdm_op = args['operation']
 
-	bdm = BDM_PI();
+	bdm = BDM_PI(FileProgress());
+	print("Open GPIO for BDM operation")
 	bdm.openGPIO()
 
 	if(bdm_op == 'pdh'):

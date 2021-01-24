@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import sys, datetime
-from crc import CRC16Reflect
-from ppc32 import PPC32
+from lib.crc import CRC16Reflect
+from lib.ppc32 import PPC32
 
 charset = "ISO-8859-15"
 
