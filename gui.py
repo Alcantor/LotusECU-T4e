@@ -22,8 +22,8 @@ class FileProgressGui(FileProgress):
 		self.textEntry.set(msg)
 		self.master.update()
 
-	def progress(self):
-		self.bytes_transfered += self.bytes_step
+	def progress(self, chunk_size):
+		self.bytes_transfered += chunk_size
 		fraction = self.bytes_transfered/self.bytes_total
 		self.progressbar['value'] = fraction*100
 		self.master.update()
@@ -36,7 +36,6 @@ class FileProgressGui(FileProgress):
 		self.progressbar['value'] = 0
 		self.bytes_total = size
 		self.bytes_transfered = 0
-		self.bytes_step = chunk_size
 		super().download(address, size, filename, read_fnct, chunk_size, chunk_align)
 
 	def verify(self, address, filename, read_fnct, chunk_size, chunk_align, offset=0, size=None):
@@ -44,14 +43,12 @@ class FileProgressGui(FileProgress):
 		self.bytes_total = size
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
-		self.bytes_step = chunk_size
 		super().verify(address, filename, read_fnct, chunk_size, chunk_align, offset, size)
 
 	def verify_blank(self, address, size, read_fnct, chunk_size, chunk_align):
 		self.bytes_total = size
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
-		self.bytes_step = chunk_size
 		super().verify_blank(address, size, read_fnct, chunk_size, chunk_align)
 
 	def upload(self, address, filename, write_fnct, chunk_size, chunk_align, offset=0, size=None):
@@ -59,7 +56,6 @@ class FileProgressGui(FileProgress):
 		self.bytes_total = size
 		self.progressbar['value'] = 0
 		self.bytes_transfered = 0
-		self.bytes_step = chunk_size
 		super().upload(address, filename, write_fnct, chunk_size, chunk_align, offset, size)
 
 class t4e_window():

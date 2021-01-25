@@ -11,7 +11,7 @@ class FileProgress:
 		print(msg)
 
 	# Override it if needed
-	def progress(self):
+	def progress(self, chunk_size):
 		print(".", end="", flush=True)
 
 	# Override it if needed
@@ -33,7 +33,7 @@ class FileProgress:
 					chunk_size = min(chunk_size, size)
 					chunk = read_fnct(address, chunk_size)
 				f.write(chunk)
-				self.progress()
+				self.progress(chunk_size)
 				address += chunk_size
 				size -= chunk_size
 			self.progress_end()
@@ -53,7 +53,7 @@ class FileProgress:
 				f_chunk = f.read(chunk_size)
 				if(f_chunk != chunk):
 					raise FileProgressException("Verify failed! @ "+hex(address))
-				self.progress()
+				self.progress(chunk_size)
 				address += chunk_size
 				size -= chunk_size
 			self.progress_end()
@@ -70,7 +70,7 @@ class FileProgress:
 			for byte in chunk:
 				if(byte != 0xFF):
 					raise FileProgressException("Verify Blank failed! @ "+hex(address))
-			self.progress()
+			self.progress(chunk_size)
 			address += chunk_size
 			size -= chunk_size
 		self.progress_end()
@@ -85,7 +85,7 @@ class FileProgress:
 				chunk = f.read(chunk_size)
 				chunk_size = len(chunk)
 				write_fnct(address, chunk)
-				self.progress()
+				self.progress(chunk_size)
 				address += chunk_size
 				size -= chunk_size
 			self.progress_end()
