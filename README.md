@@ -54,9 +54,12 @@ If you want to flash using that method, try the [Daft_LotusT4_OBD].
 The T4e of the black dashboard cars has another bootloader which does the
 reprogramming with CAN-Bus (500 kbit/s).
 
-For the white dashboard at least (black dashboard?), there is an access provided
+For most of the white dashboard, there is an access provided
 by the main program trough CAN-BUS (1 Mbit/s). It's not intended for
 reprogramming the ECU, but with somes hacks it could be use for this purpose.
+
+But since version "BCroftT4E090 27/02/2007 Lotus EngV0097" and higher (Including
+the black dashboard) this access has been disabled.
 
 My little hack is not guaranteed to work on all software versions of the
 ECU but when it works it's very reliable (A good CAN-Bus adapter is mandatory).

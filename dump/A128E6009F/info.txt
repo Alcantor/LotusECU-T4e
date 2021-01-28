@@ -1,3 +1,5 @@
+EU Lotus Exige S2 British Special GT
+
 bootldr:
 	A128E6009F K0404
 

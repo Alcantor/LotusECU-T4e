@@ -257,7 +257,8 @@ class t4e_window():
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.flasher.eraseBlock(block[0],block[1])
+			self.flasher_gui.log("Erase " + block[0])
+			self.flasher.eraseBlock(block[1])
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))
 		self.closeCAN()
