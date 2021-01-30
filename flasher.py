@@ -63,7 +63,7 @@ class Flasher:
 	def eraseBlock(self, blocks_mask):
 		cmd = 0x05
 		self.send(cmd, blocks_mask.to_bytes(1, "big"))
-		pegood = self.recv(cmd, 1, 5.0)
+		pegood = self.recv(cmd, 1, 10.0)
 		if(pegood[0] != 1):
 			raise FlasherException("No PEGOOD!")
 
