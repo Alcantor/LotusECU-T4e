@@ -18,7 +18,7 @@ control my accusump.
  calrom.bin            | Patched calibration from A128E6009F with the accusump table in it.
  T4_defs_plust4e.patch | Patch for the XML-Definition to edit the table in RomRaider.
 
-***The *.bin files are only for my car. You need to build your own files!***
+***The .bin files are only for my car. You need to build your own files!***
 
 ## Hardware
 
