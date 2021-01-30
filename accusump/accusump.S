@@ -6,11 +6,11 @@ _start:
 	lis	%r3, 0x40
 
 	/* OBD Override */
-	addi	%r4, %r3, -0x256C # 0x3FDA94, Specific to each version!!!
+	addi	%r4, %r3, -0x2154 # 0x3FDEAC, Specific to each version!!!
 	lbz	%r0, 0(%r4)
 	cmplwi	%r0, 0x16
 	bne	normal
-	addi	%r4, %r3, -0x2566 # 0x3FDA9A, Specific to each version!!!
+	addi	%r4, %r3, -0x214E # 0x3FDEB2, Specific to each version!!!
 	lbz	%r0, 0(%r4)
 	cmplwi	%r0, 0
 	beq	close_accusump
@@ -22,18 +22,18 @@ normal:
 	addi	%r4, %r4, 0x3CA0 # 0x013CA0
 
 	/* r5 the RPM */
-	addi	%r5, %r3, -0x2DD0 # 0x3FD230, Specific to each version!!!
+	addi	%r5, %r3, -0x29B4 # 0x3FD64C, Specific to each version!!!
 	lhz	%r5, 0(%r5)
 	li	%r0, 50
 	divwu	%r5, %r5, %r0 /* Divide RPM by 50 */
 
 	/* r6 the oil pressure */
-	addi	%r6, %r3, -0x2F1C # 0x3FD0E4, Specific to each version!!!
+	addi	%r6, %r3, -0x2B02 # 0x3FD4FE, Specific to each version!!!
 	lhz	%r6, 0(%r6)
 	srwi	%r6, %r6, 2 /* From 10 Bits to 8 Bits value (Divide by 4) */
 
 	/* r7 the selenoid output pointer */
-	addi	%r7, %r3, -0x6D31 # 0x3F92CF, Specific to each version!!!
+	addi	%r7, %r3, -0x6A79 # 0x3F9587, Specific to each version!!!
 
 	/* r8 Counter */
 	li	%r8, 8

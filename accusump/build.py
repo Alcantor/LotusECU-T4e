@@ -6,18 +6,18 @@ from lib.ppc32 import PPC32
 
 # Files
 acc_file = "accusump.bin"
-inp_file = "../dump/ALS3M0244F/prog.bin" # You cannot change this file without adapting accusump.S, the acis_offsets and oilw_offset variables.
+inp_file = "../dump/A128E6009F/prog.bin" # You cannot change this file without adapting accusump.S, the acis_offsets and oilw_offset variables.
 out_file = "prog.bin"
 
 # ACIS Control function to replace with the accusump control
-acis_offsets = (0x19690, 0x19790)
+acis_offsets = (0x1BC58, 0x1BD58)
 
 # If we replace the digital oil sensor with an analogic one,
 # the oil pressure warning on the cluster will light up constantly!
 # We need to patch that too.
-oilw_offset = 0x194EC
+oilw_offset = 0x1BAB4
 oilw_default = PPC32.ppc_cmpli(0, 0x200) # Threshold at 2.5 V
-oilw_new = PPC32.ppc_cmpli(0, 0x08D) # Threshold at 0.5 bar?
+oilw_new = PPC32.ppc_cmpli(0, 0x0B8) # Threshold at 1.0 bar.
 
 # Build the new program with the accusump control
 print("Accusump control builder...")
@@ -49,7 +49,7 @@ out_file = "calrom.bin"
 table_offsets = (0x3CA0, 0x3CB0)
 table_default = bytes([
 	0x0A, 0x14, 0x1E, 0x28, 0x32, 0x3C, 0x46, 0x50, # RPM
-	0x4C, 0x55, 0x5F, 0x68, 0x73, 0x7C, 0xB8, 0xB8  # Pressure
+	0x2E, 0x38, 0x43, 0x4D, 0x57, 0x61, 0x6C, 0xBD  # Pressure
 ])
 
 # Build the new calibration with the accusump default table
