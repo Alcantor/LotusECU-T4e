@@ -1,6 +1,6 @@
 ## Introduction
 
-I've have an accusump, and like [Apex_in_sno], I wanted a way to have the sump
+I have an accusump, and like [Apex_in_sno], I wanted a way to have the sump
 on line all the time, but not have it drain when the motor is idling and I wanted
 a full charge for startup.
 
