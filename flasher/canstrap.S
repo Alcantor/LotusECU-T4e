@@ -16,7 +16,8 @@ _start:
 
 	/* Set PPL */
 	/* This is already done by bootloader stage I, but not by BDM */
-	lis	%r0, 0x0090
+	/* 4 MHz XTAL * (MF+1) = 40 MHz */
+	lis	%r0, 0x0090 # MF = 9
 	stw	%r0, -0x3D7C(%r30) # 0x2FC284 PLPRCR
 wait_ppl:
 	lwz	%r0, -0x3D7C(%r30)
@@ -63,9 +64,9 @@ wait_reset:
 	bne	wait_reset
 
 	/* TouCAN A Configure */
-	/* 28 MHz / (PSEG1+1+PSEG2+1) / (PRESDIV+1) = 1 Mbit/s */
+	/* 40 MHz / (1+PROPSEG+1+PSEG1+1+PSEG2+1) / (PRESDIV+1) = 1 Mbit/s */
 	lis	%r3, 0x0004 # PROPSEG = 4
-	addi	%r0, %r3, 0x01F6 # PRESDIV = 1 , RJW = 3, PSEG1 = 6, PSEG2 = 6
+	addi	%r0, %r3, 0x01F6 # PRESDIV = 1, RJW = 3, PSEG1 = 6, PSEG2 = 6
 	stw	%r0, 0x7086(%r30) # 0x307086 CANCTRL0_A + CANCTRL1_A + PRESDIV_A + CANCTRL2_A
 
 	/* TouCAN A Disable all buffers */
