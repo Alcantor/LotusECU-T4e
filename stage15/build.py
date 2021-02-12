@@ -9,7 +9,7 @@ from lib.ppc32 import PPC32
 
 # Files
 s15_file = "../flasher/canstrap.bin"
-inp_file = "../dump/A128E6009F/bootldr.bin"
+inp_file = "../dump/white/A128E6009F/bootldr.bin"
 out_file = "bootldr.bin"
 
 # Free space in Bootloader Stage I where to insert the stage 1.5 (canStrap)

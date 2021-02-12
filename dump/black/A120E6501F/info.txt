@@ -1,0 +1,10 @@
+
+bootldr:
+	A120E6501F
+
+calrom:
+	A129E002 09-05-2007 12:01
+	A129E0002        Sport GT 240 EU
+
+prog:
+	BCroftT4E090 14/07/2006 Lotus EngV0091
