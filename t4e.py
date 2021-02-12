@@ -156,6 +156,15 @@ if __name__ == "__main__":
 		default="can0"
 	)
 	ap.add_argument(
+		"-s",
+		"--speed",
+		required=False,
+		type=str,
+		help="The CAN-Bus speed.",
+		choices=["white", "black"],
+		default="white"
+	)
+	ap.add_argument(
 		"-o",
 		"--operation",
 		required=False,
@@ -200,18 +209,24 @@ if __name__ == "__main__":
 	ecu_op = args['operation']
 	ecu_dir = args['directory']
 	ecu_zones = args['zone']
+	if(args['speed'] == 'black'):
+		can_br = 500000
+		canstrap_file = "flasher/canstrap-black.bin"
+	else:
+		can_br = 1000000
+		canstrap_file = "flasher/canstrap-white.bin"
 	if(args['listzone']):
 		print("Zones ECU")
 		for i in range(0, len(ECU_T4E.zones)):
 			print("%i: %s" % (i, ECU_T4E.zones[i][0]))
 		sys.exit(0)
 
-	print("Open CAN "+can_if+" "+str(can_ch)+" @ 1 Mbit/s")
+	print("Open CAN "+can_if+" "+str(can_ch)+" @ "+str(can_br/1000)+" kbit/s")
 	bus = can.Bus(
 		interface = can_if,
 		channel = can_ch,
 		can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
-		bitrate = 1000000
+		bitrate = can_br
 	)
 
 	t4e = ECU_T4E(bus, FileProgress());
@@ -236,7 +251,7 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
-		t4e.inject(0x3FF000, "flasher/canstrap.bin", 0x3FFFDC)
+		t4e.inject(0x3FF000, canstrap_file, 0x3FFFDC)
 		fl = Flasher(t4e.bus, t4e.fp)
 		fl.canstrap(timeout=1.0)
 		print("We have the control of the ECU!")

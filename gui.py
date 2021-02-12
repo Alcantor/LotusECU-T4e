@@ -77,7 +77,11 @@ class t4e_window():
 		self.entry_channel = tk.Entry(can_frame, textvariable = self.string_channel)
 		self.entry_channel.grid(column=1, row=0, sticky="EW")
 
-		t4e_frame = tk.LabelFrame(master, text="T4e ECU Communication (Safe)")
+		self.combo_speed = ttk.Combobox(can_frame, state="readonly", values = ["white (1 Mb/s)", "black (500 kb/s)"])
+		self.combo_speed.current(0)
+		self.combo_speed.grid(column=2, row=0, sticky="EW")
+
+		t4e_frame = tk.LabelFrame(master, text="T4e Unlocked ECU Communication (Safe)")
 		t4e_frame.grid(column=0, row=1, sticky="EW")
 		t4e_frame.grid_columnconfigure(0, weight = 1)
 
@@ -148,18 +152,21 @@ class t4e_window():
 	def openCAN(self):
 		self.combo_interface['state'] = tk.DISABLED
 		self.entry_channel['state'] = tk.DISABLED
+		self.combo_speed['state'] = tk.DISABLED
 		self.bus = can.Bus(
 			interface = self.combo_interface.get(),
 			channel = self.string_channel.get(),
 			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
-			bitrate = 1000000
+			bitrate = [1000000, 500000][self.combo_speed.current()]
 		)
 		self.t4e.bus = self.bus
 		self.flasher.bus = self.bus
+		self.canstrap_file = ["flasher/canstrap-white.bin", "flasher/canstrap-black.bin"][self.combo_speed.current()]
 
 	def closeCAN(self):
 		self.combo_interface['state'] = tk.NORMAL
 		self.entry_channel['state'] = tk.NORMAL
+		self.combo_speed['state'] = tk.NORMAL
 		self.bus.shutdown()
 
 	def download(self):
@@ -204,7 +211,7 @@ class t4e_window():
 		self.t4e_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.t4e.inject(0x3FF000, "flasher/canstrap.bin", 0x3FFFDC)
+			self.t4e.inject(0x3FF000, self.canstrap_file, 0x3FFFDC)
 			self.flasher.canstrap(timeout=1.0)
 			# Install the flasher plugin
 			self.flasher.upload(0x3FF200, "flasher/plugin_flash.bin")
@@ -222,12 +229,12 @@ class t4e_window():
 			self.openCAN()
 			self.flasher.canstrap()
 			# Move the flasher to the RAM to be able to reflash the bootloader
-			self.flasher.upload(0x3FF000,"flasher/canstrap.bin")
+			self.flasher.upload(0x3FF000,self.canstrap_file)
 			self.flasher.branch(0x3FF000)
 			self.flasher.canstrap(1.0)
 			self.flasher.upload(0x3FF200,"flasher/plugin_flash.bin")
 			self.flasher.plugin(0x3FF200)
-			self.flasher.verify(0x3FF000,"flasher/canstrap.bin")
+			self.flasher.verify(0x3FF000,self.canstrap_file)
 			self.flasher.verify(0x3FF200,"flasher/plugin_flash.bin")
 			self.flasher_buttons(tk.NORMAL)
 		except Exception as e:
@@ -239,7 +246,7 @@ class t4e_window():
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.flasher.verify(0x3FF000,"flasher/canstrap.bin")
+			self.flasher.verify(0x3FF000,self.canstrap_file)
 			self.flasher.verify(0x3FF200,"flasher/plugin_flash.bin")
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))

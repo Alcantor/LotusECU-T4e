@@ -164,6 +164,15 @@ if __name__ == "__main__":
 		default="can0"
 	)
 	ap.add_argument(
+		"-s",
+		"--speed",
+		required=False,
+		type=str,
+		help="The CAN-Bus speed.",
+		choices=["white", "black"],
+		default="white"
+	)
+	ap.add_argument(
 		"-o",
 		"--operation",
 		required=False,
@@ -216,18 +225,24 @@ if __name__ == "__main__":
 	ecu_op = args['operation']
 	ecu_dir = args['directory']
 	ecu_blocks = args['block']
+	if(args['speed'] == 'black'):
+		can_br = 500000
+		canstrap_file = "flasher/canstrap-black.bin"
+	else:
+		can_br = 1000000
+		canstrap_file = "flasher/canstrap-white.bin"
 	if(args['listblock']):
 		print("Blocks ECU")
 		for i in range(0, len(Flasher.blocks)):
 			print("%i: %s" % (i, Flasher.blocks[i][0]))
 		sys.exit(0)
 
-	print("Open CAN "+can_if+" "+str(can_ch)+" @ 1 Mbit/s")
+	print("Open CAN "+can_if+" "+str(can_ch)+" @ "+str(can_br/1000)+" kbit/s")
 	bus = can.Bus(
 		interface = can_if,
 		channel = can_ch,
 		can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
-		bitrate = 1000000
+		bitrate = can_br
 	)
 
 	fl = Flasher(bus, FileProgress());
@@ -260,7 +275,7 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'vfp'):
 		print("Verify Flasher Program")
-		fl.verify(0x3FF000,"flasher/canstrap.bin")
+		fl.verify(0x3FF000,canstrap_file)
 		fl.verify(0x3FF200,"flasher/plugin_flash.bin")
 
 	if(ecu_op == 'e'):
@@ -282,12 +297,12 @@ if __name__ == "__main__":
 		print("Turn IGN on with 60sec.")
 		fl.canstrap()
 		# Move the flasher to the RAM to be able to reflash the bootloader
-		fl.upload(0x3FF000,"flasher/canstrap.bin")
+		fl.upload(0x3FF000,canstrap_file)
 		fl.branch(0x3FF000)
 		fl.canstrap(1.0)
 		fl.upload(0x3FF200,"flasher/plugin_flash.bin")
 		fl.plugin(0x3FF200)
-		fl.verify(0x3FF000,"flasher/canstrap.bin")
+		fl.verify(0x3FF000,canstrap_file)
 		fl.verify(0x3FF200,"flasher/plugin_flash.bin")
 
 	if(ecu_op == 'r'):

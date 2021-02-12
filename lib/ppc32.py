@@ -22,6 +22,9 @@ class PPC32:
 	def ppc_and(rD, rA, rB):
 		return PPC32.__build3(31, rD, rA, rB, 28)
 
+	def ppc_ori(rA, rS, uimm):
+		return PPC32.__build2(24, rS, rA, uimm)
+
 	def ppc_mfspr(rD, spr):
 		return PPC32.__build3(31, rD, spr & 0x1F, spr >> 5, 339)
 

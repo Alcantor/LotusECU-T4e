@@ -1,5 +1,4 @@
 28560b4f1691f521646a173b24d3e660  black/A120E6501F/bootldr.bin
-767b6254b16c05990706965cc7881413  black/A120E6501F/calrom.bin
 7a4832276b9cd4908745111b090492dd  black/A120E6501F/prog.bin
 83709224e7352aafad061a12769afceb  white/A128E6009F/bootldr.bin
 7e5a75c910a7e3fbee394d820fdc4a2f  white/A128E6009F/calram.bin
@@ -8,7 +7,6 @@ ba4a624b033f5fc686d4979308819b5b  white/A128E6009F/calrom.bin
 1ddb3dd2d2086b4481bd484a6c7e1027  white/A128E6009F/prog.bin
 d997abd81200e4543d781a075134c288  white/ALS3M0240F/bootldr.bin
 7137729b3b880032c817fd7e73adbfac  white/ALS3M0240F/calrom.bin
-251ef94b25a1ce593d03aaac9922ae55  white/ALS3M0240F/dump.bin
 43fa76a09371d4e00e84f20f51755e57  white/ALS3M0240F/prog.bin
 349566939b4fb57b6a0c55e20240e9fc  white/ALS3M0240J/bootldr.bin
 363c0d1d46e4077e52633dcc577de839  white/ALS3M0240J/calram.bin
@@ -20,8 +18,10 @@ d997abd81200e4543d781a075134c288  white/ALS3M0240F/bootldr.bin
 f52dde26272bec3135e8f73c7365b9d5  white/ALS3M0244F/calrom.bin
 d76ea22ce55f76f22419aa1d427ce43f  white/ALS3M0244F/decram.bin
 33ca75a8f6db4386f005337fe7df1473  white/ALS3M0244F/prog.bin
-478fb3dd569027178a35a78fd8541b6a  ../stage15/bootldr.bin
-41d22ed3fa5cc06bdccd06cf61be0777  ../flasher/canstrap.bin
+8e160693b88d94a0f8d1332eddc682d9  ../stage15/black/bootldr.bin
+478fb3dd569027178a35a78fd8541b6a  ../stage15/white/bootldr.bin
+e8a671148a8243af25b1852c62d90bc2  ../flasher/canstrap-black.bin
+41d22ed3fa5cc06bdccd06cf61be0777  ../flasher/canstrap-white.bin
 da10b7aa1b9756970fdac6bc46e84dbb  ../flasher/func_test.bin
 9f9f7f55dcf77ede2f1f6ae2676f3855  ../flasher/plugin_eeprom.bin
 90a1bd6d02c27d6771db19ea3cb5eef8  ../flasher/plugin_flash.bin

@@ -133,11 +133,11 @@ if __name__ == "__main__":
 
 	if(bdm_op == 'ufp'):
 		print("Upload Flash Program")
-		bdm.upload(0x3FF000, "flasher/canstrap.bin")
+		bdm.upload(0x3FF000, "flasher/canstrap-white.bin")
 
 	if(bdm_op == 'vfp'):
 		print("Verify Flash Program")
-		bdm.verify(0x3FF000, "flasher/canstrap.bin")
+		bdm.verify(0x3FF000, "flasher/canstrap-white.bin")
 
 	if(bdm_op == 'sfp'):
 		print("Start Flash Program")

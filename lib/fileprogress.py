@@ -17,7 +17,7 @@ class FileProgress:
 	# Override it if needed
 	def progress_end(self):
 		print()
-		
+
 	def __aligned(self, size, chunk_size, chunk_align):
 		if(size % chunk_size != 0 and chunk_align):
 			raise FileProgressException("File size is not a multiple of "+str(chunk_size))
@@ -92,4 +92,3 @@ class FileProgress:
 
 if __name__ == "__main__":
 	print("Library to upload/download/verify files.")
-
