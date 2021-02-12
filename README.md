@@ -85,8 +85,9 @@ This could change in a near future (see develop of python-can).
 
 The IXXAT USB-to-CAN Adapter is easy to use and reliable but expensive.
 
-The Raspberry-Pi + CAN-Hat is cheap and reliable but more complicated to use (And
-you can use it as a BDM-Programmer).
+The Raspberry-Pi + CAN-Hat is cheap but not reliable, more complicated to use (And
+you can use it as a BDM-Programmer). We have experienced data corruption because of
+the SPI.
 
 [Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
@@ -137,6 +138,8 @@ you can use it as a BDM-Programmer).
 
 **: Old version like "BCroftT4E070 01/11/2005 Lotus EngV0078" does not check the CRC at all.
 
+**: The above example is for white dashboard only. Black dashboard is easier, because the CRC value is stored at the end of the calrom.
+
 ## Live tuning.
 
 It's possible to make modifications on running engine for test, because the
@@ -178,7 +181,7 @@ You have to open the "calrom.bin" file of your dump.
 
 ## Command line example (BDM Port)
 
-If your ECU is completely fucked up, or unsupported by the t4e.py script (T4e/T6e ECU Black Dash ?),
+If your ECU is completely fucked up, or unsupported by the t4e.py script (T4e/T6e ECU Black Dash),
 you could use the BDM port with a Raspberry Pi. It's much slower than a true BDM-Programmer but
 if you have a Raspberry Pi laying around, why not.
 
