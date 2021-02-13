@@ -96,9 +96,12 @@ def check_eeprom(eeprom_file):
 
 def check_crc_black_calrom(cal_file):
 	crc = CRC16Reflect(0x8005, initvalue=0x0000) # CRC for calibration
+	size_sign = 0x20
+	size_crc = 2
+	size_cal = 0x3CB4
 	with open(cal_file, 'rb') as fcal:
-		fcal.seek(0x20)
-		crc.update(fcal.read(0x3CB4-0x22))
+		fcal.seek(size_sign)
+		crc.update(fcal.read(size_cal-size_sign-size_crc))
 		print("Calibration CRC: "+hex(crc.get()))
 		crc2 = int.from_bytes(fcal.read(2), "big")
 		print("Should be CRC: "+hex(crc2))
@@ -106,6 +109,25 @@ def check_crc_black_calrom(cal_file):
 			print("CRC is correct!")
 		else:
 			print("CRC is wrong!")
+
+def unlock_black_calrom(inp_file, out_file):
+	crc = CRC16Reflect(0x8005, initvalue=0x0000) # CRC for calibration
+	magic = "WTF?".encode("ascii")
+	size_sign = 0x20
+	size_magic = 4
+	size_crc = 2
+	size_cal = 0x3CB4
+	with open(inp_file, 'rb') as finp:
+		inp_cal = finp.read(size_cal-size_magic-size_crc)
+		finp.seek(size_magic+size_crc, 1)
+		inp_free = finp.read()
+	inp_cal += magic
+	crc.update(inp_cal[size_sign:])
+	print("New calibration CRC: "+hex(crc.get()))
+	with open(out_file,'wb') as fout:
+		fout.write(inp_cal)
+		fout.write(crc.get().to_bytes(size_crc, "big"))
+		fout.write(inp_free)
 
 if __name__ == "__main__":
 	print("CRC tool for Lotus T4e ECU\n")
@@ -117,12 +139,15 @@ if __name__ == "__main__":
 		check_eeprom(sys.argv[2])
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "check_crc_black_calrom"):
 		check_crc_black_calrom(sys.argv[2])
+	elif(len(sys.argv) >= 4 and sys.argv[1] == "unlock_black_calrom"):
+		unlock_black_calrom(sys.argv[2], sys.argv[3])
 	else:
 		print("usage:")
 		print("\t"+sys.argv[0]+" sign_calrom ORIGINAL_CALROM MODIFIED_CALROM OUTFILE SIGNATURE")
 		print("\t"+sys.argv[0]+" search_crc_prog ORIGINAL_CALROM ORIGINAL_PROG")
 		print("\t"+sys.argv[0]+" check_crc_eeprom EEPROM")
 		print("\t"+sys.argv[0]+" check_crc_black_calrom ORIGINAL_CALROM")
+		print("\t"+sys.argv[0]+" unlock_black_calrom CALROM OUTFILE")
 
 	# CRC for bootloader (not working yet), LUT is correct
 	# crc = CRC16Normal(0x1021, initvalue=0x0123)
