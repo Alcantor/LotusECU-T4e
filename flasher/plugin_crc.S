@@ -10,7 +10,7 @@ _start:
 	cmplwi	%r21, 0x0B
 	bne	end_command_0x0B
 	cmplwi	%r24, 8
-	bne	no_answer # DLC is not 2
+	bne	no_answer # DLC is not 8
 	li	%r24, 5 # Answer 5 bytes
 	li	%r0, -1 # Init value
 
