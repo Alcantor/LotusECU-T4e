@@ -23,6 +23,7 @@ d76ea22ce55f76f22419aa1d427ce43f  white/ALS3M0244F/decram.bin
 e8a671148a8243af25b1852c62d90bc2  ../flasher/canstrap-black.bin
 41d22ed3fa5cc06bdccd06cf61be0777  ../flasher/canstrap-white.bin
 da10b7aa1b9756970fdac6bc46e84dbb  ../flasher/func_test.bin
+1279cc9de23f2f6fe59f3ea2eb8ff42d  ../flasher/plugin_crc.bin
 9f9f7f55dcf77ede2f1f6ae2676f3855  ../flasher/plugin_eeprom.bin
 90a1bd6d02c27d6771db19ea3cb5eef8  ../flasher/plugin_flash.bin
 40984b3716f73ea0014766396caaad72  ../accusump/accusump.bin

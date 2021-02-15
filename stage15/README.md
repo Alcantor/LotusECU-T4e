@@ -7,7 +7,7 @@ bootloader.
 
 The CANstrap will be installed at 0x3000 between the Stage I and Stage II.
 
-The default K-Line recovery routine of the white dashboard bootloader is preserved.
+The default K-Line/CAN-Bus recovery routine of the bootloader are preserved.
 
 In the black dashboard bootloader, there is only one stage... So the CANstrap is
 installed at 0x9000 and takes the hand right after the reset vector.

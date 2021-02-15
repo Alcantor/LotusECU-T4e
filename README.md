@@ -8,7 +8,7 @@
 
 This is my attempt to tune my Lotus Exige S2 (T4e ECU White Dash).
 
-It's heaveliy based on the work of [Obeisance] and [Cybernet].
+It's based on the work of [Obeisance] and [Cybernet].
 
 [Obeisance]: https://www.lotustalk.com/threads/daft-disassembly.352193/
 [Cybernet]: https://www.lotustalk.com/threads/t4e-ecu-editor-preview.372258/
@@ -31,8 +31,10 @@ through the OBD Port.
 My final goal was to control my accusump with the T4e ECU, that was not possible
 without patching the main program. See folder [accusump].
 
-To be able to patch the main program more safely I've includer the flasher into
+To be able to patch the main program more safely I've included the flasher into
 the bootloader. See folder [stage15].
+
+After that I went a little further by looking at the ECU Black Dash.
 
 [accusump]:https://github.com/Alcantor/LotusECU-T4e/tree/master/accusump
 [stage15]:https://github.com/Alcantor/LotusECU-T4e/tree/master/stage15
@@ -52,14 +54,14 @@ assume that's not reliable because BOE doesn't support that method anymore).
 If you want to flash using that method, try the [Daft_LotusT4_OBD].
 
 The T4e of the black dashboard cars has another bootloader which does the
-reprogramming with CAN-Bus (500 kbit/s).
+reprogramming with CAN-Bus (500 kbit/s). Only writing, no reading...
 
 For most of the white dashboard, there is an access provided
 by the main program trough CAN-BUS (1 Mbit/s). It's not intended for
 reprogramming the ECU, but with somes hacks it could be use for this purpose.
 
-But since version "BCroftT4E090 27/02/2007 Lotus EngV0097" and higher (Including
-the black dashboard) this access has been disabled.
+This access has been definitively disabled on the black dashboard. But it's
+possible to re-enable it, with a BDM access or a modified .CRP file.
 
 My little hack is not guaranteed to work on all software versions of the
 ECU but when it works it's very reliable (A good CAN-Bus adapter is mandatory).
@@ -85,7 +87,7 @@ This could change in a near future (see develop of python-can).
 
 The IXXAT USB-to-CAN Adapter is easy to use and reliable but expensive.
 
-The Raspberry-Pi + CAN-Hat is cheap but not reliable, more complicated to use (And
+The Raspberry-Pi + CAN-Hat is cheap and reliable?, but more complicated to use (And
 you can use it as a BDM-Programmer). We have experienced data corruption because of
 the SPI.
 
@@ -108,29 +110,31 @@ the SPI.
 
     1. sudo ip link set can0 up type can bitrate 1000000
     2. ./t4y.py -o dl -z 0 1 2 3 4
-    3. cp calrom.bin calrom.ori.bin
-    4. [Modify calrom.bin with RomRaider]
-    5. ./sign.py sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
-    6. ./t4e.py -o ifp
-    7. ./flasher.py -o vfp
-    8. ./flasher.py -o e -b 1
-    9. ./flasher.py -o vb -b 1
-    10. ./flasher.py -o p -b 1
-    11. ./flasher.py -o v -b 1
-    12. ./flasher.py -o r
+    3. ./t4y.py -o v -z 0 1 2
+    4. cp calrom.bin calrom.ori.bin
+    5. [Modify calrom.bin with RomRaider]
+    6. ./sign.py sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
+    7. ./t4e.py -o ifp
+    8. ./flasher.py -o vfp
+    9. ./flasher.py -o e -b 1
+    10. ./flasher.py -o vb -b 1
+    12. ./flasher.py -o p -b 1
+    13. ./flasher.py -o v -b 1
+    14. ./flasher.py -o r
 
     To 1: Turn CAN-Bus on [Linux/SocketCAN Only]
     To 2: Download the ECU like cybernet does.
-    To 3: Backup, backup, backup...
-    To 4: Tune your engine!
-    To 5: Sign the calibration with a fake date to match the original CRC. **
-    To 6: Install the flasher into the RAM. *
-    To 7: Verify the flasher itself.
-    To 8: Erase the calibration block. *** [TESTED] ***
-    To 9: Verify the erasure.
-    To 10: Program the calibration block. *** [TESTED] ***
-    To 11: Verify the calibration block.
-    To 12: Reset.
+    To 3: Verify the file from the previous step!
+    To 4: Backup, backup, backup...
+    To 5: Tune your engine!
+    To 6: Sign the calibration with a fake date to match the original CRC. **
+    To 7: Install the flasher into the RAM. *
+    To 8: Verify the flasher itself.
+    To 9: Erase the calibration block. *** [TESTED] ***
+    To 10: Verify the erasure.
+    To 12: Program the calibration block. *** [TESTED] ***
+    To 13: Verify the calibration block.
+    To 14: Reset.
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
@@ -139,6 +143,35 @@ the SPI.
 **: Old version like "BCroftT4E070 01/11/2005 Lotus EngV0078" does not check the CRC at all.
 
 **: The above example is for white dashboard only. Black dashboard is easier, because the CRC value is stored at the end of the calrom.
+
+## Command line example (BDM Port)
+
+If your ECU is completely fucked up, or unsupported by the t4e.py script (T4e/T6e ECU Black Dash),
+you could use the BDM port with a Raspberry Pi. It's much slower than a true BDM-Programmer but
+if you have a Raspberry Pi laying around, why not.
+
+For that you need to remove you ECU from your car, open it and connect it correctly. It's only
+loading the CAN-Bus Flasher with the BDM Port, so you also need to wire a CAN-Bus adapter.
+
+Those commands are for the Raspberry Pi with a CAN Hat.
+
+    1. ./bdm-pi.py -o pdh
+    2. [TURN YOUR ECU ON]
+    3. ./bdm-pi.py -o t
+    4. ./bdm-pi.py -o ufp
+    5. ./flasher.py -o b &
+    6. ./bdm-pi.py -o sfp
+    7. ./flasher.py -o dl -b 0 1 2
+    8. ./flasher.py -o c -b 0 1 2
+
+    To 1: Drive the DSCK pin high to enter BDM mode.
+    To 2: Turn the CPU on.
+    To 3: Test the connection by writing/reading a word. If it fail check your connections.
+    To 4: Upload the flasher into the RAM.
+    To 5: Bootstrap: The CAN-Flasher needs a answer within a short time, otherwise it will exit.
+    To 6: Start the flasher.
+    To 7: Download the ECU for example.
+    To 8: Compare CRC of the file from the previous step!
 
 ## Live tuning.
 
@@ -169,7 +202,7 @@ or a Main Program, be sure that the files are good and valid.
 
 ## GUI
 
-The simple GUI...
+The simple GUI... not all options are implemented...
 
 ![alt text](documentation/Usage/GUI.png "GUI Demo")
 
@@ -178,33 +211,6 @@ The simple GUI...
 You have to open the "calrom.bin" file of your dump.
 
 ![alt text](documentation/Usage/RomRaider.png "Tune Demo")
-
-## Command line example (BDM Port)
-
-If your ECU is completely fucked up, or unsupported by the t4e.py script (T4e/T6e ECU Black Dash),
-you could use the BDM port with a Raspberry Pi. It's much slower than a true BDM-Programmer but
-if you have a Raspberry Pi laying around, why not.
-
-For that you need to remove you ECU from your car, open it and connect it correctly. It's only
-loading the CAN-Bus Flasher with the BDM Port, so you also need to wire a CAN-Bus adapter.
-
-Those commands are for the Raspberry Pi with a CAN Hat.
-
-    1. ./bdm-pi.py -o pdh
-    2. [TURN YOUR ECU ON]
-    3. ./bdm-pi.py -o t
-    4. ./bdm-pi.py -o ufp
-    5. ./flasher.py -o b &
-    6. ./bdm-pi.py -o sfp
-    7. ./flasher.py -o dl -b 0 1 2
-
-    To 1: Drive the DSCK pin high to enter BDM mode.
-    To 2: Turn the CPU on.
-    To 3: Test the connection by writing/reading a word. If it fail check your connections.
-    To 4: Upload the flasher into the RAM.
-    To 5: Bootstrap: The CAN-Flasher needs a answer within a short time, otherwise it will exit.
-    To 6: Start the flasher.
-    To 7: Download the ECU for example.
 
 ## Debugging the MPC 5xx
 

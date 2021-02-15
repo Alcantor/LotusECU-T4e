@@ -2,6 +2,7 @@
 
 import sys, can, argparse
 from lib.fileprogress import FileProgress
+from lib.crc import CRC32Reflect
 
 class FlasherException(Exception):
 	pass
@@ -93,6 +94,11 @@ class Flasher:
 		cmd = 0x0A
 		self.send(cmd, address.to_bytes(3, "big") + data)
 		self.recv(cmd)
+
+	def computeCRC(self, address, length):
+		cmd = 0x0B
+		self.send(cmd, address.to_bytes(3, "big") + length.to_bytes(4, "big"))
+		return int.from_bytes(self.recv(cmd, 4, 5.0), "big")
 
 	def download(self, address, size, filename):
 		self.fp.download(address, size, filename, self.readWord, 4, True)
@@ -190,8 +196,9 @@ if __name__ == "__main__":
 			"t -> Tests, "
 			"dle -> Download EEPROM, "
 			"ve -> Verify EEPROM, "
-			"pe -> Program EEPROM",
-		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t", "dle", "ve", "pe"],
+			"pe -> Program EEPROM, "
+			"c -> Compute CRC",
+		choices=["dl", "v", "vb", "vfp", "e", "p", "r", "b", "t", "dle", "ve", "pe", "c"],
 		default="dl"
 	)
 	ap.add_argument(
@@ -346,6 +353,37 @@ if __name__ == "__main__":
 		fl.upload(0x3FF300,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF300)
 		fl.uploadEEPROM(0x0, ecu_dir+"/eeprom.bin")
+		# Return to the flasher plugin
+		fl.plugin(0x3FF200)
+
+	if(ecu_op == 'c'):
+		crc = CRC32Reflect(0x1EDC6F41, initvalue=0xFFFFFFFF)
+		print("Upload CRC lookup table...")
+		for i in range(0, len(crc.table)):
+			fl.writeWord(
+				0x3F8000+(i*4),
+				crc.table[i].to_bytes(4, "big")
+			)
+		fl.upload(0x3FF300,"flasher/plugin_crc.bin")
+		fl.plugin(0x3FF300)
+		crc_ok = True
+		print("\nECU      FILE     Filename")
+		print("--------------------------")
+		for i in ecu_blocks:
+			crc_ecu = fl.computeCRC(
+				Flasher.blocks[i][2],
+				Flasher.blocks[i][3]
+			)
+			filename = ecu_dir+"/"+Flasher.blocks[i][4]
+			try:
+				crc.do_file(filename)
+				crc_file = crc.get() ^ 0xFFFFFFFF
+			except:
+				crc_file = 0
+			print('%08X %08X %s' % (crc_ecu,crc_file,filename))
+			if(crc_ecu != crc_file): crc_ok = False
+		if(crc_ok): print("\nAll CRC are OK!\n")
+		else: print("\nCRC are wrong or missing!\n")
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
 

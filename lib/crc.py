@@ -23,6 +23,13 @@ class CRC:
 		for byte in reversed(data): self.update_byte_reverse(byte)
 	def get(self):
 		return self.crc
+	def do_file(self, filename):
+		with open(filename, 'rb') as f:
+			self.reset()
+			while(True):
+				chunk = f.read(1024)
+				if(len(chunk) == 0): break
+				self.update(chunk)
 
 class CRC8Normal(CRC):
 	def __init__(self, polynomial, initvalue=0xFF):
