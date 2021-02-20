@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys, can, argparse
+sys.path.insert(0, '..')
 from lib.crc import CRC8Normal
 
 class ECUBlackException(Exception):
@@ -133,7 +134,7 @@ if __name__ == "__main__":
 		bitrate = 500000
 	)
 
-	t4e = ECU_T4E_BLACK(bus,"stage15/black/bootldr.crp");
+	t4e = ECU_T4E_BLACK(bus,"black/bootldr.crp");
 	print("Turn IGN on with 60sec.")
 	t4e.bootstrap()
 	bus.shutdown()
