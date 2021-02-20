@@ -74,7 +74,7 @@ This is also a RISKY operation.
 	4. [WAIT]
 	5. [TURN YOUR ECU OFF]
 
-	To 1: Convert "white/bootldr.bin" into "white/bootldr.crp"
+	To 1: Convert "black/bootldr.bin" into "black/bootldr.crp"
 	To 2-4: Upload the CRP file of the previous step with the factory method.
 
 ## Usage example
