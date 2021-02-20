@@ -60,7 +60,7 @@ For most of the white dashboard, there is an access provided
 by the main program trough CAN-BUS (1 Mbit/s). It's not intended for
 reprogramming the ECU, but with somes hacks it could be use for this purpose.
 
-This access has been definitively disabled on the black dashboard. But it's
+This access has been definitively locked on the black dashboard. But it's
 possible to re-enable it, with a BDM access or a modified .CRP file.
 
 My little hack is not guaranteed to work on all software versions of the
@@ -87,9 +87,8 @@ This could change in a near future (see develop of python-can).
 
 The IXXAT USB-to-CAN Adapter is easy to use and reliable but expensive.
 
-The Raspberry-Pi + CAN-Hat is cheap and reliable?, but more complicated to use (And
-you can use it as a BDM-Programmer). We have experienced data corruption because of
-the SPI.
+The Raspberry-Pi + CAN-Hat is cheap and reliable, but more complicated to use (And
+you can use it as a BDM-Programmer).
 
 [Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
@@ -106,7 +105,7 @@ the SPI.
  sign.py               | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
 
-## Command line example (OBD Port)
+## Command line example (OBD Port, unlocked ECU)
 
     1. sudo ip link set can0 up type can bitrate 1000000
     2. ./t4y.py -o dl -z 0 1 2 3 4
@@ -144,9 +143,9 @@ the SPI.
 
 **: The above example is for white dashboard only. Black dashboard is easier, because the CRC value is stored at the end of the calrom.
 
-## Command line example (BDM Port)
+## Command line example (BDM Port, locked ECU)
 
-If your ECU is completely fucked up, or unsupported by the t4e.py script (T4e/T6e ECU Black Dash),
+If your ECU is completely fucked up, or unsupported by the t4e.py script (T4e ECU Black Dash),
 you could use the BDM port with a Raspberry Pi. It's much slower than a true BDM-Programmer but
 if you have a Raspberry Pi laying around, why not.
 
