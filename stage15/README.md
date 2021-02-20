@@ -80,7 +80,7 @@ This is also a RISKY operation.
 ## Usage example
 
 Once you have a bootloader with the flasher in it, you can do everything to the
-other blocks (Calibration and Main) more safely than ever and trough the OBD Port.
+other blocks (Calibration and Main) more safely than ever and through the OBD Port.
 
 	1. ./flasher.py -o b
 	2. [TURN CAR ON]

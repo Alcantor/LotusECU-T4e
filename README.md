@@ -172,6 +172,9 @@ Those commands are for the Raspberry Pi with a CAN Hat.
     To 7: Download the ECU for example.
     To 8: Compare CRC of the file from the previous step!
 
+*Note: At this point, you could install the stage15. This will avoid you to
+re-open your ECU if you need to re-flash something.*
+
 ## Live tuning.
 
 It's possible to make modifications on running engine for test, because the
