@@ -40,34 +40,28 @@ class ECU_T4E_BLACK:
 				if(chunk_size == 0): break # EOF
 				self.frames += [chunk]
 
-	def send(self, cmd, data, withCRC=True):
+	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data
-		if(withCRC):
-			self.crc.reset()
-			self.crc.update(data)
-			data += self.crc.get().to_bytes(1, "big")
-		if(len(data) > 8): raise ECUBlackException("Too much data!")
-		msg = can.Message(
-			is_extended_id = False, arbitration_id = 0x50,
-			data = data
-		)
-		self.bus.send(msg)
-
-	def send_frame(self, frame_id):
-		frame = self.frames[frame_id]
-		data = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big") + frame
 		self.crc.reset()
+		self.crc.update(data)
+		data += self.crc.get().to_bytes(1, "big")
 		offset = 0
 		size = len(data)
 		while(size > 0):
-			chunk_size = min(7, size)
+			chunk_size = min(8, size)
 			chunk = data[offset:offset+chunk_size]
-			self.crc.update(chunk)
-			if(chunk_size < 7): # Last chunk
-				data += self.crc.get().to_bytes(1, "big")
-			self.send(6, chunk, False)
+			msg = can.Message(
+				is_extended_id = False, arbitration_id = 0x50,
+				data = chunk
+			)
+			self.bus.send(msg)
 			offset += chunk_size
 			size -= chunk_size
+
+	def send_frame(self, frame_id):
+		frame = self.frames[frame_id]
+		header = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big")
+		self.send(6, header + frame)
 
 	def recv(self, timeout=1.0):
 		msg = self.bus.recv(timeout)
@@ -97,8 +91,7 @@ class ECU_T4E_BLACK:
 			if(cmd == 0x02):
 				print("Programming completed received from ECU")
 			# Error
-			if(cmd == 0x05):
-				print("Error received from ECU\n")
+			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
 				print("Error "+hex(error)+": "+ECU_T4E_BLACK.errors[error])
 
@@ -139,4 +132,3 @@ if __name__ == "__main__":
 	t4e.bootstrap()
 	bus.shutdown()
 	print("Done")
-
