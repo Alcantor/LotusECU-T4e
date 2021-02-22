@@ -2,8 +2,8 @@
 
 import os, struct, xtea
 
-def bin2crp(bin_file, crp_file, address, bin_offset=0):
-	size = os.path.getsize(bin_file) - bin_offset
+def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
+	if(not size): size = os.path.getsize(bin_file) - bin_offset
 	crp_header = struct.pack(
 		"<3I32s5I",
 		0, # Unknow
@@ -23,18 +23,18 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0):
 			0x41, 0x50, 0x0C, 0x5C, 0x64, 0xA7, 0xB1, 0xDB
 		]),
 		mode=xtea.MODE_CBC,
-		rounds=64, # This is divided by 2 in the library!
+		rounds=64, # 64 Rounds, 32 Cycles
 		iv=bytes([0,0,0,0,0,0,0,0])
 	)
 
 	with open(bin_file, 'rb') as fbin, open(crp_file, 'wb') as fcrp:
 		fcrp.write(x.encrypt(crp_header))
 		fbin.seek(bin_offset)
-		while(True):
-				chunk = fbin.read(1024)
-				chunk_size = len(chunk)
-				if(chunk_size == 0): break # EOF
+		while(size > 0):
+				chunk_size = min(1024, size)
+				chunk = fbin.read(chunk_size)
 				fcrp.write(x.encrypt(chunk))
+				size -= chunk_size
 
 if __name__ == "__main__":
 	print("Convert black stage 15 into a CRP File...")
@@ -43,6 +43,7 @@ if __name__ == "__main__":
 		"black/bootldr.bin",
 		"black/bootldr.crp",
 		0xA00,
-		0xA00
+		0xA00,
+		0x9000-0xA00+512 # Max 512 bytes canstrap-black.bin
 	)
 
