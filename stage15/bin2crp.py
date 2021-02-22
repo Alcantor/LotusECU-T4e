@@ -23,7 +23,7 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0):
 			0x41, 0x50, 0x0C, 0x5C, 0x64, 0xA7, 0xB1, 0xDB
 		]),
 		mode=xtea.MODE_CBC,
-		rounds=32,
+		rounds=64, # This is divided by 2 in the library!
 		iv=bytes([0,0,0,0,0,0,0,0])
 	)
 
