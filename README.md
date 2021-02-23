@@ -98,7 +98,7 @@ you can use it as a BDM-Programmer).
 
  Files                 | Description
  ----------------------|------------
- t4e.py                | Program to talk to the original Software (Read/Write RAM)
+ t4e.py                | Program to talk to the original UNLOCKED Software (Read/Write RAM)
  flasher.py            | Program to talk to the flasher Software (Read/Write RAM+Flash+EEPROM)
  flasher/*.bin         | CAN-Bus Flasher for the MPC563
  gui.py                | Graphical interface for both t4e.py and flasher.py
