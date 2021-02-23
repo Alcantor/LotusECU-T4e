@@ -2,16 +2,27 @@
 
 import os, struct, xtea
 
+# Valid addresses are:
+#  Flash:
+#   0xA00 - Payload 12 Bytes (Bootloader config?)
+#   0xA08 - ?
+#   0xA2C - Payload 32 Bytes (Firmware Number)
+#   0xA4C - Payload 32 Bytes (ECU Hardware Version)
+#   0x10000 - Payload max. size 0x5FFFF (calrom)
+#   0x20000 - Payload max. size 0x10000 (prog)
+#
+#  SPI: 0x7C0, 0x7E0, 0x17C0
+#
 def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 	if(not size): size = os.path.getsize(bin_file) - bin_offset
 	crp_header = struct.pack(
 		"<3I32s5I",
 		0, # Unknow
 		0, # Unknow
-		0, # Unknow
+		size + 0x40, # Total size (Header + Payload + Padding)
 		b"T4E                            \0", # Identification string
-		address, # Destination Address (0xA00, 0x10000, 0x20000, ...)
-		size, # Length
+		address, # Destination Address
+		size, # Size of payload
 		11240, # Min version of bootloader
 		11240, # Max version of bootloader
 		0 # Unknow
