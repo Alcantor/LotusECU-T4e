@@ -8,8 +8,8 @@ import os, struct, xtea
 #   0xA08 - ?
 #   0xA2C - Payload 32 Bytes (Firmware Number)
 #   0xA4C - Payload 32 Bytes (ECU Hardware Version)
-#   0x10000 - Payload max. size 0x5FFFF (calrom)
-#   0x20000 - Payload max. size 0x10000 (prog)
+#   0x10000 - Payload max. size 0x10000 (calrom)
+#   0x20000 - Payload max. size 0x5FFFF (prog)
 #
 #  SPI: 0x7C0, 0x7E0, 0x17C0
 #
