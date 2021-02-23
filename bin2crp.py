@@ -19,10 +19,20 @@ import sys, os, struct, xtea
 # I don't think you can update the bootloader itself. Only calrom and prog.
 #
 def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
-	if(not size): size = os.path.getsize(bin_file) - bin_offset
 	print("Convert "+bin_file+" to "+crp_file+".")
-	crp_header = struct.pack(
-		">3I32s5I",
+	if(not size):
+		size = 0
+		with open(bin_file, 'rb') as fbin:
+			while(True):
+				byte = fbin.read(1)
+				if(len(byte) == 0): break # EOF
+				if(byte[0] != 0xFF): size = fbin.tell()
+		print("Auto-Trim free space @ "+hex(size))
+		size -= bin_offset
+
+	# Header
+	crp_data = struct.pack(
+		">3I32s8I",
 		0, # Unknow
 		0, # Unknow
 		size + 0x40, # Total size (Header + Payload) without padding
@@ -31,9 +41,23 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 		size, # Size of payload
 		0, # Max version of bootloader (0 to ignore)
 		0, # Min version of bootloader (0 to ignore)
+		0, # Unknow
+		0, # Unknow
+		0, # Unknow
 		0 # Unknow
 	)
 
+	# Read bin file
+	with open(bin_file, 'rb') as fbin:
+		fbin.seek(bin_offset)
+		crp_data += fbin.read(size)
+
+	# Padding bytes
+	crp_align = len(crp_data) % 8
+	if(crp_align > 0):
+		for _ in range(0, 8-crp_align): crp_data += b'\xFF'
+
+	# XTEA Encryption
 	x = xtea.new(
 		bytes([
 			0x8F, 0xCB, 0x06, 0xDA, 0xAC, 0x19, 0x3E, 0x62,
@@ -44,14 +68,9 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 		iv=bytes([0,0,0,0,0,0,0,0])
 	)
 
-	with open(bin_file, 'rb') as fbin, open(crp_file, 'wb') as fcrp:
-		fcrp.write(x.encrypt(crp_header))
-		fbin.seek(bin_offset)
-		while(size > 0):
-				chunk_size = min(1024, size)
-				chunk = fbin.read(chunk_size)
-				fcrp.write(x.encrypt(chunk))
-				size -= chunk_size
+	# Create CRP file
+	with open(crp_file, 'wb') as fcrp:
+		fcrp.write(x.encrypt(crp_data))
 
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e ECU\n")

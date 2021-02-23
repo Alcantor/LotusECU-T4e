@@ -19,8 +19,6 @@ installed at 0x9000 and takes the hand right after the reset vector.
  build.py              | Build the file "bootldr.bin"
  white/bootldr.bin     | Bootloader from A128E6009F with the CANstrap in it.
  black/bootldr.bin     | Bootloader from A120E6501F with the CANstrap in it.
- bin2crp.py            | NOT FUNCTIONAL. Convert the black/bootldr.bin into a CRP file.
- t4e-black.py          | NOT FUNCTIONAL. Tool to upload a CRP file to a locked black ECU.
 
 ## Installation example for white dashboard (OBD Port, unlocked ECU).
 
@@ -61,21 +59,6 @@ Those commands are for the Raspberry Pi with a CAN Hat.
 
 *Note: The parameter "-s black" is omitted here, the "bdm-pi.py" load only the
 white version. This not a problem because we are alone on the bus.*
-
-## Installation example for black dashboard (OBD Port, locked ECU).
-
-This is NOT working at the moment and is only here for development purpose.
-
-This is also a RISKY operation.
-
-	1. ./bin2crp.py
-	2. ./t4e-black.py
-	3. [TURN YOUR ECU ON]
-	4. [WAIT]
-	5. [TURN YOUR ECU OFF]
-
-	To 1: Convert "black/bootldr.bin" into "black/bootldr.crp"
-	To 2-4: Upload the CRP file of the previous step with the factory method.
 
 ## Usage example
 

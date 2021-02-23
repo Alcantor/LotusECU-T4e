@@ -104,36 +104,38 @@ you can use it as a BDM-Programmer).
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
+ bin2crp.py            | Convert a BIN into a CRP file.
+ t4e-black.py          | Tool to upload a CRP file to a locked black ECU (Write Flash).
 
 ## Command line example (OBD Port, unlocked ECU)
 
-    1. sudo ip link set can0 up type can bitrate 1000000
-    2. ./t4y.py -o dl -z 0 1 2 3 4
-    3. ./t4y.py -o v -z 0 1 2
-    4. cp calrom.bin calrom.ori.bin
-    5. [Modify calrom.bin with RomRaider]
-    6. ./sign.py sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
-    7. ./t4e.py -o ifp
-    8. ./flasher.py -o vfp
-    9. ./flasher.py -o e -b 1
-    10. ./flasher.py -o vb -b 1
-    12. ./flasher.py -o p -b 1
-    13. ./flasher.py -o v -b 1
-    14. ./flasher.py -o r
+	1. sudo ip link set can0 up type can bitrate 1000000
+	2. ./t4y.py -o dl -z 0 1 2 3 4
+	3. ./t4y.py -o v -z 0 1 2
+	4. cp calrom.bin calrom.ori.bin
+	5. [Modify calrom.bin with RomRaider]
+	6. ./sign.py sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
+	7. ./t4e.py -o ifp
+	8. ./flasher.py -o vfp
+	9. ./flasher.py -o e -b 1
+	10. ./flasher.py -o vb -b 1
+	12. ./flasher.py -o p -b 1
+	13. ./flasher.py -o v -b 1
+	14. ./flasher.py -o r
 
-    To 1: Turn CAN-Bus on [Linux/SocketCAN Only]
-    To 2: Download the ECU like cybernet does.
-    To 3: Verify the file from the previous step!
-    To 4: Backup, backup, backup...
-    To 5: Tune your engine!
-    To 6: Sign the calibration with a fake date to match the original CRC. **
-    To 7: Install the flasher into the RAM. *
-    To 8: Verify the flasher itself.
-    To 9: Erase the calibration block. *** [TESTED] ***
-    To 10: Verify the erasure.
-    To 12: Program the calibration block. *** [TESTED] ***
-    To 13: Verify the calibration block.
-    To 14: Reset.
+	To 1: Turn CAN-Bus on [Linux/SocketCAN Only]
+	To 2: Download the ECU like cybernet does.
+	To 3: Verify the file from the previous step!
+	To 4: Backup, backup, backup...
+	To 5: Tune your engine!
+	To 6: Sign the calibration with a fake date to match the original CRC. **
+	To 7: Install the flasher into the RAM. *
+	To 8: Verify the flasher itself.
+	To 9: Erase the calibration block. *** [TESTED] ***
+	To 10: Verify the erasure.
+	To 12: Program the calibration block. *** [TESTED] ***
+	To 13: Verify the calibration block.
+	To 14: Reset.
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
@@ -154,26 +156,56 @@ loading the CAN-Bus Flasher with the BDM Port, so you also need to wire a CAN-Bu
 
 Those commands are for the Raspberry Pi with a CAN Hat.
 
-    1. ./bdm-pi.py -o pdh
-    2. [TURN YOUR ECU ON]
-    3. ./bdm-pi.py -o t
-    4. ./bdm-pi.py -o ufp
-    5. ./flasher.py -o b &
-    6. ./bdm-pi.py -o sfp
-    7. ./flasher.py -o dl -b 0 1 2
-    8. ./flasher.py -o c -b 0 1 2
+	1. ./bdm-pi.py -o pdh
+	2. [TURN YOUR ECU ON]
+	3. ./bdm-pi.py -o t
+	4. ./bdm-pi.py -o ufp
+	5. ./flasher.py -o b &
+	6. ./bdm-pi.py -o sfp
+	7. ./flasher.py -o dl -b 0 1 2
+	8. ./flasher.py -o c -b 0 1 2
 
-    To 1: Drive the DSCK pin high to enter BDM mode.
-    To 2: Turn the CPU on.
-    To 3: Test the connection by writing/reading a word. If it fail check your connections.
-    To 4: Upload the flasher into the RAM.
-    To 5: Bootstrap: The CAN-Flasher needs a answer within a short time, otherwise it will exit.
-    To 6: Start the flasher.
-    To 7: Download the ECU for example.
-    To 8: Compare CRC of the file from the previous step!
+	To 1: Drive the DSCK pin high to enter BDM mode.
+	To 2: Turn the CPU on.
+	To 3: Test the connection by writing/reading a word. If it fail check your connections.
+	To 4: Upload the flasher into the RAM.
+	To 5: Bootstrap: The CAN-Flasher needs a answer within a short time, otherwise it will exit.
+	To 6: Start the flasher.
+	To 7: Download the ECU for example.
+	To 8: Compare CRC of the file from the previous step!
 
 *Note: At this point, you could install the stage15. This will avoid you to
 re-open your ECU if you need to re-flash something.*
+
+## Command line example (OBD Port, locked black ECU).
+
+This example use the factory upload method (Like a Lotus Scan 3 would do). You
+will lose your calibration (maps) with this method!
+
+	1. [Get a calrom.bin file for your car]
+	2. ./sign.py check_crc_black_calrom calrom_original.bin
+	3. [Modify calrom.bin with RomRaider]
+	4. ./sign.py unlock_black_calrom calrom_original.bin calrom.bin
+	5. ./bin2crp.py calrom calrom.bin calrom.crp
+	6. ./t4e-black.py -f calrom.crp *** [TESTED only 1x BE CAREFUL] ***
+	7. [TURN CAR ON]
+	8. ./t4y.py -o dl -z 0 2 3 4
+	9. ./t4y.py -o v -z 0 2
+
+	To 1: Source a calrom.bin file. *
+	To 2: Verify the calrom.bin that you find somewhere, the CRC must match!
+	To 3: Modify the calibration if needed.
+	To 4: Update the CRC and unlock the "live tuning" feature.
+	To 5: Convert the BIN file into an encrypted CRP file.
+	To 6: Make your computer ready to answer the "Hello" message from the ECU.
+	To 7: Turn the CPU on. The flashing will automatically starts.
+	To 8: Your ECU should be unlocked at this point. So download the "bootldr.bin" and "prog.bin" files.
+	To 9: Verify the file from the previous step!
+
+*: Because the factory bootloader can only upload files, you cannot read the
+calibration of your ECU before overwriting it!
+
+*Note: If your want to preserve your "calrom" but not your "prog" of your ECU, it's also possible.*
 
 ## Live tuning.
 

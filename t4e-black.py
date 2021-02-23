@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import sys, can, argparse
-sys.path.insert(0, '..')
 from lib.crc import CRC8Normal
 
 class ECUBlackException(Exception):
@@ -93,6 +92,7 @@ class ECU_T4E_BLACK:
 			# Programming Info
 			if(cmd == 0x02):
 				print("Programming completed received from ECU")
+				break
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
@@ -142,3 +142,4 @@ if __name__ == "__main__":
 	t4e.bootstrap()
 	bus.shutdown()
 	print("Done")
+
