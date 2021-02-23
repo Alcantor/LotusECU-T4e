@@ -19,7 +19,7 @@ class ECU_T4E_BLACK:
 		0x8A: "Programmed Bootloader Version is 0x0 and destination flash address was not 0xA00. Decrypted header Min/Max Bootloader versions are not matching or are zero",
 		0x8B: "Decrypted header 'T4E'+0x1F<0x20> is not matching !",
 		0x8C: "Header A00_val1(+0x34) > flashed 0xA00 value OR Header A00_val2(+0x38) < flashed 0xA00 value",
-		0x8D: "Stage3: when flashing 0x10000 and payload is bigger than 65532 bytes",
+		0x8D: "Invalid destination address and/or size",
 		0x8E: "Timeout while waiting for data.",
 		0x8F: "Test for emptiness of the flash destination address failed. This is valid for 0xA00, 0xA2C, 0xA4C, 0x7C0 (SPI) addresses",
 		0x90: "HC908: Error unlocking HC908 with 8 byte passphrase",
@@ -97,7 +97,6 @@ class ECU_T4E_BLACK:
 
 if __name__ == "__main__":
 	print("CRP Uploader for T4e Black ECU\n")
-	print("\nUNTESTED! Do NOT use!\nThis is NOT safe!\n")
 	ap = argparse.ArgumentParser()
 	ap.add_argument(
 		"-i",
@@ -115,9 +114,17 @@ if __name__ == "__main__":
 		help="The CAN-Bus device to use.",
 		default="can0"
 	)
+	ap.add_argument(
+		"-f",
+		"--file",
+		required=True,
+		type=str,
+		help="The CRP file to upload"
+	)
 	args = vars(ap.parse_args())
 	can_if = args['interface']
 	can_ch = args['device']
+	crp_file = args['file']
 
 	print("Open CAN "+can_if+" "+str(can_ch)+" @ 500 kbit/s")
 	bus = can.Bus(
@@ -127,7 +134,7 @@ if __name__ == "__main__":
 		bitrate = 500000
 	)
 
-	t4e = ECU_T4E_BLACK(bus,"black/bootldr.crp");
+	t4e = ECU_T4E_BLACK(bus, crp_file);
 	print("Turn IGN on with 60sec.")
 	t4e.bootstrap()
 	bus.shutdown()

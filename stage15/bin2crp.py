@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-import os, struct, xtea
+import sys, os, struct, xtea
 
 # Valid addresses are:
 #  Flash:
-#   0xA00 - Payload 12 Bytes (Bootloader config?)
-#   0xA08 - ?
+#   0xA00 - Payload 12 Bytes (Bootloader config)
+#   0xA08 - Payload 4 Bytes (0xFFFFFFFF (Accept unencrypted) -> 0x1 Only CRP)
 #   0xA2C - Payload 32 Bytes (Firmware Number)
 #   0xA4C - Payload 32 Bytes (ECU Hardware Version)
 #   0x10000 - Payload max. size 0x10000 (calrom)
@@ -13,18 +13,24 @@ import os, struct, xtea
 #
 #  SPI: 0x7C0, 0x7E0, 0x17C0
 #
+# Only addresses 0x10000 and 0x20000 can be erased. The other addresses in
+# the bootloader are only to upload a new configuration to a blank bootloader.
+#
+# I don't think you can update the bootloader itself. Only calrom and prog.
+#
 def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 	if(not size): size = os.path.getsize(bin_file) - bin_offset
+	print("Convert "+bin_file+" to "+crp_file+".")
 	crp_header = struct.pack(
 		"<3I32s5I",
 		0, # Unknow
 		0, # Unknow
-		size + 0x40, # Total size (Header + Payload + Padding)
+		size + 0x40, # Total size (Header + Payload) without padding
 		b"T4E                            \0", # Identification string
 		address, # Destination Address
 		size, # Size of payload
-		11240, # Min version of bootloader
-		11240, # Max version of bootloader
+		0, # Min version of bootloader (0 to ignore)
+		0, # Max version of bootloader (0 to ignore)
 		0 # Unknow
 	)
 
@@ -48,13 +54,13 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 				size -= chunk_size
 
 if __name__ == "__main__":
-	print("Convert black stage 15 into a CRP File...")
-	print("\nUNTESTED! Do NOT use!\n")
-	bin2crp(
-		"black/bootldr.bin",
-		"black/bootldr.crp",
-		0xA00,
-		0xA00,
-		0x9000-0xA00+512 # Max 512 bytes canstrap-black.bin
-	)
+	print("BIN to CRP file tool for Lotus T4e ECU\n")
+	if  (len(sys.argv) >= 4 and sys.argv[1] == "calrom"):
+		bin2crp(sys.argv[2], sys.argv[3], 0x10000)
+	elif(len(sys.argv) >= 4 and sys.argv[1] == "prog"):
+		bin2crp(sys.argv[2], sys.argv[3], 0x20000)
+	else:
+		print("usage:")
+		print("\t"+sys.argv[0]+" calrom BIN_FILE CRP_FILE")
+		print("\t"+sys.argv[0]+" prog BIN_FILE CRP_FILE")
 
