@@ -22,15 +22,15 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 	if(not size): size = os.path.getsize(bin_file) - bin_offset
 	print("Convert "+bin_file+" to "+crp_file+".")
 	crp_header = struct.pack(
-		"<3I32s5I",
+		">3I32s5I",
 		0, # Unknow
 		0, # Unknow
 		size + 0x40, # Total size (Header + Payload) without padding
 		b"T4E                            \0", # Identification string
 		address, # Destination Address
 		size, # Size of payload
-		0, # Min version of bootloader (0 to ignore)
 		0, # Max version of bootloader (0 to ignore)
+		0, # Min version of bootloader (0 to ignore)
 		0 # Unknow
 	)
 

@@ -35,7 +35,7 @@ class ECU_T4E_BLACK:
 		self.frames = []
 		with open(crp_file, 'rb') as fcrp:
 			while(True):
-				chunk = fcrp.read(128)
+				chunk = fcrp.read(512)
 				chunk_size = len(chunk)
 				if(chunk_size == 0): break # EOF
 				self.frames += [chunk]
@@ -81,9 +81,12 @@ class ECU_T4E_BLACK:
 				self.send(7, b"\x01\x00\x00\x00\x00\x00")
 			# Frame request
 			if(cmd == 0x01):
-				frame_id = int.from_bytes(data[4:5], "big")
+				frame_id = int.from_bytes(data[4:6], "big")
 				print("Frame "+str(frame_id)+" request from ECU")
-				self.send_frame(frame_id)
+				if(frame_id < len(self.frames)):
+					self.send_frame(frame_id)
+				else:
+					print("Error: Frame is not available!!!")
 			# Erase Info
 			if(cmd == 0x03):
 				print("Erase completed received from ECU")
