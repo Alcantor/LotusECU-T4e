@@ -66,10 +66,6 @@ possible to re-enable it, with a BDM access or a modified .CRP file.
 My little hack is not guaranteed to work on all software versions of the
 ECU but when it works it's very reliable (A good CAN-Bus adapter is mandatory).
 
-If you want more information about the protocol used by the factory bootloader,
-if you want to try it on a black dashboard or if the hack doesn't work,
-please contact me.
-
 [Daft_LotusT4_OBD]: https://github.com/Obeisance/Daft_LotusT4_OBD
 
 ## Prerequisite
@@ -226,8 +222,8 @@ You really need to understand how this work to be able to use the flasher
  4. To start the Main Program, a Bootloader is needed.
 
 So if you erase the Main Program and cut the power off, don't expect to be able
-to restore your ECU with that program through the OBD port. You will have to
-save your ECU with the programming (BDM) port on the board.
+to restore your ECU with the "t4e.py" script. You will have to save your ECU with
+the programming (BDM) port on the board or with the "t4e-black.py" script.
 
 Use the verify function before resetting the ECU! If your programming a Bootloader
 or a Main Program, be sure that the files are good and valid.

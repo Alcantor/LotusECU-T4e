@@ -301,7 +301,7 @@ if __name__ == "__main__":
 			)
 
 	if(ecu_op == 'b'):
-		print("Turn IGN on with 60sec.")
+		print("Turn IGN on within 60sec.")
 		fl.canstrap()
 		# Move the flasher to the RAM to be able to reflash the bootloader
 		fl.upload(0x3FF000,canstrap_file)

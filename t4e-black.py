@@ -96,7 +96,7 @@ class ECU_T4E_BLACK:
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
-				print("Error "+hex(error)+": "+ECU_T4E_BLACK.errors[error])
+				print("Error "+hex(error)+": "+ECU_T4E_BLACK.errors.get(error, "Unknow"))
 
 if __name__ == "__main__":
 	print("CRP Uploader for T4e Black ECU\n")
@@ -138,7 +138,7 @@ if __name__ == "__main__":
 	)
 
 	t4e = ECU_T4E_BLACK(bus, crp_file);
-	print("Turn IGN on with 60sec.")
+	print("Turn IGN on within 60sec.")
 	t4e.bootstrap()
 	bus.shutdown()
 	print("Done")
