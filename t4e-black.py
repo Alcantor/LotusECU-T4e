@@ -88,7 +88,7 @@ class ECU_T4E_BLACK:
 					print("Error: Frame is not available!!!")
 			# Erase Info
 			if(cmd == 0x03):
-				print("Erase completed received from ECU")
+				print("Erasing... received from ECU")
 			# Programming Info
 			if(cmd == 0x02):
 				print("Programming completed received from ECU")
