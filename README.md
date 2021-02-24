@@ -185,8 +185,8 @@ will lose your calibration (maps) with this method!
 	5. ./bin2crp.py calrom calrom.bin calrom.crp
 	6. ./t4e-black.py -f calrom.crp *** [TESTED only 1x BE CAREFUL] ***
 	7. [TURN CAR ON]
-	8. ./t4y.py -s black -o dl -z 0 2 3 4
-	9. ./t4y.py -s black -o v -z 0 2
+	8. ./t4e.py -s black -o dl -z 0 2 3 4
+	9. ./t4e.py -s black -o v -z 0 2
 
 	To 1: Source a calrom.bin file. *
 	To 2: Verify the calrom.bin that you find somewhere, the CRC must match!
