@@ -51,11 +51,12 @@ class BDM_PI:
 		return bytes_out
 
 	def readWord(self, address):
+		# See MCP561RM Table 23-13
 		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(30, 630))
 		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
 		self.io_bytes(b'\x04' + PPC32.ppc_lwz(31, 30, 0))
-		self.io_bytes(b'\x03' + b'\x80')
-		self.io_bytes(b'\x03' + b'\x80')
+		self.io_bytes(b'\x03\x80') # NOP (0x7 + 7 bits to 0)
+		self.io_bytes(b'\x03\x80')
 		self.io_bytes(b'\x04' + PPC32.ppc_mtspr(31, 630))
 		return self.io_bytes(b'\x04' + PPC32.ppc_and(0, 0, 0))[1:5]
 
@@ -65,8 +66,8 @@ class BDM_PI:
 		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(30, 630))
 		self.io_bytes(b'\x05' + address.to_bytes(4, "big"))
 		self.io_bytes(b'\x04' + PPC32.ppc_stw(31, 30, 0))
-		self.io_bytes(b'\x03' + b'\x80')
-		self.io_bytes(b'\x03' + b'\x80')
+		self.io_bytes(b'\x03\x80')
+		self.io_bytes(b'\x03\x80')
 
 	def execute(self, address, msr=0x000003002):
 		self.io_bytes(b'\x04' + PPC32.ppc_mfspr(30, 630))
