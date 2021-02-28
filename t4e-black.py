@@ -32,6 +32,7 @@ class ECU_T4E_BLACK:
 		self.bus = bus
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
 		self.frames = []
+		# TODO: Support the checksum at the end of file.
 		with open(crp_file, 'rb') as fcrp:
 			while(True):
 				chunk = fcrp.read(512)

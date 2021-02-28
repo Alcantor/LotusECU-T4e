@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, os, struct, xtea
+import sys, os, struct, secrets, xtea
 
 # Valid addresses are:
 #  Flash:
@@ -20,6 +20,8 @@ import sys, os, struct, xtea
 #
 def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 	print("Convert "+bin_file+" to "+crp_file+".")
+
+	# Guess size
 	if(not size):
 		size = 0
 		with open(bin_file, 'rb') as fbin:
@@ -30,29 +32,32 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 		print("Auto-Trim free space @ "+hex(size))
 		size -= bin_offset
 
-	# Header
+	# Chunk Header
 	crp_data = struct.pack(
-		">3I32s8I",
-		0, # Unknow
-		0, # Unknow
-		size + 0x40, # Total size (Header + Payload) without padding
+		">32s4I16x",
 		b"T4E                            \0", # Identification string
 		address, # Destination Address
 		size, # Size of payload
 		0, # Max version of bootloader (0 to ignore)
-		0, # Min version of bootloader (0 to ignore)
-		0, # Unknow
-		0, # Unknow
-		0, # Unknow
-		0 # Unknow
+		0 # Min version of bootloader (0 to ignore)
+		# 16 Padding bytes
 	)
 
-	# Read bin file
+	# Chunk
 	with open(bin_file, 'rb') as fbin:
 		fbin.seek(bin_offset)
 		crp_data += fbin.read(size)
 
-	# Padding bytes
+	# TODO: Add other chunk, if needed...
+
+	# Encryption Header
+	crp_data = struct.pack(
+		">8s1I",
+		secrets.token_bytes(8), # Encryption Salt (Random numbers)
+		len(crp_data), # Size of plain data
+	) + crp_data
+
+	# Padding bytes for XTEA
 	crp_align = len(crp_data) % 8
 	if(crp_align > 0):
 		for _ in range(0, 8-crp_align): crp_data += b'\xFF'
@@ -67,10 +72,18 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 		rounds=64, # 64 Rounds, 32 Cycles
 		iv=bytes([0,0,0,0,0,0,0,0])
 	)
+	crp_data = x.encrypt(crp_data)
+
+	# Add final checksum (not needed for the bootloader)
+	# and not supported by the t4e-black.py script for now!
+	#sum = 0
+	#for b in crp_data: sum += b
+	#sum &= 0xFFFF
+	#crp_data += sum.to_bytes(2, "little")
 
 	# Create CRP file
 	with open(crp_file, 'wb') as fcrp:
-		fcrp.write(x.encrypt(crp_data))
+		fcrp.write(crp_data)
 
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e ECU\n")
