@@ -32,7 +32,7 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 		print("Auto-Trim free space @ "+hex(size))
 		size -= bin_offset
 
-	# Chunk Header
+	# Normal Header
 	crp_data = struct.pack(
 		">32s4I16x",
 		b"T4E                            \0", # Identification string
@@ -43,12 +43,10 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 		# 16 Padding bytes
 	)
 
-	# Chunk
+	# Data
 	with open(bin_file, 'rb') as fbin:
 		fbin.seek(bin_offset)
 		crp_data += fbin.read(size)
-
-	# TODO: Add other chunk, if needed...
 
 	# Encryption Header
 	crp_data = struct.pack(
@@ -75,11 +73,10 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 	crp_data = x.encrypt(crp_data)
 
 	# Add final checksum (not needed for the bootloader)
-	# and not supported by the t4e-black.py script for now!
-	#sum = 0
-	#for b in crp_data: sum += b
-	#sum &= 0xFFFF
-	#crp_data += sum.to_bytes(2, "little")
+	sum = 0
+	for b in crp_data: sum += b
+	sum &= 0xFFFF
+	crp_data += sum.to_bytes(2, "little")
 
 	# Create CRP file
 	with open(crp_file, 'wb') as fcrp:

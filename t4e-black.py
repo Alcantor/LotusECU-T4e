@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, can, argparse
+import sys, os, can, argparse
 from lib.crc import CRC8Normal
 
 class ECUBlackException(Exception):
@@ -32,13 +32,20 @@ class ECU_T4E_BLACK:
 		self.bus = bus
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
 		self.frames = []
-		# TODO: Support the checksum at the end of file.
+		size = os.path.getsize(crp_file)
+		size -= 2 # Minus checksum size.
 		with open(crp_file, 'rb') as fcrp:
-			while(True):
-				chunk = fcrp.read(512)
-				chunk_size = len(chunk)
-				if(chunk_size == 0): break # EOF
+			sum = 0
+			while(size > 0):
+				chunk_size = min(512, size)
+				chunk = fcrp.read(chunk_size)
+				for b in chunk: sum += b
 				self.frames += [chunk]
+				size -= chunk_size
+			sum &= 0xFFFF
+			crp_sum = int.from_bytes(fcrp.read(2), "little")
+			if(sum != crp_sum):
+				raise ECUBlackException("CRP wrong sum!")
 
 	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data

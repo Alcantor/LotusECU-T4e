@@ -82,8 +82,8 @@ class FileProgress:
 		with open(filename,'rb') as f:
 			f.seek(offset)
 			while(size > 0):
+				chunk_size = min(chunk_size, size)
 				chunk = f.read(chunk_size)
-				chunk_size = len(chunk)
 				write_fnct(address, chunk)
 				self.progress(chunk_size)
 				address += chunk_size

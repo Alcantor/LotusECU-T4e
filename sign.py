@@ -82,12 +82,13 @@ def search_calrom_cpmlwi(cal_file, prog_file):
 			offset += chunk_size
 		print("CRC not found in "+prog_file)
 
-def check_eeprom(eeprom_file):
+def check_eeprom(eeprom_file, size=0x53C):
 	crc = CRC16Reflect(0x8005, initvalue=0x0000) # CRC for EEPROM
+	size_crc = 4
 	with open(eeprom_file, 'rb') as feeprom:
-		crc.update(feeprom.read(0x538))
+		crc.update(feeprom.read(size-size_crc))
 		print("EEPROM CRC: "+hex(crc.get()))
-		crc2 = int.from_bytes(feeprom.read(4), "big")
+		crc2 = int.from_bytes(feeprom.read(size_crc), "big")
 		print("Should be CRC: "+hex(crc2))
 		if(crc.get() == crc2):
 			print("CRC is correct!")
@@ -136,7 +137,10 @@ if __name__ == "__main__":
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "search_crc_prog"):
 		search_calrom_cpmlwi(sys.argv[2], sys.argv[3])
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "check_crc_eeprom"):
+		print("White:\n")
 		check_eeprom(sys.argv[2])
+		print("\nBlack:\n")
+		check_eeprom(sys.argv[2], 0x56C)
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "check_crc_black_calrom"):
 		check_crc_black_calrom(sys.argv[2])
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "unlock_black_calrom"):
