@@ -135,9 +135,9 @@ you can use it as a BDM-Programmer).
 
 *: This use a little hack (Stack Overwrite) to gain control, retry 4-5 times if it fails.
 
-*: Tested with "BCroftT4E070 01/11/2005 Lotus EngV0078", "BCroftT4E090 14/07/2006 Lotus EngV0091" and "BCroftT4E090 14/07/2006 Lotus EngV0093" yet.
+*: Tested with "BCroftT4E070 01/11/2005 Lotus EngV0078", "BCroftT4E080 20/02/2006 Lotus EngV0080", "BCroftT4E090 14/07/2006 Lotus EngV0091" and "BCroftT4E090 14/07/2006 Lotus EngV0093" yet.
 
-**: Old version like "BCroftT4E070 01/11/2005 Lotus EngV0078" does not check the CRC at all.
+**: Old version like V0078 and EngV0080 does not check the CRC at all.
 
 **: The above example is for white dashboard only. Black dashboard is easier, because the CRC value is stored at the end of the calrom.
 
