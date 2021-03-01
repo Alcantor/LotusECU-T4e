@@ -1,4 +1,4 @@
-EU Lotus Exige S2 British Special GT
+EU Lotus Elise S2
 
 bootldr:
 	B120E0029F K0403
