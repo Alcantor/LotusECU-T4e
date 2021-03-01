@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, os, struct, secrets, xtea
+import sys, struct, secrets, xtea
 
 # Valid addresses are:
 #  Flash:
@@ -18,8 +18,8 @@ import sys, os, struct, secrets, xtea
 #
 # I don't think you can update the bootloader itself. Only calrom and prog.
 #
-def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
-	print("Convert "+bin_file+" to "+crp_file+".")
+def bin2chunk(bin_file, address, bin_offset=0, size=None):
+	print("Convert "+bin_file)
 
 	# Guess size
 	if(not size):
@@ -70,9 +70,26 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 		rounds=64, # 64 Rounds, 32 Cycles
 		iv=bytes([0,0,0,0,0,0,0,0])
 	)
-	crp_data = x.encrypt(crp_data)
+	return x.encrypt(crp_data)
 
-	# Add final checksum (not needed for the bootloader)
+def chunk2crp(crp_file, crp_chunks):
+	# Add chunk header
+	nb_crp_chunks = 1 + len(crp_chunks)
+	crp_data = struct.pack(
+		"<1I2I",
+		nb_crp_chunks, # Nb of chunks
+		0, 4+(8*nb_crp_chunks) # First chunk: This header
+	)
+	offset = 4+(8*nb_crp_chunks)
+	for chunk in crp_chunks:
+		crp_data += struct.pack("<2I", offset, len(chunk))
+		offset += len(chunk)
+
+	# Add all chunks
+	for chunk in crp_chunks:
+		crp_data += chunk
+
+	# Add final checksum
 	sum = 0
 	for b in crp_data: sum += b
 	sum &= 0xFFFF
@@ -85,11 +102,21 @@ def bin2crp(bin_file, crp_file, address, bin_offset=0, size=None):
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e ECU\n")
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "calrom"):
-		bin2crp(sys.argv[2], sys.argv[3], 0x10000)
+		chunk2crp(sys.argv[3], [
+			bin2chunk(sys.argv[2], 0x10000)
+		])
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "prog"):
-		bin2crp(sys.argv[2], sys.argv[3], 0x20000)
+		chunk2crp(sys.argv[3], [
+			bin2chunk(sys.argv[2], 0x20000)
+		])
+	elif(len(sys.argv) >= 5 and sys.argv[1] == "both"):
+		chunk2crp(sys.argv[4], [
+			bin2chunk(sys.argv[2], 0x10000),
+			bin2chunk(sys.argv[3], 0x20000)
+		])
 	else:
 		print("usage:")
 		print("\t"+sys.argv[0]+" calrom BIN_FILE CRP_FILE")
 		print("\t"+sys.argv[0]+" prog BIN_FILE CRP_FILE")
+		print("\t"+sys.argv[0]+" both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
 

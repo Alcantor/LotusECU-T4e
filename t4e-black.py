@@ -31,21 +31,32 @@ class ECU_T4E_BLACK:
 	def __init__(self, bus, crp_file):
 		self.bus = bus
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
-		self.frames = []
+		self.crp_chunks = []
 		size = os.path.getsize(crp_file)
-		size -= 2 # Minus checksum size.
 		with open(crp_file, 'rb') as fcrp:
-			sum = 0
-			while(size > 0):
-				chunk_size = min(512, size)
-				chunk = fcrp.read(chunk_size)
-				for b in chunk: sum += b
-				self.frames += [chunk]
-				size -= chunk_size
-			sum &= 0xFFFF
-			crp_sum = int.from_bytes(fcrp.read(2), "little")
-			if(sum != crp_sum):
+			# Check the sum
+			cksum = 0
+			while(size > 2):
+				cksum += fcrp.read(1)[0]
+				size -= 1
+			cksum &= 0xFFFF
+			if(cksum != int.from_bytes(fcrp.read(2), "little")):
 				raise ECUBlackException("CRP wrong sum!")
+			# Read the file
+			fcrp.seek(0)
+			nb_crp_chunks = int.from_bytes(fcrp.read(4), "little")
+			for i in range(1, nb_crp_chunks):
+				fcrp.seek(4+(8*i))
+				offset = int.from_bytes(fcrp.read(4), "little")
+				size = int.from_bytes(fcrp.read(4), "little")
+				fcrp.seek(offset)
+				frames = []
+				while(size > 0):
+					chunk_size = min(512, size)
+					chunk = fcrp.read(chunk_size)
+					frames.append(chunk)
+					size -= chunk_size
+				self.crp_chunks.append(frames)
 
 	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data
@@ -65,10 +76,13 @@ class ECU_T4E_BLACK:
 			offset += chunk_size
 			size -= chunk_size
 
-	def send_frame(self, frame_id):
-		frame = self.frames[frame_id]
+	def send_frame(self, crp_chunk_id, frame_id):
+		frame = self.crp_chunks[crp_chunk_id][frame_id]
 		header = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big")
 		self.send(6, header + frame)
+
+	def send_start(self):
+		self.send(7, b"\x01\x00\x00\x00\x00\x00")
 
 	def recv(self, timeout=1.0):
 		msg = self.bus.recv(timeout)
@@ -80,18 +94,20 @@ class ECU_T4E_BLACK:
 		return (msg.data[0], msg.data[1:])
 
 	def bootstrap(self, timeout=60.0):
+		crp_chunk_id = 0
 		while(True):
 			cmd, data = self.recv(timeout=timeout)
 			# Hello
 			if(cmd == 0x0A):
 				print("Hello received from ECU")
-				self.send(7, b"\x01\x00\x00\x00\x00\x00")
+				crp_chunk_id = 0
+				self.send_start()
 			# Frame request
 			if(cmd == 0x01):
 				frame_id = int.from_bytes(data[4:6], "big")
 				print("Frame "+str(frame_id)+" request from ECU")
-				if(frame_id < len(self.frames)):
-					self.send_frame(frame_id)
+				if(frame_id < len(self.crp_chunks[crp_chunk_id])):
+					self.send_frame(crp_chunk_id, frame_id)
 				else:
 					print("Error: Frame is not available!!!")
 			# Erase Info
@@ -100,7 +116,12 @@ class ECU_T4E_BLACK:
 			# Programming Info
 			if(cmd == 0x02):
 				print("Programming completed received from ECU")
-				break
+				crp_chunk_id += 1
+				if(crp_chunk_id < len(self.crp_chunks)):
+					print("Next sector!")
+					self.send_start()
+				else:
+					break
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
