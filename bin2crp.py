@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, struct, secrets, xtea
+import sys, secrets, xtea
 
 # Valid addresses are:
 #  Flash:
@@ -32,33 +32,31 @@ def bin2chunk(bin_file, address, bin_offset=0, size=None):
 		print("Auto-Trim free space @ "+hex(size))
 		size -= bin_offset
 
-	# Normal Header
-	crp_data = struct.pack(
-		">32s4I16x",
-		b"T4E                            \0", # Identification string
-		address, # Destination Address
-		size, # Size of payload
-		0, # Max version of bootloader (0 to ignore)
-		0 # Min version of bootloader (0 to ignore)
-		# 16 Padding bytes
-	)
-
-	# Data
+	# Normal Header + Data
 	with open(bin_file, 'rb') as fbin:
 		fbin.seek(bin_offset)
-		crp_data += fbin.read(size)
+		chk_data = fbin.read(size)
+	chk_data = b''.join([
+		b"T4E".ljust(31), b'\x00', # Identification string
+		address.to_bytes(4, "big"), # Destination Address
+		size.to_bytes(4, "big"), # Size of payload
+		(0).to_bytes(4, "big"), # Max version of bootloader (0 to ignore)
+		(0).to_bytes(4, "big"), # Min version of bootloader (0 to ignore)
+		b'\x00' * 16, # 16 Padding bytes
+		chk_data # Payload
+	])
 
-	# Encryption Header
-	crp_data = struct.pack(
-		">8s1I",
+	# Encryption Header + Data
+	chk_data = b''.join([
+		# b'\x00' * 8, # No Salt
 		secrets.token_bytes(8), # Encryption Salt (Random numbers)
-		len(crp_data), # Size of plain data
-	) + crp_data
+		len(chk_data).to_bytes(4, "big"), # Size of plain data
+		chk_data # Plain data
+	])
 
 	# Padding bytes for XTEA
-	crp_align = len(crp_data) % 8
-	if(crp_align > 0):
-		for _ in range(0, 8-crp_align): crp_data += b'\xFF'
+	crp_align = len(chk_data) % 8
+	if(crp_align > 0): chk_data += b'\xFF' * (8-crp_align)
 
 	# XTEA Encryption
 	x = xtea.new(
@@ -70,24 +68,27 @@ def bin2chunk(bin_file, address, bin_offset=0, size=None):
 		rounds=64, # 64 Rounds, 32 Cycles
 		iv=bytes([0,0,0,0,0,0,0,0])
 	)
-	return x.encrypt(crp_data)
+	return x.encrypt(chk_data)
 
 def chunk2crp(crp_file, crp_chunks):
 	# Add chunk header
 	nb_crp_chunks = 1 + len(crp_chunks)
-	crp_data = struct.pack(
-		"<1I2I",
-		nb_crp_chunks, # Nb of chunks
-		0, 4+(8*nb_crp_chunks) # First chunk: This header
-	)
 	offset = 4+(8*nb_crp_chunks)
+	crp_header = [
+		nb_crp_chunks.to_bytes(4, "little"), # Nb of chunks
+		# First chunk: This header
+		(0).to_bytes(4, "little"), # Offset
+		offset.to_bytes(4, "little") # Length
+	]
 	for chunk in crp_chunks:
-		crp_data += struct.pack("<2I", offset, len(chunk))
+		crp_header += [
+			offset.to_bytes(4, "little"), # Offset
+			len(chunk).to_bytes(4, "little") # Length
+		]
 		offset += len(chunk)
 
-	# Add all chunks
-	for chunk in crp_chunks:
-		crp_data += chunk
+	# Concat header + all chunks
+	crp_data = b''.join(crp_header + crp_chunks)
 
 	# Add final checksum
 	sum = 0
