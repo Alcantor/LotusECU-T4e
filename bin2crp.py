@@ -91,10 +91,10 @@ def chunk2crp(crp_file, crp_chunks):
 	crp_data = b''.join(crp_header + crp_chunks)
 
 	# Add final checksum
-	sum = 0
-	for b in crp_data: sum += b
-	sum &= 0xFFFF
-	crp_data += sum.to_bytes(2, "little")
+	cksum = 0
+	for b in crp_data: cksum += b
+	cksum &= 0xFFFF
+	crp_data += cksum.to_bytes(2, "little")
 
 	# Create CRP file
 	with open(crp_file, 'wb') as fcrp:
