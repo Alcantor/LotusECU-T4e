@@ -39,7 +39,7 @@ def bin2chunk(bin_file, address, bin_offset=0, size=None):
 	chk_data = b''.join([
 		b"T4E".ljust(31), b'\x00', # Identification string
 		address.to_bytes(4, "big"), # Destination Address
-		size.to_bytes(4, "big"), # Size of payload
+		len(chk_data).to_bytes(4, "big"), # Size of payload
 		(0).to_bytes(4, "big"), # Max version of bootloader (0 to ignore)
 		(0).to_bytes(4, "big"), # Min version of bootloader (0 to ignore)
 		b'\x00' * 16, # 16 Padding bytes
