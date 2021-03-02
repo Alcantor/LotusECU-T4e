@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
-import sys, os, can, argparse
+import sys, can, argparse
 from lib.crc import CRC8Normal
+from bin2crp import CRP
 
 class ECUBlackException(Exception):
 	pass
@@ -31,32 +32,7 @@ class ECU_T4E_BLACK:
 	def __init__(self, bus, crp_file):
 		self.bus = bus
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
-		self.crp_chunks = []
-		size = os.path.getsize(crp_file)
-		with open(crp_file, 'rb') as fcrp:
-			# Check the sum
-			cksum = 0
-			while(size > 2):
-				cksum += fcrp.read(1)[0]
-				size -= 1
-			cksum &= 0xFFFF
-			if(cksum != int.from_bytes(fcrp.read(2), "little")):
-				raise ECUBlackException("CRP wrong sum!")
-			# Read the file
-			fcrp.seek(0)
-			nb_crp_chunks = int.from_bytes(fcrp.read(4), "little")
-			for i in range(1, nb_crp_chunks):
-				fcrp.seek(4+(8*i))
-				offset = int.from_bytes(fcrp.read(4), "little")
-				size = int.from_bytes(fcrp.read(4), "little")
-				fcrp.seek(offset)
-				frames = []
-				while(size > 0):
-					chunk_size = min(512, size)
-					chunk = fcrp.read(chunk_size)
-					frames.append(chunk)
-					size -= chunk_size
-				self.crp_chunks.append(frames)
+		self.crp_chunks = CRP.crp2chunk(crp_file)
 
 	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data
@@ -76,8 +52,9 @@ class ECU_T4E_BLACK:
 			offset += chunk_size
 			size -= chunk_size
 
-	def send_frame(self, crp_chunk_id, frame_id):
-		frame = self.crp_chunks[crp_chunk_id][frame_id]
+	def send_frame(self, crp_chunk_id, frame_id, frame_size=512):
+		offset = frame_id * frame_size
+		frame = self.crp_chunks[crp_chunk_id][offset:offset+frame_size]
 		header = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big")
 		self.send(6, header + frame)
 
@@ -106,10 +83,7 @@ class ECU_T4E_BLACK:
 			if(cmd == 0x01):
 				frame_id = int.from_bytes(data[4:6], "big")
 				print("Frame "+str(frame_id)+" request from ECU")
-				if(frame_id < len(self.crp_chunks[crp_chunk_id])):
-					self.send_frame(crp_chunk_id, frame_id)
-				else:
-					print("Error: Frame is not available!!!")
+				self.send_frame(crp_chunk_id, frame_id)
 			# Erase Info
 			if(cmd == 0x03):
 				print("Erasing... received from ECU")
