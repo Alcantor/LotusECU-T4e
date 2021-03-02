@@ -18,6 +18,11 @@ class ECU_T4E:
 	]
 
 	def __init__(self, bus, fp):
+		if(bus): bus.set_filters([{
+			"extended": False,
+			"can_id": 0x7A0,
+			"can_mask": 0x7FF
+		}])
 		self.bus = bus
 		self.fp = fp
 
@@ -225,7 +230,6 @@ if __name__ == "__main__":
 	bus = can.Bus(
 		interface = can_if,
 		channel = can_ch,
-		can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
 		bitrate = can_br
 	)
 

@@ -30,9 +30,14 @@ class ECU_T4E_BLACK:
 	}
 
 	def __init__(self, bus, crp_file):
+		if(bus): bus.set_filters([{
+			"extended": False,
+			"can_id": 0x7A1,
+			"can_mask": 0x7FF
+		}])
 		self.bus = bus
-		self.crc = CRC8Normal(0x31, initvalue=0x00)
 		self.crp_chunks = CRP.crp2chunk(crp_file)
+		self.crc = CRC8Normal(0x31, initvalue=0x00)
 
 	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data
@@ -136,7 +141,6 @@ if __name__ == "__main__":
 	bus = can.Bus(
 		interface = can_if,
 		channel = can_ch,
-		can_filters = [{"extended": False, "can_id": 0x7A1, "can_mask": 0x7FF }],
 		bitrate = 500000
 	)
 
