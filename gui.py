@@ -22,6 +22,11 @@ class FileProgressGui(FileProgress):
 		self.textEntry.set(msg)
 		self.master.update()
 
+	def progress_start(self, total_size):
+		self.progressbar['value'] = 0
+		self.bytes_total = total_size
+		self.bytes_transfered = 0
+
 	def progress(self, chunk_size):
 		self.bytes_transfered += chunk_size
 		fraction = self.bytes_transfered/self.bytes_total
@@ -31,32 +36,6 @@ class FileProgressGui(FileProgress):
 	def progress_end(self):
 		self.progressbar['value'] = 100
 		self.master.update()
-
-	def download(self, address, size, filename, read_fnct, chunk_size, chunk_align):
-		self.progressbar['value'] = 0
-		self.bytes_total = size
-		self.bytes_transfered = 0
-		super().download(address, size, filename, read_fnct, chunk_size, chunk_align)
-
-	def verify(self, address, filename, read_fnct, chunk_size, chunk_align, offset=0, size=None):
-		if(not size): size = os.path.getsize(filename) - offset
-		self.bytes_total = size
-		self.progressbar['value'] = 0
-		self.bytes_transfered = 0
-		super().verify(address, filename, read_fnct, chunk_size, chunk_align, offset, size)
-
-	def verify_blank(self, address, size, read_fnct, chunk_size, chunk_align):
-		self.bytes_total = size
-		self.progressbar['value'] = 0
-		self.bytes_transfered = 0
-		super().verify_blank(address, size, read_fnct, chunk_size, chunk_align)
-
-	def upload(self, address, filename, write_fnct, chunk_size, chunk_align, offset=0, size=None):
-		if(not size): size = os.path.getsize(filename) - offset
-		self.bytes_total = size
-		self.progressbar['value'] = 0
-		self.bytes_transfered = 0
-		super().upload(address, filename, write_fnct, chunk_size, chunk_align, offset, size)
 
 class t4e_window():
 	def __init__(self, master):
@@ -325,7 +304,7 @@ class t4e_window():
 		self.flasher_buttons(tk.DISABLED)
 		try:
 			self.openCAN()
-			self.flasher.branch(0x4000)
+			self.flasher.branch(0x100)
 			self.t4e_buttons(tk.NORMAL)
 		except Exception as e:
 			messagebox.showerror(master=self.master, title="Error!", message=str(e))

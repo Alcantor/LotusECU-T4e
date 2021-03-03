@@ -2,13 +2,14 @@
 
 import os
 
-class FileProgressException(Exception):
-	pass
-
-class FileProgress:
+class Progress:
 	# Override it if needed
 	def log(self, msg):
 		print(msg)
+
+	# Override it if needed
+	def progress_start(self, total_size):
+		pass
 
 	# Override it if needed
 	def progress(self, chunk_size):
@@ -18,6 +19,10 @@ class FileProgress:
 	def progress_end(self):
 		print()
 
+class FileProgressException(Exception):
+	pass
+
+class FileProgress(Progress):
 	def __aligned(self, size, chunk_size, chunk_align):
 		if(size % chunk_size != 0 and chunk_align):
 			raise FileProgressException("File size is not a multiple of "+str(chunk_size))
@@ -26,6 +31,7 @@ class FileProgress:
 		self.log("Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
 		self.__aligned(size, chunk_size, chunk_align)
 		with open(filename,'wb') as f:
+			self.progress_start(size)
 			while(size > 0):
 				if(chunk_align):
 					chunk = read_fnct(address)
@@ -44,6 +50,7 @@ class FileProgress:
 		self.__aligned(size, chunk_size, chunk_align)
 		with open(filename,'rb') as f:
 			f.seek(offset)
+			self.progress_start(size)
 			while(size > 0):
 				if(chunk_align):
 					chunk = read_fnct(address)
@@ -61,6 +68,7 @@ class FileProgress:
 	def verify_blank(self, address, size, read_fnct, chunk_size, chunk_align):
 		self.log("Verify Blank "+str(size)+" bytes @ "+hex(address))
 		self.__aligned(size, chunk_size, chunk_align)
+		self.progress_start(size)
 		while(size > 0):
 			if(chunk_align):
 				chunk = read_fnct(address)
@@ -81,6 +89,7 @@ class FileProgress:
 		self.__aligned(size, chunk_size, chunk_align)
 		with open(filename,'rb') as f:
 			f.seek(offset)
+			self.progress_start(size)
 			while(size > 0):
 				chunk_size = min(chunk_size, size)
 				chunk = f.read(chunk_size)
@@ -92,3 +101,4 @@ class FileProgress:
 
 if __name__ == "__main__":
 	print("Library to upload/download/verify files.")
+

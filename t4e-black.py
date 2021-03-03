@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys, can, argparse
+from lib.fileprogress import Progress
 from lib.crc import CRC8Normal
 from bin2crp import CRP
 
@@ -29,15 +30,16 @@ class ECU_T4E_BLACK:
 		0x99: "Databyte 3/4 of the expected First/Next/Subsequent Frame message (0x6) did not match (total number of frame bytes received)-6 or unknown"
 	}
 
-	def __init__(self, bus, crp_file):
+	def __init__(self, bus, p):
 		if(bus): bus.set_filters([{
 			"extended": False,
 			"can_id": 0x7A1,
 			"can_mask": 0x7FF
 		}])
 		self.bus = bus
-		self.crp_chunks = CRP.crp2chunk(crp_file)
+		self.p = p
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
+		self.frame_size = 512
 
 	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data
@@ -57,9 +59,9 @@ class ECU_T4E_BLACK:
 			offset += chunk_size
 			size -= chunk_size
 
-	def send_frame(self, crp_chunk_id, frame_id, frame_size=512):
-		offset = frame_id * frame_size
-		frame = self.crp_chunks[crp_chunk_id][offset:offset+frame_size]
+	def send_frame(self, crp_chunk, frame_id):
+		offset = frame_id * self.frame_size
+		frame = crp_chunk[offset:offset+self.frame_size]
 		header = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big")
 		self.send(6, header + frame)
 
@@ -75,36 +77,41 @@ class ECU_T4E_BLACK:
 			raise ECUBlackException("Wrong CRC!")
 		return (msg.data[0], msg.data[1:])
 
-	def bootstrap(self, timeout=60.0):
-		crp_chunk_id = 0
+	def bootstrap(self, crp_file, timeout=60.0):
+		crp_chunk_i = 0
+		crp_chunks = CRP.crp2chunk(crp_file)
 		while(True):
 			cmd, data = self.recv(timeout=timeout)
 			# Hello
 			if(cmd == 0x0A):
-				print("Hello received from ECU")
-				crp_chunk_id = 0
+				self.p.log("ECU: Hello")
+				crp_chunk_i = 0
+				self.p.progress_start(len(crp_chunks[crp_chunk_i]))
 				self.send_start()
 			# Frame request
 			if(cmd == 0x01):
 				frame_id = int.from_bytes(data[4:6], "big")
-				print("Frame "+str(frame_id)+" request from ECU")
-				self.send_frame(crp_chunk_id, frame_id)
+				#self.p.log("ECU: Request Frame "+str(frame_id))
+				self.p.progress(self.frame_size)
+				self.send_frame(crp_chunks[crp_chunk_i], frame_id)
 			# Erase Info
 			if(cmd == 0x03):
-				print("Erasing... received from ECU")
+				self.p.log("\nECU: Erasing...")
 			# Programming Info
 			if(cmd == 0x02):
-				print("Programming completed received from ECU")
-				crp_chunk_id += 1
-				if(crp_chunk_id < len(self.crp_chunks)):
-					print("Next sector!")
+				self.p.progress_end()
+				crp_chunk_i += 1
+				if(crp_chunk_i < len(crp_chunks)):
+					self.p.log("ECU: Next chunk!")
+					self.p.progress_start(len(crp_chunks[crp_chunk_i]))
 					self.send_start()
 				else:
+					self.p.log("ECU: Programming completed!")
 					break
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
-				print("Error "+hex(error)+": "+ECU_T4E_BLACK.errors.get(error, "Unknow"))
+				raise ECUBlackException("Error "+hex(error)+": "+ECU_T4E_BLACK.errors.get(error, "Unknow"))
 
 if __name__ == "__main__":
 	print("CRP Uploader for T4e Black ECU\n")
@@ -144,9 +151,9 @@ if __name__ == "__main__":
 		bitrate = 500000
 	)
 
-	t4e = ECU_T4E_BLACK(bus, crp_file);
+	t4e = ECU_T4E_BLACK(bus, Progress());
 	print("Turn IGN on within 60sec.")
-	t4e.bootstrap()
+	t4e.bootstrap(crp_file)
 	bus.shutdown()
 	print("Done")
 
