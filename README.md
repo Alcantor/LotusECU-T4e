@@ -90,7 +90,7 @@ loss, especially for old versions (Like V0078, V0080) of the white dash (1 Mbit/
 Old version of the ECU firmware loads the CAN-Bus at 100% with data for the cluster,
 so HW-Filtering would be a big improvement! Do a "t4e.py -o ifp", if it's success,
 you will leave the ECU firmware and jump into the flasher program, which doesn't
-overlaod the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
+overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
 
 [Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
