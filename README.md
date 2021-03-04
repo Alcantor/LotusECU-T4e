@@ -83,12 +83,19 @@ This could change in a near future (see develop of python-can).
 
 The IXXAT USB-to-CAN Adapter is easy to use and reliable but expensive.
 
-The Raspberry-Pi + CAN-Hat is cheap and reliable, but more complicated to use (And
-you can use it as a BDM-Programmer).
+The Raspberry-Pi + CAN-Hat is cheap and you can use it as a BDM-Programmer, but
+it's not really realiable. The MCP2515 has only two receive buffers and the linux
+driver for it doesn't implement HW-Filtering ([patch] ?). This leads to packet
+loss, especially for old versions (Like V0078, V0080) of the white dash (1 Mbit/s).
+Old version of the ECU firmware loads the CAN-Bus at 100% with data for the cluster,
+so HW-Filtering would be a big improvement! Do a "t4e.py -o ifp", if it's success,
+you will leave the ECU firmware and jump into the flasher program, which doesn't
+overlaod the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
 
 [Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
 [CAN-BUS adapter]: https://python-can.readthedocs.io/en/master/interfaces.html
+[patch]: https://github.com/craigpeacock/mcp251x
 
 ## Files
 
