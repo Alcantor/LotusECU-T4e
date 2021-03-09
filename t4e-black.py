@@ -60,7 +60,8 @@ class ECU_T4E_BLACK:
 			size -= chunk_size
 
 	def send_frame(self, crp_chunk, frame_id):
-		offset = frame_id * self.frame_size
+		# 0x40 is the size of the CAN-Bus configuration.
+		offset = 0x40 + (frame_id * self.frame_size)
 		frame = crp_chunk[offset:offset+self.frame_size]
 		header = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big")
 		self.send(6, header + frame)
@@ -78,14 +79,17 @@ class ECU_T4E_BLACK:
 		return (msg.data[0], msg.data[1:])
 
 	def bootstrap(self, crp_file, timeout=60.0):
-		crp_chunk_i = 0
+		crp_chunk_i = 1
 		crp_chunks = CRP.crp2chunk(crp_file)
+		# TODO: Configure the CAN-Bus with the first 64 Bytes of each
+		# chunks. This would be needed to update other components than
+		# the ECU, like a transmission controller of the Evora...
 		while(True):
 			cmd, data = self.recv(timeout=timeout)
 			# Hello
 			if(cmd == 0x0A):
 				self.p.log("ECU: Hello")
-				crp_chunk_i = 0
+				crp_chunk_i = 1
 				self.p.progress_start(len(crp_chunks[crp_chunk_i]))
 				self.send_start()
 			# Frame request
