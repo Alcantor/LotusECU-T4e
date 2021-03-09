@@ -125,16 +125,12 @@ class CRP:
 			chk_data # Payload
 		])
 
-	# Unpack a CRP file into bin!
-	def chunk2bin(crp_chunks):
-		infos = CRP.chunk2info(crp_chunks[0])
-		for i in range(1, len(crp_chunks)):
-			bin_file = infos[i-1]['name']
-			print("\t into "+bin_file)
-			bin_data = CRP.xtea().decrypt(crp_chunks[i][0x40:])
-			length = int.from_bytes(bin_data[0x30:0x34], "big")
-			with open(bin_file, 'wb') as fbin:
-				fbin.write(bin_data[0x4C:0x4C+length])
+	# Reverse of bin2chunk()...
+	def chunk2bin(bin_file, chk_data):
+		chk_data = CRP.xtea().decrypt(chk_data[0x40:])
+		length = int.from_bytes(chk_data[0x30:0x34], "big")
+		with open(bin_file, 'wb') as fbin:
+			fbin.write(chk_data[0x4C:0x4C+length])
 
 	# Pack multiple chunks into a CRP file.
 	def chunk2crp(crp_file, crp_chunks):
@@ -210,7 +206,13 @@ if __name__ == "__main__":
 		])
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "unpack"):
 		print("Unpack "+sys.argv[2])
-		CRP.chunk2bin(CRP.crp2chunk(sys.argv[2]))
+		crp_chunks = CRP.crp2chunk(sys.argv[2])
+		infos = CRP.chunk2info(crp_chunks[0])
+		infos = CRP.chunk2info(crp_chunks[0])
+		for i in range(1, len(crp_chunks)):
+			bin_file = infos[i-1]['name']
+			print("\t into "+bin_file)
+			CRP.chunk2bin(bin_file, crp_chunks[i])
 	else:
 		print("usage:")
 		print("\t"+sys.argv[0]+" calrom BIN_FILE CRP_FILE")
