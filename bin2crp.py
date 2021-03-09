@@ -208,7 +208,6 @@ if __name__ == "__main__":
 		print("Unpack "+sys.argv[2])
 		crp_chunks = CRP.crp2chunk(sys.argv[2])
 		infos = CRP.chunk2info(crp_chunks[0])
-		infos = CRP.chunk2info(crp_chunks[0])
 		for i in range(1, len(crp_chunks)):
 			bin_file = infos[i-1]['name']
 			print("\t into "+bin_file)
