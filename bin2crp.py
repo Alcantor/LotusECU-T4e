@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import sys, secrets, xtea
+import sys, os, secrets, xtea
 
 class CRPException(Exception):
 	pass
@@ -22,11 +22,11 @@ class CRP:
 	def info2chunk(infos):
 		subchunk_names = b''.join(
 			[(1).to_bytes(4, "little")] +
-			[x['name'].encode().ljust(0x80) for x in infos]
+			[x['name'].encode().ljust(0x80)[:0x80] for x in infos]
 		)
 		subchunk_descs = b''.join(
 			[(2).to_bytes(4, "little")] +
-			[x['desc'].encode().ljust(0x80) for x in infos]
+			[x['desc'].encode().ljust(0x80)[:0x80] for x in infos]
 		)
 		return b''.join([
 			(2).to_bytes(4, "little"), # 2 Sub-chunk
@@ -178,11 +178,12 @@ class CRP:
 
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e ECU\n")
+	t4e_desc = "LOTUS_T4E_MY08"
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "calrom"):
 		print("Convert "+sys.argv[2]+" into "+sys.argv[3])
 		CRP.chunk2crp(sys.argv[3], [
 			CRP.info2chunk([
-				{'name': "calrom.bin", 'desc': "CUSTOM CALROM"}
+				{'name': os.path.basename(sys.argv[2]), 'desc': t4e_desc}
 			]),
 			CRP.bin2chunk(sys.argv[2], 0x10000)
 		])
@@ -190,7 +191,7 @@ if __name__ == "__main__":
 		print("Convert "+sys.argv[2]+" into "+sys.argv[3])
 		CRP.chunk2crp(sys.argv[3], [
 			CRP.info2chunk([
-				{'name': "prog.bin", 'desc': "CUSTOM PROG"}
+				{'name': os.path.basename(sys.argv[2]), 'desc': t4e_desc}
 			]),
 			CRP.bin2chunk(sys.argv[2], 0x20000)
 		])
@@ -198,8 +199,8 @@ if __name__ == "__main__":
 		print("Convert "+sys.argv[2]+" and "+sys.argv[3]+" into "+sys.argv[4])
 		CRP.chunk2crp(sys.argv[4], [
 			CRP.info2chunk([
-				{'name': "calrom.bin", 'desc': "CUSTOM CALROM"},
-				{'name': "prog.bin", 'desc': "CUSTOM PROG"}
+				{'name': os.path.basename(sys.argv[2]), 'desc': t4e_desc},
+				{'name': os.path.basename(sys.argv[3]), 'desc': t4e_desc}
 			]),
 			CRP.bin2chunk(sys.argv[2], 0x10000),
 			CRP.bin2chunk(sys.argv[3], 0x20000)
