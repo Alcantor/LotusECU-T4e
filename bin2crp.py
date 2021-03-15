@@ -30,13 +30,14 @@ class CRP:
 		)
 		return b''.join([
 			(2).to_bytes(4, "little"), # 2 Sub-chunk
-			(0x14).to_bytes(4, "little"), # Offset 1
+			(20).to_bytes(4, "little"), # Offset 1
 			len(subchunk_names).to_bytes(4, "little"), # Length 1
-			(0x14+len(subchunk_names)).to_bytes(4, "little"), # Offset 2
+			(20+len(subchunk_names)).to_bytes(4, "little"), # Offset 2
 			len(subchunk_descs).to_bytes(4, "little"), # Length 2
 			subchunk_names, subchunk_descs
 		])
 
+	# Reverse of info2chunk()...
 	def chunk2info(chunk0):
 		if(int.from_bytes(chunk0[0:4], "little") != 2):
 			raise CRPException("CRP index chunk!")
@@ -87,7 +88,7 @@ class CRP:
 			fbin.seek(bin_offset)
 			chk_data = fbin.read(size)
 		chk_data = b''.join([
-			ecu_id_str.ljust(31), b'\x00', # Identification string
+			ecu_id_str.ljust(0x20)[:0x20], # Identification string
 			address.to_bytes(4, "big"), # Destination Address
 			len(chk_data).to_bytes(4, "big"), # Size of payload
 			(0).to_bytes(4, "big"), # Max version of bootloader (0 to ignore)
@@ -106,7 +107,7 @@ class CRP:
 
 		# Padding bytes for XTEA
 		crp_align = len(chk_data) % 8
-		if(crp_align > 0): chk_data += b'\xFF' * (8-crp_align)
+		if(crp_align > 0): chk_data += b'\x00' * (8-crp_align)
 
 		# XTEA Encryption
 		# At this point, we have the data as expected by the bootloader.
