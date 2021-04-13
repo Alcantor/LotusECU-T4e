@@ -51,9 +51,11 @@ Those commands are for the Raspberry Pi with a CAN Hat.
 	4. ./bdm-pi.py -o ufp
 	5. ./flasher.py -o b &
 	6. ./bdm-pi.py -o sfp
-	7. ./flasher.py -o p -b 0 -D stage15/black/
-	8. ./flasher.py -o v -b 0 -D stage15/black/
-	9. ./flasher.py -o r
+	7. ./flasher.py -o e -b 0
+	8. ./flasher.py -o vb -b 0
+	9. ./flasher.py -o p -b 0 -D stage15/black/
+	10. ./flasher.py -o v -b 0 -D stage15/black/
+	11. ./flasher.py -o r
 
 	To 1-9: See the others examples
 
