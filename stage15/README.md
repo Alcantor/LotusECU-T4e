@@ -57,7 +57,7 @@ Those commands are for the Raspberry Pi with a CAN Hat.
 	10. ./flasher.py -o v -b 0 -D stage15/black/
 	11. ./flasher.py -o r
 
-	To 1-9: See the others examples
+	To 1-11: See the others examples
 
 *Note: The parameter "-s black" is omitted here, the "bdm-pi.py" load only the
 white version. This not a problem because we are alone on the bus.*
