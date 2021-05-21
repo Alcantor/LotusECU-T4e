@@ -45,16 +45,31 @@ Under [CC-NC-SA].
 
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-## Factory Method
+## Factory Method [pre 2008]
 
-The T4e ECU on the Lotus with white dashboard (Instrument Cluster) has a
-bootloader split into 2 parts: Stage 1 and 2. The first stage can only update
-the second one, and the second one can update the rest. Only with K-Line!
-Like on the T4, it would be possible the modify the stage 2 to have read
-functionality. If you want to flash using that method, try the [Daft_LotusT4_OBD].
+The T4 and the T4e ECU on the Lotus with white dashboard (Instrument Cluster)
+has a bootloader split into 2 parts: Stage 1 and 2.
+
+The stage 1 can update the stage 2 and is enabled only if the CRC of the stage 2
+is wrong.
+
+The stage 2 accepts an encrypted .CRP file and can update itself, the
+calibration or the software. Only writing with K-Line, no reading...
+
+It would be possible the modify the stage 2 to have read functionality.
+If you want to flash using that method, try the [Daft_LotusT4_OBD].
+
+[Daft_LotusT4_OBD]: https://github.com/Obeisance/Daft_LotusT4_OBD
+
+## Factory Method [post 2008]
 
 The T4e of the black dashboard cars has another bootloader which does the
-reprogramming with CAN-Bus (500 kbit/s). Only writing, no reading...
+reprogramming with CAN-Bus (500 kbit/s).
+
+This bootloader accepts an encrypted .CRP file and can update the calibration,
+the software or the EEPROM. Only writing with CAN-Bus, no reading...
+
+## Live tuning access [2006-2008]
 
 For most of the white dashboard, there is an access provided by the main program
 trough CAN-BUS (1 Mbit/s). It's intended for "live tuning" and not for
@@ -66,7 +81,14 @@ possible to re-enable it, with a BDM access or a modified .CRP file.
 My little hack is not guaranteed to work on all software versions of the
 ECU but when it works it's very reliable (A good CAN-Bus adapter is mandatory).
 
-[Daft_LotusT4_OBD]: https://github.com/Obeisance/Daft_LotusT4_OBD
+## About CRP Files
+
+ECU Updates from Lotus are .CRP files. Somes are available on the [VCIS].
+Most of them are included in the Lotus TechCentre or Lotus Scan 3.
+
+The structure of the .CRP files has completely change in 2008.
+
+[VCIS]: https://vsic.lotuscars.com/
 
 ## Prerequisite
 
@@ -107,8 +129,9 @@ overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
- bin2crp.py            | Convert a BIN into a CRP file.
+ bin2crp.py            | Convert a BIN into a CRP file (post 2008).
  t4e-black.py          | Tool to upload a CRP file to a locked black ECU (Write Flash).
+ t4-white.py           | Tool to upload a CRP file to a locked white ECU (Write Flash).
 
 ## Command line example (OBD Port, unlocked ECU)
 
