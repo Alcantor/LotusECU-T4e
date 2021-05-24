@@ -45,7 +45,9 @@ Under [CC-NC-SA].
 
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-## Factory Method [pre 2008]
+## Factory Method 
+
+### Pre 2008
 
 The T4 and the T4e ECU on the Lotus with white dashboard (Instrument Cluster)
 has a bootloader split into 2 parts: Stage 1 and 2.
@@ -61,13 +63,22 @@ If you want to flash using that method, try the [Daft_LotusT4_OBD].
 
 [Daft_LotusT4_OBD]: https://github.com/Obeisance/Daft_LotusT4_OBD
 
-## Factory Method [post 2008]
+### Post 2008
 
 The T4e of the black dashboard cars has another bootloader which does the
 reprogramming with CAN-Bus (500 kbit/s).
 
 This bootloader accepts an encrypted .CRP file and can update the calibration,
 the software or the EEPROM. Only writing with CAN-Bus, no reading...
+
+### CRP Files
+
+ECU Updates from Lotus are .CRP files. Somes are available on the [VCIS].
+Most of them are included in the Lotus TechCentre or Lotus Scan 3.
+
+The structure of the .CRP files has completely change in 2008.
+
+[VCIS]: https://vsic.lotuscars.com/
 
 ## Live tuning access [2006-2008]
 
@@ -80,15 +91,6 @@ possible to re-enable it, with a BDM access or a modified .CRP file.
 
 My little hack is not guaranteed to work on all software versions of the
 ECU but when it works it's very reliable (A good CAN-Bus adapter is mandatory).
-
-## About CRP Files
-
-ECU Updates from Lotus are .CRP files. Somes are available on the [VCIS].
-Most of them are included in the Lotus TechCentre or Lotus Scan 3.
-
-The structure of the .CRP files has completely change in 2008.
-
-[VCIS]: https://vsic.lotuscars.com/
 
 ## Prerequisite
 
