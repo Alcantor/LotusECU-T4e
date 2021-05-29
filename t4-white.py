@@ -10,7 +10,7 @@ class ECU_T4_WHITE:
 	def __init__(self, port, p):
 		self.ser = serial.Serial(port=port, baudrate=29761, timeout=0.1)
 		self.p = p
-		self.frame_size = 64
+		self.frame_size = 96
 		
 	# A packet to the ECU is:
 	#	1 byte length (excluding checksum)
@@ -27,18 +27,38 @@ class ECU_T4_WHITE:
 	#	0x81: Enter stage II at speed 29069 (no data)
 	#	0x72: CRP Data
 	#	0x73: Exit (no data)
-	def send(self, cmd, data = b''):
+	def send(self, cmd, payload = b''):
 		# Send
-		data = cmd.to_bytes(1, "big") + data
-		data = len(data).to_bytes(1, "big") + data
+		length = len(payload) + 1 # +1 for the cmd byte
+		data = length.to_bytes(1, "big") + cmd.to_bytes(1, "big") + payload
 		cksum = sum(data) & 0xFF
-		data = data + cksum.to_bytes(1, "big")
+		data += cksum.to_bytes(1, "big")
 		self.ser.write(data)
-		# Receive the echo + the acknowledgement
-		cksum = ~cksum & 0xFF
-		data = data + cksum.to_bytes(1, "big")
+		# Receive the echo
 		if self.ser.read(len(data)) != data:
+			raise ECUWhiteException("No echo!")
+		# Receive the acknowledgement
+		ack = self.ser.read(1)
+		if(len(ack) == 0 or ack[0] != (~cksum & 0xFF)):
 			raise ECUWhiteException("No acknowledgement!")
+
+	def recv(self):
+		# Recv
+		data = self.ser.read(1)
+		while(len(data) == 0): data = self.ser.read(1)
+		length = data[0]
+		data += self.ser.read(length+1) # +1 for the sum byte
+		if(len(data) != length+2): # +2 for the length and the sum bytes
+			raise ECUWhiteException("Missing bytes!")
+		cmd, payload, cksum = data[1], data[2:-1], data[-1]
+		# Check the checksum
+		if(cksum != (sum(data[:-1]) & 0xFF)):
+			raise ECUWhiteException("Wrong checksum!")
+		# Send the acknowledgement
+		ack = (~cksum & 0xFF).to_bytes(1, "big")
+		self.ser.write(ack)
+		self.ser.read(len(ack)) # Acknowledgement echo
+		return (cmd, payload)
 
 	def bootstrap(self, crp_file):
 		self.p.log("--> Drive the L-Line down yourself! (Modify the VAG-Cable) <--\n")
@@ -55,12 +75,19 @@ class ECU_T4_WHITE:
 		# Send the CRP
 		self.p.progress_start(len(data_crp))
 		for frame_id in range(0, len(data_crp)//self.frame_size):
-			self.p.progress(self.frame_size)
 			offset = frame_id * self.frame_size
-			self.send(0x72, data_crp[offset:offset+self.frame_size])
+			self.send(0x70, data_crp[offset:offset+self.frame_size])
+			cmd, payload = self.recv()
+			if(cmd == 0x72 and len(payload) == 1):
+				if(payload[0] == 0):
+					self.p.progress(self.frame_size)
+				elif(payload[0] == 255):
+					print("ECU: Error")
+				else:
+					print("ECU: Unknow code: "+str(payload[0]))
 		self.p.progress_end()
 		# Exit
-		self.send(0x73)
+		#self.send(0x73)
 		self.p.log("ECU: Done")
 
 if __name__ == "__main__":

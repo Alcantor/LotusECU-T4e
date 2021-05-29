@@ -131,8 +131,9 @@ overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
- bin2crp.py            | Convert a BIN into a CRP file (post 2008).
+ bin2crp.py            | Convert a BIN file into a CRP file (post 2008).
  t4e-black.py          | Tool to upload a CRP file to a locked black ECU (Write Flash).
+ srec2crp.py           | Convert a S-Record file into a CRP file (pre 2008, including T4).
  t4-white.py           | Tool to upload a CRP file to a locked white ECU (Write Flash).
 
 ## Command line example (OBD Port, unlocked ECU)
