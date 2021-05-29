@@ -25,7 +25,7 @@ class ECU_T4_WHITE:
 	# Cmd:
 	#	0x71: Enter stage II at speed 29761 (no data)
 	#	0x81: Enter stage II at speed 29069 (no data)
-	#	0x72: CRP Data
+	#	0x70: CRP Data
 	#	0x73: Exit (no data)
 	def send(self, cmd, payload = b''):
 		# Send
@@ -42,6 +42,11 @@ class ECU_T4_WHITE:
 		if(len(ack) == 0 or ack[0] != (~cksum & 0xFF)):
 			raise ECUWhiteException("No acknowledgement!")
 
+	# A packet from the ECU follows the same structure.
+	#
+	# Cmd:
+	#	0x72: Ok, next frame (1 byte data, error code)
+	#
 	def recv(self):
 		# Recv
 		data = self.ser.read(1)
