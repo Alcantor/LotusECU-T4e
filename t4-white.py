@@ -46,7 +46,6 @@ class ECU_T4_WHITE:
 	#
 	# Cmd:
 	#	0x72: Ok, next frame (1 byte data, error code)
-	#
 	def recv(self):
 		# Recv
 		data = self.ser.read(1)
