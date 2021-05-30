@@ -236,6 +236,31 @@ calibration of your ECU before overwriting it!
 
 *Note: If your want to preserve your "calrom" but not your "prog" of your ECU, it's also possible.*
 
+## Command line example (OBD Port, locked white ECU).
+
+This is COMPLICATE: Two different cables are needed. A VAG-COM and a CANable adapter.
+
+	1. for i in {0..63}; do echo 003FF000; done | xxd -r -p > poison.bin
+	2. srec_cat flasher/canstrap-white.bin -binary -offset 0x3FF000 poison.bin -binary -offset 0x3FFF00 -o canstrap.srec -motorola -address-length 3 -header CANstrap
+	3. ./srec2crp.py pack_t4e canstrap.srec canstrap.crp
+	4. ./flasher.py -o b &
+	5. ./t4-white.py -f canstrap.crp
+	6. [TURN CAR ON]
+	7. ./flasher.py -o dl -b 0 1 2
+	8. ./flasher.py -o c -b 0 1 2
+
+	To 1: Create a file to poison the stack.
+	To 2: Convert both BIN files into a SREC file.
+	To 3: Convert the SREC file into an encrypted CRP file.
+	To 4: With a CAN-Bus adapter: Make your computer ready to answer the "Hello" from the CANstrap.
+	To 5: With a VAG-COM adapter: Make your computer ready to answer the "Hello" from the ECU.
+	To 6: Turn the CPU on. The upload will automatically starts and it will hang because of the poison.
+	To 7: Download the whole flash.
+	To 8: Verify the download (with CRC).
+
+*Note: At this point, you could install the stage15. This will give you an easy
+access to re-flash something.*
+
 ## Live tuning.
 
 It's possible to make modifications on running engine for test, because the

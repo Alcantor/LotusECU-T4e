@@ -68,11 +68,11 @@ class CRP:
 				# Sector ?
 				sector = int.from_bytes(address, "big") // 0x10000
 				if(t4_variant):
-					sectors[sector] = 1
+					if(sector < len(sectors)): sectors[sector] = 1
 				else:
 					if(sector == 0): sectors[0] = ord('1')
 					elif(sector == 1): sectors[2] = ord('1')
-					else: sectors[1] = ord('1')
+					elif(sector < 8): sectors[1] = ord('1')
 			elif(line[1] == "3"):
 				raise Exception("This script doesn't support S3 format... Sorry...")
 		print("SREC for " + desc.decode())
