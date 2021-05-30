@@ -62,6 +62,39 @@ Those commands are for the Raspberry Pi with a CAN Hat.
 *Note: The parameter "-s black" is omitted here, the "bdm-pi.py" load only the
 white version. This not a problem because we are alone on the bus.*
 
+## Command line example (OBD Port, locked white ECU).
+
+This is RISKY: The stage II will be overwritten.
+This is COMPLICATE: Two different cables are needed. A VAG-COM and a CANable adapter.
+
+	1. srec_cat flasher/canstrap-white.bin -binary -offset 0x4000 -o canstrap.srec -motorola -address-length 3 -header CANstrap
+	2. ./srec2crp.py pack_t4e canstrap.srec canstrap.crp
+	3. ./t4-white.py -f canstrap.crp
+	4. [TURN CAR ON]
+	5. [TURN CAR OFF]
+	6. ./flasher.py -o b
+	7. [TURN CAR ON]
+	8. ./flasher.py -o e -b 0
+	9. ./flasher.py -o p -b 0 -D stage15/white
+	10. ./flasher.py -o c -b 0 -D stage15/white
+	11. ./flasher.py -o dl -b 1 2
+	12. ./flasher.py -o dl -b 1 2
+	13. ./flasher.py -o r
+
+	To 1: Do not but an offset below 0x4000 - Only Stage II can be overwritten.
+	To 2: Convert the BIN file into an encrypted CRP file.
+	To 3: With a VAG-COM adapter: Make your computer ready to answer the "Hello".
+	To 4: Turn the CPU on. The flashing will automatically starts.
+	To 5: At this point the Stage II is replaced with the CANstrap. You car won't run at this point!
+	To 6: With a CAN-Bus adapter: Make your computer ready to answer the "Hello".
+	To 7: Turn the CPU on. Enter into CANstrap.
+	To 8: Erase the bootloader block (Stage I and II).
+	To 9: Upload a complete bootloader (Stage I, II + stage 1.5).
+	To 10: Verify the bootloader block (Using CRC).
+	To 11: Download the calibration and the program.
+	To 12: Verify the download.
+	To 13: Reset.
+
 ## Usage example
 
 Once you have a bootloader with the flasher in it, you can do everything to the

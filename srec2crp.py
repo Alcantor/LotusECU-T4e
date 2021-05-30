@@ -39,34 +39,43 @@ class CRP:
 		with open(srec_file, 'r') as fsrec:
 		  data_srec = fsrec.read()
 
+		# Default S0 Record
+		desc = b'CUSTOM CRP'
+
 		# Build the sub-packet
 		data_bin = bytearray()
 		if(t4_variant): sectors = bytearray([0]*8)
 		else: sectors = bytearray(b'0'*3)
 		for line in data_srec.split('\n'):
 			# Read the SREC Line
-			if(len(line) < 2 or line[0:2] == "S0" or line[0:2] == "S5" or line[0:2] == "S8"): continue
-			if(line[0:2] != "S2"):
-				raise Exception("Only support S2 format... Sorry...")
+			if(len(line) < 2 or line[0] != 'S'): continue
 			srec_bin = bytearray([int(line[j:j+2], 16) for j in range(2,len(line),2)])
 			length = srec_bin[0]
 			if(~sum(srec_bin[:length]) & 0xFF != srec_bin[length]):
 				raise Exception("S-Record checksum error")
-			address = srec_bin[1:4]
-			data = srec_bin[4:length]
-			# Build the Sub-Packet
-			if(length % 2 != 0):
-				raise Exception("S-Record uneven length is incompatible with encryption!")
-			sub = b'\x55' + (length+1).to_bytes(1, "big") + address + data
-			data_bin += sub + (sum(sub) & 0xFF).to_bytes(1, "big")
-			# Sector ?
-			sector = int.from_bytes(address, "big") // 0x10000
-			if(t4_variant):
-				sectors[sector] = 1
-			else:
-				if(sector == 0): sectors[0] = ord('1')
-				elif(sector == 1): sectors[2] = ord('1')
-				else: sectors[1] = ord('1')
+			if  (line[1] == "0"):
+				desc = srec_bin[3:length]
+			elif(line[1] == "1"):
+				raise Exception("This script doesn't support S1 format... Sorry...")
+			elif(line[1] == "2"):
+				address = srec_bin[1:4]
+				data = srec_bin[4:length]
+				# Build the Sub-Packet
+				if(length % 2 != 0):
+					raise Exception("S-Record uneven length is incompatible with encryption!")
+				sub = b'\x55' + (length+1).to_bytes(1, "big") + address + data
+				data_bin += sub + (sum(sub) & 0xFF).to_bytes(1, "big")
+				# Sector ?
+				sector = int.from_bytes(address, "big") // 0x10000
+				if(t4_variant):
+					sectors[sector] = 1
+				else:
+					if(sector == 0): sectors[0] = ord('1')
+					elif(sector == 1): sectors[2] = ord('1')
+					else: sectors[1] = ord('1')
+			elif(line[1] == "3"):
+				raise Exception("This script doesn't support S3 format... Sorry...")
+		print("SREC for " + desc.decode())
 
 		# Sectors to be erase?
 		if(t4_variant):
@@ -94,7 +103,7 @@ class CRP:
 		# Header
 		data_crp = bytearray()
 		data_crp += size.to_bytes(4, "big")
-		data_crp += b'CUSTOM CRP\x00\xFF'
+		data_crp += ((desc+b'\x00').ljust(12, b'\xFF'))[0:12]
 
 		# Convert the length into 4 bytes, sum them all + 9744, and invert
 		K = ~(9744 + sum(size.to_bytes(4, 'big')))
@@ -132,7 +141,8 @@ class CRP:
 			raise Exception("Length is not 24 bits aligned!")
 
 		# 12 bytes string null terminated and padded with 0xFF
-		print("CRP for "+data_crp[4:16].rstrip(b'\x00\xFF').decode('ISO-8859-1'))
+		desc = data_crp[4:16].rstrip(b'\x00\xFF')
+		print("CRP for " + desc.decode())
 
 		# Convert the length into 4 bytes, sum them all + 9744, and invert
 		K = ~(9744 + sum(len(data_crp).to_bytes(4, 'big')))
@@ -174,9 +184,13 @@ class CRP:
 			raise Exception("Unknow file variant!")
 		# data_bin[11:16] == b'\xFF' * 5
 
+		# S0 Record
+		srec_bin = (2+len(desc)+1).to_bytes(1, "big") + b'\x00\x00' + desc
+		srec_bin += (~sum(srec_bin) & 0xFF).to_bytes(1, "big")
+		data_srec = "S0" + ''.join('{:02X}'.format(x) for x in srec_bin) + '\n'
+
 		# Sub-packet
 		i = 11
-		data_srec = ""
 		while(i < len(data_bin)-2):
 			if(data_bin[i] == 0xFF):
 				# 0xFF are stuffing bytes ?
@@ -216,3 +230,4 @@ if __name__ == "__main__":
 		print("\t"+sys.argv[0]+" pack SREC_FILE CRP_FILE")
 		print("\t"+sys.argv[0]+" pack_t4e SREC_FILE CRP_FILE")
 		print("\t"+sys.argv[0]+" unpack CRP_FILE SREC_FILE")
+
