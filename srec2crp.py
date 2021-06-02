@@ -101,6 +101,7 @@ class CRP:
 	#   1 Byte     - Header, always 0x55
 	#   1 Byte     - Length (Excluging header, including checksum)
 	#   3 Bytes BE - 24 Bits destination address
+	#   x Bytes    - Data to write
 	#   1 Bytes    - Checksum
 	def srec2crp(srec_file, crp_file, t4_variant):
 		# Read the SREC file
