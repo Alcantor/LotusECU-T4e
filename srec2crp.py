@@ -34,6 +34,74 @@ class CRP:
 	# Decrypt: 372 = (257160 * 3182) % 380951
 	# Encrypt: 257160 = (372 * 62135) % 380951
 
+	# The first 16 bytes of the unencrypted data, are a list of
+	# sectors to be erase.
+	#
+	# T4 : 00 00 00 s0 s1 s2 s3 s4 s5 s6 s7 FF FF FF FF FF
+	# T4e:  T  4  E  _ S0 S2 S1 00 00 00 00 FF FF FF FF FF
+	#
+	# s1 to s7 are bit flags 0x01 or 0x00 to erase the sectors or not.
+	# S1 to S2 are ASCII flags '1' (0x31) or '0' (0x30) to erase the
+	# sectors or not. S2 includes sectors 2 to 7.
+	#
+	# The remaining 0xFF are optional padding bytes.
+	def sectors2bin(sectors, t4_variant):
+		if(t4_variant):
+			print("--> T4 ECU <--")
+			for i in range(0, len(sectors)):
+				if(sectors[i]):	print("Sector "+str(i)+" will be erased!")
+			return b'\x00'*3 + bytes(sectors) + b'\xFF'*5
+		else:
+			print("--> T4E ECU <--")
+			sectors = [sectors[0],max(sectors[2:]),sectors[1]]
+			if(sectors[0]): print("Block 0 (Bootloader) will be erased!")
+			if(sectors[1]): print("Block 2-7 (Prog) will be erased!")
+			if(sectors[2]): print("Block 1 (Calibration) will be erased!")
+			sectors = [i+ord('0') for i in sectors]
+			return b'T4E_' + bytes(sectors) + b'\x00'*4 + b'\xFF'*5
+
+	# Reverse of sectors2bin()...
+	def bin2sectors(data_bin):
+		if(data_bin[0:3] == b'\x00' * 3):
+			print("--> T4 ECU <--")
+			sectors = data_bin[3:11]
+			# data_bin[11:16] == b'\xFF'*5
+			for i in range(0, len(sectors)):
+				if(sectors[i]):	print("Sector "+str(i)+" must be erased!")
+			return sectors
+		elif(data_bin[0:4] == b'T4E_'):
+			print("--> T4E ECU <--")
+			sectors = data_bin[4:7]
+			# data_bin[7:16] == b'\x00'*4 + b'\xFF'*5
+			sectors = [i-ord('0') for i in sectors]
+			if(sectors[0]): print("Block 0 (Bootloader) must be erased!")
+			if(sectors[1]): print("Block 2-7 (Prog) must be erased!")
+			if(sectors[2]): print("Block 1 (Calibration) must be erased!")
+			sectors = [sectors[0],sectors[2]]+[sectors[1]]*6
+			return sectors
+		else:
+			raise Exception("Unknow file variant!")
+
+	# CRP Format:
+	#
+	#   4 Bytes BE - Total length of CRP file.
+	#  12 Bytes    - Description (NULL-Terminated + padded with 0xFF)
+	#   x Bytes    - Encrypted data
+	#   4 Bytes    - Signature " EFi"
+	#
+	# Unencrypted data format:
+	#
+	#  11 Bytes    - Sectors to erase
+	#   5 Bytes    - Padding bytes 0xFF (optional)
+	#   x Bytes    - Multiple sub-packets
+	#   2 Bytes LE - Checksum
+	#
+	# Sub-packets format:
+	#
+	#   1 Byte     - Header, always 0x55
+	#   1 Byte     - Length (Excluging header, including checksum)
+	#   3 Bytes BE - 24 Bits destination address
+	#   1 Bytes    - Checksum
 	def srec2crp(srec_file, crp_file, t4_variant):
 		# Read the SREC file
 		with open(srec_file, 'r') as fsrec:
@@ -42,10 +110,9 @@ class CRP:
 		# Default S0 Record
 		desc = b'CUSTOM CRP'
 
-		# Build the sub-packet
+		# Build sub-packets
 		data_bin = bytearray()
-		if(t4_variant): sectors = bytearray([0]*8)
-		else: sectors = bytearray(b'0'*3)
+		sectors = [False]*8
 		for line in data_srec.split('\n'):
 			# Read the SREC Line
 			if(len(line) < 2 or line[0] != 'S'): continue
@@ -65,35 +132,20 @@ class CRP:
 					raise Exception("S-Record uneven length is incompatible with encryption!")
 				sub = b'\x55' + (length+1).to_bytes(1, "big") + address + data
 				data_bin += sub + (sum(sub) & 0xFF).to_bytes(1, "big")
-				# Sector ?
+				# Sectors ?
 				sector = int.from_bytes(address, "big") // 0x10000
-				if(t4_variant):
-					if(sector < len(sectors)): sectors[sector] = 1
-				else:
-					if(sector == 0): sectors[0] = ord('1')
-					elif(sector == 1): sectors[2] = ord('1')
-					elif(sector < 8): sectors[1] = ord('1')
+				if(sector < len(sectors)): sectors[sector] = True
 			elif(line[1] == "3"):
 				raise Exception("This script doesn't support S3 format... Sorry...")
 		print("SREC for " + desc.decode())
 
-		# Sectors to be erase?
-		if(t4_variant):
-			print("--> T4 ECU <--")
-			for i in range(0, len(sectors)):
-				if(sectors[i]): print("Sector "+str(i)+" will be erased!")
-			data_bin = b'\x00'*3 + sectors + b'\xFF'*5 + data_bin
-		else:
-			print("--> T4E ECU <--")
-			if(sectors[0] == ord('1')): print("Block 0 (Bootloader) will be erased!")
-			if(sectors[1] == ord('1')): print("Block 2-7 (Prog) will be erased!")
-			if(sectors[2] == ord('1')): print("Block 1 (Calibration) will be erased!")
-			data_bin = b'T4E_' + sectors + b'\x00'*4 + b'\xFF'*5 + data_bin
+		# Sectors to be erase
+		data_bin = CRP.sectors2bin(sectors, t4_variant) + data_bin
 
 		# Global Checksum
 		data_bin += (sum(data_bin) & 0xFFFF).to_bytes(2, "little")
 
-		# Write the intermatiade file
+		# Write the intermediate file
 		#with open("intermediate2.bin", 'wb') as fbin:
 		#	fbin.write(data_bin)
 
@@ -127,6 +179,7 @@ class CRP:
 		with open(crp_file, 'wb') as fcrp:
 			fcrp.write(data_crp)
 
+	# Reverse of srec2crp()...
 	def crp2srec(crp_file, srec_file):
 		# Read the CRP file
 		with open(crp_file, 'rb') as fcrp:
@@ -169,27 +222,15 @@ class CRP:
 		#with open("intermediate.bin", 'wb') as fbin:
 		#	fbin.write(data_bin)
 
-		# Sectors to be erase?
-		if(data_bin[0:3] == b'\x00' * 3):
-			print("--> T4 ECU <--")
-			for i in range(0, 8):
-					if(data_bin[i+3] > 0): print("Sector "+str(i)+" must be erased!")
-		elif(data_bin[0:4] == b'T4E_'):
-			print("--> T4E ECU <--")
-			if(data_bin[4] == ord('1')): print("Block 0 (Bootloader) must be erased!")
-			if(data_bin[5] == ord('1')): print("Block 2-7 (Prog) must be erased!")
-			if(data_bin[6] == ord('1')): print("Block 1 (Calibration) must be erased!")
-			# data_bin[7:11] == b'\x00' * 4
-		else:
-			raise Exception("Unknow file variant!")
-		# data_bin[11:16] == b'\xFF' * 5
+		# Sectors to be erase
+		CRP.bin2sectors(data_bin)
 
 		# S0 Record
 		srec_bin = (2+len(desc)+1).to_bytes(1, "big") + b'\x00\x00' + desc
 		srec_bin += (~sum(srec_bin) & 0xFF).to_bytes(1, "big")
 		data_srec = "S0" + ''.join('{:02X}'.format(x) for x in srec_bin) + '\n'
 
-		# Sub-packet
+		# Read sub-packets
 		i = 11
 		while(i < len(data_bin)-2):
 			if(data_bin[i] == 0xFF):

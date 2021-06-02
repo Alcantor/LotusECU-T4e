@@ -96,6 +96,9 @@ ECU but when it works it's very reliable (A good CAN-Bus adapter is mandatory).
 
 The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BUS adapter].
 
+The [Macchina P1] is my actual recommendation if you want to buy hardware, but I
+have not tested it my-self yet.
+
 The CANable (with slcan firmware) is very simple to use, but it has a bottleneck
 with the serial interface, and does not work well with the "t4e.py" script.
 In contrario the "flasher.py" works flawless (but slowly) with this adapter
@@ -119,6 +122,7 @@ overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
 [Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
 [CAN-BUS adapter]: https://python-can.readthedocs.io/en/master/interfaces.html
+[Macchina P1]: https://www.macchina.cc/catalog/p1-boards/p1-under-dash
 [patch]: https://github.com/craigpeacock/mcp251x
 
 ## Files
