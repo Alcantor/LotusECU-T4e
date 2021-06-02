@@ -40,8 +40,8 @@ class CRP:
 	# T4 : 00 00 00 s0 s1 s2 s3 s4 s5 s6 s7 FF FF FF FF FF
 	# T4e:  T  4  E  _ S0 S2 S1 00 00 00 00 FF FF FF FF FF
 	#
-	# s1 to s7 are bit flags 0x01 or 0x00 to erase the sectors or not.
-	# S1 to S2 are ASCII flags '1' (0x31) or '0' (0x30) to erase the
+	# s0 to s7 are bit flags 0x01 or 0x00 to erase the sectors or not.
+	# S0 to S2 are ASCII flags '1' (0x31) or '0' (0x30) to erase the
 	# sectors or not. S2 includes sectors 2 to 7.
 	#
 	# The remaining 0xFF are optional padding bytes.
