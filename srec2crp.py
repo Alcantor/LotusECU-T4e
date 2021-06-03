@@ -23,6 +23,16 @@ class CRP:
 	# This value is needed to encrypt and is not stored in the ECU.
 	key_mult_inv = 62135
 
+	# Encryption algorithm:
+	#
+	# Note: 2 plain bytes gives 3 encrypted bytes!
+	#
+	# K = ~(9744 + (Sum each byte of (CRP Final size)))
+	#
+	# w_plain = 2 plain bytes read in little endian
+	# w_bit_flag = w_plain + K
+	# w_sum = Sum of table values where the corresponding bit is set in w_bit_flag.
+	#
 	# The reverse of:
 	#   w_sum = (w_cipher * CRP.key_mult) % CRP.key_mod
 	# is:
@@ -33,6 +43,49 @@ class CRP:
 	#
 	# Decrypt: 372 = (257160 * 3182) % 380951
 	# Encrypt: 257160 = (372 * 62135) % 380951
+	def encrypt(data_plain, crp_size):
+		if(len(data_plain) % 2 != 0):
+			raise Exception("Plain length is not 16 bits aligned!")
+
+		# Convert the length into 4 bytes, sum them all + 9744, and invert
+		K = ~(9744 + sum(crp_size.to_bytes(4, 'big')))
+
+		# Encrypt
+		data_cipher = bytearray()
+		for i in range(0, len(data_plain), 2):
+			w_plain = int.from_bytes(data_plain[i:i+2], "little")
+			w_bit_flag = (w_plain + K) & 0xFFFF
+			w_sum = 0;
+			for j in reversed(range(0, 16)):
+				if(w_bit_flag & (1<<j)):
+					w_sum += CRP.key_table[j]
+			w_cipher = (w_sum * CRP.key_mult_inv) % CRP.key_mod
+			w_cipher += (CRP.key_mod *  random.randint(0, 8))
+			data_cipher += w_cipher.to_bytes(3, "little")
+		return data_cipher
+
+	# Reverse of encrypt()...
+	def decrypt(data_cipher, crp_size):
+		if(len(data_cipher) % 3 != 0):
+			raise Exception("Cipher length is not 24 bits aligned!")
+
+		# Convert the length into 4 bytes, sum them all + 9744, and invert
+		K = ~(9744 + sum(crp_size.to_bytes(4, 'big')))
+
+		# Decrypt
+		data_plain = bytearray()
+		for i in range(0, len(data_cipher), 3):
+			w_cipher = int.from_bytes(data_cipher[i:i+3], "little")
+			w_sum = (w_cipher * CRP.key_mult) % CRP.key_mod
+			w_bit_flag = 0;
+			for j in reversed(range(0, 16)):
+				if(w_sum >= CRP.key_table[j]):
+					w_sum -= CRP.key_table[j]
+					w_bit_flag |= 1<<j
+			if(w_sum != 0): raise Exception("Wrong Key! @ "+hex(i))
+			w_plain = (w_bit_flag - K) & 0xFFFF
+			data_plain += w_plain.to_bytes(2, "little")
+		return data_plain
 
 	# The first 16 bytes of the unencrypted data, are a list of
 	# sectors to be erase.
@@ -153,27 +206,11 @@ class CRP:
 		# Compute final size
 		size = (len(data_bin) // 2 * 3) + 16 + 4
 
-		# Header
+		# Build the CRP
 		data_crp = bytearray()
 		data_crp += size.to_bytes(4, "big")
 		data_crp += ((desc+b'\x00').ljust(12, b'\xFF'))[0:12]
-
-		# Convert the length into 4 bytes, sum them all + 9744, and invert
-		K = ~(9744 + sum(size.to_bytes(4, 'big')))
-
-		# Encrypt
-		for i in range(0, len(data_bin), 2):
-			w_plain = int.from_bytes(data_bin[i:i+2], "little")
-			w_bit_flag = w_plain + K
-			w_sum = 0;
-			for j in reversed(range(0, 16)):
-				if(w_bit_flag & (1<<j)):
-					w_sum += CRP.key_table[j]
-			w_cipher = (w_sum * CRP.key_mult_inv) % CRP.key_mod
-			w_cipher += (CRP.key_mod *  random.randint(0, 8))
-			data_crp += w_cipher.to_bytes(3, "little")
-
-		# Footer
+		data_crp += CRP.encrypt(data_bin, size)
 		data_crp += b' EFi'
 
 		# Write the CRP file
@@ -186,34 +223,14 @@ class CRP:
 		with open(crp_file, 'rb') as fcrp:
 			data_crp = fcrp.read()
 
-		# Header and Footer
-		if(data_crp[-4:] != b' EFi'):
-			raise Exception("Wrong Signature")
+		# Parse the CRP
 		if(int.from_bytes(data_crp[0:4], "big") != len(data_crp)):
 			raise Exception("Header length mismatch")
-		if((len(data_crp)-16-4) % 3 != 0):
-			raise Exception("Length is not 24 bits aligned!")
-
-		# 12 bytes string null terminated and padded with 0xFF
 		desc = data_crp[4:16].rstrip(b'\x00\xFF')
+		data_bin = CRP.decrypt(data_crp[16:-4], len(data_crp))
+		if(data_crp[-4:] != b' EFi'):
+			raise Exception("Wrong Signature")
 		print("CRP for " + desc.decode())
-
-		# Convert the length into 4 bytes, sum them all + 9744, and invert
-		K = ~(9744 + sum(len(data_crp).to_bytes(4, 'big')))
-
-		# Decrypt
-		data_bin = bytearray()
-		for i in range(16, len(data_crp)-4, 3):
-			w_cipher = int.from_bytes(data_crp[i:i+3], "little")
-			w_sum = (w_cipher * CRP.key_mult) % CRP.key_mod
-			w_bit_flag = 0;
-			for j in reversed(range(0, 16)):
-				if(w_sum >= CRP.key_table[j]):
-					w_sum -= CRP.key_table[j]
-					w_bit_flag |= 1<<j
-			if(w_sum != 0): raise Exception("Wrong Key! @ "+hex(i))
-			w_plain = (w_bit_flag - K) & 0xFFFF
-			data_bin += w_plain.to_bytes(2, "little")
 
 		# Global Checksum
 		if(sum(data_bin[:-2]) & 0xFFFF != int.from_bytes(data_bin[-2:], "little")):

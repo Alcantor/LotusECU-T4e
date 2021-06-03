@@ -34,7 +34,7 @@ without patching the main program. See folder [accusump].
 To be able to patch the main program more safely I've included the flasher into
 the bootloader. See folder [stage15].
 
-After that I went a little further by looking at the ECU Black Dash.
+After that I went a little further by looking at the ECU Black Dash and the T4.
 
 [accusump]:https://github.com/Alcantor/LotusECU-T4e/tree/master/accusump
 [stage15]:https://github.com/Alcantor/LotusECU-T4e/tree/master/stage15
@@ -58,10 +58,9 @@ is wrong.
 The stage 2 accepts an encrypted .CRP file and can update itself, the
 calibration or the software. Only writing with K-Line, no reading...
 
-It would be possible the modify the stage 2 to have read functionality.
-If you want to flash using that method, try the [Daft_LotusT4_OBD].
-
-[Daft_LotusT4_OBD]: https://github.com/Obeisance/Daft_LotusT4_OBD
+Destination addresses are NOT verified, so it's possible to write a program to
+the RAM and take the control by poisoning the stack. So reading is indirectly
+possible.
 
 ### Post 2008
 
@@ -70,6 +69,9 @@ reprogramming with CAN-Bus (500 kbit/s).
 
 This bootloader accepts an encrypted .CRP file and can update the calibration,
 the software or the EEPROM. Only writing with CAN-Bus, no reading...
+
+Destination addresses are verified. So there is no possibilities to write the
+RAM.
 
 ### CRP Files
 
@@ -80,7 +82,7 @@ The structure of the .CRP files has completely change in 2008.
 
 [VCIS]: https://vsic.lotuscars.com/
 
-## Live tuning access [2006-2008]
+## Live tuning access [2005-2008]
 
 For most of the white dashboard, there is an access provided by the main program
 trough CAN-BUS (1 Mbit/s). It's intended for "live tuning" and not for
