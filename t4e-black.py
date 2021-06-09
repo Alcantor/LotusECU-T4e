@@ -3,7 +3,7 @@
 import sys, can, argparse
 from lib.fileprogress import Progress
 from lib.crc import CRC8Normal
-from bin2crp import CRP
+from bin2crp import CRP08
 
 class ECUBlackException(Exception):
 	pass
@@ -31,15 +31,19 @@ class ECU_T4E_BLACK:
 	}
 
 	def __init__(self, bus, p):
-		if(bus): bus.set_filters([{
-			"extended": False,
-			"can_id": 0x7A1,
-			"can_mask": 0x7FF
-		}])
 		self.bus = bus
 		self.p = p
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
 		self.frame_size = 512
+
+	def configure_can(self, chunk_can):
+		# TODO: Configure bitrate
+		self.bus.set_filters([{
+			"extended": False,
+			"can_id": chunk_can.can_local_id2,
+			"can_mask": 0x7FF
+		}])
+		self.remote_id = chunk_can.can_remote_id2,
 
 	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data
@@ -52,17 +56,16 @@ class ECU_T4E_BLACK:
 			chunk_size = min(8, size)
 			chunk = data[offset:offset+chunk_size]
 			msg = can.Message(
-				is_extended_id = False, arbitration_id = 0x50,
+				is_extended_id = False, arbitration_id = 0x51,
 				data = chunk
 			)
 			self.bus.send(msg)
 			offset += chunk_size
 			size -= chunk_size
 
-	def send_frame(self, crp_chunk, frame_id):
-		# 0x40 is the size of the CAN-Bus configuration.
-		offset = 0x40 + (frame_id * self.frame_size)
-		frame = crp_chunk[offset:offset+self.frame_size]
+	def send_frame(self, data, frame_id):
+		offset = frame_id * self.frame_size
+		frame = data[offset:offset+self.frame_size]
 		header = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big")
 		self.send(6, header + frame)
 
@@ -80,34 +83,36 @@ class ECU_T4E_BLACK:
 
 	def bootstrap(self, crp_file, timeout=60.0):
 		crp_chunk_i = 1
-		crp_chunks = CRP.crp2chunk(crp_file)
-		# TODO: Configure the CAN-Bus with the first 64 Bytes of each
-		# chunks. This would be needed to update other components than
-		# the ECU, like a transmission controller of the Evora...
+		crp = CRP08()
+		crp.read_file(crp_file, True)
+		self.configure_can(crp.chunks[crp_chunk_i])
 		while(True):
 			cmd, data = self.recv(timeout=timeout)
 			# Hello
 			if(cmd == 0x0A):
 				self.p.log("ECU: Hello")
 				crp_chunk_i = 1
-				self.p.progress_start(len(crp_chunks[crp_chunk_i]))
+				self.p.progress_start(len(crp.chunks[crp_chunk_i].data))
+				self.configure_can(crp.chunks[crp_chunk_i])
 				self.send_start()
 			# Frame request
 			if(cmd == 0x01):
 				frame_id = int.from_bytes(data[4:6], "big")
 				#self.p.log("ECU: Request Frame "+str(frame_id))
-				self.p.progress(self.frame_size)
-				self.send_frame(crp_chunks[crp_chunk_i], frame_id)
+				if(frame_id > 0): self.p.progress(self.frame_size)
+				self.send_frame(crp.chunks[crp_chunk_i].data, frame_id)
 			# Erase Info
 			if(cmd == 0x03):
-				self.p.log("\nECU: Erasing...")
+				self.p.log("ECU: Erasing...")
+				self.p.progress(self.frame_size)
 			# Programming Info
 			if(cmd == 0x02):
 				self.p.progress_end()
 				crp_chunk_i += 1
-				if(crp_chunk_i < len(crp_chunks)):
+				if(crp_chunk_i < len(crp.chunks)):
 					self.p.log("ECU: Next chunk!")
-					self.p.progress_start(len(crp_chunks[crp_chunk_i]))
+					self.p.progress_start(len(crp.chunks[crp_chunk_i].data))
+					self.configure_can(crp.chunks[crp_chunk_i])
 					self.send_start()
 				else:
 					self.p.log("ECU: Programming completed!")
