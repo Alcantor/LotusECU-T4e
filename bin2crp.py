@@ -143,6 +143,10 @@ class CRP08_chunk_toc(BinDataFormat):
 		self.values[0].append(name)
 		self.values[1].append(desc)
 
+	def del_entry(self, index):
+		del self.values[0][index]
+		del self.values[1][index]
+
 class CRP08_data_ecu(BinDataFormat):	
 	def __init__(self):
 		# Encryption header (12 Bytes)
@@ -212,6 +216,8 @@ class CRP08_data_ecu(BinDataFormat):
 	# Import from a BIN file.
 	def import_bin(self, file):
 		with open(file, 'rb') as f: self.ecu_data = f.read()
+		# Remove free space at the end
+		self.ecu_data = self.ecu_data.rstrip(b'\xFF')
 
 	def __str__(self):
 		fmt = """
@@ -297,6 +303,8 @@ CRP08 CAN Chunk:
 		) + str(self.data)
 
 class CRP08(BinDataFormat):
+	t4e_desc = "LOTUS_T4E_MY08"
+
 	def __init__(self):
 		# An empty CRP file
 		self.chunks = [CRP08_chunk_toc()]
@@ -345,6 +353,25 @@ class CRP08(BinDataFormat):
 		self.chunks[0].add_entry(name, desc)
 		self.chunks.append(chunk)
 
+	def del_chunk(self, index):
+		# Delete the entry from the TOC.
+		self.chunks[0].del_entry(index-1)
+		del self.chunks[index]
+
+	# Create a chunk for the T4E Calibration
+	def add_t4e_cal(self, file):
+		chk = CRP08_chunk_can(False)
+		chk.data.ecu_addr = 0x10000
+		chk.data.import_bin(file)
+		self.add_chunk(chk, os.path.basename(file), self.t4e_desc)
+
+	# Create a chunk for the T4E Program
+	def add_t4e_prog(self, file):
+		chk = CRP08_chunk_can(False)
+		chk.data.ecu_addr = 0x20000
+		chk.data.import_bin(file)
+		self.add_chunk(chk, os.path.basename(file), self.t4e_desc)
+
 	# Unpack multiple chunks from a CRP file.
 	def read_file(self, file, leave_encrypted=False):
 		with open(file, 'rb') as f: self.parse(memoryview(f.read()), leave_encrypted)
@@ -357,41 +384,21 @@ class CRP08(BinDataFormat):
 
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e ECU\n")
-	t4e_desc = "LOTUS_T4E_MY08"
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "calrom"):
 		print("Convert "+sys.argv[2]+" into "+sys.argv[3])
 		crp = CRP08()
-		# Create a chunk for the Calibration
-		chk = CRP08_chunk_ecu(False)
-		chk.data.ecu_addr = 0x10000
-		chk.data.import_bin(sys.argv[2])
-		crp.add_chunk(chk, os.path.basename(sys.argv[2]), t4e_desc)
-		# Write
+		crp.add_t4e_cal(sys.argv[2])
 		crp.write_file(sys.argv[3])
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "prog"):
 		print("Convert "+sys.argv[2]+" and "+sys.argv[3]+" into "+sys.argv[4])
 		crp = CRP08()
-		# Create a chunk for the Program
-		chk = CRP08_chunk_can(False)
-		chk.data.ecu_addr = 0x20000
-		chk.data.import_bin(sys.argv[2])
-		crp.add_chunk(chk, os.path.basename(sys.argv[2]), t4e_desc)
-		# Write
+		crp.add_t4e_prog(sys.argv[2])
 		crp.write_file(sys.argv[3])
 	elif(len(sys.argv) >= 5 and sys.argv[1] == "both"):
 		print("Convert "+sys.argv[2]+" and "+sys.argv[3]+" into "+sys.argv[4])
 		crp = CRP08()
-		# Create a chunk for the Calibration
-		chk = CRP08_chunk_can(False)
-		chk.data.ecu_addr = 0x10000
-		chk.data.import_bin(sys.argv[2])
-		crp.add_chunk(chk, os.path.basename(sys.argv[2]), t4e_desc)
-		# Create a chunk for the Program
-		chk = CRP08_chunk_can(False)
-		chk.data.ecu_addr = 0x20000
-		chk.data.import_bin(sys.argv[3])
-		crp.add_chunk(chk, os.path.basename(sys.argv[3]), t4e_desc)
-		# Write
+		crp.add_t4e_cal(sys.argv[2])
+		crp.add_t4e_prog(sys.argv[3])
 		crp.write_file(sys.argv[4])
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "unpack"):
 		print("Unpack "+sys.argv[2])
