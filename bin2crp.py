@@ -94,7 +94,7 @@ class BinDataFormat:
 	def parse(self, data) -> None:
 		raise NotImplementedError
 
-	def getSize(self) -> int:
+	def get_size(self) -> int:
 		raise NotImplementedError
 
 	def compose(self, data) -> None:
@@ -118,7 +118,7 @@ class CRP08_chunk_toc(BinDataFormat):
 				x = offset+4+(self.ENS*j)
 				self.values[i][j] = str(data[x:x+self.ENS], CHARSET).rstrip()
 
-	def getSize(self):
+	def get_size(self):
 		nb_entries = len(self.values)
 		size = 4+(8*nb_entries)
 		for i in range(0, nb_entries):
@@ -182,7 +182,7 @@ class CRP08_data_ecu(BinDataFormat):
 		# Binary data
 		self.ecu_data = plain[76:76+ecu_binsize]
 
-	def getSize(self):
+	def get_size(self):
 		return CRP08_xtea.calc_size(76+len(self.ecu_data))
 
 	def compose(self, data):
@@ -212,6 +212,26 @@ class CRP08_data_ecu(BinDataFormat):
 	# Import from a BIN file.
 	def import_bin(self, file):
 		with open(file, 'rb') as f: self.ecu_data = f.read()
+
+	def __str__(self):
+		fmt = """
+CRP08 ECU Data:
+
+	XTEA Salt: {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}
+	Id.      : {:s}
+	Address  : 0x{:5X}
+	Size     : 0x{:5X}
+	Max Ver. : {:d}
+	Min Ver. : {:d}
+"""
+		return fmt.format(
+			*self.xtea_salt,
+			self.ecu_id,
+			self.ecu_addr,
+			len(self.ecu_data),
+			self.ecu_maxversion,
+			self.ecu_minversion,
+		)
 
 class CRP08_chunk_can(BinDataFormat):
 	SIGNATURE = 0x0001010A
@@ -245,9 +265,9 @@ class CRP08_chunk_can(BinDataFormat):
 		if(self.is_encrypted): self.data = data[64:]
 		else: self.data.parse(data[64:])
 
-	def getSize(self):
+	def get_size(self):
 		if(self.is_encrypted): return 64 + len(self.enc_data)
-		else: return 64 + self.data.getSize()
+		else: return 64 + self.data.get_size()
 
 	def compose(self, data):
 		# Configuration header (64 Bytes)
@@ -261,6 +281,20 @@ class CRP08_chunk_can(BinDataFormat):
 		# Encrypted data
 		if(self.is_encrypted): self.data = data[64:]
 		else: self.data.compose(data[64:])
+
+	def __str__(self):
+		fmt = """
+CRP08 CAN Chunk:
+
+	Bitrate   : {:d} kbits/s
+	Remote ID : 0x{:3X} / 0x{:3X}
+	Local ID  : 0x{:3X} / 0x{:3X}
+"""
+		return fmt.format(
+			self.can_bitrate,
+			self.can_remote_id1, self.can_remote_id2,
+			self.can_local_id1, self.can_local_id2
+		) + str(self.data)
 
 class CRP08(BinDataFormat):
 	def __init__(self):
@@ -284,10 +318,10 @@ class CRP08(BinDataFormat):
 			chunk.parse(data[offset:offset+size])
 			self.chunks[i] = chunk
 
-	def getSize(self):
+	def get_size(self):
 		size = 4+(8*len(self.chunks))+2
 		for chunk in self.chunks:
-			size += chunk.getSize()
+			size += chunk.get_size()
 		return size
 
 	def compose(self, data):
@@ -295,7 +329,7 @@ class CRP08(BinDataFormat):
 		data[0:4] = len(self.chunks).to_bytes(4, BO_LE)
 		offset = 4+(8*len(self.chunks))
 		for i in range(0, len(self.chunks)):
-			size = self.chunks[i].getSize()
+			size = self.chunks[i].get_size()
 			x = 4+(8*i)
 			data[x:x+4] = offset.to_bytes(4, BO_LE)
 			data[x+4:x+8] = size.to_bytes(4, BO_LE)
@@ -317,7 +351,7 @@ class CRP08(BinDataFormat):
 
 	# Pack multiple chunks into a CRP file.
 	def write_file(self, file):
-		data = memoryview(bytearray(self.getSize()))
+		data = memoryview(bytearray(self.get_size()))
 		self.compose(data)
 		with open(file, 'wb') as f: f.write(data)
 
