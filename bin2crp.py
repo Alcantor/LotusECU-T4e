@@ -91,13 +91,13 @@ class CRP08_xtea():
 		return size
 
 class BinDataFormat:
-	def parse(self, data) -> None:
+	def parse(self, data: memoryview) -> None:
 		raise NotImplementedError
 
 	def get_size(self) -> int:
 		raise NotImplementedError
 
-	def compose(self, data) -> None:
+	def compose(self, data: memoryview) -> None:
 		raise NotImplementedError
 
 class CRP08_chunk_toc(BinDataFormat):
@@ -147,7 +147,7 @@ class CRP08_chunk_toc(BinDataFormat):
 		del self.values[0][index]
 		del self.values[1][index]
 
-class CRP08_data_ecu(BinDataFormat):	
+class CRP08_data_ecu(BinDataFormat):
 	def __init__(self):
 		# Encryption header (12 Bytes)
 		self.xtea_salt = secrets.token_bytes(8)
@@ -244,7 +244,7 @@ class CRP08_chunk_can(BinDataFormat):
 	
 	def __init__(self, is_encrypted):
 		# Configuration header (64 Bytes)
-		self.signature = self.SIGNATURE
+		#self.signature = self.SIGNATURE
 		self.can_bitrate = 500
 		self.can_remote_id1 = 0x50
 		self.can_local_id1 = 0x7A0
@@ -258,13 +258,13 @@ class CRP08_chunk_can(BinDataFormat):
 
 	def parse(self, data):
 		# Configuration header (64 Bytes)
-		self.signature = int.from_bytes(data[0:4], BO_LE)
+		signature = int.from_bytes(data[0:4], BO_LE)
 		self.can_bitrate = int.from_bytes(data[4:8], BO_LE)
 		self.can_remote_id1 = int.from_bytes(data[8:12], BO_LE)
 		self.can_local_id1 = int.from_bytes(data[12:16], BO_LE)
 		self.can_remote_id2 = int.from_bytes(data[16:20], BO_LE)
 		self.can_local_id2 = int.from_bytes(data[20:24], BO_LE)
-		if(self.signature != self.SIGNATURE):
+		if(signature != self.SIGNATURE):
 			raise CRP08_exception("CRP chunk signature!")
 
 		# Encrypted data
@@ -277,7 +277,7 @@ class CRP08_chunk_can(BinDataFormat):
 
 	def compose(self, data):
 		# Configuration header (64 Bytes)
-		data[0:4] = self.signature.to_bytes(4, BO_LE)
+		data[0:4] = self.SIGNATURE.to_bytes(4, BO_LE)
 		data[4:8] = self.can_bitrate.to_bytes(4, BO_LE)
 		data[8:12] = self.can_remote_id1.to_bytes(4, BO_LE)
 		data[12:16] = self.can_local_id1.to_bytes(4, BO_LE)
@@ -285,7 +285,7 @@ class CRP08_chunk_can(BinDataFormat):
 		data[20:24] = self.can_local_id2.to_bytes(4, BO_LE)
 
 		# Encrypted data
-		if(self.is_encrypted): self.data = data[64:]
+		if(self.is_encrypted): data[64:] = self.data
 		else: self.data.compose(data[64:])
 
 	def __str__(self):
