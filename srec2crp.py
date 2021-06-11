@@ -107,7 +107,7 @@ class CRP05_hdr_ecu_t4:
 	SIGNATURE =  b'\x00\x00\x00'
 
 	def __init__(self):
-		self.erase_sector = [False]*8
+		self.clear()
 
 	def parse(self, data):
 		signature = data[0:3]
@@ -123,6 +123,9 @@ class CRP05_hdr_ecu_t4:
 		data[0:3] = self.SIGNATURE
 		for i in range(0, 8):
 			data[i+3] = 1 if(self.erase_sector[i]) else 0
+
+	def clear(self):
+		self.erase_sector = [False]*8
 
 	def set_erase_by_addr(self, addr):
 		sector = addr // 0x10000
@@ -155,7 +158,7 @@ class CRP05_hdr_ecu_t4e:
 	SIGNATURE =  b'T4E_'
 
 	def __init__(self):
-		self.erase_sector = [False]*3
+		self.clear()
 
 	def parse(self, data):
 		signature = data[0:4]
@@ -172,6 +175,9 @@ class CRP05_hdr_ecu_t4e:
 		for i in range(0, 3):
 			data[i+4] = ord('1') if(self.erase_sector[i]) else ord('0')
 		data[7:11] = b'\x00\x00\x00\x00'
+
+	def clear(self):
+		self.erase_sector = [False]*3
 
 	def set_erase_by_addr(self, addr):
 		sector = addr // 0x10000
@@ -237,6 +243,11 @@ class CRP05_subpackets:
 			data[i+size] = sum(data[i:i+size]) & 0xFF
 			i += size+1
 
+	def del_sector(self, sector):
+		start = sector * 0x10000
+		end = start + 0x10000
+		self.subpackets = [x for x in self.subpackets if not (start <= x[0] and x[0] < end)]
+
 	# Export into a SREC file.
 	def export_srec(self, file, desc):
 		desc = bytes(desc, CHARSET)
@@ -252,6 +263,39 @@ class CRP05_subpackets:
 				srec_bin += s[1]
 				srec_bin += (~sum(srec_bin) & 0xFF).to_bytes(1, BO_BE)
 				f.write("S2" + ''.join('{:02X}'.format(x) for x in srec_bin) + '\n')
+
+	# Import from a SREC file.
+	def import_srec(self, file):
+		desc = ""
+
+		# Read the SREC file
+		with open(file, 'r') as f:
+			data_srec = f.read()
+		for line in data_srec.split('\n'):
+			if(len(line) < 2 or line[0] != 'S'): continue
+			srec_bin = bytearray([int(line[i:i+2], 16) for i in range(2,len(line),2)])
+			length = srec_bin[0]
+			if(~sum(srec_bin[:length]) & 0xFF != srec_bin[length]):
+				raise CRP05_Exception("S-Record checksum error")
+			if  (line[1] == "0"):
+				desc = str(srec_bin[3:length], CHARSET)
+				continue
+			elif(line[1] == "1"):
+				addr = int.from_bytes(srec_bin[1:3], BO_BE)
+				data = srec_bin[3:length]
+			elif(line[1] == "2"):
+				addr = int.from_bytes(srec_bin[1:4], BO_BE)
+				data = srec_bin[4:length]
+			elif(line[1] == "3"):
+				addr = int.from_bytes(srec_bin[1:5], BO_BE)
+				data = srec_bin[5:length]
+			else:
+				continue
+			# Build the Sub-Packet
+			if(len(data) % 2 != 0):
+				raise Exception("S-Record uneven length is incompatible with encryption!")
+			self.subpackets.append((addr, data))
+		return desc
 
 	def __str__(self):
 		fmt = """
@@ -271,9 +315,9 @@ Subpackets:
 #   2 Bytes LE - Checksum
 #
 class CRP05_data_ecu:
-	def __init__(self):
+	def __init__(self, for_t4e=False):
 		# Binary data
-		self.header = None
+		self.header = CRP05_hdr_ecu_t4e() if(for_t4e) else CRP05_hdr_ecu_t4()
 		self.subpackets = CRP05_subpackets()
 
 	def parse(self, data):
@@ -306,6 +350,11 @@ class CRP05_data_ecu:
 		# Encrypt
 		CRP05_3by2enc(self.get_size()+20).encrypt(plain, data)
 
+	def update_header(self):
+		self.header.clear()
+		for s in self.subpackets.subpackets:
+			self.header.set_erase_by_addr(s[0])
+
 	def __str__(self):
 		return str(self.header) + str(self.subpackets)
 
@@ -319,11 +368,11 @@ class CRP05_data_ecu:
 class CRP05:
 	SIGNATURE = b' EFi'
 
-	def __init__(self, is_encrypted):
+	def __init__(self, for_t4e=False, is_encrypted=False):
 		self.desc = ""
 		self.is_encrypted = is_encrypted
 		if(self.is_encrypted): self.data = None
-		else: self.data = CRP05_data_ecu()
+		else: self.data = CRP05_data_ecu(for_t4e)
 
 	def parse(self, data):
 		# Parse the CRP
@@ -374,11 +423,19 @@ CRP05 K-Line File:
 		) + str(self.data)
 
 if __name__ == "__main__":
-	crp = CRP05(False)
+	crp = CRP05()
 	crp.read_file("B120E06H.CRP")
 	print(crp)
 	crp.data.subpackets.export_srec("B120E06H-TEST.SREC", crp.desc)
 	crp.write_file("B120E06H-TEST.CRP")
+
+	
+	crp = CRP05()
+	crp.desc = crp.data.subpackets.import_srec("B120E06H-TEST.SREC")
+	crp.data.subpackets.del_sector(7)
+	crp.data.update_header()
+	print(crp)
+
 	sys.exit()
 	print("SREC to CRP file tool for Lotus T4/T4E ECU\n")
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "pack"):
