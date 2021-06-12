@@ -3,7 +3,7 @@
 import sys, can, argparse
 from lib.fileprogress import Progress
 from lib.crc import CRC8Normal
-from bin2crp import CRP08
+from lib.crp08 import CRP08
 
 class ECUBlackException(Exception):
 	pass
