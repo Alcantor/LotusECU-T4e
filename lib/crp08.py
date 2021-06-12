@@ -115,7 +115,7 @@ class CRP08_chunk_toc(BinData):
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
 			if(int.from_bytes(data[offset:offset+4], BO_LE) != i+1):
-				raise CRP08_exception("CRP index chunk!")
+				raise CRP08_exception("Index chunk!")
 			self.toc_values[i] = [None] * ((size-4) // self.ENS)
 			for j in range(0, len(self.toc_values[i])):
 				x = offset+4+(self.ENS*j)
@@ -224,7 +224,7 @@ class CRP08_data_ecu(BinData):
 
 		# Check sizes
 		if(xtea_plainsize != ecu_binsize+64):
-			raise CRP08_exception("CRP size mismatch!")
+			raise CRP08_exception("Size mismatch!")
 
 		# Binary data
 		self.ecu_data = plain[76:76+ecu_binsize]
@@ -321,7 +321,7 @@ class CRP08_chunk_can(BinData):
 		self.can_remote_id2 = int.from_bytes(data[16:20], BO_LE)
 		self.can_local_id2 = int.from_bytes(data[20:24], BO_LE)
 		if(signature != self.SIGNATURE):
-			raise CRP08_exception("CRP chunk signature!")
+			raise CRP08_exception("Chunk signature!")
 
 		# Encrypted data
 		if(self.is_encrypted): self.data = data[64:]
@@ -381,7 +381,7 @@ class CRP08(BinData):
 		# Check the sum
 		cksum = sum(data[:-2]) & 0xFFFF
 		if(cksum != int.from_bytes(data[-2:], BO_LE)):
-			raise CRP08_exception("CRP wrong sum!")
+			raise CRP08_exception("Wrong sum!")
 
 		# Parse the chunks
 		self.chunks = [None] * int.from_bytes(data[0:4], BO_LE)

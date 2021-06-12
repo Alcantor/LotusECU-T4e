@@ -2,7 +2,6 @@
 
 import os
 import tkinter as tk
-from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
 from lib.crp08 import CRP08
@@ -35,33 +34,53 @@ class CRP08_window():
 		master.config(menu=menubar)
 
 		# List
-		self.lb = tk.Listbox(master)
+		self.lb = tk.Listbox(master, height=5, width=45)
 		self.lb.bind('<<ListboxSelect>>', self.updateText)
 		self.lb.pack()
 
 		# Infos
-		self.txt = tk.Text(root, height=20, width=50)
+		self.txt = tk.Text(master, height=16, width=45, state=tk.DISABLED)
 		self.txt.pack()
 
 		# Backend
 		self.crp = CRP08()
 
 	def updateList(self, evt=None):
+		# Clear and re-fill the list
 		self.lb.delete(0, tk.END)
 		for name in self.crp.chunks[0].toc_values[0]:
 			self.lb.insert(tk.END, name)
-		self.updateText(evt)
+		# Clear the text
+		self.txt.config(state=tk.NORMAL)
+		self.txt.delete('1.0', tk.END)
+		self.txt.config(state=tk.DISABLED)
 
 	def updateText(self, evt=None):
+		if(len(self.lb.curselection()) == 0): return
+		self.txt.config(state=tk.NORMAL)
 		self.txt.delete('1.0', tk.END)
-		if(len(self.lb.curselection()) > 0):
-			i = self.lb.curselection()[0]
-			self.txt.insert(tk.END, str(self.crp.chunks[i+1]))
+		i = self.lb.curselection()[0]
+		self.txt.insert(tk.END, str(self.crp.chunks[i+1]))
+		self.txt.config(state=tk.DISABLED)
 
+	def try_msgbox_decorator(func):
+		def wrapper(self):
+			try:
+				func(self)
+			except Exception as e:
+				messagebox.showerror(
+					master=self.master,
+					title="Error!",
+					message=str(e)
+				)
+		return wrapper
+
+	@try_msgbox_decorator
 	def new(self):
 		self.crp = CRP08()
 		self.updateList()
 
+	@try_msgbox_decorator
 	def open(self):
 		answer = filedialog.askopenfilename(
 			parent = self.master,
@@ -73,6 +92,7 @@ class CRP08_window():
 			self.crp.read_file(answer)
 			self.updateList()
 
+	@try_msgbox_decorator
 	def save(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self.master,
@@ -83,25 +103,26 @@ class CRP08_window():
 		if(answer):
 			self.crp.write_file(answer)
 
+	@try_msgbox_decorator
 	def remove(self):
-		if(len(self.lb.curselection()) > 0):
-			i = self.lb.curselection()[0]
-			self.crp.del_chunk(i+1)
-			self.updateList()
+		i = self.lb.curselection()[0]
+		self.crp.del_chunk(i+1)
+		self.updateList()
 
+	@try_msgbox_decorator
 	def export(self):
-		if(len(self.lb.curselection()) > 0):
-			i = self.lb.curselection()[0]
-			answer = filedialog.asksaveasfilename(
-				parent = self.master,
-				initialdir = os.getcwd(),
-				initialfile = self.crp.chunks[0].toc_values[0][i],
-				title = "Please select a file:",
-				filetypes = bin_file
-			)
-			if(answer):
-				self.crp.chunks[i+1].data.export_bin(answer)
+		i = self.lb.curselection()[0]
+		answer = filedialog.asksaveasfilename(
+			parent = self.master,
+			initialdir = os.getcwd(),
+			initialfile = self.crp.chunks[0].toc_values[0][i],
+			title = "Please select a file:",
+			filetypes = bin_file
+		)
+		if(answer):
+			self.crp.chunks[i+1].data.export_bin(answer)
 
+	@try_msgbox_decorator
 	def import_t4e_cal(self):
 		answer = filedialog.askopenfilename(
 			parent = self.master,
@@ -114,6 +135,7 @@ class CRP08_window():
 			self.crp.add_t4e_cal(answer)
 			self.updateList()
 
+	@try_msgbox_decorator
 	def import_t4e_prog(self):
 		answer = filedialog.askopenfilename(
 			parent = self.master,
@@ -126,6 +148,3 @@ class CRP08_window():
 			self.crp.add_t4e_prog(answer)
 			self.updateList()
 
-root = tk.Tk()
-app = CRP08_window(root)
-root.mainloop()

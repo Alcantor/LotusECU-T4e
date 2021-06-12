@@ -8,6 +8,8 @@ from tkinter import messagebox
 from t4e import ECU_T4E
 from flasher import Flasher
 from lib.fileprogress import FileProgress
+from lib.gui_crp05 import CRP05_window
+from lib.gui_crp08 import CRP08_window
 
 binary_file = [("Binary File", "*.bin")]
 
@@ -312,6 +314,9 @@ class t4e_window():
 		self.closeCAN()
 
 root = tk.Tk()
-app = t4e_window(root)
+t4e_window(root)
+
+CRP05_window(tk.Toplevel(root))
+CRP08_window(tk.Toplevel(root))
 root.mainloop()
 

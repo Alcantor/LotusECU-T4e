@@ -432,14 +432,14 @@ if __name__ == "__main__":
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "pack"):
 		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
 		crp = CRP05()
-		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])
+		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
 		crp.data.update_header()
 		crp.write_file(sys.argv[3])
 		print(crp)
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "pack_t4e"):
 		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
 		crp = CRP05(True)
-		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])
+		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
 		crp.data.update_header()
 		crp.write_file(sys.argv[3])
 		print(crp)
