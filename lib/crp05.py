@@ -219,6 +219,7 @@ class CRP05_subpackets(BinData):
 		self.subpackets = []
 
 	def parse(self, data):
+		self.subpackets = []
 		i = 0
 		while(i < len(data)):
 			if(data[i] == 0xFF):
@@ -253,12 +254,10 @@ class CRP05_subpackets(BinData):
 			data[i+size] = sum(data[i:i+size]) & 0xFF
 			i += size+1
 
-	def del_sector(self, sector):
-		start = sector * 0x10000
-		end = start + 0x10000
-		self.subpackets = [x for x in self.subpackets if not (start <= x[0] and x[0] < end)]
+	def delete(self, offset, size):
+		limit = offset + size
+		self.subpackets = [x for x in self.subpackets if not (offset <= x[0] and x[0] < limit)]
 
-	# Export into a SREC file.
 	def export_srec(self, file, desc):
 		desc = bytes(desc, CHARSET)
 		with open(file, 'w') as f:
@@ -274,7 +273,6 @@ class CRP05_subpackets(BinData):
 				srec_bin += (~sum(srec_bin) & 0xFF).to_bytes(1, BO_BE)
 				f.write("S2" + ''.join('{:02X}'.format(x) for x in srec_bin) + '\n')
 
-	# Import from a SREC file.
 	def import_srec(self, file):
 		desc = ""
 		with open(file, 'r') as f:
@@ -304,6 +302,26 @@ class CRP05_subpackets(BinData):
 				raise Exception("S-Record uneven length is incompatible with encryption!")
 			self.subpackets.append((addr, data))
 		return desc
+
+	def export_bin(self, file, offset, size):
+		limit = offset + size
+		buf = bytearray([0xFF]*size)
+		for s in self.subpackets:
+			if not (offset <= s[0] and s[0] < limit): continue
+			x = s[0]-offset
+			buf[x:x+len(s[1])] = s[1]
+		buf = buf.rstrip(b'\xFF')
+		with open(file, 'wb') as f:
+			f.write(buf)
+
+	def import_bin(self, file, offset):
+		with open(file, 'rb') as f:
+			buf = f.read()
+		self.delete(offset, len(buf))
+		buf = buf.rstrip(b'\xFF')
+		# 246 is the maximal size of data in a subpacket.
+		for i in range(0, len(buf), 246):
+			self.subpackets.append((offset+i, buf[i:i+246]))
 
 	def __str__(self):
 		fmt = """
@@ -378,7 +396,7 @@ class CRP05(BinData):
 	SIGNATURE = b' EFi'
 
 	def __init__(self, for_t4e=False, is_encrypted=False):
-		self.desc = ""
+		self.desc = "CUSTOM"
 		self.is_encrypted = is_encrypted
 		if(self.is_encrypted): self.data = None
 		else: self.data = CRP05_data_ecu(for_t4e)
