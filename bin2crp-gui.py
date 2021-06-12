@@ -5,7 +5,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog
 from tkinter import messagebox
-from bin2crp import CRP08
+from lib.crp08 import CRP08
 
 crp08_file = [("Lotus CRP 08 file", "*.CRP *.crp")]
 bin_file = [("Raw binary file", "*.BIN *.bin *.cpt")]
@@ -48,7 +48,7 @@ class CRP08_window():
 
 	def updateList(self, evt=None):
 		self.lb.delete(0, tk.END)
-		for name in self.crp.chunks[0].values[0]:
+		for name in self.crp.chunks[0].toc_values[0]:
 			self.lb.insert(tk.END, name)
 		self.updateText(evt)
 
@@ -95,7 +95,7 @@ class CRP08_window():
 			answer = filedialog.asksaveasfilename(
 				parent = self.master,
 				initialdir = os.getcwd(),
-				initialfile = self.crp.chunks[0].values[0][i],
+				initialfile = self.crp.chunks[0].toc_values[0][i],
 				title = "Please select a file:",
 				filetypes = bin_file
 			)

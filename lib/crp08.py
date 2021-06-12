@@ -1,32 +1,28 @@
 #!/usr/bin/python3
 
-# Valid addresses are:
-#  Flash:
-#   0xA00 - Payload 12 Bytes (Bootloader config)
-#   0xA08 - Payload 4 Bytes (0xFFFFFFFF (Accept unencrypted) -> 0x1 Only CRP)
-#   0xA2C - Payload 32 Bytes (Firmware Number)
-#   0xA4C - Payload 32 Bytes (ECU Hardware Version)
-#   0x10000 - Payload max. size 0x10000 (calrom)
-#   0x20000 - Payload max. size 0x5FFFF (prog)
-#
-#  SPI: 0x7C0, 0x7E0, 0x17C0
-#
-# Only addresses 0x10000 and 0x20000 can be erased. The other addresses in
-# the bootloader are only to upload a new configuration to a blank bootloader.
-#
-# I don't think you can update the bootloader itself. Only calrom and prog.
-#
+import sys, os, secrets
 
 # Some constants
 BO_LE = 'little'
 BO_BE = 'big'
 CHARSET = 'ISO-8859-15'
 
-import sys, os, secrets
+class BinData:
+	def parse(self, data: memoryview) -> None:
+		raise NotImplementedError
+	def get_size(self) -> int:
+		raise NotImplementedError
+	def compose(self, data: memoryview) -> None:
+		raise NotImplementedError
 
 class CRP08_exception(Exception):
 	pass
 
+# Encryption algorithm:
+#
+# Standard XTEA. XTEA data size needs to be a mulitple of 16 bytes. So padding
+# is required.
+#
 class CRP08_xtea():
 	def __init__(self):
 		self.delta = 0x9E3779B9;
@@ -47,7 +43,7 @@ class CRP08_xtea():
 			xsum = (xsum + self.delta) & self.mask
 			v1 = (v1 + (((v0 << 4 ^ v0 >> 5) + v0) ^ (xsum + self.key[(xsum >> 11) & 3]))) & self.mask
 		return v0, v1
-	
+
 	def decrypt(self, v0, v1):
 		xsum = (self.delta * self.rounds) & self.mask
 		for i in range(0, self.rounds):
@@ -55,8 +51,7 @@ class CRP08_xtea():
 			xsum = (xsum - self.delta) & self.mask
 			v0 = (v0 - (((v1 << 4 ^ v1 >> 5) + v1) ^ (xsum + self.key[xsum & 3]))) & self.mask
 		return v0, v1
-	
-	# CBC Encrypt
+
 	def encrypt_cbc(self, buf_in, buf_out):
 		last_v0, last_v1 = self.iv
 		for i in range(0, len(buf_in), 8):
@@ -70,7 +65,6 @@ class CRP08_xtea():
 			last_v0 = v0
 			last_v1 = v1
 
-	# CBC Decrypt
 	def decrypt_cbc(self, buf_in, buf_out):
 		last_v0, last_v1 = self.iv
 		for i in range(0, len(buf_in), 8):
@@ -90,64 +84,113 @@ class CRP08_xtea():
 		if(align > 0): size += (8-align)
 		return size
 
-class BinDataFormat:
-	def parse(self, data: memoryview) -> None:
-		raise NotImplementedError
-
-	def get_size(self) -> int:
-		raise NotImplementedError
-
-	def compose(self, data: memoryview) -> None:
-		raise NotImplementedError
-
-class CRP08_chunk_toc(BinDataFormat):
+# The first chunk of a CRP data contains a kind of "Table of Content" for the
+# next chunks.
+#
+# Chunk TOC format:
+#
+#   4 Bytes LE - Sould always be 2
+#   4 Bytes LE - Offset of the file list
+#   4 Bytes LE - Size of the file list
+#   4 Bytes LE - Offset of description list
+#   4 Bytes LE - Size of the description list
+#
+# File list format:
+#   4 Bytes LE - Sould always be 1
+#   x Bytes    - File list (Each element is 128 Bytes long)
+#
+# File description format:
+#   4 Bytes LE - Sould always be 2
+#   x Bytes    - File list (Each element is 128 Bytes long)
+#
+class CRP08_chunk_toc(BinData):
 	def __init__(self):
-		self.values = [[], []]
+		self.toc_values = [[], []]
 		self.ENS = 128
 
 	def parse(self, data):
-		self.values = [None] * int.from_bytes(data[0:4], BO_LE)
-		for i in range(0, len(self.values)):
+		self.toc_values = [None] * int.from_bytes(data[0:4], BO_LE)
+		for i in range(0, len(self.toc_values)):
 			x = 4+(8*i)
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
 			if(int.from_bytes(data[offset:offset+4], BO_LE) != i+1):
 				raise CRP08_exception("CRP index chunk!")
-			self.values[i] = [None] * ((size-4) // self.ENS)
-			for j in range(0, len(self.values[i])):
+			self.toc_values[i] = [None] * ((size-4) // self.ENS)
+			for j in range(0, len(self.toc_values[i])):
 				x = offset+4+(self.ENS*j)
-				self.values[i][j] = str(data[x:x+self.ENS], CHARSET).rstrip()
+				self.toc_values[i][j] = str(data[x:x+self.ENS], CHARSET).rstrip()
 
 	def get_size(self):
-		nb_entries = len(self.values)
+		nb_entries = len(self.toc_values)
 		size = 4+(8*nb_entries)
 		for i in range(0, nb_entries):
-			size += 4+(len(self.values[i])*self.ENS)
+			size += 4+(len(self.toc_values[i])*self.ENS)
 		return size
 
 	def compose(self, data):
-		data[0:4] = len(self.values).to_bytes(4, BO_LE)
-		offset = 4+(8*len(self.values))
-		for i in range(0, len(self.values)):
-			size = 4+(len(self.values[i])*self.ENS)
+		data[0:4] = len(self.toc_values).to_bytes(4, BO_LE)
+		offset = 4+(8*len(self.toc_values))
+		for i in range(0, len(self.toc_values)):
+			size = 4+(len(self.toc_values[i])*self.ENS)
 			x = 4+(8*i)
 			data[x:x+4] = offset.to_bytes(4, BO_LE)
 			data[x+4:x+8] = size.to_bytes(4, BO_LE)
 			data[offset:offset+4] = (i+1).to_bytes(4, BO_LE)
-			for j in range(0, len(self.values[i])):
+			for j in range(0, len(self.toc_values[i])):
 				x = offset+4+(self.ENS*j)
-				data[x:x+self.ENS] = bytes(self.values[i][j].ljust(self.ENS), CHARSET)
+				data[x:x+self.ENS] = bytes(self.toc_values[i][j].ljust(self.ENS), CHARSET)
 			offset += size
 
 	def add_entry(self, name, desc):
-		self.values[0].append(name)
-		self.values[1].append(desc)
+		self.toc_values[0].append(name)
+		self.toc_values[1].append(desc)
 
 	def del_entry(self, index):
-		del self.values[0][index]
-		del self.values[1][index]
+		del self.toc_values[0][index]
+		del self.toc_values[1][index]
 
-class CRP08_data_ecu(BinDataFormat):
+# Data as interpreted after decryption by a T4e/T6 ECU.
+#
+# Data ECU format:
+#
+#  12 Bytes    - Encryption header
+#  64 Bytes    - ECU header
+#   x Bytes    - Data to be flashed
+#   x Bytes    - XTEA padding
+#
+# Encryption header format:
+#
+#   8 Bytes    - XTEA Salt or Initialization Vector (Random values)
+#   4 Bytes BE - XTEA: Size of data before padding
+#
+# ECU header format:
+#
+#  32 Bytes    - Identification string, like "T4E" padded with spaces
+#   4 Bytes BE - Destination address
+#   4 Bytes BE - Data size
+#   4 Bytes BE - Max version of the bootloader to accept the file
+#   4 Bytes BE - Min version of the bootloader to accept the file
+#  16 Bytes    - Filled with 0x00
+#
+# Valid addresses for a T4E are:
+#
+#  Flash:
+#   0xA00 - Payload 12 Bytes (Bootloader config)
+#   0xA08 - Payload 4 Bytes (0xFFFFFFFF (Accept unencrypted) -> 0x1 Only CRP)
+#   0xA2C - Payload 32 Bytes (Firmware Number)
+#   0xA4C - Payload 32 Bytes (ECU Hardware Version)
+#   0x10000 - Payload max. size 0x10000 (calrom)
+#   0x20000 - Payload max. size 0x5FFFF (prog)
+#
+#  SPI: 0x7C0, 0x7E0, 0x17C0
+#
+# Only addresses 0x10000 and 0x20000 can be erased. The other addresses in
+# the bootloader are only to upload a new configuration to a blank bootloader.
+#
+# I don't think you can update the bootloader itself. Only calrom and prog.
+#
+class CRP08_data_ecu(BinData):
 	def __init__(self):
 		# Encryption header (12 Bytes)
 		self.xtea_salt = secrets.token_bytes(8)
@@ -239,9 +282,22 @@ CRP08 ECU Data:
 			self.ecu_minversion,
 		)
 
-class CRP08_chunk_can(BinDataFormat):
+# The following chunks of a CRP data contains data to flash through CAN-Bus.
+#
+# Chunk CAN format:
+#
+#   4 Bytes LE - Sould always be 0x0001010A
+#   4 Bytes LE - CAN Bitrate
+#   4 Bytes LE - CAN Remote ID 1
+#   4 Bytes LE - CAN Local ID 1
+#   4 Bytes LE - CAN Remote ID 2
+#   4 Bytes LE - CAN Local ID 2
+#  40 Bytes    - Filled with 0x00
+#   x Bytes    - XTEA Encrypted data (see Data ECU format)
+#
+class CRP08_chunk_can(BinData):
 	SIGNATURE = 0x0001010A
-	
+
 	def __init__(self, is_encrypted):
 		# Configuration header (64 Bytes)
 		#self.signature = self.SIGNATURE
@@ -302,7 +358,19 @@ CRP08 CAN Chunk:
 			self.can_local_id1, self.can_local_id2
 		) + str(self.data)
 
-class CRP08(BinDataFormat):
+# CRP 08 format:
+#
+#   4 Bytes LE - Number of chunks
+#   x Bytes    - Multiple "Chunk offset and size"
+#   x Bytes    - All chunks
+#   2 Bytes LE - Checksum
+#
+# Chunk offset and size format:
+#
+#   4 Bytes LE - Offset of the chunk
+#   4 Bytes LE - Size of the chunk
+#
+class CRP08(BinData):
 	t4e_desc = "LOTUS_T4E_MY08"
 
 	def __init__(self):
@@ -385,29 +453,32 @@ class CRP08(BinDataFormat):
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e ECU\n")
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "calrom"):
-		print("Convert "+sys.argv[2]+" into "+sys.argv[3])
+		print("-- Add "+sys.argv[2]+" into "+sys.argv[3]+" --")
 		crp = CRP08()
 		crp.add_t4e_cal(sys.argv[2])
 		crp.write_file(sys.argv[3])
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "prog"):
-		print("Convert "+sys.argv[2]+" and "+sys.argv[3]+" into "+sys.argv[4])
+		print("-- Add "+sys.argv[2]+" into "+sys.argv[3]+" --")
 		crp = CRP08()
 		crp.add_t4e_prog(sys.argv[2])
 		crp.write_file(sys.argv[3])
 	elif(len(sys.argv) >= 5 and sys.argv[1] == "both"):
-		print("Convert "+sys.argv[2]+" and "+sys.argv[3]+" into "+sys.argv[4])
+		print("-- Add "+sys.argv[2]+" into "+sys.argv[4]+" --")
 		crp = CRP08()
 		crp.add_t4e_cal(sys.argv[2])
+		print(crp.chunks[1])
+		print("-- Add "+sys.argv[3]+" into "+sys.argv[4]+" --")
 		crp.add_t4e_prog(sys.argv[3])
+		print(crp.chunks[2])
 		crp.write_file(sys.argv[4])
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "unpack"):
-		print("Unpack "+sys.argv[2])
 		crp = CRP08()
 		crp.read_file(sys.argv[2])
 		for i in range(1, len(crp.chunks)):
-			bin_file = crp.chunks[0].values[0][i-1]
-			print("\t into "+bin_file)
+			bin_file = crp.chunks[0].toc_values[0][i-1]
+			print("-- Extract "+bin_file+" from "+sys.argv[2]+" --")
 			crp.chunks[i].data.export_bin(bin_file)
+			print(crp.chunks[i])
 	else:
 		print("usage:")
 		print("\t"+sys.argv[0]+" calrom BIN_FILE CRP_FILE")

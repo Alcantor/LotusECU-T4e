@@ -137,9 +137,9 @@ overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
- bin2crp.py            | Convert a BIN file into a CRP file (post 2008).
+ lib/crp08.py          | Convert a BIN file into a CRP file (post 2008).
  t4e-black.py          | Tool to upload a CRP file to a locked black ECU (Write Flash).
- srec2crp.py           | Convert a S-Record file into a CRP file (pre 2008, including T4).
+ lib/crp05.py          | Convert a S-Record file into a CRP file (pre 2008, including T4).
  t4-white.py           | Tool to upload a CRP file to a locked white ECU (Write Flash).
 
 ## Command line example (OBD Port, unlocked ECU)
@@ -221,7 +221,7 @@ will lose your calibration (maps) with this method!
 	2. ./sign.py check_crc_black_calrom calrom_original.bin
 	3. [Modify calrom.bin with RomRaider]
 	4. ./sign.py unlock_black_calrom calrom_original.bin calrom.bin
-	5. ./bin2crp.py calrom calrom.bin calrom.crp
+	5. ./lib/crp08.py calrom calrom.bin calrom.crp
 	6. ./t4e-black.py -f calrom.crp *** [TESTED only 1x BE CAREFUL] ***
 	7. [TURN CAR ON]
 	8. ./t4e.py -s black -o dl -z 0 2 3 4
@@ -248,7 +248,7 @@ This is COMPLICATE: Two different cables are needed. A VAG-COM and a CANable ada
 
 	1. for i in {0..63}; do echo 003FF000; done | xxd -r -p > poison.bin
 	2. srec_cat flasher/canstrap-white.bin -binary -offset 0x3FF000 poison.bin -binary -offset 0x3FFF00 -o canstrap.srec -motorola -address-length 3 -header CANstrap
-	3. ./srec2crp.py pack_t4e canstrap.srec canstrap.crp
+	3. ./lib/crp05.py pack_t4e canstrap.srec canstrap.crp
 	4. ./flasher.py -o b &
 	5. ./t4-white.py -f canstrap.crp
 	6. [TURN CAR ON]

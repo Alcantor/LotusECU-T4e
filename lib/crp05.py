@@ -7,6 +7,14 @@ BO_LE = 'little'
 BO_BE = 'big'
 CHARSET = 'ISO-8859-15'
 
+class BinData:
+	def parse(self, data: memoryview) -> None:
+		raise NotImplementedError
+	def get_size(self) -> int:
+		raise NotImplementedError
+	def compose(self, data: memoryview) -> None:
+		raise NotImplementedError
+
 class CRP05_exception(Exception):
 	pass
 
@@ -37,6 +45,7 @@ class CRP05_exception(Exception):
 # Table:
 #   0x7 0xF 0x17 0x2F 0x5D 0xBA 0x174 0x2E8
 #   0x5D0 0xBA0 0x1740 0x2E80 0x5D00 0xBA00 0x17401 0x2E801
+#
 class CRP05_3by2enc:
 	def __init__(self, crp_size):
 		# The key for the T4 and T4e
@@ -55,7 +64,6 @@ class CRP05_3by2enc:
 		# Convert the length into 4 bytes, sum them all + 9744, and invert
 		self.K = ~(9744 + sum(crp_size.to_bytes(4, 'big')))
 
-	# Encrypt data
 	def encrypt(self, buf_in, buf_out):
 		for i in range(0, len(buf_in)//2, 1):
 			x = i*2
@@ -70,7 +78,6 @@ class CRP05_3by2enc:
 			x = i*3
 			buf_out[x:x+3] = w_cipher.to_bytes(3, BO_LE)
 
-	# Decrypt data
 	def decrypt(self, buf_in, buf_out):
 		for i in range(0, len(buf_in)//3, 1):
 			x = i*3
@@ -103,7 +110,8 @@ class CRP05_3by2enc:
 # 00 00 00 s0 s1 s2 s3 s4 s5 s6 s7
 #
 # s0 to s7 are bit flags 0x01 or 0x00 to erase the sectors or not.
-class CRP05_hdr_ecu_t4:
+#
+class CRP05_hdr_ecu_t4(BinData):
 	SIGNATURE =  b'\x00\x00\x00'
 
 	def __init__(self):
@@ -154,7 +162,8 @@ T4 Header:
 #
 # S0 to S2 are ASCII flags '1' (0x31) or '0' (0x30) to erase the
 # sectors or not. S2 includes sectors 2 to 7.
-class CRP05_hdr_ecu_t4e:
+#
+class CRP05_hdr_ecu_t4e(BinData):
 	SIGNATURE =  b'T4E_'
 
 	def __init__(self):
@@ -204,7 +213,8 @@ T4e Header:
 #   3 Bytes BE - 24 Bits destination address
 #   x Bytes    - Data to write
 #   1 Bytes    - Checksum
-class CRP05_subpackets:
+#
+class CRP05_subpackets(BinData):
 	def __init__(self):
 		self.subpackets = []
 
@@ -267,8 +277,6 @@ class CRP05_subpackets:
 	# Import from a SREC file.
 	def import_srec(self, file):
 		desc = ""
-
-		# Read the SREC file
 		with open(file, 'r') as f:
 			data_srec = f.read()
 		for line in data_srec.split('\n'):
@@ -314,7 +322,7 @@ Subpackets:
 #   x Bytes    - Multiple sub-packets
 #   2 Bytes LE - Checksum
 #
-class CRP05_data_ecu:
+class CRP05_data_ecu(BinData):
 	def __init__(self, for_t4e=False):
 		# Binary data
 		self.header = CRP05_hdr_ecu_t4e() if(for_t4e) else CRP05_hdr_ecu_t4()
@@ -337,14 +345,15 @@ class CRP05_data_ecu:
 			raise CRP05_Exception("Wrong Checksum!")
 
 	def get_size(self):
-		return CRP05_3by2enc.calc_size_encrypted(14+self.subpackets.get_size())
+		return CRP05_3by2enc.calc_size_encrypted(18+self.subpackets.get_size())
 
 	def compose(self, data):
-		plain = memoryview(bytearray(14+self.subpackets.get_size()))
+		plain = memoryview(bytearray(18+self.subpackets.get_size()))
 
 		self.header.compose(plain[0:11])
-		self.subpackets.compose(plain[11:-2])
-		cksum = int.from_bytes(plain[-2:], BO_LE) & 0xFFFF
+		plain[11:16] = b'\xFF\xFF\xFF\xFF\xFF'
+		self.subpackets.compose(plain[16:-2])
+		cksum = sum(plain[:-2]) & 0xFFFF
 		plain[-2:] = cksum.to_bytes(2, BO_LE)
 
 		# Encrypt
@@ -365,7 +374,7 @@ class CRP05_data_ecu:
 #   x Bytes    - Encrypted data
 #   4 Bytes    - Signature " EFi"
 #
-class CRP05:
+class CRP05(BinData):
 	SIGNATURE = b' EFi'
 
 	def __init__(self, for_t4e=False, is_encrypted=False):
@@ -394,19 +403,15 @@ class CRP05:
 
 	def compose(self, data):
 		crp_size = self.get_size()
-
-		# Compose the CRP
 		data[0:4] = crp_size.to_bytes(4, BO_BE)
 		data[4:16] = (bytes(self.desc, CHARSET) + b'\x00').ljust(12, b'\xFF')
 		if(self.is_encrypted): data[16:-4] = self.data
 		else: self.data.compose(data[16:-4])
 		data[-4:] = self.SIGNATURE
 
-	# Unpack multiple chunks from a CRP file.
 	def read_file(self, file):
 		with open(file, 'rb') as f: self.parse(memoryview(f.read()))
 
-	# Pack multiple chunks into a CRP file.
 	def write_file(self, file):
 		data = memoryview(bytearray(self.get_size()))
 		self.compose(data)
@@ -423,30 +428,27 @@ CRP05 K-Line File:
 		) + str(self.data)
 
 if __name__ == "__main__":
-	crp = CRP05()
-	crp.read_file("B120E06H.CRP")
-	print(crp)
-	crp.data.subpackets.export_srec("B120E06H-TEST.SREC", crp.desc)
-	crp.write_file("B120E06H-TEST.CRP")
-
-	
-	crp = CRP05()
-	crp.desc = crp.data.subpackets.import_srec("B120E06H-TEST.SREC")
-	crp.data.subpackets.del_sector(7)
-	crp.data.update_header()
-	print(crp)
-
-	sys.exit()
 	print("SREC to CRP file tool for Lotus T4/T4E ECU\n")
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "pack"):
-		print("Convert "+sys.argv[2]+" into "+sys.argv[3]+"\n")
-		CRP.srec2crp(sys.argv[2], sys.argv[3], True)
+		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
+		crp = CRP05()
+		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])
+		crp.data.update_header()
+		crp.write_file(sys.argv[3])
+		print(crp)
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "pack_t4e"):
-		print("Convert "+sys.argv[2]+" into "+sys.argv[3]+"\n")
-		CRP.srec2crp(sys.argv[2], sys.argv[3], False)
+		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
+		crp = CRP05(True)
+		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])
+		crp.data.update_header()
+		crp.write_file(sys.argv[3])
+		print(crp)
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "unpack"):
-		print("Convert "+sys.argv[2]+" into "+sys.argv[3]+"\n")
-		CRP.crp2srec(sys.argv[2], sys.argv[3])
+		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
+		crp = CRP05()
+		crp.read_file(sys.argv[2])
+		crp.data.subpackets.export_srec(sys.argv[3], crp.desc)
+		print(crp)
 	else:
 		print("usage:")
 		print("\t"+sys.argv[0]+" pack SREC_FILE CRP_FILE")
