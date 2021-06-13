@@ -69,9 +69,10 @@ class CRP08_window():
 				func(self)
 			except Exception as e:
 				messagebox.showerror(
-					master=self.master,
-					title="Error!",
-					message=str(e)
+					parent = self.master,
+					master = self.master,
+					title = "Error!",
+					message = str(e)
 				)
 		return wrapper
 

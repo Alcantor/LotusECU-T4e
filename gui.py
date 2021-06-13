@@ -18,7 +18,7 @@ class FileProgressGui(FileProgress):
 		self.master = master
 		self.progressbar = ttk.Progressbar(master, orient=tk.HORIZONTAL, length=100, mode='determinate')
 		self.textEntry = tk.StringVar()
-		self.entry = tk.Entry(master, state=tk.DISABLED, textvariable = self.textEntry)
+		self.entry = tk.Entry(master, state=tk.DISABLED, textvariable=self.textEntry)
 
 	def log(self, msg):
 		self.textEntry.set(msg)
@@ -315,6 +315,7 @@ class t4e_window():
 
 from lib.gui_crp08 import crp08_file
 from lib.crp08 import CRP08
+test = __import__("t4e-black")
 
 class CRP08_uploader_win():
 	def __init__(self, master):
@@ -323,19 +324,19 @@ class CRP08_uploader_win():
 		master.resizable(0, 0)
 
 		can_frame = tk.LabelFrame(master, text="CAN Device")
-		can_frame.pack()
+		can_frame.pack(fill=tk.X, padx=4, pady=4)
 
 		self.combo_interface = ttk.Combobox(can_frame, state="readonly", values = ["socketcan", "ixxat", "serial", "slcan"])
 		self.combo_interface.current(0)
-		self.combo_interface.grid(column=0, row=0, sticky="EW")
+		self.combo_interface.pack(side=tk.LEFT, fill=tk.X)
 
 		self.string_channel = tk.StringVar()
 		self.string_channel.set("can0")
 		self.entry_channel = tk.Entry(can_frame, textvariable = self.string_channel)
-		self.entry_channel.grid(column=1, row=0, sticky="EW")
+		self.entry_channel.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
 		crp_frame = tk.LabelFrame(master, text="CRP08 File")
-		crp_frame.pack()
+		crp_frame.pack(fill=tk.X, padx=4, pady=4)
 
 		self.txt = tk.Text(crp_frame, height=16, width=50, state=tk.DISABLED)
 		self.txt.pack()
@@ -343,12 +344,27 @@ class CRP08_uploader_win():
 		self.bt_crp = tk.Button(master, text="Load file", height=3, width=20, command=self.load_crp)
 		self.bt_crp.pack()
 
-		test = FileProgressGui(master)
-		test.progressbar.pack()
-		test.entry.pack()
+		self.p = FileProgressGui(master)
+		self.p.progressbar.pack(fill=tk.X, pady=10)
+		self.p.entry.pack(fill=tk.X)
 
 		# Backend
 		self.crp = CRP08(True)
+
+	def openCAN(self):
+		self.combo_interface['state'] = tk.DISABLED
+		self.entry_channel['state'] = tk.DISABLED
+		self.bus = can.Bus(
+			interface = self.combo_interface.get(),
+			channel = self.string_channel.get(),
+			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
+			bitrate = 500000
+		)
+
+	def closeCAN(self):
+		self.combo_interface['state'] = tk.NORMAL
+		self.entry_channel['state'] = tk.NORMAL
+		self.bus.shutdown()
 
 	def updateText(self, evt=None):
 		self.txt.config(state=tk.NORMAL)
@@ -366,6 +382,8 @@ class CRP08_uploader_win():
 		if(answer):
 			self.crp.read_file(answer)
 			self.updateText()
+			self.openCAN()
+			test.ECU_T4E_BLACK(self.bus, self.p).bootstrap(self.crp)
 
 class main_window():
 	def __init__(self, master):
@@ -377,6 +395,7 @@ class main_window():
 		tk.Button(master, text="CRP05 Uploader\n(K-Line)", height=3, width=20, command=self.open_todo).pack()
 		tk.Button(master, text="CRP08 Uploader\n(CAN-Bus)", height=3, width=20, command=self.open_crp08_uploader).pack()
 		tk.Button(master, text="Live-Tuning Access\n(Unlocked ECU)", height=3, width=20, command=self.open_todo).pack()
+		tk.Button(master, text="Calibration CRC", height=3, width=20, command=self.open_todo).pack()
 		tk.Button(master, text="Custom Flasher\n(Stage15)", height=3, width=20, command=self.open_todo).pack()
 		tk.Button(master, text="ABS EBC430", height=3, width=20, command=self.open_todo).pack()
 	def open_crp05_editor(self):
