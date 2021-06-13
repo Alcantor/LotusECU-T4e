@@ -150,6 +150,18 @@ class CRP08_chunk_toc(BinData):
 		del self.toc_values[0][index]
 		del self.toc_values[1][index]
 
+	def __str__(self):
+		fmt = """
+CRP08 TOC Chunk:
+
+	Names : {:s}
+	Desc. : {:s}
+"""
+		return fmt.format(
+			" ".join(self.toc_values[0]),
+			" ".join(self.toc_values[1])
+		)
+
 # Data as interpreted after decryption by a T4e/T6 ECU.
 #
 # Data ECU format:
@@ -356,7 +368,7 @@ CRP08 CAN Chunk:
 			self.can_bitrate,
 			self.can_remote_id1, self.can_remote_id2,
 			self.can_local_id1, self.can_local_id2
-		) + str(self.data)
+		) + ("" if(self.is_encrypted) else str(self.data))
 
 # CRP 08 format:
 #
@@ -373,9 +385,10 @@ CRP08 CAN Chunk:
 class CRP08(BinData):
 	t4e_desc = "LOTUS_T4E_MY08"
 
-	def __init__(self):
+	def __init__(self, is_encrypted=False):
 		# An empty CRP file
 		self.chunks = [CRP08_chunk_toc()]
+		self.is_encrypted = is_encrypted
 
 	def parse(self, data, leave_encrypted=False):
 		# Check the sum
@@ -390,7 +403,7 @@ class CRP08(BinData):
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
 			if(i == 0): chunk = CRP08_chunk_toc()
-			else: chunk = CRP08_chunk_can(leave_encrypted)
+			else: chunk = CRP08_chunk_can(self.is_encrypted)
 			chunk.parse(data[offset:offset+size])
 			self.chunks[i] = chunk
 
@@ -441,14 +454,17 @@ class CRP08(BinData):
 		self.add_chunk(chk, os.path.basename(file), self.t4e_desc)
 
 	# Unpack multiple chunks from a CRP file.
-	def read_file(self, file, leave_encrypted=False):
-		with open(file, 'rb') as f: self.parse(memoryview(f.read()), leave_encrypted)
+	def read_file(self, file):
+		with open(file, 'rb') as f: self.parse(memoryview(f.read()))
 
 	# Pack multiple chunks into a CRP file.
 	def write_file(self, file):
 		data = memoryview(bytearray(self.get_size()))
 		self.compose(data)
 		with open(file, 'wb') as f: f.write(data)
+
+	def __str__(self):
+		return "".join([str(c) for c in self.chunks])
 
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e ECU\n")

@@ -313,10 +313,83 @@ class t4e_window():
 			self.flasher_buttons(tk.NORMAL)
 		self.closeCAN()
 
-root = tk.Tk()
-t4e_window(root)
+from lib.gui_crp08 import crp08_file
+from lib.crp08 import CRP08
 
-CRP05_window(tk.Toplevel(root))
-CRP08_window(tk.Toplevel(root))
+class CRP08_uploader_win():
+	def __init__(self, master):
+		self.master = master
+		master.title('Up')
+		master.resizable(0, 0)
+
+		can_frame = tk.LabelFrame(master, text="CAN Device")
+		can_frame.pack()
+
+		self.combo_interface = ttk.Combobox(can_frame, state="readonly", values = ["socketcan", "ixxat", "serial", "slcan"])
+		self.combo_interface.current(0)
+		self.combo_interface.grid(column=0, row=0, sticky="EW")
+
+		self.string_channel = tk.StringVar()
+		self.string_channel.set("can0")
+		self.entry_channel = tk.Entry(can_frame, textvariable = self.string_channel)
+		self.entry_channel.grid(column=1, row=0, sticky="EW")
+
+		crp_frame = tk.LabelFrame(master, text="CRP08 File")
+		crp_frame.pack()
+
+		self.txt = tk.Text(crp_frame, height=16, width=50, state=tk.DISABLED)
+		self.txt.pack()
+
+		self.bt_crp = tk.Button(master, text="Load file", height=3, width=20, command=self.load_crp)
+		self.bt_crp.pack()
+
+		test = FileProgressGui(master)
+		test.progressbar.pack()
+		test.entry.pack()
+
+		# Backend
+		self.crp = CRP08(True)
+
+	def updateText(self, evt=None):
+		self.txt.config(state=tk.NORMAL)
+		self.txt.delete('1.0', tk.END)
+		self.txt.insert(tk.END, str(self.crp))
+		self.txt.config(state=tk.DISABLED)
+
+	def load_crp(self):
+		answer = filedialog.askopenfilename(
+			parent = self.master,
+			initialdir = os.getcwd(),
+			title = "Please select a file:",
+			filetypes = crp08_file
+		)
+		if(answer):
+			self.crp.read_file(answer)
+			self.updateText()
+
+class main_window():
+	def __init__(self, master):
+		self.master = master
+		master.title('Lotus Tools')
+		master.resizable(0, 0)
+		tk.Button(master, text="CRP05 Editor", height=3, width=20, command=self.open_crp05_editor).pack()
+		tk.Button(master, text="CRP08 Editor", height=3, width=20, command=self.open_crp08_editor).pack()
+		tk.Button(master, text="CRP05 Uploader\n(K-Line)", height=3, width=20, command=self.open_todo).pack()
+		tk.Button(master, text="CRP08 Uploader\n(CAN-Bus)", height=3, width=20, command=self.open_crp08_uploader).pack()
+		tk.Button(master, text="Live-Tuning Access\n(Unlocked ECU)", height=3, width=20, command=self.open_todo).pack()
+		tk.Button(master, text="Custom Flasher\n(Stage15)", height=3, width=20, command=self.open_todo).pack()
+		tk.Button(master, text="ABS EBC430", height=3, width=20, command=self.open_todo).pack()
+	def open_crp05_editor(self):
+		CRP05_window(tk.Toplevel(self.master))
+	def open_crp08_editor(self):
+		CRP08_window(tk.Toplevel(self.master))
+	def open_crp08_uploader(self):
+		CRP08_uploader_win(tk.Toplevel(self.master))
+	def open_todo(self):
+		messagebox.showerror(master=self.master, title="Error!", message="Work in progress...")
+
+root = tk.Tk()
+main_window(root)
+t4e_window(tk.Toplevel(root))
 root.mainloop()
 
