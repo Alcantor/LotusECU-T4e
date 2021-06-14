@@ -3,26 +3,27 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
-from tkinter import messagebox
 from lib.crp08 import CRP08
+from lib.gui_fileprogress import FileProgress_widget
+from lib.gui_common import *
+test = __import__("t4e-black")
 
 crp08_file = [("Lotus CRP 08 file", "*.CRP *.crp")]
-bin_file = [("Raw binary file", "*.BIN *.bin *.cpt")]
 
-class CRP08_window():
-	def __init__(self, master):
-		self.master = master
-		master.title('CRP08 Editor')
-		master.resizable(0, 0)
+class CRP08_editor_win(tk.Toplevel):
+	def __init__(self, parent=None):
+		tk.Toplevel.__init__(self, parent)
+		self.title('CRP08 Editor')
+		self.resizable(0, 0)
 
 		# Menu
-		menubar = tk.Menu(master)
+		menubar = tk.Menu(self)
 		filemenu = tk.Menu(menubar, tearoff=0)
 		filemenu.add_command(label="New", command=self.new)
 		filemenu.add_command(label="Open", command=self.open)
 		filemenu.add_command(label="Save as...", command=self.save)
 		filemenu.add_separator()
-		filemenu.add_command(label="Exit", command=master.destroy)
+		filemenu.add_command(label="Exit", command=self.destroy)
 		menubar.add_cascade(label="File", menu=filemenu)
 		filemenu = tk.Menu(menubar, tearoff=0)
 		filemenu.add_command(label="Remove", command=self.remove)
@@ -31,15 +32,15 @@ class CRP08_window():
 		filemenu.add_command(label="Import BIN - T4E Calibration", command=self.import_t4e_cal)
 		filemenu.add_command(label="Import BIN - T4E Program", command=self.import_t4e_prog)
 		menubar.add_cascade(label="Edit", menu=filemenu)
-		master.config(menu=menubar)
+		self.config(menu=menubar)
 
 		# List
-		self.lb = tk.Listbox(master, height=5, width=45)
+		self.lb = tk.Listbox(self, height=5, width=45)
 		self.lb.bind('<<ListboxSelect>>', self.updateText)
 		self.lb.pack()
 
 		# Infos
-		self.txt = tk.Text(master, height=16, width=45, state=tk.DISABLED)
+		self.txt = tk.Text(self, height=16, width=45, state=tk.DISABLED)
 		self.txt.pack()
 
 		# Backend
@@ -63,19 +64,6 @@ class CRP08_window():
 		self.txt.insert(tk.END, str(self.crp.chunks[i+1]))
 		self.txt.config(state=tk.DISABLED)
 
-	def try_msgbox_decorator(func):
-		def wrapper(self):
-			try:
-				func(self)
-			except Exception as e:
-				messagebox.showerror(
-					parent = self.master,
-					master = self.master,
-					title = "Error!",
-					message = str(e)
-				)
-		return wrapper
-
 	@try_msgbox_decorator
 	def new(self):
 		self.crp = CRP08()
@@ -84,7 +72,7 @@ class CRP08_window():
 	@try_msgbox_decorator
 	def open(self):
 		answer = filedialog.askopenfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			title = "Please select a file:",
 			filetypes = crp08_file
@@ -96,7 +84,7 @@ class CRP08_window():
 	@try_msgbox_decorator
 	def save(self):
 		answer = filedialog.asksaveasfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			title = "Please select a file:",
 			filetypes = crp08_file
@@ -114,7 +102,7 @@ class CRP08_window():
 	def export(self):
 		i = self.lb.curselection()[0]
 		answer = filedialog.asksaveasfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = self.crp.chunks[0].toc_values[0][i],
 			title = "Please select a file:",
@@ -126,7 +114,7 @@ class CRP08_window():
 	@try_msgbox_decorator
 	def import_t4e_cal(self):
 		answer = filedialog.askopenfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
 			title = "Please select a file:",
@@ -139,7 +127,7 @@ class CRP08_window():
 	@try_msgbox_decorator
 	def import_t4e_prog(self):
 		answer = filedialog.askopenfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
 			title = "Please select a file:",
@@ -148,4 +136,64 @@ class CRP08_window():
 		if(answer):
 			self.crp.add_t4e_prog(answer)
 			self.updateList()
+
+
+class CRP08_uploader_win(tk.Toplevel):
+	def __init__(self, parent=None):
+		tk.Toplevel.__init__(self, parent)
+		self.title('CRP08 Uploader')
+		self.resizable(0, 0)
+
+		self.can_device = SelectCAN_widget(self, False)
+		self.can_device.pack(fill=tk.X)
+
+		up_frame = tk.LabelFrame(self, text="CRP08 Flashing")
+		up_frame.pack(fill=tk.X)
+
+		self.p = FileProgress_widget(up_frame)
+		self.p.pack()
+
+		btn_frame = tk.Frame(up_frame)
+		btn_frame.pack()
+		tk.Button(btn_frame, text="Load file", command=self.load_crp).pack(side=tk.LEFT)
+		tk.Button(btn_frame, text="Flash", command=self.flash_crp).pack(side=tk.LEFT)
+
+		# Backend
+		self.crp = CRP08(True)
+
+	@try_msgbox_decorator
+	def openCAN(self):
+		self.combo_interface['state'] = tk.DISABLED
+		self.entry_channel['state'] = tk.DISABLED
+		self.bus = can.Bus(
+			interface = self.combo_interface.get(),
+			channel = self.string_channel.get(),
+			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
+			bitrate = 500000
+		)
+
+	@try_msgbox_decorator
+	def closeCAN(self):
+		self.combo_interface['state'] = tk.NORMAL
+		self.entry_channel['state'] = tk.NORMAL
+		self.bus.shutdown()
+
+	@try_msgbox_decorator
+	def load_crp(self):
+		answer = filedialog.askopenfilename(
+			parent = self,
+			initialdir = os.getcwd(),
+			title = "Please select a file:",
+			filetypes = crp08_file
+		)
+		if(answer):
+			self.p.log("Load "+answer)
+			self.crp.read_file(answer)
+			for name in self.crp.chunks[0].toc_values[0]:
+				self.p.log(" -> "+name)
+
+	@try_msgbox_decorator
+	def flash_crp(self):
+		self.openCAN()
+		test.ECU_T4E_BLACK(self.bus, self.p).bootstrap(self.crp)
 

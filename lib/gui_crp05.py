@@ -3,28 +3,27 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
-from tkinter import messagebox
 from lib.crp05 import CRP05
+from lib.gui_common import *
 
 crp05_file = [("Lotus CRP 05 file", "*.CRP *.crp")]
-bin_file = [("Raw binary file", "*.BIN *.bin *.cpt")]
 srec_file = [("Motorola S-Record file", "*.SREC *.srec")]
 
-class CRP05_window():
-	def __init__(self, master):
-		self.master = master
-		master.title('CRP05 Editor')
-		master.resizable(0, 0)
+class CRP05_editor_win(tk.Toplevel):
+	def __init__(self, parent=None):
+		tk.Toplevel.__init__(self, parent)
+		self.title('CRP05 Editor')
+		self.resizable(0, 0)
 
 		# Menu
-		menubar = tk.Menu(master)
+		menubar = tk.Menu(self)
 		filemenu = tk.Menu(menubar, tearoff=0)
 		filemenu.add_command(label="New T4", command=self.new_t4)
 		filemenu.add_command(label="New T4e", command=self.new_t4e)
 		filemenu.add_command(label="Open", command=self.open)
 		filemenu.add_command(label="Save as...", command=self.save)
 		filemenu.add_separator()
-		filemenu.add_command(label="Exit", command=master.destroy)
+		filemenu.add_command(label="Exit", command=self.destroy)
 		menubar.add_cascade(label="File", menu=filemenu)
 		filemenu = tk.Menu(menubar, tearoff=0)
 		filemenu.add_command(label="Remove S0 (Bootloader)", command=self.remove_bootldr)
@@ -44,10 +43,10 @@ class CRP05_window():
 		filemenu.add_command(label="Export BIN S1 (T4e Calibration)", command=self.export_t4e_cal)
 		filemenu.add_command(label="Import BIN S1 (T4e Calibration)", command=self.import_t4e_cal)
 		menubar.add_cascade(label="Edit", menu=filemenu)
-		master.config(menu=menubar)
+		self.config(menu=menubar)
 
 		# Infos
-		self.txt = tk.Text(master, height=21, width=45, state=tk.DISABLED)
+		self.txt = tk.Text(self, height=21, width=45, state=tk.DISABLED)
 		self.txt.pack()
 
 		# Backend
@@ -59,19 +58,6 @@ class CRP05_window():
 		self.txt.delete('1.0', tk.END)
 		self.txt.insert(tk.END, str(self.crp))
 		self.txt.config(state=tk.DISABLED)
-
-	def try_msgbox_decorator(func):
-		def wrapper(self):
-			try:
-				func(self)
-			except Exception as e:
-				messagebox.showerror(
-					parent = self.master,
-					master = self.master,
-					title = "Error!",
-					message = str(e)
-				)
-		return wrapper
 
 	@try_msgbox_decorator
 	def new_t4(self):
@@ -86,7 +72,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def open(self):
 		answer = filedialog.askopenfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			title = "Please select a file:",
 			filetypes = crp05_file
@@ -98,7 +84,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def save(self):
 		answer = filedialog.asksaveasfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			title = "Please select a file:",
 			filetypes = crp05_file
@@ -139,7 +125,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def export_srec(self):
 		answer = filedialog.asksaveasfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = self.crp.desc+".SREC",
 			title = "Please select a file:",
@@ -151,7 +137,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def import_srec(self):
 		answer = filedialog.askopenfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "T4.SREC",
 			title = "Please select a file:",
@@ -165,7 +151,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def export_t4_cal(self):
 		answer = filedialog.asksaveasfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
 			title = "Please select a file:",
@@ -177,7 +163,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def import_t4_cal(self):
 		answer = filedialog.askopenfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
 			title = "Please select a file:",
@@ -191,7 +177,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def export_t4e_cal(self):
 		answer = filedialog.asksaveasfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
 			title = "Please select a file:",
@@ -203,7 +189,7 @@ class CRP05_window():
 	@try_msgbox_decorator
 	def import_t4e_cal(self):
 		answer = filedialog.askopenfilename(
-			parent = self.master,
+			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
 			title = "Please select a file:",
