@@ -6,7 +6,7 @@ from tkinter import filedialog
 from lib.crp08 import CRP08
 from lib.gui_fileprogress import FileProgress_widget
 from lib.gui_common import *
-test = __import__("t4e-black")
+from lib.crp08_uploader import CRP08_uploader
 
 crp08_file = [("Lotus CRP 08 file", "*.CRP *.crp")]
 
@@ -74,7 +74,7 @@ class CRP08_editor_win(tk.Toplevel):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = crp08_file
 		)
 		if(answer):
@@ -86,7 +86,7 @@ class CRP08_editor_win(tk.Toplevel):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = crp08_file
 		)
 		if(answer):
@@ -105,7 +105,7 @@ class CRP08_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = self.crp.chunks[0].toc_values[0][i],
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
@@ -117,7 +117,7 @@ class CRP08_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
@@ -130,7 +130,7 @@ class CRP08_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
@@ -162,28 +162,11 @@ class CRP08_uploader_win(tk.Toplevel):
 		self.crp = CRP08(True)
 
 	@try_msgbox_decorator
-	def openCAN(self):
-		self.combo_interface['state'] = tk.DISABLED
-		self.entry_channel['state'] = tk.DISABLED
-		self.bus = can.Bus(
-			interface = self.combo_interface.get(),
-			channel = self.string_channel.get(),
-			can_filters = [{"extended": False, "can_id": 0x7A0, "can_mask": 0x7FF }],
-			bitrate = 500000
-		)
-
-	@try_msgbox_decorator
-	def closeCAN(self):
-		self.combo_interface['state'] = tk.NORMAL
-		self.entry_channel['state'] = tk.NORMAL
-		self.bus.shutdown()
-
-	@try_msgbox_decorator
 	def load_crp(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = crp08_file
 		)
 		if(answer):
@@ -194,6 +177,5 @@ class CRP08_uploader_win(tk.Toplevel):
 
 	@try_msgbox_decorator
 	def flash_crp(self):
-		self.openCAN()
-		test.ECU_T4E_BLACK(self.bus, self.p).bootstrap(self.crp)
+		CRP08_uploader(self.can_device.get_interface(), self.can_device.get_channel(), self.p).bootstrap(self.crp)
 

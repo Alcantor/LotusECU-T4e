@@ -395,11 +395,12 @@ class CRP05_data_ecu(BinData):
 class CRP05(BinData):
 	SIGNATURE = b' EFi'
 
-	def __init__(self, for_t4e=False, is_encrypted=False):
+	def __init__(self, is_encrypted=False, for_t4e=False):
 		self.desc = "CUSTOM"
 		self.is_encrypted = is_encrypted
 		if(self.is_encrypted): self.data = None
 		else: self.data = CRP05_data_ecu(for_t4e)
+		self.file_data = b''
 
 	def parse(self, data):
 		# Parse the CRP
@@ -415,17 +416,24 @@ class CRP05(BinData):
 		if(signature != self.SIGNATURE):
 			raise Exception("Wrong Signature")
 
+		# Keep a reference to the complete file
+		self.file_data = data
+
 	def get_size(self):
 		if(self.is_encrypted): return 20 + len(self.data)
 		else: return 20 + self.data.get_size()
 
 	def compose(self, data):
+		# Compose the CRP
 		crp_size = self.get_size()
 		data[0:4] = crp_size.to_bytes(4, BO_BE)
 		data[4:16] = (bytes(self.desc, CHARSET) + b'\x00').ljust(12, b'\xFF')
 		if(self.is_encrypted): data[16:-4] = self.data
 		else: self.data.compose(data[16:-4])
 		data[-4:] = self.SIGNATURE
+
+		# Keep a reference to the complete file
+		self.file_data = data
 
 	def read_file(self, file):
 		with open(file, 'rb') as f: self.parse(memoryview(f.read()))

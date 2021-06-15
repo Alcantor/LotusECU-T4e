@@ -1,12 +1,10 @@
 #!/usr/bin/python3
 
 import serial, argparse
+from lib.crp05 import CRP05, CRP05_exception
 from lib.fileprogress import Progress
 
-class ECUWhiteException(Exception):
-	pass
-
-class ECU_T4_WHITE:
+class CRP05_uploader:
 	def __init__(self, port, p):
 		self.ser = serial.Serial(port=port, baudrate=29761, timeout=0.1)
 		self.p = p
@@ -36,11 +34,11 @@ class ECU_T4_WHITE:
 		self.ser.write(data)
 		# Receive the echo
 		if self.ser.read(len(data)) != data:
-			raise ECUWhiteException("No echo!")
+			raise CRP05_exception("No echo!")
 		# Receive the acknowledgement
 		ack = self.ser.read(1)
 		if(len(ack) == 0 or ack[0] != (~cksum & 0xFF)):
-			raise ECUWhiteException("No acknowledgement!")
+			raise CRP05_exception("No acknowledgement!")
 
 	# A packet from the ECU follows the same structure.
 	#
@@ -53,22 +51,21 @@ class ECU_T4_WHITE:
 		length = data[0]
 		data += self.ser.read(length+1) # +1 for the sum byte
 		if(len(data) != length+2): # +2 for the length and the sum bytes
-			raise ECUWhiteException("Missing bytes!")
+			raise CRP05_exception("Missing bytes!")
 		cmd, payload, cksum = data[1], data[2:-1], data[-1]
 		# Check the checksum
 		if(cksum != (sum(data[:-1]) & 0xFF)):
-			raise ECUWhiteException("Wrong checksum!")
+			raise CRP05_exception("Wrong checksum!")
 		# Send the acknowledgement
 		ack = (~cksum & 0xFF).to_bytes(1, "big")
 		self.ser.write(ack)
 		self.ser.read(len(ack)) # Acknowledgement echo
 		return (cmd, payload)
 
-	def bootstrap(self, crp_file):
+	# Wait the ECU to be turned on and automatically flash it!
+	def bootstrap(self, crp):
 		self.p.log("--> Drive the L-Line down yourself! (Modify the VAG-Cable) <--\n")
 		self.p.log("Power On ECU, please!")
-		with open(crp_file, 'rb') as fcrp:
-			data_crp = fcrp.read()
 		while(True):
 			msg = self.ser.read(1024)
 			#print(msg)
@@ -77,18 +74,16 @@ class ECU_T4_WHITE:
 		self.send(0x71)
 		self.p.log("ECU: In stage II")
 		# Send the CRP
-		self.p.progress_start(len(data_crp))
-		for frame_id in range(0, len(data_crp)//self.frame_size):
+		self.p.progress_start(len(crp.file_data))
+		for frame_id in range(0, len(crp.file_data)//self.frame_size):
 			offset = frame_id * self.frame_size
-			self.send(0x70, data_crp[offset:offset+self.frame_size])
+			self.send(0x70, crp.file_data[offset:offset+self.frame_size])
 			cmd, payload = self.recv()
 			if(cmd == 0x72 and len(payload) == 1):
 				if(payload[0] == 0):
 					self.p.progress(self.frame_size)
-				elif(payload[0] == 255):
-					print("ECU: Error")
 				else:
-					print("ECU: Unknow code: "+str(payload[0]))
+					raise CRP05_exception("ECU: Unknow code: "+str(payload[0]))
 		self.p.progress_end()
 		# Exit
 		#self.send(0x73)
@@ -116,6 +111,8 @@ if __name__ == "__main__":
 	ser_dev = args['device']
 	crp_file = args['file']
 	
-	t4 = ECU_T4_WHITE(ser_dev, Progress());
-	t4.bootstrap(crp_file)
+	up = CRP05_uploader(ser_dev, Progress());
+	crp = CRP05(True)
+	crp.read_file(crp_file)
+	up.bootstrap(crp)
 

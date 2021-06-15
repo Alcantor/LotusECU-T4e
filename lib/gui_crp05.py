@@ -4,7 +4,9 @@ import os
 import tkinter as tk
 from tkinter import filedialog
 from lib.crp05 import CRP05
+from lib.gui_fileprogress import FileProgress_widget
 from lib.gui_common import *
+from lib.crp05_uploader import CRP05_uploader
 
 crp05_file = [("Lotus CRP 05 file", "*.CRP *.crp")]
 srec_file = [("Motorola S-Record file", "*.SREC *.srec")]
@@ -61,12 +63,12 @@ class CRP05_editor_win(tk.Toplevel):
 
 	@try_msgbox_decorator
 	def new_t4(self):
-		self.crp = CRP05(False)
+		self.crp = CRP05(False, False)
 		self.updateText()
 
 	@try_msgbox_decorator
 	def new_t4e(self):
-		self.crp = CRP05(True)
+		self.crp = CRP05(False, True)
 		self.updateText()
 
 	@try_msgbox_decorator
@@ -74,7 +76,7 @@ class CRP05_editor_win(tk.Toplevel):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = crp05_file
 		)
 		if(answer):
@@ -86,7 +88,7 @@ class CRP05_editor_win(tk.Toplevel):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = crp05_file
 		)
 		if(answer):
@@ -128,7 +130,7 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = self.crp.desc+".SREC",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = srec_file
 		)
 		if(answer):
@@ -140,7 +142,7 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "T4.SREC",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = srec_file
 		)
 		if(answer):
@@ -154,7 +156,7 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
@@ -166,7 +168,7 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
@@ -180,7 +182,7 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
@@ -192,11 +194,51 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			initialfile = "calrom.bin",
-			title = "Please select a file:",
+			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
 			self.crp.data.subpackets.import_bin(answer, 0x10000)
 			self.crp.data.update_header()
 			self.updateText()
+
+class CRP05_uploader_win(tk.Toplevel):
+	def __init__(self, parent=None):
+		tk.Toplevel.__init__(self, parent)
+		self.title('CRP05 Uploader')
+		self.resizable(0, 0)
+
+		self.com_device = SelectCOM_widget(self)
+		self.com_device.pack(fill=tk.X)
+
+		up_frame = tk.LabelFrame(self, text="CRP05 Flashing")
+		up_frame.pack(fill=tk.X)
+
+		self.p = FileProgress_widget(up_frame)
+		self.p.pack()
+
+		btn_frame = tk.Frame(up_frame)
+		btn_frame.pack()
+		tk.Button(btn_frame, text="Load file", command=self.load_crp).pack(side=tk.LEFT)
+		tk.Button(btn_frame, text="Flash", command=self.flash_crp).pack(side=tk.LEFT)
+
+		# Backend
+		self.crp = CRP05(True)
+
+	@try_msgbox_decorator
+	def load_crp(self):
+		answer = filedialog.askopenfilename(
+			parent = self,
+			initialdir = os.getcwd(),
+			title = please_select_file,
+			filetypes = crp05_file
+		)
+		if(answer):
+			self.p.log("Load "+answer)
+			self.crp.read_file(answer)
+			self.p.log(" -> "+self.crp.desc)
+
+	@try_msgbox_decorator
+	def flash_crp(self):
+		CRP05_uploader(self.com_device.get_port(), self.p).bootstrap(self.crp)
 

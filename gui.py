@@ -7,7 +7,7 @@ from tkinter import filedialog
 from tkinter import messagebox
 from t4e import ECU_T4E
 from flasher import Flasher
-from lib.gui_crp05 import CRP05_editor_win#, CRP05_uploader_win
+from lib.gui_crp05 import CRP05_editor_win, CRP05_uploader_win
 from lib.gui_crp08 import CRP08_editor_win, CRP08_uploader_win
 from lib.gui_fileprogress import FileProgress_widget
 from lib.gui_common import *
@@ -269,7 +269,7 @@ class main_window():
 		master.resizable(0, 0)
 		tk.Button(master, text="CRP05 Editor", height=3, width=20, command=self.open_crp05_editor).pack()
 		tk.Button(master, text="CRP08 Editor", height=3, width=20, command=self.open_crp08_editor).pack()
-		tk.Button(master, text="CRP05 Uploader\n(K-Line)", height=3, width=20, command=self.open_todo).pack()
+		tk.Button(master, text="CRP05 Uploader\n(K-Line)", height=3, width=20, command=self.open_crp05_uploader).pack()
 		tk.Button(master, text="CRP08 Uploader\n(CAN-Bus)", height=3, width=20, command=self.open_crp08_uploader).pack()
 		tk.Button(master, text="Live-Tuning Access\n(Unlocked ECU)", height=3, width=20, command=self.open_live_access).pack()
 		tk.Button(master, text="Calibration CRC", height=3, width=20, command=self.open_todo).pack()
@@ -279,6 +279,8 @@ class main_window():
 		CRP05_editor_win(self.master)
 	def open_crp08_editor(self):
 		CRP08_editor_win(self.master)
+	def open_crp05_uploader(self):
+		CRP05_uploader_win(self.master)
 	def open_crp08_uploader(self):
 		CRP08_uploader_win(self.master)
 	def open_live_access(self):

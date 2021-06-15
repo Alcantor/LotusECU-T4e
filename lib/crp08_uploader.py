@@ -1,14 +1,11 @@
 #!/usr/bin/python3
 
 import sys, can, argparse
-from lib.fileprogress import Progress
 from lib.crc import CRC8Normal
-from lib.crp08 import CRP08
+from lib.crp08 import CRP08, CRP08_exception
+from lib.fileprogress import Progress
 
-class ECUBlackException(Exception):
-	pass
-
-class ECU_T4E_BLACK:
+class CRP08_uploader:
 	errors = {
 		0x81: "Not a 7,1 or 8,0 or 9,0 message received",
 		0x82: "Error count > 3 (too many Errors)",
@@ -30,20 +27,33 @@ class ECU_T4E_BLACK:
 		0x99: "Databyte 3/4 of the expected First/Next/Subsequent Frame message (0x6) did not match (total number of frame bytes received)-6 or unknown"
 	}
 
-	def __init__(self, bus, p):
-		self.bus = bus
+	def __init__(self, interface, channel, p):
+		self.interface = interface
+		self.channel = channel
 		self.p = p
+		self.bus = None
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
 		self.frame_size = 512
 
-	def configure_can(self, chunk_can):
-		# TODO: Configure bitrate
+	def open_can(self, chunk_can):
+		if(self.bus != None): self.close_can()
+		self.p.log("Open CAN "+self.interface+" "+str(self.channel)+" @ "+str(chunk_can.can_bitrate)+" kbit/s")
+		self.bus = can.Bus(
+			interface = self.interface,
+			channel = self.channel,
+			bitrate = chunk_can.can_bitrate*1000
+		)
 		self.bus.set_filters([{
 			"extended": False,
 			"can_id": chunk_can.can_local_id2,
 			"can_mask": 0x7FF
 		}])
 		self.remote_id = chunk_can.can_remote_id2,
+
+	def close_can(self, chunk_can):
+		self.p.log("Close CAN ")
+		self.bus.shutdown()
+		self.bus = None
 
 	def send(self, cmd, data):
 		data = cmd.to_bytes(1, "big") + data
@@ -74,18 +84,17 @@ class ECU_T4E_BLACK:
 
 	def recv(self, timeout=1.0):
 		msg = self.bus.recv(timeout)
-		if(msg == None): raise ECUBlackException("No answer!")
+		if(msg == None): raise CRP08_exception("No answer!")
 		self.crc.reset()
 		self.crc.update(msg.data[0:-1])
 		if(self.crc.get() != msg.data[-1]):
-			raise ECUBlackException("Wrong CRC!")
+			raise CRP08_exception("Wrong CRC!")
 		return (msg.data[0], msg.data[1:])
 
-	def bootstrap(self, crp_file, timeout=60.0):
+	def bootstrap(self, crp, timeout=60.0):
+		self.p.log("Power On ECU, please! (within 60sec.)")
 		crp_chunk_i = 1
-		crp = CRP08()
-		crp.read_file(crp_file, True)
-		self.configure_can(crp.chunks[crp_chunk_i])
+		self.open_can(crp.chunks[crp_chunk_i])
 		while(True):
 			cmd, data = self.recv(timeout=timeout)
 			# Hello
@@ -93,7 +102,7 @@ class ECU_T4E_BLACK:
 				self.p.log("ECU: Hello")
 				crp_chunk_i = 1
 				self.p.progress_start(len(crp.chunks[crp_chunk_i].data))
-				self.configure_can(crp.chunks[crp_chunk_i])
+				self.open_can(crp.chunks[crp_chunk_i])
 				self.send_start()
 			# Frame request
 			if(cmd == 0x01):
@@ -112,7 +121,7 @@ class ECU_T4E_BLACK:
 				if(crp_chunk_i < len(crp.chunks)):
 					self.p.log("ECU: Next chunk!")
 					self.p.progress_start(len(crp.chunks[crp_chunk_i].data))
-					self.configure_can(crp.chunks[crp_chunk_i])
+					self.open_can(crp.chunks[crp_chunk_i])
 					self.send_start()
 				else:
 					self.p.log("ECU: Programming completed!")
@@ -120,10 +129,11 @@ class ECU_T4E_BLACK:
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
-				raise ECUBlackException("Error "+hex(error)+": "+ECU_T4E_BLACK.errors.get(error, "Unknow"))
+				raise CRP08_exception("Error "+hex(error)+": "+self.errors.get(error, "Unknow"))
+		self.close_can()
 
 if __name__ == "__main__":
-	print("CRP Uploader for T4e Black ECU\n")
+	print("CRP Uploader for T4e/T6 Black ECU\n")
 	ap = argparse.ArgumentParser()
 	ap.add_argument(
 		"-i",
@@ -153,16 +163,8 @@ if __name__ == "__main__":
 	can_ch = args['device']
 	crp_file = args['file']
 
-	print("Open CAN "+can_if+" "+str(can_ch)+" @ 500 kbit/s")
-	bus = can.Bus(
-		interface = can_if,
-		channel = can_ch,
-		bitrate = 500000
-	)
-
-	t4e = ECU_T4E_BLACK(bus, Progress());
-	print("Turn IGN on within 60sec.")
-	t4e.bootstrap(crp_file)
-	bus.shutdown()
-	print("Done")
+	up = CRP08_uploader(can_if, can_ch, Progress())
+	crp = CRP08(True)
+	crp.read_file(crp_file)
+	up.bootstrap(crp)
 

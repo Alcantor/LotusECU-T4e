@@ -4,6 +4,7 @@ import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
 
+please_select_file = "Please select a file:"
 bin_file = [("Raw binary file", "*.BIN *.bin *.cpt")]
 
 def try_msgbox_decorator(func):
@@ -21,7 +22,7 @@ def try_msgbox_decorator(func):
 
 class SelectCAN_widget(tk.LabelFrame):
 	def __init__(self, parent=None, with_speed=True):
-		tk.LabelFrame.__init__(self, parent, text="CAN Device")
+		tk.LabelFrame.__init__(self, parent, text="CAN Device (CANable Adapter)")
 
 		self.combo_interface = ttk.Combobox(self, width=14, state="readonly", values=["socketcan", "ixxat", "serial", "slcan"])
 		self.combo_interface.current(0)
@@ -45,4 +46,16 @@ class SelectCAN_widget(tk.LabelFrame):
 
 	def get_birate(self):
 		return [1000000, 500000][self.combo_bitrate.current()]
+
+class SelectCOM_widget(tk.LabelFrame):
+	def __init__(self, parent=None):
+		tk.LabelFrame.__init__(self, parent, text="COM Device (VAG-COM Adapter)")
+
+		self.string_port = tk.StringVar()
+		self.string_port.set("/dev/ttyUSB0")
+		self.entry_port = tk.Entry(self, width=14, textvariable=self.string_port)
+		self.entry_port.pack(side=tk.LEFT, fill=tk.X, expand=True)
+
+	def get_port(self):
+		return self.string_port.get()
 
