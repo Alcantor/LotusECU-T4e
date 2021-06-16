@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import serial, argparse
 from lib.crp05 import CRP05, CRP05_exception
 from lib.fileprogress import Progress
@@ -69,7 +67,7 @@ class CRP05_uploader:
 		while(True):
 			msg = self.ser.read(1024)
 			#print(msg)
-			if  (msg == b'\x00\x00\x00'): break
+			if(msg == b'\x00\x00\x00'): break
 		self.p.log("ECU: Hello")
 		self.send(0x71)
 		self.p.log("ECU: In stage II")

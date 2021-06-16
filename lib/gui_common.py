@@ -1,8 +1,7 @@
-#!/usr/bin/python3
-
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import ttk
+from threading import *
 
 please_select_file = "Please select a file:"
 bin_file = [("Raw binary file", "*.BIN *.bin *.cpt")]
@@ -18,6 +17,19 @@ def try_msgbox_decorator(func):
 				title = "Error!",
 				message = str(e)
 			)
+	return wrapper
+
+def thread_start_decorator(func):
+	def wrapper(self):
+		self.th = Thread(target=func, args=(self,))
+		self.th.start()
+	return wrapper
+
+def thread_stop_decorator(func):
+	def wrapper(self):
+		self.th.notify()
+		func(self)
+		self.th.join()
 	return wrapper
 
 class SelectCAN_widget(tk.LabelFrame):
@@ -44,7 +56,7 @@ class SelectCAN_widget(tk.LabelFrame):
 	def get_channel(self):
 		return self.string_channel.get()
 
-	def get_birate(self):
+	def get_bitrate(self):
 		return [1000000, 500000][self.combo_bitrate.current()]
 
 class SelectCOM_widget(tk.LabelFrame):

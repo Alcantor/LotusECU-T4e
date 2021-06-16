@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys, can, argparse
 from lib.crc import CRC8Normal
 from lib.crp08 import CRP08, CRP08_exception
@@ -48,9 +46,9 @@ class CRP08_uploader:
 			"can_id": chunk_can.can_local_id2,
 			"can_mask": 0x7FF
 		}])
-		self.remote_id = chunk_can.can_remote_id2,
+		self.remote_id = chunk_can.can_remote_id2
 
-	def close_can(self, chunk_can):
+	def close_can(self):
 		self.p.log("Close CAN ")
 		self.bus.shutdown()
 		self.bus = None
@@ -82,7 +80,7 @@ class CRP08_uploader:
 	def send_start(self):
 		self.send(7, b"\x01\x00\x00\x00\x00\x00")
 
-	def recv(self, timeout=1.0):
+	def recv(self, timeout):
 		msg = self.bus.recv(timeout)
 		if(msg == None): raise CRP08_exception("No answer!")
 		self.crc.reset()

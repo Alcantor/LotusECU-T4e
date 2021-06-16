@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import os
 import tkinter as tk
 from tkinter import filedialog
@@ -143,7 +141,7 @@ class CRP08_uploader_win(tk.Toplevel):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP08 Uploader')
 		self.resizable(0, 0)
-
+		#self.protocol("WM_DELETE_WINDOW", self.abort)
 		self.can_device = SelectCAN_widget(self, False)
 		self.can_device.pack(fill=tk.X)
 
@@ -155,11 +153,23 @@ class CRP08_uploader_win(tk.Toplevel):
 
 		btn_frame = tk.Frame(up_frame)
 		btn_frame.pack()
-		tk.Button(btn_frame, text="Load file", command=self.load_crp).pack(side=tk.LEFT)
-		tk.Button(btn_frame, text="Flash", command=self.flash_crp).pack(side=tk.LEFT)
+		self.btn_load = tk.Button(btn_frame, text="Load file", command=self.load_crp)
+		self.btn_load.pack(side=tk.LEFT)
+		self.btn_flash = tk.Button(btn_frame, text="Flash", command=self.flash_crp, state=tk.DISABLED)
+		self.btn_flash.pack(side=tk.LEFT)
 
 		# Backend
 		self.crp = CRP08(True)
+		self.up = None
+
+	def lock_buttons_decorator(func):
+		def wrapper(self):
+			self.btn_load['state'] = tk.DISABLED
+			self.btn_flash['state'] = tk.DISABLED
+			func(self)
+			self.btn_load['state'] = tk.NORMAL
+			self.btn_flash['state'] = tk.NORMAL
+		return wrapper
 
 	@try_msgbox_decorator
 	def load_crp(self):
@@ -174,7 +184,10 @@ class CRP08_uploader_win(tk.Toplevel):
 			self.crp.read_file(answer)
 			for name in self.crp.chunks[0].toc_values[0]:
 				self.p.log(" -> "+name)
+			self.btn_flash['state'] = tk.NORMAL
 
+	#@thread_start_decorator
+	@lock_buttons_decorator
 	@try_msgbox_decorator
 	def flash_crp(self):
 		CRP08_uploader(self.can_device.get_interface(), self.can_device.get_channel(), self.p).bootstrap(self.crp)

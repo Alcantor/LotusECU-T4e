@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys, random
 
 # Some constants
@@ -464,7 +462,7 @@ if __name__ == "__main__":
 		print(crp)
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "pack_t4e"):
 		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
-		crp = CRP05(True)
+		crp = CRP05(False, True)
 		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
 		crp.data.update_header()
 		crp.write_file(sys.argv[3])

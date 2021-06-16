@@ -2,31 +2,47 @@
 
 import sys, can, argparse
 from lib.fileprogress import FileProgress
-from flasher import Flasher
+from lib.flasher import Flasher
 
 class ECUException(Exception):
 	pass
 
-class ECU_T4E:
+class LiveTuningAccess:
 	zones = [
-		("ROM Boot Loader", 0x000000, 0x10000, "bootldr.bin"),
-		("ROM Calibration", 0x010000, 0x10000, "calrom.bin"),
-		("ROM Program"    , 0x020000, 0x60000, "prog.bin"),
-		("RAM Persistant" , 0x2F8000, 0x00800, "decram.bin"),
-		("RAM Main"       , 0x3F8000, 0x08000, "calram.bin"),
-		("ROM Full"       , 0x000000, 0x80000, "dump.bin")
+		("S0 (Bootloader)"       , 0x000000, 0x10000, "bootldr.bin"),
+		("S1 (T4e Calibration)"  , 0x010000, 0x10000, "calrom.bin"),
+		("S2-S7 (T4e Program)"   , 0x020000, 0x60000, "prog.bin"),
+		("RAM1 (T4e EEPROM Copy)", 0x2F8000, 0x00800, "decram.bin"),
+		("RAM2 (T4e Main RAM)"   , 0x3F8000, 0x08000, "calram.bin"),
+		("S1-S6 (T4 Program)"    , 0x010000, 0x60000, "prog.bin"),
+		("S7 (T4 Calibration)"   , 0x070000, 0x10000, "calrom.bin"),
+		("S0-S7 (Full ROM)"      , 0x000000, 0x80000, "dump.bin")
 	]
 
-	def __init__(self, bus, fp):
-		if(bus): bus.set_filters([{
-			"extended": False,
-			"can_id": 0x7A0,
-			"can_mask": 0x7FF
-		}])
-		self.bus = bus
+	def __init__(self, fp):
+		self.bus = None
 		self.fp = fp
 
-	def readMemory(self, address, size):
+	def open_can(self, interface, channel, bitrate):
+		if(self.bus != None): self.close_can()
+		self.fp.log("Open CAN "+interface+" "+str(channel)+" @ "+str(bitrate/1000)+" kbit/s")
+		self.bus = can.Bus(
+			interface = interface,
+			channel = channel,
+			can_filters = [{
+				"extended": False,
+				"can_id": 0x7A0,
+				"can_mask": 0x7FF
+			}],
+			bitrate = bitrate
+		)
+
+	def close_can(self):
+		self.fp.log("Close CAN ")
+		self.bus.shutdown()
+		self.bus = None
+
+	def read_memory(self, address, size):
 		if  (size == 4):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x50,
@@ -75,7 +91,7 @@ class ECU_T4E:
 			raise ECUException("ECU Read too much bytes!")
 		return data
 
-	def writeMemory(self, address, data, verify = False):
+	def write_memory(self, address, data, verify = False):
 		size = len(data)
 		if  (size == 4):
 			msg = can.Message(
@@ -113,33 +129,33 @@ class ECU_T4E:
 				offset += chunk_size
 		else:
 			raise ECUException("ECU Write too much bytes!")
-		if(verify and data != self.readMemory(address, len(data))):
+		if(verify and data != self.read_memory(address, len(data))):
 			raise ECUException("ECU Write failed!")
 
 	def download(self, address, size, filename):
-		self.fp.download(address, size, filename, self.readMemory, 128, False)
+		self.fp.download(address, size, filename, self.read_memory, 128, False)
 
 	def verify(self, address, filename):
-		self.fp.verify(address, filename, self.readMemory, 128, False)
+		self.fp.verify(address, filename, self.read_memory, 128, False)
 
 	def upload(self, address, filename):
-		self.fp.upload(address, filename, self.writeMemory, 128, False)
+		self.fp.upload(address, filename, self.write_memory, 128, False)
 
 	def inject(self, freeram_address, filename, stackblr_address):
 		self.upload(freeram_address, filename)
-		self.writeMemory(stackblr_address, freeram_address.to_bytes(4, "big"))
+		self.write_memory(stackblr_address, freeram_address.to_bytes(4, "big"))
 
 	def test(self, freeram_address):
 		# Word
-		self.writeMemory(freeram_address, b'\xDE\xAD\xBE\xEF', True)
+		self.write_memory(freeram_address, b'\xDE\xAD\xBE\xEF', True)
 		# 3 Bytes
-		self.writeMemory(freeram_address, b'\x11\x22\x33', True)
+		self.write_memory(freeram_address, b'\x11\x22\x33', True)
 		# Half
-		self.writeMemory(freeram_address, b'\xAA\x55', True)
+		self.write_memory(freeram_address, b'\xAA\x55', True)
 		# Byte
-		self.writeMemory(freeram_address, b'\x10', True)
+		self.write_memory(freeram_address, b'\x10', True)
 		# Much more
-		self.writeMemory(freeram_address, b'Hello world', True)
+		self.write_memory(freeram_address, b'Hello world', True)
 
 if __name__ == "__main__":
 	print("Dumper for Lotus T4e ECU\n")
@@ -197,7 +213,7 @@ if __name__ == "__main__":
 		nargs='*',
 		type=int,
 		help="Specify a zone",
-		choices=range(0, len(ECU_T4E.zones)),
+		choices=range(0, len(LiveTuningAccess.zones)),
 		default=range(0, 5)
 	)
 	ap.add_argument(
@@ -222,41 +238,35 @@ if __name__ == "__main__":
 		canstrap_file = "flasher/canstrap-white.bin"
 	if(args['listzone']):
 		print("Zones ECU")
-		for i in range(0, len(ECU_T4E.zones)):
-			print("%i: %s" % (i, ECU_T4E.zones[i][0]))
+		for i in range(0, len(LiveTuningAccess.zones)):
+			print("%i: %s" % (i, LiveTuningAccess.zones[i][0]))
 		sys.exit(0)
 
-	print("Open CAN "+can_if+" "+str(can_ch)+" @ "+str(can_br/1000)+" kbit/s")
-	bus = can.Bus(
-		interface = can_if,
-		channel = can_ch,
-		bitrate = can_br
-	)
-
-	t4e = ECU_T4E(bus, FileProgress());
+	lta = LiveTuningAccess(FileProgress())
+	lta.open_can(can_if, can_ch, can_br)
 	print()
 
 	if(ecu_op == 'dl'):
 		print("Download ECU")
 		for i in ecu_zones:
-			t4e.download(
-				ECU_T4E.zones[i][1],
-				ECU_T4E.zones[i][2],
-				ecu_dir+"/"+ECU_T4E.zones[i][3]
+			lta.download(
+				LiveTuningAccess.zones[i][1],
+				LiveTuningAccess.zones[i][2],
+				ecu_dir+"/"+LiveTuningAccess.zones[i][3]
 			)
 
 	if(ecu_op == 'v'):
 		print("Verify ECU")
 		for i in ecu_zones:
-			t4e.verify(
-				ECU_T4E.zones[i][1],
+			lta.verify(
+				LiveTuningAccess.zones[i][1],
 				ecu_dir+"/"+ECU_T4E.zones[i][3]
 			)
 
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
-		t4e.inject(0x3FF000, canstrap_file, 0x3FFFDC)
-		fl = Flasher(t4e.bus, t4e.fp)
+		lta.inject(0x3FF000, canstrap_file, 0x3FFFDC)
+		fl = Flasher(lta.bus, lta.fp)
 		fl.canstrap(timeout=1.0)
 		print("We have the control of the ECU!")
 		# Install the flasher plugin
@@ -265,8 +275,8 @@ if __name__ == "__main__":
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")
-		t4e.test(0x3FF000)
+		lta.test(0x3FF000)
 
-	bus.shutdown()
+	lta.close_can()
 	print("Done")
 

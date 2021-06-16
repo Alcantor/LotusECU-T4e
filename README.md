@@ -131,32 +131,32 @@ overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
 
  Files                 | Description
  ----------------------|------------
- t4e.py                | Program to talk to the original UNLOCKED Software (Read/Write RAM)
- flasher.py            | Program to talk to the flasher Software (Read/Write RAM+Flash+EEPROM)
+ lib/ltacc.py          | Program to talk to the original UNLOCKED Software (Read/Write RAM)
+ lib/flasher.py        | Program to talk to the flasher Software (Read/Write RAM+Flash+EEPROM)
  flasher/*.bin         | CAN-Bus Flasher for the MPC563
  gui.py                | Graphical interface for both t4e.py and flasher.py
  sign.py               | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
  lib/crp08.py          | Convert a BIN file into a CRP file (post 2008).
- t4e-black.py          | Tool to upload a CRP file to a locked black ECU (Write Flash).
+ lib/crp08_uploader.py | Tool to upload a CRP file to a locked black ECU (Write Flash).
  lib/crp05.py          | Convert a S-Record file into a CRP file (pre 2008, including T4).
- t4-white.py           | Tool to upload a CRP file to a locked white ECU (Write Flash).
+ lib/crp05_uploader.py | Tool to upload a CRP file to a locked white ECU (Write Flash).
 
 ## Command line example (OBD Port, unlocked ECU)
 
 	1. sudo ip link set can0 up type can bitrate 1000000
-	2. ./t4y.py -o dl -z 0 1 2 3 4
-	3. ./t4y.py -o v -z 0 1 2
+	2. python3 -m lib.ltacc -o dl -z 0 1 2 3 4
+	3. python3 -m lib.ltacc -o v -z 0 1 2
 	4. cp calrom.bin calrom.ori.bin
 	5. [Modify calrom.bin with RomRaider]
 	6. ./sign.py sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
-	7. ./t4e.py -o ifp
-	8. ./flasher.py -o vfp
-	9. ./flasher.py -o e -b 1
-	10. ./flasher.py -o vb -b 1
-	12. ./flasher.py -o p -b 1
-	13. ./flasher.py -o v -b 1
-	14. ./flasher.py -o r
+	7. python3 -m lib.ltacc -o ifp
+	8. python3 -m lib.flasher -o vfp
+	9. python3 -m lib.flasher -o e -b 1
+	10. python3 -m lib.flasher -o vb -b 1
+	12. python3 -m lib.flasher -o p -b 1
+	13. python3 -m lib.flasher -o v -b 1
+	14. python3 -m lib.flasher -o r
 
 	To 1: Turn CAN-Bus on [Linux/SocketCAN Only]
 	To 2: Download the ECU like cybernet does.
@@ -221,11 +221,11 @@ will lose your calibration (maps) with this method!
 	2. ./sign.py check_crc_black_calrom calrom_original.bin
 	3. [Modify calrom.bin with RomRaider]
 	4. ./sign.py unlock_black_calrom calrom_original.bin calrom.bin
-	5. ./lib/crp08.py calrom calrom.bin calrom.crp
-	6. ./t4e-black.py -f calrom.crp *** [TESTED only 1x BE CAREFUL] ***
+	5. python3 -m lib.crp08 calrom calrom.bin calrom.crp
+	6. python3 -m lib.crp08_uploader -f calrom.crp *** [TESTED only 1x BE CAREFUL] ***
 	7. [TURN CAR ON]
-	8. ./t4e.py -s black -o dl -z 0 2 3 4
-	9. ./t4e.py -s black -o v -z 0 2
+	8. python3 -m lib.ltacc -s black -o dl -z 0 2 3 4
+	9. python3 -m lib.ltacc -s black -o v -z 0 2
 
 	To 1: Source a calrom.bin file. *
 	To 2: Verify the calrom.bin that you find somewhere, the CRC must match!
@@ -248,12 +248,12 @@ This is COMPLICATE: Two different cables are needed. A VAG-COM and a CANable ada
 
 	1. for i in {0..63}; do echo 003FF000; done | xxd -r -p > poison.bin
 	2. srec_cat flasher/canstrap-white.bin -binary -offset 0x3FF000 poison.bin -binary -offset 0x3FFF00 -o canstrap.srec -motorola -address-length 3 -header CANstrap
-	3. ./lib/crp05.py pack_t4e canstrap.srec canstrap.crp
-	4. ./flasher.py -o b &
-	5. ./t4-white.py -f canstrap.crp
+	3. python3 -m lib.crp05 pack_t4e canstrap.srec canstrap.crp
+	4. python3 -m lib.flasher -o b &
+	5. python3 -m lib.crp05_uploader -f canstrap.crp
 	6. [TURN CAR ON]
-	7. ./flasher.py -o dl -b 0 1 2
-	8. ./flasher.py -o c -b 0 1 2
+	7. python3 -m lib.flasher -o dl -b 0 1 2
+	8. python3 -m lib.flasher -o c -b 0 1 2
 
 	To 1: Create a file to poison the stack.
 	To 2: Convert both BIN files into a SREC file.

@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys, can, argparse
 from lib.fileprogress import FileProgress
 from lib.crc import CRC32Reflect
@@ -9,20 +7,34 @@ class FlasherException(Exception):
 
 class Flasher:
 	blocks = [
-		("Flash Boot Loader", 0x80, 0x000000, 0x10000, "bootldr.bin"),
-		("Flash Calibration", 0x40, 0x010000, 0x10000, "calrom.bin"),
-		("Flash Program"    , 0x3F, 0x020000, 0x60000, "prog.bin"),
-		("Flash Full"       , 0xFF, 0x000000, 0x80000, "dump.bin")
+		("S0 (Bootloader)"     , 0x80, 0x000000, 0x10000, "bootldr.bin"),
+		("S1 (T4e Calibration)", 0x40, 0x010000, 0x10000, "calrom.bin"),
+		("S2-S7 (T4e Program)" , 0x3F, 0x020000, 0x60000, "prog.bin"),
+		("S0-S7 (Full ROM)"    , 0xFF, 0x000000, 0x80000, "dump.bin")
 	]
 
-	def __init__(self, bus, fp):
-		if(bus): bus.set_filters([{
-			"extended": False,
-			"can_id": 0x7A0,
-			"can_mask": 0x7FF
-		}])
-		self.bus = bus
+	def __init__(self, fp):
+		self.bus = None
 		self.fp = fp
+
+	def open_can(self, interface, channel, bitrate):
+		if(self.bus != None): self.close_can()
+		self.fp.log("Open CAN "+interface+" "+str(channel)+" @ "+str(bitrate/1000)+" kbit/s")
+		self.bus = can.Bus(
+			interface = interface,
+			channel = channel,
+			can_filters = [{
+				"extended": False,
+				"can_id": 0x7A0,
+				"can_mask": 0x7FF
+			}],
+			bitrate = bitrate
+		)
+
+	def close_can(self):
+		self.fp.log("Close CAN ")
+		self.bus.shutdown()
+		self.bus = None
 
 	def send(self, cmd, data=b''):
 		msg = can.Message(
@@ -47,12 +59,12 @@ class Flasher:
 		if(rdata != data):
 			raise FlasherException("Unexpected echo!")
 
-	def readWord(self, address):
+	def read_word(self, address):
 		cmd = 0x01
 		self.send(cmd, address.to_bytes(3, "big"))
 		return self.recv(cmd, 4)
 
-	def writeWord(self, address, data):
+	def write_word(self, address, data):
 		cmd = 0x02
 		self.send(cmd, address.to_bytes(3, "big") + data)
 		self.recv(cmd)
@@ -66,74 +78,75 @@ class Flasher:
 		self.send(cmd, address.to_bytes(3, "big"))
 		self.recv(cmd)
 
-	def eraseBlock(self, blocks_mask):
+	def erase_block(self, blocks_mask):
 		cmd = 0x05
 		self.send(cmd, blocks_mask.to_bytes(1, "big"))
 		pegood = self.recv(cmd, 1, 10.0)
 		if(pegood[0] != 1):
 			raise FlasherException("No PEGOOD!")
 
-	def startProgramBlock(self, blocks_mask):
+	def start_program_block(self, blocks_mask):
 		cmd = 0x06
 		self.send(cmd, blocks_mask.to_bytes(1, "big"))
 		self.recv(cmd)
 
-	def programBlockWord(self, address, data):
+	def program_block_word(self, address, data):
 		cmd = 0x07
 		self.send(cmd, address.to_bytes(3, "big") + data)
 		pegood = self.recv(cmd, 1, 1.0)
 		if(pegood[0] != 1):
 			raise FlasherException("No PEGOOD!")
 
-	def stopProgramBlock(self):
+	def stop_program_block(self):
 		cmd = 0x08
 		self.send(cmd)
 		self.recv(cmd)
 
-	def readEEPROMWord(self, address):
+	def read_eeprom_word(self, address):
 		cmd = 0x09
 		self.send(cmd, address.to_bytes(3, "big"))
 		return self.recv(cmd, 4)
 
-	def writeEEPROMWord(self, address, data):
+	def write_eeprom_word(self, address, data):
 		cmd = 0x0A
 		self.send(cmd, address.to_bytes(3, "big") + data)
 		self.recv(cmd)
 
-	def computeCRC(self, address, length):
+	def compute_crc(self, address, length):
 		cmd = 0x0B
 		self.send(cmd, address.to_bytes(3, "big") + length.to_bytes(4, "big"))
 		return int.from_bytes(self.recv(cmd, 4, 5.0), "big")
 
 	def download(self, address, size, filename):
-		self.fp.download(address, size, filename, self.readWord, 4, True)
+		self.fp.download(address, size, filename, self.read_word, 4, True)
 
 	def verify(self, address, filename, offset=0, size=None):
-		self.fp.verify(address, filename, self.readWord, 4, True, offset, size)
+		self.fp.verify(address, filename, self.read_word, 4, True, offset, size)
 
 	def verify_blank(self, address, size):
-		self.fp.verify_blank(address, size, self.readWord, 4, True)
+		self.fp.verify_blank(address, size, self.read_word, 4, True)
 
 	def upload(self, address, filename, offset=0, size=None):
-		self.fp.upload(address, filename, self.writeWord, 4, True, offset, size)
+		self.fp.upload(address, filename, self.write_word, 4, True, offset, size)
 
-	def downloadEEPROM(self, address, size, filename):
-		self.fp.download(address, size, filename, self.readEEPROMWord, 4, True)
+	def download_eeprom(self, address, size, filename):
+		self.fp.download(address, size, filename, self.read_eeprom_word, 4, True)
 
-	def verifyEEPROM(self, address, filename, offset=0, size=None):
-		self.fp.verify(address, filename, self.readEEPROMWord, 4, True, offset, size)
+	def verify_eeprom(self, address, filename, offset=0, size=None):
+		self.fp.verify(address, filename, self.read_eeprom_word, 4, True, offset, size)
 
-	def uploadEEPROM(self, address, filename, offset=0, size=None):
-		self.fp.upload(address, filename, self.writeEEPROMWord, 4, True, offset, size)
+	def upload_eeprom(self, address, filename, offset=0, size=None):
+		self.fp.upload(address, filename, self.write_eeprom_word, 4, True, offset, size)
 
 	def program(self, block_mask, address, filename, offset=0, size=None):
 		try:
-			self.startProgramBlock(block_mask)
-			self.fp.upload(address, filename, self.programBlockWord, 4, True, offset, size)
+			self.start_program_block(block_mask)
+			self.fp.upload(address, filename, self.program_block_word, 4, True, offset, size)
 		finally:
-			self.stopProgramBlock()
+			self.stop_program_block()
 
 	def canstrap(self, timeout=60.0):
+		self.fp.log("Power On ECU, please! (within 60sec.)")
 		msg = self.bus.recv(timeout=timeout)
 		if(msg == None): raise FlasherException("Time out!")
 		if(msg.dlc != 6 or msg.data != b'HiCsV1'):
@@ -144,8 +157,8 @@ class Flasher:
 	def test(self, freeram_address):
 		self.echo(b'Hi ;-)')
 		test = b'\xDE\xAD\xBE\xEF'
-		self.writeWord(freeram_address, test)
-		if(test != self.readWord(freeram_address)):
+		self.write_word(freeram_address, test)
+		if(test != self.read_word(freeram_address)):
 			raise FlasherException("Word readback failed!")
 		self.upload(freeram_address, "flasher/func_test.bin")
 		self.verify(freeram_address, "flasher/func_test.bin")
@@ -249,14 +262,8 @@ if __name__ == "__main__":
 			print("%i: %s" % (i, Flasher.blocks[i][0]))
 		sys.exit(0)
 
-	print("Open CAN "+can_if+" "+str(can_ch)+" @ "+str(can_br/1000)+" kbit/s")
-	bus = can.Bus(
-		interface = can_if,
-		channel = can_ch,
-		bitrate = can_br
-	)
-
-	fl = Flasher(bus, FileProgress());
+	fl = Flasher(FileProgress());
+	fl.open_can(can_if, can_ch, can_br)
 	print()
 
 	if(ecu_op == 'dl'):
@@ -293,7 +300,7 @@ if __name__ == "__main__":
 		print("Erase ECU Flash")
 		for i in ecu_blocks:
 			print("Erase "+Flasher.blocks[i][0])
-			fl.eraseBlock(Flasher.blocks[i][1])
+			fl.erase_block(Flasher.blocks[i][1])
 
 	if(ecu_op == 'p'):
 		print("Program ECU Flash")
@@ -305,7 +312,6 @@ if __name__ == "__main__":
 			)
 
 	if(ecu_op == 'b'):
-		print("Turn IGN on within 60sec.")
 		fl.canstrap()
 		# Move the flasher to the RAM to be able to reflash the bootloader
 		fl.upload(0x3FF000,canstrap_file)
@@ -332,7 +338,7 @@ if __name__ == "__main__":
 		print("Read EEPROM (Does not work from stage15)")
 		fl.upload(0x3FF300,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF300)
-		fl.downloadEEPROM(0x0, 2048, ecu_dir+"/eeprom.bin")
+		fl.download_eeprom(0x0, 2048, ecu_dir+"/eeprom.bin")
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
 
@@ -344,7 +350,7 @@ if __name__ == "__main__":
 		print("Verify EEPROM (Does not work from stage15)")
 		fl.upload(0x3FF300,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF300)
-		fl.verifyEEPROM(0x0, ecu_dir+"/eeprom.bin")
+		fl.verify_eeprom(0x0, ecu_dir+"/eeprom.bin")
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
 
@@ -356,7 +362,7 @@ if __name__ == "__main__":
 		print("Program EEPROM (Does not work from stage15)")
 		fl.upload(0x3FF300,"flasher/plugin_eeprom.bin")
 		fl.plugin(0x3FF300)
-		fl.uploadEEPROM(0x0, ecu_dir+"/eeprom.bin")
+		fl.upload_eeprom(0x0, ecu_dir+"/eeprom.bin")
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
 
@@ -364,7 +370,7 @@ if __name__ == "__main__":
 		crc = CRC32Reflect(0x1EDC6F41, initvalue=0xFFFFFFFF)
 		print("Upload CRC lookup table...")
 		for i in range(0, len(crc.table)):
-			fl.writeWord(
+			fl.write_word(
 				0x3F8000+(i*4),
 				crc.table[i].to_bytes(4, "big")
 			)
@@ -374,7 +380,7 @@ if __name__ == "__main__":
 		print("\nECU      FILE     Filename")
 		print("--------------------------")
 		for i in ecu_blocks:
-			crc_ecu = fl.computeCRC(
+			crc_ecu = fl.compute_crc(
 				Flasher.blocks[i][2],
 				Flasher.blocks[i][3]
 			)
@@ -391,6 +397,6 @@ if __name__ == "__main__":
 		# Return to the flasher plugin
 		fl.plugin(0x3FF200)
 
-	bus.shutdown()
+	fl.close_can()
 	print("Done")
 

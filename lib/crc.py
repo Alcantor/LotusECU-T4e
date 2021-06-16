@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 # Very interesting:
 # http://www.danielvik.com/2013/07/rewinding-crc-calculating-crc-backwards.html
 
