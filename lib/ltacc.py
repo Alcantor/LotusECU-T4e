@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 import sys, can, argparse
 from lib.fileprogress import FileProgress
 from lib.flasher import Flasher

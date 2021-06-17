@@ -1,5 +1,3 @@
-#!/usr/bin/python3
-
 class PPC32:
 	def __build1(opcd, li, aa, lk):
 		return (opcd<<26|li<<2|aa<<1|lk).to_bytes(4,"big")

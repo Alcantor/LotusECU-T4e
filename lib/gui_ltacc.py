@@ -1,6 +1,8 @@
+import os
 import tkinter as tk
 from tkinter import filedialog
 from lib.ltacc import LiveTuningAccess
+from lib.flasher import Flasher
 from lib.gui_common import *
 from lib.gui_fileprogress import FileProgress_widget
 
