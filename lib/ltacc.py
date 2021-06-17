@@ -139,10 +139,6 @@ class LiveTuningAccess:
 	def upload(self, address, filename):
 		self.fp.upload(address, filename, self.write_memory, 128, False)
 
-	def inject(self, freeram_address, filename, stackblr_address):
-		self.upload(freeram_address, filename)
-		self.write_memory(stackblr_address, freeram_address.to_bytes(4, "big"))
-
 	def test(self, freeram_address):
 		# Word
 		self.write_memory(freeram_address, b'\xDE\xAD\xBE\xEF', True)
@@ -263,13 +259,17 @@ if __name__ == "__main__":
 
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
-		lta.inject(0x3FF000, canstrap_file, 0x3FFFDC)
-		fl = Flasher(lta.bus, lta.fp)
+		lta.upload(0x3FF000, canstrap_file)
+		lta.upload(0x3FFF00, "poison.bin")
+		fl = Flasher(lta.fp)
+		fl.bus = lta.bus
 		fl.canstrap(timeout=1.0)
 		print("We have the control of the ECU!")
 		# Install the flasher plugin
 		fl.upload(0x3FF200, "flasher/plugin_flash.bin")
 		fl.plugin(0x3FF200)
+		fl.verify(0x3FF000, canstrap_file)
+		fl.verify(0x3FF200, "flasher/plugin_flash.bin")
 
 	if(ecu_op == 't'):
 		print("Test ECU Read/Write")

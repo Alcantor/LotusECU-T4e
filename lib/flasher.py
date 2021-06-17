@@ -314,13 +314,13 @@ if __name__ == "__main__":
 	if(ecu_op == 'b'):
 		fl.canstrap()
 		# Move the flasher to the RAM to be able to reflash the bootloader
-		fl.upload(0x3FF000,canstrap_file)
+		fl.upload(0x3FF000, canstrap_file)
 		fl.branch(0x3FF000)
 		fl.canstrap(1.0)
-		fl.upload(0x3FF200,"flasher/plugin_flash.bin")
+		fl.upload(0x3FF200, "flasher/plugin_flash.bin")
 		fl.plugin(0x3FF200)
-		fl.verify(0x3FF000,canstrap_file)
-		fl.verify(0x3FF200,"flasher/plugin_flash.bin")
+		fl.verify(0x3FF000, canstrap_file)
+		fl.verify(0x3FF200, "flasher/plugin_flash.bin")
 
 	if(ecu_op == 'r'):
 		print("Reset ECU - Reboot")

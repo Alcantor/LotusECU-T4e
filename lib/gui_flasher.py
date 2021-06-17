@@ -115,8 +115,8 @@ class Flasher_win(tk.Toplevel):
 		block = Flasher.blocks[self.combo_blocks.current()]
 		answer = tk.messagebox.askquestion(
 			parent = self,
-			title = 'Be careful!',
-			message = 'Do you really want to erase?\n\n'+block[0]
+			title = "Be careful!",
+			message = "Do you really want to erase?\n\n"+block[0]
 		)
 		if(answer != 'yes'): return
 		self.fp.log("Erase " + block[0])
@@ -129,8 +129,8 @@ class Flasher_win(tk.Toplevel):
 		block = Flasher.blocks[self.combo_blocks.current()]
 		answer = tk.messagebox.askquestion(
 			parent = self,
-			title = 'Be careful!',
-			message = 'Do you really want to program?\n\n'+block[0]
+			title = "Be careful!",
+			message = "Do you really want to program?\n\n"+block[0]
 		)
 		if(answer != 'yes'): return
 		answer = filedialog.askopenfilename(
@@ -162,8 +162,8 @@ class Flasher_win(tk.Toplevel):
 	def reset(self, fl):
 		answer = tk.messagebox.askquestion(
 			parent = self,
-			title = 'Be careful!',
-			message = 'Do you really want to reset?'
+			title = "Be careful!",
+			message = "Do you really want to reset?"
 		)
 		if(answer != 'yes'): return
 		fl.branch(0x100)

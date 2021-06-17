@@ -98,11 +98,19 @@ class LiveTuningAccess_win(tk.Toplevel):
 			canstrap_file = "flasher/canstrap-white.bin"
 		else:
 			canstrap_file = "flasher/canstrap-black.bin"
-		lta.inject(0x3FF000, canstrap_file, 0x3FFFDC)
+		lta.upload(0x3FF000, canstrap_file)
+		lta.upload(0x3FFF00, "poison.bin")
 		fl = Flasher(self.fp)
 		fl.bus = lta.bus
 		fl.canstrap(timeout=1.0)
 		# Install the flasher plugin
 		fl.upload(0x3FF200, "flasher/plugin_flash.bin")
 		fl.plugin(0x3FF200)
+		fl.verify(0x3FF000, canstrap_file)
+		fl.verify(0x3FF200, "flasher/plugin_flash.bin")
+		tk.messagebox.showinfo(
+			parent = self,
+			title = "Be careful!",
+			message = "Success! You can use the \"Custom Flasher\" now!"
+		)
 
