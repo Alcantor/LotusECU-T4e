@@ -120,7 +120,7 @@ class Flasher_win(tk.Toplevel):
 		)
 		if(answer != 'yes'): return
 		self.fp.log("Erase " + block[0])
-		fl.eraseBlock(block[1])
+		fl.erase_block(block[1])
 
 	@lock_buttons_decorator
 	@try_msgbox_decorator
