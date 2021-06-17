@@ -146,7 +146,7 @@ class Flasher:
 			self.stop_program_block()
 
 	def canstrap(self, timeout=60.0):
-		self.fp.log("Power On ECU, please! (within 60sec.)")
+		self.fp.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
 		msg = self.bus.recv(timeout=timeout)
 		if(msg == None): raise FlasherException("Time out!")
 		if(msg.dlc != 6 or msg.data != b'HiCsV1'):

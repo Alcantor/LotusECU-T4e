@@ -3,11 +3,21 @@ from lib.crp05 import CRP05, CRP05_exception
 from lib.fileprogress import Progress
 
 class CRP05_uploader:
-	def __init__(self, port, p):
-		self.ser = serial.Serial(port=port, baudrate=29761, timeout=0.1)
+	def __init__(self, p):
 		self.p = p
+		self.ser = None
 		self.frame_size = 96
-		
+
+	def open_com(self, port):
+		if(self.ser != None): self.close_com()
+		self.p.log("Open COM "+str(port)+" @ 29.7 kbit/s")
+		self.ser = serial.Serial(port=port, baudrate=29761, timeout=0.1)
+
+	def close_com(self, port):
+		self.p.log("Close COM")
+		if(self.ser != None): self.ser.close()
+		self.ser = None
+
 	# A packet to the ECU is:
 	#	1 byte length (excluding checksum)
 	#	1 byte command
@@ -108,9 +118,13 @@ if __name__ == "__main__":
 	args = vars(ap.parse_args())
 	ser_dev = args['device']
 	crp_file = args['file']
-	
-	up = CRP05_uploader(ser_dev, Progress());
+
 	crp = CRP05(True)
-	crp.read_file(crp_file)
-	up.bootstrap(crp)
+	crp.read_file(crp_file)	
+	up = CRP05_uploader(Progress());
+	up.open_com(ser_dev)
+	try:
+		up.bootstrap(self.crp)
+	finally:
+		up.close_com()
 

@@ -252,5 +252,10 @@ class CRP05_uploader_win(tk.Toplevel):
 	@lock_buttons_decorator
 	@try_msgbox_decorator
 	def flash_crp(self):
-		CRP05_uploader(self.com_device.get_port(), self.p).bootstrap(self.crp)
+		up = CRP05_uploader(self.p)
+		up.open_com(self.com_device.get_port())
+		try:
+			up.bootstrap(self.crp)
+		finally:
+			up.close_com()
 

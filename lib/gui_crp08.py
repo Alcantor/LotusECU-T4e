@@ -190,5 +190,9 @@ class CRP08_uploader_win(tk.Toplevel):
 	@lock_buttons_decorator
 	@try_msgbox_decorator
 	def flash_crp(self):
-		CRP08_uploader(self.can_device.get_interface(), self.can_device.get_channel(), self.p).bootstrap(self.crp)
+		up = CRP08_uploader(self.can_device.get_interface(), self.can_device.get_channel(), self.p)
+		try:
+			up.bootstrap(self.crp)
+		finally:
+			up.close_can()
 

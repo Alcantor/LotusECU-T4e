@@ -49,8 +49,8 @@ class CRP08_uploader:
 		self.remote_id = chunk_can.can_remote_id2
 
 	def close_can(self):
-		self.p.log("Close CAN ")
-		self.bus.shutdown()
+		self.p.log("Close CAN")
+		if(self.bus != None): self.bus.shutdown()
 		self.bus = None
 
 	def send(self, cmd, data):
@@ -90,7 +90,9 @@ class CRP08_uploader:
 		return (msg.data[0], msg.data[1:])
 
 	def bootstrap(self, crp, timeout=60.0):
-		self.p.log("Power On ECU, please! (within 60sec.)")
+		if(len(crp.chunks)<2):
+			raise CRP08_exception("CRP file is empty!")
+		self.p.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
 		crp_chunk_i = 1
 		self.open_can(crp.chunks[crp_chunk_i])
 		while(True):
@@ -161,8 +163,11 @@ if __name__ == "__main__":
 	can_ch = args['device']
 	crp_file = args['file']
 
-	up = CRP08_uploader(can_if, can_ch, Progress())
 	crp = CRP08(True)
 	crp.read_file(crp_file)
-	up.bootstrap(crp)
+	up = CRP08_uploader(can_if, can_ch, Progress())
+	try:
+		up.bootstrap(self.crp)
+	finally:
+		up.close_can()
 
