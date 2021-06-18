@@ -201,12 +201,12 @@ class CRP05_editor_win(tk.Toplevel):
 			self.updateText()
 
 class CRP05_uploader_win(tk.Toplevel):
-	def __init__(self, parent=None):
+	def __init__(self, config, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP05 Uploader')
 		self.resizable(0, 0)
 
-		self.com_device = SelectCOM_widget(self)
+		self.com_device = SelectCOM_widget(config, self)
 		self.com_device.pack(fill=tk.X)
 
 		up_frame = tk.LabelFrame(self, text="CRP05 Flashing")

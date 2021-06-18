@@ -2,6 +2,9 @@ import serial, argparse
 from lib.crp05 import CRP05, CRP05_exception
 from lib.fileprogress import Progress
 
+# Some constants
+BO_BE = 'big'
+
 class CRP05_uploader:
 	def __init__(self, p):
 		self.p = p
@@ -36,9 +39,9 @@ class CRP05_uploader:
 	def send(self, cmd, payload = b''):
 		# Send
 		length = len(payload) + 1 # +1 for the cmd byte
-		data = length.to_bytes(1, "big") + cmd.to_bytes(1, "big") + payload
+		data = length.to_bytes(1, BO_BE) + cmd.to_bytes(1, BO_BE) + payload
 		cksum = sum(data) & 0xFF
-		data += cksum.to_bytes(1, "big")
+		data += cksum.to_bytes(1, BO_BE)
 		self.ser.write(data)
 		# Receive the echo
 		if self.ser.read(len(data)) != data:
@@ -65,7 +68,7 @@ class CRP05_uploader:
 		if(cksum != (sum(data[:-1]) & 0xFF)):
 			raise CRP05_exception("Wrong checksum!")
 		# Send the acknowledgement
-		ack = (~cksum & 0xFF).to_bytes(1, "big")
+		ack = (~cksum & 0xFF).to_bytes(1, BO_BE)
 		self.ser.write(ack)
 		self.ser.read(len(ack)) # Acknowledgement echo
 		return (cmd, payload)

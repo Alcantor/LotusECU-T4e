@@ -2,6 +2,9 @@ import sys, can, argparse
 from lib.fileprogress import FileProgress
 from lib.crc import CRC32Reflect
 
+# Some constants
+BO_BE = 'big'
+
 class FlasherException(Exception):
 	pass
 
@@ -39,7 +42,7 @@ class Flasher:
 	def send(self, cmd, data=b''):
 		msg = can.Message(
 			is_extended_id = False, arbitration_id = 0x60,
-			data = cmd.to_bytes(1, "big") + data
+			data = cmd.to_bytes(1, BO_BE) + data
 		)
 		self.bus.send(msg)
 
@@ -61,38 +64,38 @@ class Flasher:
 
 	def read_word(self, address):
 		cmd = 0x01
-		self.send(cmd, address.to_bytes(3, "big"))
+		self.send(cmd, address.to_bytes(3, BO_BE))
 		return self.recv(cmd, 4)
 
 	def write_word(self, address, data):
 		cmd = 0x02
-		self.send(cmd, address.to_bytes(3, "big") + data)
+		self.send(cmd, address.to_bytes(3, BO_BE) + data)
 		self.recv(cmd)
 
 	def branch(self, address, param = b''):
 		cmd = 0x03
-		self.send(cmd, address.to_bytes(3, "big") + param)
+		self.send(cmd, address.to_bytes(3, BO_BE) + param)
 
 	def plugin(self, address):
 		cmd = 0x04
-		self.send(cmd, address.to_bytes(3, "big"))
+		self.send(cmd, address.to_bytes(3, BO_BE))
 		self.recv(cmd)
 
 	def erase_block(self, blocks_mask):
 		cmd = 0x05
-		self.send(cmd, blocks_mask.to_bytes(1, "big"))
+		self.send(cmd, blocks_mask.to_bytes(1, BO_BE))
 		pegood = self.recv(cmd, 1, 10.0)
 		if(pegood[0] != 1):
 			raise FlasherException("No PEGOOD!")
 
 	def start_program_block(self, blocks_mask):
 		cmd = 0x06
-		self.send(cmd, blocks_mask.to_bytes(1, "big"))
+		self.send(cmd, blocks_mask.to_bytes(1, BO_BE))
 		self.recv(cmd)
 
 	def program_block_word(self, address, data):
 		cmd = 0x07
-		self.send(cmd, address.to_bytes(3, "big") + data)
+		self.send(cmd, address.to_bytes(3, BO_BE) + data)
 		pegood = self.recv(cmd, 1, 1.0)
 		if(pegood[0] != 1):
 			raise FlasherException("No PEGOOD!")
@@ -104,18 +107,18 @@ class Flasher:
 
 	def read_eeprom_word(self, address):
 		cmd = 0x09
-		self.send(cmd, address.to_bytes(3, "big"))
+		self.send(cmd, address.to_bytes(3, BO_BE))
 		return self.recv(cmd, 4)
 
 	def write_eeprom_word(self, address, data):
 		cmd = 0x0A
-		self.send(cmd, address.to_bytes(3, "big") + data)
+		self.send(cmd, address.to_bytes(3, BO_BE) + data)
 		self.recv(cmd)
 
 	def compute_crc(self, address, length):
 		cmd = 0x0B
-		self.send(cmd, address.to_bytes(3, "big") + length.to_bytes(4, "big"))
-		return int.from_bytes(self.recv(cmd, 4, 5.0), "big")
+		self.send(cmd, address.to_bytes(3, BO_BE) + length.to_bytes(4, BO_BE))
+		return int.from_bytes(self.recv(cmd, 4, 5.0), BO_BE)
 
 	def download(self, address, size, filename):
 		self.fp.download(address, size, filename, self.read_word, 4, True)
@@ -372,7 +375,7 @@ if __name__ == "__main__":
 		for i in range(0, len(crc.table)):
 			fl.write_word(
 				0x3F8000+(i*4),
-				crc.table[i].to_bytes(4, "big")
+				crc.table[i].to_bytes(4, BO_BE)
 			)
 		fl.upload(0x3FF300,"flasher/plugin_crc.bin")
 		fl.plugin(0x3FF300)

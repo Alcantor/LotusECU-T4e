@@ -137,12 +137,12 @@ class CRP08_editor_win(tk.Toplevel):
 
 
 class CRP08_uploader_win(tk.Toplevel):
-	def __init__(self, parent=None):
+	def __init__(self, config, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP08 Uploader')
 		self.resizable(0, 0)
 		#self.protocol("WM_DELETE_WINDOW", self.abort)
-		self.can_device = SelectCAN_widget(self, False)
+		self.can_device = SelectCAN_widget(config, self, False)
 		self.can_device.pack(fill=tk.X)
 
 		up_frame = tk.LabelFrame(self, text="CRP08 Flashing")

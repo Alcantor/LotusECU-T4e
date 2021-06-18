@@ -1,12 +1,15 @@
+# Some constants
+BO_BE = 'big'
+
 class PPC32:
 	def __build1(opcd, li, aa, lk):
-		return (opcd<<26|li<<2|aa<<1|lk).to_bytes(4,"big")
+		return (opcd<<26|li<<2|aa<<1|lk).to_bytes(4,BO_BE)
 		
 	def __build2(opcd, rSD, rA, uimm):
-		return (opcd<<26|rSD<<21|rA<<16|uimm).to_bytes(4,"big")
+		return (opcd<<26|rSD<<21|rA<<16|uimm).to_bytes(4,BO_BE)
 		
 	def __build3(opcd, rSD, rA, rB, xo):
-		return (opcd<<26|rSD<<21|rA<<16|rB<<11|xo<<1).to_bytes(4,"big")
+		return (opcd<<26|rSD<<21|rA<<16|rB<<11|xo<<1).to_bytes(4,BO_BE)
 
 	def ppc_cmpli(rA, uimm):
 		return PPC32.__build2(10, 0, rA, uimm)

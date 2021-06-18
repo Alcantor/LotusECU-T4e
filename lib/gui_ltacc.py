@@ -7,12 +7,12 @@ from lib.gui_common import *
 from lib.gui_fileprogress import FileProgress_widget
 
 class LiveTuningAccess_win(tk.Toplevel):
-	def __init__(self, parent=None):
+	def __init__(self, config, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('Live-Tuning Access')
 		self.resizable(0, 0)
 
-		self.can_device = SelectCAN_widget(self)
+		self.can_device = SelectCAN_widget(config, self)
 		self.can_device.pack(fill=tk.X)
 
 		lta_frame = tk.LabelFrame(self, text="Dump")

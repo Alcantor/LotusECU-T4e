@@ -3,6 +3,9 @@ from lib.crc import CRC8Normal
 from lib.crp08 import CRP08, CRP08_exception
 from lib.fileprogress import Progress
 
+# Some constants
+BO_BE = 'big'
+
 class CRP08_uploader:
 	errors = {
 		0x81: "Not a 7,1 or 8,0 or 9,0 message received",
@@ -54,10 +57,10 @@ class CRP08_uploader:
 		self.bus = None
 
 	def send(self, cmd, data):
-		data = cmd.to_bytes(1, "big") + data
+		data = cmd.to_bytes(1, BO_BE) + data
 		self.crc.reset()
 		self.crc.update(data)
-		data += self.crc.get().to_bytes(1, "big")
+		data += self.crc.get().to_bytes(1, BO_BE)
 		offset = 0
 		size = len(data)
 		while(size > 0):
@@ -74,7 +77,7 @@ class CRP08_uploader:
 	def send_frame(self, data, frame_id):
 		offset = frame_id * self.frame_size
 		frame = data[offset:offset+self.frame_size]
-		header = frame_id.to_bytes(2, "big") + len(frame).to_bytes(2, "big")
+		header = frame_id.to_bytes(2, BO_BE) + len(frame).to_bytes(2, BO_BE)
 		self.send(6, header + frame)
 
 	def send_start(self):
@@ -106,7 +109,7 @@ class CRP08_uploader:
 				self.send_start()
 			# Frame request
 			if(cmd == 0x01):
-				frame_id = int.from_bytes(data[4:6], "big")
+				frame_id = int.from_bytes(data[4:6], BO_BE)
 				#self.p.log("ECU: Request Frame "+str(frame_id))
 				if(frame_id > 0): self.p.progress(self.frame_size)
 				self.send_frame(crp.chunks[crp_chunk_i].data, frame_id)

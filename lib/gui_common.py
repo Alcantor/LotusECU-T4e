@@ -33,15 +33,16 @@ def thread_stop_decorator(func):
 	return wrapper
 
 class SelectCAN_widget(tk.LabelFrame):
-	def __init__(self, parent=None, with_speed=True):
+	def __init__(self, config, parent=None, with_speed=True):
 		tk.LabelFrame.__init__(self, parent, text="CAN Device (CANable Adapter)")
+		self.config = config
 
-		self.combo_interface = ttk.Combobox(self, width=14, state="readonly", values=["socketcan", "ixxat", "serial", "slcan"])
-		self.combo_interface.current(0)
+		self.combo_interface = ttk.Combobox(self, width=14, state="readonly", values=["slcan", "socketcan", "ixxat"])
+		self.combo_interface.set(self.config['CANBUS']['interface'])
 		self.combo_interface.pack(side=tk.LEFT)
 
 		self.string_channel = tk.StringVar()
-		self.string_channel.set("can0")
+		self.string_channel.set(self.config['CANBUS']['channel'])
 		self.entry_channel = tk.Entry(self, width=6, textvariable=self.string_channel)
 		self.entry_channel.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
@@ -51,23 +52,30 @@ class SelectCAN_widget(tk.LabelFrame):
 			self.combo_bitrate.pack(side=tk.LEFT)
 
 	def get_interface(self):
-		return self.combo_interface.get()
+		interface = self.combo_interface.get()
+		self.config['CANBUS']['interface'] = interface
+		return interface
 
 	def get_channel(self):
-		return self.string_channel.get()
+		channel = self.string_channel.get()
+		self.config['CANBUS']['channel'] = channel
+		return channel
 
 	def get_bitrate(self):
 		return [1000000, 500000][self.combo_bitrate.current()]
 
 class SelectCOM_widget(tk.LabelFrame):
-	def __init__(self, parent=None):
+	def __init__(self, config, parent=None):
 		tk.LabelFrame.__init__(self, parent, text="COM Device (VAG-COM Adapter)")
+		self.config = config
 
 		self.string_port = tk.StringVar()
-		self.string_port.set("/dev/ttyUSB0")
+		self.string_port.set(self.config['COM']['port'])
 		self.entry_port = tk.Entry(self, width=14, textvariable=self.string_port)
 		self.entry_port.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
 	def get_port(self):
-		return self.string_port.get()
+		port = self.string_port.get()
+		self.config['COM']['port']
+		return port
 

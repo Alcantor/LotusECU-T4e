@@ -60,7 +60,7 @@ class CRP05_3by2enc:
 		self.key_mult_inv = 62135
 
 		# Convert the length into 4 bytes, sum them all + 9744, and invert
-		self.K = ~(9744 + sum(crp_size.to_bytes(4, 'big')))
+		self.K = ~(9744 + sum(crp_size.to_bytes(4, BO_BE)))
 
 	def encrypt(self, buf_in, buf_out):
 		for i in range(0, len(buf_in)//2, 1):

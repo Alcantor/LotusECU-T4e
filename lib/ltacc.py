@@ -2,6 +2,9 @@ import sys, can, argparse
 from lib.fileprogress import FileProgress
 from lib.flasher import Flasher
 
+# Some constants
+BO_BE = 'big'
+
 class ECUException(Exception):
 	pass
 
@@ -44,7 +47,7 @@ class LiveTuningAccess:
 		if  (size == 4):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x50,
-				data = address.to_bytes(4, "big")
+				data = address.to_bytes(4, BO_BE)
 			)
 			self.bus.send(msg)
 			msg = self.bus.recv(timeout=1.0)
@@ -54,7 +57,7 @@ class LiveTuningAccess:
 		elif(size == 2):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x51,
-				data = address.to_bytes(4, "big")
+				data = address.to_bytes(4, BO_BE)
 			)
 			self.bus.send(msg)
 			msg = self.bus.recv(timeout=1.0)
@@ -64,7 +67,7 @@ class LiveTuningAccess:
 		elif(size == 1):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x52,
-				data = address.to_bytes(4, "big")
+				data = address.to_bytes(4, BO_BE)
 			)
 			self.bus.send(msg)
 			msg = self.bus.recv(timeout=1.0)
@@ -74,7 +77,7 @@ class LiveTuningAccess:
 		elif(size < 256):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x53,
-				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
+				data = address.to_bytes(4, BO_BE) + size.to_bytes(1, BO_BE)
 			)
 			self.bus.send(msg)
 			data = bytearray()
@@ -94,26 +97,26 @@ class LiveTuningAccess:
 		if  (size == 4):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x54,
-				data = address.to_bytes(4, "big") + data
+				data = address.to_bytes(4, BO_BE) + data
 			)
 			self.bus.send(msg)
 		elif(size == 2):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x55,
-				data = address.to_bytes(4, "big") + data
+				data = address.to_bytes(4, BO_BE) + data
 			)
 			self.bus.send(msg)
 		elif(size == 1):
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x56,
-				data = address.to_bytes(4, "big") + data
+				data = address.to_bytes(4, BO_BE) + data
 			)
 			self.bus.send(msg)
 		elif(size < 256):
 			offset = 0
 			msg = can.Message(
 				is_extended_id = False, arbitration_id = 0x57,
-				data = address.to_bytes(4, "big") + size.to_bytes(1, "big")
+				data = address.to_bytes(4, BO_BE) + size.to_bytes(1, BO_BE)
 			)
 			self.bus.send(msg)
 			while(size > 0):
