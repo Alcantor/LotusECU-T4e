@@ -34,6 +34,11 @@ class main_window():
 	def open_crp08_uploader(self):
 		CRP08_uploader_win(self.config, self.master)
 	def open_live_access(self):
+		messagebox.showinfo(
+			master=self.master,
+			title="Info!",
+			message="This tool needs a good CAN-Adapter to \"Download\" and \"Verify\" successfully. It will probably fail with slcan devices."
+		)
 		LiveTuningAccess_win(self.config, self.master)
 	def open_flasher(self):
 		Flasher_win(self.config, self.master)

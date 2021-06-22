@@ -257,7 +257,7 @@ if __name__ == "__main__":
 		for i in ecu_zones:
 			lta.verify(
 				LiveTuningAccess.zones[i][1],
-				ecu_dir+"/"+ECU_T4E.zones[i][3]
+				ecu_dir+"/"+LiveTuningAccess.zones[i][3]
 			)
 
 	if(ecu_op == 'ifp'):
