@@ -134,8 +134,8 @@ overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
  lib/ltacc.py          | Program to talk to the original UNLOCKED Software (Read/Write RAM)
  lib/flasher.py        | Program to talk to the flasher Software (Read/Write RAM+Flash+EEPROM)
  flasher/*.bin         | CAN-Bus Flasher for the MPC563
- gui.py                | Graphical interface for both t4e.py and flasher.py
- sign.py               | Tool for CRC
+ gui.py                | Graphical interface.
+ lib/calibration.py    | Tool for CRC
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
  lib/crp08.py          | Convert a BIN file into a CRP file (post 2008).
  lib/crp08_uploader.py | Tool to upload a CRP file to a locked black ECU (Write Flash).
@@ -149,7 +149,7 @@ overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
 	3. python3 -m lib.ltacc -o v -z 0 1 2
 	4. cp calrom.bin calrom.ori.bin
 	5. [Modify calrom.bin with RomRaider]
-	6. ./sign.py sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
+	6. python3 -m lib.calibration sign_calrom calrom.ori.bin calrom.bin calrom.bin "MYTUNE"
 	7. python3 -m lib.ltacc -o ifp
 	8. python3 -m lib.flasher -o vfp
 	9. python3 -m lib.flasher -o e -b 1
@@ -218,9 +218,9 @@ This example use the factory upload method (Like a Lotus Scan 3 would do). You
 will lose your calibration (maps) with this method!
 
 	1. [Get a calrom.bin file for your car]
-	2. ./sign.py check_crc_black_calrom calrom_original.bin
+	2. .python3 -m lib.calibration check_crc_black_calrom calrom_original.bin
 	3. [Modify calrom.bin with RomRaider]
-	4. ./sign.py unlock_black_calrom calrom_original.bin calrom.bin
+	4. python3 -m lib.calibration unlock_black_calrom calrom_original.bin calrom.bin
 	5. python3 -m lib.crp08 calrom calrom.bin calrom.crp
 	6. python3 -m lib.crp08_uploader -f calrom.crp *** [TESTED only 1x BE CAREFUL] ***
 	7. [TURN CAR ON]
