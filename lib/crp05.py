@@ -1,4 +1,4 @@
-import sys, random
+import os, sys, random
 
 # Some constants
 BO_LE = 'little'
@@ -474,8 +474,9 @@ if __name__ == "__main__":
 		crp.data.subpackets.export_srec(sys.argv[3], crp.desc)
 		print(crp)
 	else:
+		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+sys.argv[0]+" pack SREC_FILE CRP_FILE")
-		print("\t"+sys.argv[0]+" pack_t4e SREC_FILE CRP_FILE")
-		print("\t"+sys.argv[0]+" unpack CRP_FILE SREC_FILE")
+		print("\t"+prog+" pack SREC_FILE CRP_FILE")
+		print("\t"+prog+" pack_t4e SREC_FILE CRP_FILE")
+		print("\t"+prog+" unpack CRP_FILE SREC_FILE")
 

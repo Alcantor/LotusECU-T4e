@@ -43,7 +43,7 @@ class SelectCAN_widget(tk.LabelFrame):
 
 		self.string_channel = tk.StringVar()
 		self.string_channel.set(self.config['CANBUS']['channel'])
-		self.entry_channel = tk.Entry(self, width=6, textvariable=self.string_channel)
+		self.entry_channel = tk.Entry(self, width=14, textvariable=self.string_channel)
 		self.entry_channel.pack(side=tk.LEFT, fill=tk.X, expand=True)
 
 		if(with_speed):

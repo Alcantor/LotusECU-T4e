@@ -33,9 +33,9 @@ class CRP08_editor_win(tk.Toplevel):
 		self.config(menu=menubar)
 
 		# List
-		self.lb = tk.Listbox(self, height=5, width=45)
+		self.lb = tk.Listbox(self, height=5)
 		self.lb.bind('<<ListboxSelect>>', self.updateText)
-		self.lb.pack()
+		self.lb.pack(fill=tk.X)
 
 		# Infos
 		self.txt = tk.Text(self, height=16, width=45, state=tk.DISABLED)

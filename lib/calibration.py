@@ -1,4 +1,4 @@
-import sys, datetime
+import os, sys, datetime
 from lib.crc import CRC16Reflect
 from lib.ppc32 import PPC32
 
@@ -165,10 +165,11 @@ if __name__ == "__main__":
 	#	print("\nBlack:\n")
 	#	check_eeprom(sys.argv[2], 0x56C)
 	else:
+		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+sys.argv[0]+" sign_calrom ORIGINAL_CALROM MODIFIED_CALROM OUTFILE SIGNATURE")
-		print("\t"+sys.argv[0]+" search_crc_prog ORIGINAL_CALROM ORIGINAL_PROG")
-		print("\t"+sys.argv[0]+" check_crc_black_calrom ORIGINAL_CALROM")
-		print("\t"+sys.argv[0]+" unlock_black_calrom CALROM OUTFILE")
-		#print("\t"+sys.argv[0]+" check_crc_eeprom EEPROM")
+		print("\t"+prog+" sign_calrom ORIGINAL_CALROM MODIFIED_CALROM OUTFILE SIGNATURE")
+		print("\t"+prog+" search_crc_prog ORIGINAL_CALROM ORIGINAL_PROG")
+		print("\t"+prog+" check_crc_black_calrom ORIGINAL_CALROM")
+		print("\t"+prog+" unlock_black_calrom CALROM OUTFILE")
+		#print("\t"+prog+" check_crc_eeprom EEPROM")
 

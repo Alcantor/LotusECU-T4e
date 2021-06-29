@@ -1,4 +1,4 @@
-import sys, os, secrets
+import os, sys, secrets
 
 # Some constants
 BO_LE = 'little'
@@ -494,9 +494,10 @@ if __name__ == "__main__":
 			crp.chunks[i].data.export_bin(bin_file)
 			print(crp.chunks[i])
 	else:
+		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+sys.argv[0]+" calrom BIN_FILE CRP_FILE")
-		print("\t"+sys.argv[0]+" prog BIN_FILE CRP_FILE")
-		print("\t"+sys.argv[0]+" both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
-		print("\t"+sys.argv[0]+" unpack CRP_FILE")
+		print("\t"+prog+" calrom BIN_FILE CRP_FILE")
+		print("\t"+prog+" prog BIN_FILE CRP_FILE")
+		print("\t"+prog+" both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
+		print("\t"+prog+" unpack CRP_FILE")
 
