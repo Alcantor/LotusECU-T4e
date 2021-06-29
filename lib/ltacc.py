@@ -263,7 +263,7 @@ if __name__ == "__main__":
 	if(ecu_op == 'ifp'):
 		print("Inject Flash Program")
 		lta.upload(0x3FF000, canstrap_file)
-		lta.upload(0x3FFF00, "poison.bin")
+		lta.upload(0x3FFF00, "lib/poison.bin")
 		fl = Flasher(lta.fp)
 		fl.bus = lta.bus
 		fl.canstrap(timeout=1.0)

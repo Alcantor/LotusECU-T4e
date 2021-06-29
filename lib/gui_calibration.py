@@ -43,11 +43,11 @@ class CAL_editor_win(tk.Toplevel):
 		self.config(menu=menubar)
 
 		# Infos
-		self.txt = tk.Text(self, height=10, width=64, state=tk.DISABLED)
+		self.txt = tk.Text(self, height=12, width=64, state=tk.DISABLED)
 		self.txt.pack()
 
 		# Backend
-		self.cal = None
+		self.cal = Calibration()
 		self.updateText()
 
 	def updateText(self, evt=None):
@@ -66,7 +66,7 @@ class CAL_editor_win(tk.Toplevel):
 			filetypes = bin_file
 		)
 		if(answer):
-			self.cal = Calibration(answer)
+			self.cal.read_file(answer)
 			self.updateText()
 
 	@try_msgbox_decorator

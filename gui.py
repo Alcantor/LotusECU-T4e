@@ -16,6 +16,7 @@ class main_window():
 		master.title('Lotus Tools')
 		master.resizable(0, 0)
 		master.protocol("WM_DELETE_WINDOW", self.on_close)
+		master.iconphoto(True, tk.PhotoImage(file="lib/app.png"))
 		tk.Button(master, text="CRP05 Editor", height=3, width=20, command=self.open_crp05_editor).pack()
 		tk.Button(master, text="CRP08 Editor", height=3, width=20, command=self.open_crp08_editor).pack()
 		tk.Button(master, text="CRP05 Uploader\n(K-Line)", height=3, width=20, command=self.open_crp05_uploader).pack()

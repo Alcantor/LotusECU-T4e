@@ -15,8 +15,10 @@ CHARSET = 'ISO-8859-15'
 #     2 Bytes   - 16 Bits CRC
 #
 class Calibration():
-	def __init__(self, file):
-		self.read_file(file)
+	def __init__(self):
+		self.data = bytearray(15540)
+		self.set_desc("Empty Cal.")
+		self.set_calid("Blank")
 
 	def get_desc(self):
 		return str(bytes(self.data[0:32]), CHARSET).rstrip()
@@ -98,30 +100,15 @@ class Calibration():
 		crc.update(self.data[32:15538])
 		return crc.get()
 
-	def str_white(self):
+	def __str__(self):
 		fmt = """
-Calibration File (Probably white dashboard):
-
-	Description : {:s}
-	CalID       : {:s}
-	CRC         : 0x{:04X}
-	Size        : {:d} bytes
-"""
-		return fmt.format(
-			self.get_desc(),
-			self.get_calid(),
-			self.wh_compute_crc(),
-			self.get_size()
-		)
-
-	def str_black(self):
-		fmt = """
-Calibration File (Probably black dashboard):
+Calibration File:
 
 	Description : {:s}
 	CalID       : {:s}
 	Unlocked    : {:s}
-	CRC         : 0x{:04X}
+	CRC white   : 0x{:04X}
+	CRC black   : 0x{:04X}
 	CRC stored  : 0x{:04X}
 	Size        : {:d} bytes
 """
@@ -129,14 +116,11 @@ Calibration File (Probably black dashboard):
 			self.get_desc(),
 			self.get_calid(),
 			("Yes" if(self.bl_is_unlocked()) else "No"),
+			self.wh_compute_crc(),
 			self.bl_compute_crc(),
 			self.bl_get_crc(),
 			self.get_size()
 		)
-
-	def __str__(self):
-		return self.str_black() if(self.get_size() >= 15540) else self.str_white()
-
 #def check_eeprom(eeprom_file, size=0x53C):
 #	crc = CRC16Reflect(0x8005, initvalue=0x0000) # CRC for EEPROM
 #	size_crc = 4
@@ -153,22 +137,27 @@ Calibration File (Probably black dashboard):
 if __name__ == "__main__":
 	print("CRC tool for Lotus T4e ECU\n")
 	if  (len(sys.argv) >= 6 and sys.argv[1] == "sign_calrom"):
-		cal1 = Calibration(sys.argv[2])
-		cal2 = Calibration(sys.argv[3])
+		cal1 = Calibration()
+		cal1.read_file(sys.argv[2])
+		cal2 = Calibration()
+		cal2.read_file(sys.argv[3])
 		cal2.wh_modify_crc(sys.argv[5]+" ", cal1.wh_compute_crc())
 		cal2.write_file(sys.argv[4])
 		print(cal2)
 		print("--> THIS IS A FAKE DATE TO MATCH THE ORIGINAL CRC")
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "search_crc_prog"):
-		cal = Calibration(sys.argv[2])
+		cal = Calibration()
+		cal.read_file(sys.argv[2])
 		offset = cal.wh_search_crc_cmpli(sys.argv[3])
 		if(offset < 0): print("CRC cmplwi not found!")
 		else: print("CRC cmplwi offset: "+hex(offset))
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "check_crc_black_calrom"):
-		cal = Calibration(sys.argv[2])
+		cal = Calibration()
+		cal.read_file(sys.argv[2])
 		print(cal)
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "unlock_black_calrom"):
-		cal = Calibration(sys.argv[2])
+		cal = Calibration()
+		cal.read_file(sys.argv[2])
 		cal.bl_unlock()
 		cal.bl_set_crc(cal.bl_compute_crc())
 		cal.write_file(sys.argv[3])
