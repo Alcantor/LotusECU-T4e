@@ -24,6 +24,12 @@ class Calibration():
 	def set_desc(self, desc):
 		self.data[0:32] = bytes(desc.ljust(32), CHARSET)
 
+	def get_calid(self):
+		return str(bytes(self.data[13910:13942]), CHARSET).rstrip()
+
+	def set_calid(self, calid):
+		self.data[13910:13942] = bytes(calid.ljust(32), CHARSET)
+
 	def get_size(self):
 		return len(self.data)
 
@@ -35,10 +41,17 @@ class Calibration():
 		with open(file, 'wb') as f: f.write(self.data)
 
 	# For white calibration ################################################
-	def wh_compute_crc(self):
-		crc = CRC16Reflect(0x8005, initvalue=0x0000)
-		crc.update(self.data[0:15502])
-		return crc.get()
+	def wh_search_crc_cmpli(self, prog_file):
+		opcode = PPC32.ppc_cmpli(0, self.wh_compute_crc())
+		offset = 0
+		with open(prog_file, 'rb') as fprg:
+			while(True):
+				chunk = fprg.read(4)
+				chunk_size = len(chunk)
+				if(chunk_size != 4): break # EOF
+				if(chunk == opcode): return offset
+				offset += chunk_size
+		return -1
 
 	def wh_modify_crc(self, desc, crc):
 		# Compute CRC backward
@@ -56,23 +69,20 @@ class Calibration():
 			if(crc.get() == crc_desc): break
 			date -= onesecond
 
-	def wh_search_crc_cmpli(self, prog_file):
-		opcode = PPC32.ppc_cmpli(0, self.wh_compute_crc())
-		offset = 0
-		with open(prog_file, 'rb') as fprg:
-			while(True):
-				chunk = fprg.read(4)
-				chunk_size = len(chunk)
-				if(chunk_size != 4): break # EOF
-				if(chunk == opcode): return offset
-				offset += chunk_size
-		return -1
+	def wh_compute_crc(self):
+		crc = CRC16Reflect(0x8005, initvalue=0x0000)
+		crc.update(self.data[0:15502])
+		return crc.get()
 
 	# For black calibration ################################################
+	LOCK_MAGIC = b'\x00\x00\x00\x00'
 	UNLOCK_MAGIC = bytes("WTF?", CHARSET)
 
 	def bl_is_unlocked(self):
 		return self.data[15534:15538] == self.UNLOCK_MAGIC
+
+	def bl_lock(self):
+		self.data[15534:15538] = self.LOCK_MAGIC
 
 	def bl_unlock(self):
 		self.data[15534:15538] = self.UNLOCK_MAGIC
@@ -93,11 +103,13 @@ class Calibration():
 Calibration File (Probably white dashboard):
 
 	Description : {:s}
+	CalID       : {:s}
 	CRC         : 0x{:04X}
 	Size        : {:d} bytes
 """
 		return fmt.format(
 			self.get_desc(),
+			self.get_calid(),
 			self.wh_compute_crc(),
 			self.get_size()
 		)
@@ -107,6 +119,7 @@ Calibration File (Probably white dashboard):
 Calibration File (Probably black dashboard):
 
 	Description : {:s}
+	CalID       : {:s}
 	Unlocked    : {:s}
 	CRC         : 0x{:04X}
 	CRC stored  : 0x{:04X}
@@ -114,6 +127,7 @@ Calibration File (Probably black dashboard):
 """
 		return fmt.format(
 			self.get_desc(),
+			self.get_calid(),
 			("Yes" if(self.bl_is_unlocked()) else "No"),
 			self.bl_compute_crc(),
 			self.bl_get_crc(),
