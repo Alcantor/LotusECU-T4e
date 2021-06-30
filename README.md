@@ -1,4 +1,4 @@
-# Lotus T4e Flasher
+# Lotus T4/T4e Flasher
 
 ## Disclaimer
 
@@ -105,7 +105,7 @@ The CANable (with slcan firmware) is very simple to use, but it has a bottleneck
 with the serial interface, and does not work well with the "ltacc.py" script.
 In contrario the "flasher.py" works flawless (but slowly) with this adapter
 because it doesn't make bulk read/write. So if you still want to use this adapter,
-use the download function of the "flasher.py" and not from the "t4e.py".
+use the download function of the "flasher.py" and not from the "ltacc.py".
 
 The CANable (with CandleLight firmware) is great but unsupported under Windows yet.
 This could change in a near future (see develop of python-can).
@@ -117,9 +117,7 @@ it's not really reliable. The MCP2515 has only two receive buffers and the linux
 driver for it doesn't implement HW-Filtering ([patch] ?). This leads to packet
 loss, especially for old versions (Like V0078, V0080) of the white dash (1 Mbit/s).
 Old version of the ECU firmware loads the CAN-Bus at 100% with data for the cluster,
-so HW-Filtering would be a big improvement! Do a "t4e.py -o ifp", if it's success,
-you will leave the ECU firmware and jump into the flasher program, which doesn't
-overload the CAN-Bus, then make the download with "flasher.py -o dl -b 0 1 2".
+so HW-Filtering would be a big improvement!
 
 [Python 3]: https://www.python.org/download/releases/3.0/
 [python-can]: https://python-can.readthedocs.io/en/master/installation.html
