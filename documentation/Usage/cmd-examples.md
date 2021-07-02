@@ -68,10 +68,10 @@ Those commands are for the Raspberry Pi with a CAN Hat.
 	2. [TURN YOUR ECU ON]
 	3. ./bdm-pi.py -o t
 	4. ./bdm-pi.py -o ufp
-	5. ./flasher.py -o b &
+	5. python3 -m lib.flasher -o b &
 	6. ./bdm-pi.py -o sfp
-	7. ./flasher.py -o dl -b 0 1 2
-	8. ./flasher.py -o c -b 0 1 2
+	7. python3 -m lib.flasher -o dl -b 0 1 2
+	8. python3 -m lib.flasher -o c -b 0 1 2
 
 	To 1: Drive the DSCK pin high to enter BDM mode.
 	To 2: Turn the CPU on.

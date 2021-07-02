@@ -33,6 +33,10 @@ class Flasher:
 			}],
 			bitrate = bitrate
 		)
+		# Workaround for socketcan interface.
+		# The kernel filtering does not filter out the error messages.
+		# So force library filtering.
+		self.bus._is_filtered = False
 
 	def close_can(self):
 		self.fp.log("Close CAN ")
@@ -154,8 +158,7 @@ class Flasher:
 		if(msg == None): raise FlasherException("Time out!")
 		if(msg.dlc != 6 or msg.data != b'HiCsV1'):
 			raise FlasherException("Unexpected answer!")
-		else:
-			self.echo()
+		self.echo()
 
 	def test(self, freeram_address):
 		self.echo(b'Hi ;-)')

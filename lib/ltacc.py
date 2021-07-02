@@ -37,6 +37,10 @@ class LiveTuningAccess:
 			}],
 			bitrate = bitrate
 		)
+		# Workaround for socketcan interface.
+		# The kernel filtering does not filter out the error messages.
+		# So force library filtering.
+		self.bus._is_filtered = False
 
 	def close_can(self):
 		self.fp.log("Close CAN ")
