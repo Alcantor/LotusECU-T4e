@@ -106,7 +106,7 @@ class Flasher_win(tk.Toplevel):
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
-		if(answer): fl.download(block[2], answer)
+		if(answer): fl.download(block[2], block[3], answer)
 
 	@lock_buttons_decorator
 	@try_msgbox_decorator

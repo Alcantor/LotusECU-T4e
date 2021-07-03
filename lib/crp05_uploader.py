@@ -16,7 +16,7 @@ class CRP05_uploader:
 		self.p.log("Open COM "+str(port)+" @ 29.7 kbit/s")
 		self.ser = serial.Serial(port=port, baudrate=29761, timeout=0.1)
 
-	def close_com(self, port):
+	def close_com(self):
 		self.p.log("Close COM")
 		if(self.ser != None): self.ser.close()
 		self.ser = None
