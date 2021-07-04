@@ -19,19 +19,6 @@ def try_msgbox_decorator(func):
 			)
 	return wrapper
 
-def thread_start_decorator(func):
-	def wrapper(self):
-		self.th = Thread(target=func, args=(self,))
-		self.th.start()
-	return wrapper
-
-def thread_stop_decorator(func):
-	def wrapper(self):
-		self.th.notify()
-		func(self)
-		self.th.join()
-	return wrapper
-
 class SelectCAN_widget(tk.LabelFrame):
 	def __init__(self, config, parent=None, with_speed=True):
 		tk.LabelFrame.__init__(self, parent, text="CAN Device (CANable Adapter)")
@@ -76,6 +63,6 @@ class SelectCOM_widget(tk.LabelFrame):
 
 	def get_port(self):
 		port = self.string_port.get()
-		self.config['COM']['port']
+		self.config['COM']['port'] = port
 		return port
 

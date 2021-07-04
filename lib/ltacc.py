@@ -43,7 +43,8 @@ class LiveTuningAccess:
 		self.bus._is_filtered = False
 
 	def close_can(self):
-		self.fp.log("Close CAN ")
+		if(self.bus == None): return
+		self.fp.log("Close CAN")
 		self.bus.shutdown()
 		self.bus = None
 

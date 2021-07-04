@@ -39,7 +39,8 @@ class Flasher:
 		self.bus._is_filtered = False
 
 	def close_can(self):
-		self.fp.log("Close CAN ")
+		if(self.bus == None): return
+		self.fp.log("Close CAN")
 		self.bus.shutdown()
 		self.bus = None
 
@@ -152,9 +153,12 @@ class Flasher:
 		finally:
 			self.stop_program_block()
 
-	def canstrap(self, timeout=60.0):
+	def canstrap(self, timeout=60.0, ui_cb=lambda:None):
 		self.fp.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
-		msg = self.bus.recv(timeout=timeout)
+		for _ in range(0, int(timeout/0.5)):
+			ui_cb()
+			msg = self.bus.recv(timeout=0.5)
+			if(msg != None): break
 		if(msg == None): raise FlasherException("Time out!")
 		if(msg.dlc != 6 or msg.data != b'HiCsV1'):
 			raise FlasherException("Unexpected answer!")

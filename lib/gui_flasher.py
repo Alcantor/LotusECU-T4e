@@ -10,6 +10,8 @@ class Flasher_win(tk.Toplevel):
 		tk.Toplevel.__init__(self, parent)
 		self.title('Flasher')
 		self.resizable(0, 0)
+		self.protocol("WM_DELETE_WINDOW", self.on_closing)
+		self.run_task = False
 
 		self.can_device = SelectCAN_widget(config, self)
 		self.can_device.pack(fill=tk.X)
@@ -76,6 +78,14 @@ class Flasher_win(tk.Toplevel):
 				fl.close_can()
 		return wrapper
 
+	def on_closing(self):
+		if(not self.run_task): self.destroy()
+		else: self.run_task = False
+
+	def waitmore(self):
+		self.update()
+		if(not self.run_task): raise Exception("Terminated by user")
+
 	@lock_buttons_decorator
 	@try_msgbox_decorator
 	@fl_decorator
@@ -84,7 +94,9 @@ class Flasher_win(tk.Toplevel):
 			canstrap_file = "flasher/canstrap-white.bin"
 		else:
 			canstrap_file = "flasher/canstrap-black.bin"
-		fl.canstrap()
+		self.run_task = True
+		fl.canstrap(ui_cb=self.waitmore)
+		self.run_task = False
 		# Move the flasher to the RAM to be able to reflash the bootloader
 		fl.upload(0x3FF000, canstrap_file)
 		fl.branch(0x3FF000)

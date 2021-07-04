@@ -141,7 +141,9 @@ class CRP08_uploader_win(tk.Toplevel):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP08 Uploader')
 		self.resizable(0, 0)
-		#self.protocol("WM_DELETE_WINDOW", self.abort)
+		self.protocol("WM_DELETE_WINDOW", self.on_closing)
+		self.run_task = False
+
 		self.can_device = SelectCAN_widget(config, self, False)
 		self.can_device.pack(fill=tk.X)
 
@@ -186,13 +188,22 @@ class CRP08_uploader_win(tk.Toplevel):
 				self.p.log(" -> "+name)
 			self.btn_flash['state'] = tk.NORMAL
 
-	#@thread_start_decorator
+	def on_closing(self):
+		if(not self.run_task): self.destroy()
+		else: self.run_task = False
+
+	def waitmore(self):
+		self.update()
+		if(not self.run_task): raise Exception("Terminated by user")
+
 	@lock_buttons_decorator
 	@try_msgbox_decorator
 	def flash_crp(self):
 		up = CRP08_uploader(self.can_device.get_interface(), self.can_device.get_channel(), self.p)
+		self.run_task = True
 		try:
-			up.bootstrap(self.crp)
+			up.bootstrap(self.crp, ui_cb=self.waitmore)
 		finally:
+			self.run_task = False
 			up.close_can()
 

@@ -52,8 +52,9 @@ class CRP08_uploader:
 		self.remote_id = chunk_can.can_remote_id2
 
 	def close_can(self):
+		if(self.bus == None): return
 		self.p.log("Close CAN")
-		if(self.bus != None): self.bus.shutdown()
+		self.bus.shutdown()
 		self.bus = None
 
 	def send(self, cmd, data):
@@ -83,8 +84,11 @@ class CRP08_uploader:
 	def send_start(self):
 		self.send(7, b"\x01\x00\x00\x00\x00\x00")
 
-	def recv(self, timeout):
-		msg = self.bus.recv(timeout)
+	def recv(self, timeout, ui_cb):
+		for _ in range(0, int(timeout/0.5)):
+			ui_cb()
+			msg = self.bus.recv(timeout=0.5)
+			if(msg != None): break
 		if(msg == None): raise CRP08_exception("No answer!")
 		self.crc.reset()
 		self.crc.update(msg.data[0:-1])
@@ -92,14 +96,14 @@ class CRP08_uploader:
 			raise CRP08_exception("Wrong CRC!")
 		return (msg.data[0], msg.data[1:])
 
-	def bootstrap(self, crp, timeout=60.0):
+	def bootstrap(self, crp, timeout=60.0, ui_cb=lambda:None):
 		if(len(crp.chunks)<2):
 			raise CRP08_exception("CRP file is empty!")
-		self.p.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
 		crp_chunk_i = 1
 		self.open_can(crp.chunks[crp_chunk_i])
+		self.p.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
 		while(True):
-			cmd, data = self.recv(timeout=timeout)
+			cmd, data = self.recv(timeout, ui_cb)
 			# Hello
 			if(cmd == 0x0A):
 				self.p.log("ECU: Hello")
@@ -132,7 +136,7 @@ class CRP08_uploader:
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
-				raise CRP08_exception("Error "+hex(error)+": "+self.errors.get(error, "Unknow"))
+				raise CRP08_exception("ECU: Error "+hex(error)+" "+self.errors.get(error, "Unknow"))
 		self.close_can()
 
 if __name__ == "__main__":

@@ -17,8 +17,9 @@ class CRP05_uploader:
 		self.ser = serial.Serial(port=port, baudrate=29761, timeout=0.1)
 
 	def close_com(self):
+		if(self.ser == None): return
 		self.p.log("Close COM")
-		if(self.ser != None): self.ser.close()
+		self.ser.close()
 		self.ser = None
 
 	# A packet to the ECU is:
@@ -55,10 +56,12 @@ class CRP05_uploader:
 	#
 	# Cmd:
 	#	0x72: Ok, next frame (1 byte data, error code)
-	def recv(self):
+	def recv(self, timeout=1.0):
 		# Recv
-		data = self.ser.read(1)
-		while(len(data) == 0): data = self.ser.read(1)
+		for _ in range(0, int(timeout/self.ser.timeout)):
+			data = self.ser.read(1)
+			if(len(data) > 0): break
+		if(len(data) == 0): raise CRP05_exception("No answer!")
 		length = data[0]
 		data += self.ser.read(length+1) # +1 for the sum byte
 		if(len(data) != length+2): # +2 for the length and the sum bytes
@@ -74,13 +77,15 @@ class CRP05_uploader:
 		return (cmd, payload)
 
 	# Wait the ECU to be turned on and automatically flash it!
-	def bootstrap(self, crp):
+	def bootstrap(self, crp, timeout=60.0, ui_cb=lambda:None):
 		self.p.log("--> Drive the L-Line down yourself! (Modify the VAG-Cable) <--\n")
-		self.p.log("Power On ECU, please!")
-		while(True):
+		self.p.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
+		for _ in range(0, int(timeout/self.ser.timeout)):
+			ui_cb()
 			msg = self.ser.read(1024)
 			#print(msg)
 			if(msg == b'\x00\x00\x00'): break
+		if(len(msg) == 0): raise CRP05_exception("Time out!")
 		self.p.log("ECU: Hello")
 		self.send(0x71)
 		self.p.log("ECU: In stage II")
@@ -94,7 +99,7 @@ class CRP05_uploader:
 				if(payload[0] == 0):
 					self.p.progress(self.frame_size)
 				else:
-					raise CRP05_exception("ECU: Unknow code: "+str(payload[0]))
+					raise CRP05_exception("ECU: Error "+str(payload[0]))
 		self.p.progress_end()
 		# Exit
 		#self.send(0x73)
@@ -127,7 +132,7 @@ if __name__ == "__main__":
 	up = CRP05_uploader(Progress());
 	up.open_com(ser_dev)
 	try:
-		up.bootstrap(self.crp)
+		up.bootstrap(crp)
 	finally:
 		up.close_com()
 
