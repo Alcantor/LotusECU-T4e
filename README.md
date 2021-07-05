@@ -101,6 +101,9 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 The [Macchina P1] is my actual recommendation if you want to buy hardware, but I
 have not tested it my-self yet.
 
+For the T4 and the locked T4e, a K-Line adapter is also needed. I use a modified
+VAG-COM Cable.
+
 The CANable (with slcan firmware) is very simple to use, but it has a bottleneck
 with the serial interface, and does not work well with the "ltacc.py" script.
 In contrario the "flasher.py" works flawless (but slowly) with this adapter
@@ -124,6 +127,10 @@ so HW-Filtering would be a big improvement!
 [CAN-BUS adapter]: https://python-can.readthedocs.io/en/master/interfaces.html
 [Macchina P1]: https://www.macchina.cc/catalog/p1-boards/p1-under-dash
 [patch]: https://github.com/craigpeacock/mcp251x
+
+The cable, I use:
+
+![alt text](documentation/Hardware/Cable-3way.jpg "Cable 3 way")
 
 ## GUI
 
