@@ -56,7 +56,7 @@ class CRP05_uploader:
 	#
 	# Cmd:
 	#	0x72: Ok, next frame (1 byte data, error code)
-	def recv(self, timeout=1.0):
+	def recv(self, timeout=10.0):
 		# Recv
 		for _ in range(0, int(timeout/self.ser.timeout)):
 			data = self.ser.read(1)

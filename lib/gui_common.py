@@ -7,9 +7,9 @@ please_select_file = "Please select a file:"
 bin_file = [("Raw binary file", "*.BIN *.bin *.cpt")]
 
 def try_msgbox_decorator(func):
-	def wrapper(self):
+	def wrapper(self, *args, **kwargs):
 		try:
-			func(self)
+			func(self, *args, **kwargs)
 		except Exception as e:
 			messagebox.showerror(
 				parent = self,

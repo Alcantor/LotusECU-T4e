@@ -312,14 +312,15 @@ class CRP05_subpackets(BinData):
 		with open(file, 'wb') as f:
 			f.write(buf)
 
-	def import_bin(self, file, offset):
+	# 246 is the maximal size of data in a subpacket.
+	def import_bin(self, file, offset, spsize=246):
 		with open(file, 'rb') as f:
 			buf = f.read()
 		self.delete(offset, len(buf))
+		# Remove white space
 		buf = buf.rstrip(b'\xFF')
-		# 246 is the maximal size of data in a subpacket.
-		for i in range(0, len(buf), 246):
-			self.subpackets.append((offset+i, buf[i:i+246]))
+		for i in range(0, len(buf), spsize):
+			self.subpackets.append((offset+i, buf[i:i+spsize]))
 
 	def __str__(self):
 		fmt = """

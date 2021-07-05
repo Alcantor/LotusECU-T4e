@@ -26,22 +26,26 @@ class CRP05_editor_win(tk.Toplevel):
 		menu.add_command(label="Exit", command=self.destroy)
 		menubar.add_cascade(label="File", menu=menu)
 		menu = tk.Menu(menubar, tearoff=0)
-		menu.add_command(label="Remove S0 (Bootloader)", command=self.remove_bootldr)
+		menu.add_command(label="Remove S0 (Bootloader)", command=lambda:self.remove(0x00000, 0x10000))
 		menu.add_separator()
-		menu.add_command(label="Remove S1-S6 (T4 Program)", command=self.remove_t4_prog)
-		menu.add_command(label="Remove S7 (T4 Calibration)", command=self.remove_t4_cal)
+		menu.add_command(label="Remove S1-S6 (T4 Program)", command=lambda:self.remove(0x10000, 0x60000))
+		menu.add_command(label="Remove S7 (T4 Calibration)", command=lambda:self.remove(0x70000, 0x10000))
 		menu.add_separator()
-		menu.add_command(label="Remove S1 (T4e Calibration)", command=self.remove_t4e_cal)
-		menu.add_command(label="Remove S2-S7 (T4e Program)", command=self.remove_t4e_prog)
+		menu.add_command(label="Remove S1 (T4e Calibration)", command=lambda:self.remove(0x10000, 0x10000))
+		menu.add_command(label="Remove S2-S7 (T4e Program)", command=lambda:self.remove(0x20000, 0x60000))
 		menu.add_separator()
 		menu.add_command(label="Export SREC", command=self.export_srec)
 		menu.add_command(label="Import SREC", command=self.import_srec)
 		menu.add_separator()
-		menu.add_command(label="Export BIN S7 (T4 Calibration)", command=self.export_t4_cal)
-		menu.add_command(label="Import BIN S7 (T4 Calibration)", command=self.import_t4_cal)
+		menu.add_command(label="Export BIN S7 (T4 Calibration)", command=lambda:self.export_bin("calrom.bin", 0x70000, 0x10000))
+		menu.add_command(label="Import BIN S7 (T4 Calibration)", command=lambda:self.import_bin("calrom.bin", 0x70000))
+		menu.add_command(label="Export BIN S1-S6 (T4 Program)", command=lambda:self.export_bin("prog.bin", 0x10000, 0x60000))
+		menu.add_command(label="Import BIN S1-S6 (T4 Program)", command=lambda:self.import_bin("prog.bin", 0x10000))
 		menu.add_separator()
-		menu.add_command(label="Export BIN S1 (T4e Calibration)", command=self.export_t4e_cal)
-		menu.add_command(label="Import BIN S1 (T4e Calibration)", command=self.import_t4e_cal)
+		menu.add_command(label="Export BIN S1 (T4e Calibration)", command=lambda:self.export_bin("calrom.bin", 0x10000, 0x10000))
+		menu.add_command(label="Import BIN S1 (T4e Calibration)", command=lambda:self.import_bin("calrom.bin", 0x10000))
+		menu.add_command(label="Export BIN S2-S7 (T4e Program)", command=lambda:self.export_bin("prog.bin", 0x20000, 0x60000))
+		menu.add_command(label="Import BIN S2-S7 (T4e Program)", command=lambda:self.import_bin("prog.bin", 0x20000))
 		menubar.add_cascade(label="Edit", menu=menu)
 		self.config(menu=menubar)
 
@@ -93,32 +97,8 @@ class CRP05_editor_win(tk.Toplevel):
 			self.crp.write_file(answer)
 
 	@try_msgbox_decorator
-	def remove_bootldr(self):
-		self.crp.data.subpackets.delete(0x00000, 0x10000)
-		self.crp.data.update_header()
-		self.updateText()
-
-	@try_msgbox_decorator
-	def remove_t4_prog(self):
-		self.crp.data.subpackets.delete(0x10000, 0x60000)
-		self.crp.data.update_header()
-		self.updateText()
-
-	@try_msgbox_decorator
-	def remove_t4_cal(self):
-		self.crp.data.subpackets.delete(0x70000, 0x10000)
-		self.crp.data.update_header()
-		self.updateText()
-
-	@try_msgbox_decorator
-	def remove_t4e_cal(self):
-		self.crp.data.subpackets.delete(0x10000, 0x10000)
-		self.crp.data.update_header()
-		self.updateText()
-
-	@try_msgbox_decorator
-	def remove_t4e_prog(self):
-		self.crp.data.subpackets.delete(0x20000, 0x60000)
+	def remove(self, offset, size):
+		self.crp.data.subpackets.delete(offset, size)
 		self.crp.data.update_header()
 		self.updateText()
 
@@ -149,54 +129,28 @@ class CRP05_editor_win(tk.Toplevel):
 			self.updateText()
 
 	@try_msgbox_decorator
-	def export_t4_cal(self):
+	def export_bin(self, name, offset, size):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			initialfile = "calrom.bin",
+			initialfile = name,
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
-			self.crp.data.subpackets.export_bin(answer, 0x70000, 0x10000)
+			self.crp.data.subpackets.export_bin(answer, offset, size)
 
 	@try_msgbox_decorator
-	def import_t4_cal(self):
+	def import_bin(self, name, offset):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			initialfile = "calrom.bin",
+			initialfile = name,
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
-			self.crp.data.subpackets.import_bin(answer, 0x70000)
-			self.crp.data.update_header()
-			self.updateText()
-
-	@try_msgbox_decorator
-	def export_t4e_cal(self):
-		answer = filedialog.asksaveasfilename(
-			parent = self,
-			initialdir = os.getcwd(),
-			initialfile = "calrom.bin",
-			title = please_select_file,
-			filetypes = bin_file
-		)
-		if(answer):
-			self.crp.data.subpackets.export_bin(answer, 0x10000, 0x10000)
-
-	@try_msgbox_decorator
-	def import_t4e_cal(self):
-		answer = filedialog.askopenfilename(
-			parent = self,
-			initialdir = os.getcwd(),
-			initialfile = "calrom.bin",
-			title = please_select_file,
-			filetypes = bin_file
-		)
-		if(answer):
-			self.crp.data.subpackets.import_bin(answer, 0x10000)
+			self.crp.data.subpackets.import_bin(answer, offset)
 			self.crp.data.update_header()
 			self.updateText()
 
