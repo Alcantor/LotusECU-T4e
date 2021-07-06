@@ -86,6 +86,7 @@ class CAL_editor_win(tk.Toplevel):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
+			initialfile = "prog.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
