@@ -317,7 +317,7 @@ class CRP05_subpackets(BinData):
 		with open(file, 'rb') as f:
 			buf = f.read()
 		self.delete(offset, len(buf))
-		# Remove white space
+		# Remove free space
 		buf = buf.rstrip(b'\xFF')
 		for i in range(0, len(buf), spsize):
 			self.subpackets.append((offset+i, buf[i:i+spsize]))

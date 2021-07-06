@@ -172,7 +172,7 @@ CRP08 TOC Chunk:
 # Encryption header format:
 #
 #   8 Bytes    - XTEA Salt or Initialization Vector (Random values)
-#   4 Bytes BE - XTEA: Size of data before padding
+#   4 Bytes BE - XTEA Size of data before padding
 #
 # ECU header format:
 #
