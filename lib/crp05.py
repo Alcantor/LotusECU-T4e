@@ -227,7 +227,7 @@ class CRP05_subpackets(BinData):
 				# Extract the Sub-Packet (Very similar to a S-Record line but binary)
 				size = data[i+1]
 				if(sum(data[i:i+size]) & 0xFF != data[i+size]):
-					raise CRP05_Exception("Checksum error of sub-packet")
+					raise CRP05_exception("Checksum error of sub-packet")
 				addr = int.from_bytes(data[i+2:i+5], BO_BE)
 				data2 = data[i+5:i+size]
 				i += size+1
@@ -280,7 +280,7 @@ class CRP05_subpackets(BinData):
 			srec_bin = bytearray([int(line[i:i+2], 16) for i in range(2,len(line),2)])
 			length = srec_bin[0]
 			if(~sum(srec_bin[:length]) & 0xFF != srec_bin[length]):
-				raise CRP05_Exception("S-Record checksum error")
+				raise CRP05_exception("S-Record checksum error")
 			if  (line[1] == "0"):
 				desc = str(srec_bin[3:length], CHARSET)
 				continue
@@ -359,7 +359,7 @@ class CRP05_data_ecu(BinData):
 
 		# Global Checksum
 		if(cksum != sum(plain[:-2]) & 0xFFFF):
-			raise CRP05_Exception("Wrong Checksum!")
+			raise CRP05_exception("Wrong Checksum!")
 
 	def get_size(self):
 		return CRP05_3by2enc.calc_size_encrypted(18+self.subpackets.get_size())
