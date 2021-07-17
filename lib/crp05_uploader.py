@@ -127,7 +127,7 @@ if __name__ == "__main__":
 	ser_dev = args['device']
 	crp_file = args['file']
 
-	crp = CRP05(True)
+	crp = CRP05(is_encrypted=True)
 	crp.read_file(crp_file)	
 	up = CRP05_uploader(Progress());
 	up.open_com(ser_dev)

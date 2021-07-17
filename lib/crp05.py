@@ -340,7 +340,7 @@ Subpackets:
 #   2 Bytes LE - Checksum
 #
 class CRP05_data_ecu(BinData):
-	def __init__(self, for_t4e=False):
+	def __init__(self, for_t4e):
 		# Binary data
 		self.header = CRP05_hdr_ecu_t4e() if(for_t4e) else CRP05_hdr_ecu_t4()
 		self.subpackets = CRP05_subpackets()
@@ -456,14 +456,14 @@ if __name__ == "__main__":
 	print("SREC to CRP file tool for Lotus T4/T4E ECU\n")
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "pack"):
 		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
-		crp = CRP05()
+		crp = CRP05(for_t4e=False)
 		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
 		crp.data.update_header()
 		crp.write_file(sys.argv[3])
 		print(crp)
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "pack_t4e"):
 		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
-		crp = CRP05(False, True)
+		crp = CRP05(for_t4e=True)
 		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
 		crp.data.update_header()
 		crp.write_file(sys.argv[3])

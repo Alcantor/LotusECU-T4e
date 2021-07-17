@@ -65,12 +65,12 @@ class CRP05_editor_win(tk.Toplevel):
 
 	@try_msgbox_decorator
 	def new_t4(self):
-		self.crp = CRP05(False, False)
+		self.crp = CRP05(for_t4e=False)
 		self.updateText()
 
 	@try_msgbox_decorator
 	def new_t4e(self):
-		self.crp = CRP05(False, True)
+		self.crp = CRP05(for_t4e=True)
 		self.updateText()
 
 	@try_msgbox_decorator
@@ -179,7 +179,7 @@ class CRP05_uploader_win(tk.Toplevel):
 		self.btn_flash.pack(side=tk.LEFT)
 
 		# Backend
-		self.crp = CRP05(True)
+		self.crp = CRP05(is_encrypted=True)
 
 	def lock_buttons_decorator(func):
 		def wrapper(self):

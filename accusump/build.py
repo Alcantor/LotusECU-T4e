@@ -6,7 +6,7 @@ from lib.ppc32 import PPC32
 
 # Files
 acc_file = "accusump.bin"
-inp_file = "../dump/white/A128E6009F/prog.bin" # You cannot change this file without adapting accusump.S, the acis_offsets and oilw_offset variables.
+inp_file = "../dump/t4e-white/A128E6009F/prog.bin" # You cannot change this file without adapting accusump.S, the acis_offsets and oilw_offset variables.
 out_file = "prog.bin"
 
 # ACIS Control function to replace with the accusump control
@@ -43,7 +43,7 @@ if(chunk2_size > 0):
 	raise Exception("Accusump control is too big!")
 
 # Files
-inp_file = "../dump/white/A128E6009F/calrom.bin"
+inp_file = "../dump/t4e-white/A128E6009F/calrom.bin"
 out_file = "calrom.bin"
 
 table_offsets = (0x3CA0, 0x3CB0)

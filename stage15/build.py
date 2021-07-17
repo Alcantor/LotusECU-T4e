@@ -33,7 +33,7 @@ def patch(s15_file, inp_file, out_file, old_branch, new_branch, s15_offset):
 print("Stage 1.5 for white dashboard...")
 patch(
 	"../flasher/canstrap-white.bin",
-	"../dump/white/A128E6009F/bootldr.bin",
+	"../dump/t4e-white/A128E6009F/bootldr.bin",
 	"white/bootldr.bin",
 	PPC32.ppc_ba(0x4000), # This value is also hardcoded in canstrap-white.bin
 	PPC32.ppc_ba(0x3000),
@@ -42,7 +42,7 @@ patch(
 print("Stage 1.5 for black dashboard...")
 patch(
 	"../flasher/canstrap-black.bin",
-	"../dump/black/A120E6501F/bootldr.bin",
+	"../dump/t4e-black/A120E6501F/bootldr.bin",
 	"black/bootldr.bin",
 	PPC32.ppc_ori(4, 4, 0x1FDC), # This value is also hardcoded in canstrap-black.bin
 	PPC32.ppc_ori(4, 4, 0x9000),

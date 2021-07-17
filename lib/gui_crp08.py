@@ -18,7 +18,8 @@ class CRP08_editor_win(tk.Toplevel):
 		menubar = tk.Menu(self)
 		menu = tk.Menu(menubar, tearoff=0)
 		menu.add_command(label="New", command=self.new)
-		menu.add_command(label="Open", command=self.open)
+		menu.add_command(label="Open T4E", command=self.open_t4e)
+		menu.add_command(label="Open T6", command=self.open_t6)
 		menu.add_command(label="Save as...", command=self.save)
 		menu.add_separator()
 		menu.add_command(label="Exit", command=self.destroy)
@@ -29,6 +30,8 @@ class CRP08_editor_win(tk.Toplevel):
 		menu.add_command(label="Export BIN", command=self.export)
 		menu.add_command(label="Import BIN - T4E Calibration", command=self.import_t4e_cal)
 		menu.add_command(label="Import BIN - T4E Program", command=self.import_t4e_prog)
+		menu.add_command(label="Import BIN - T6 Calibration", command=self.import_t6_cal)
+		menu.add_command(label="Import BIN - T6 Program", command=self.import_t6_prog)
 		menubar.add_cascade(label="Edit", menu=menu)
 		self.config(menu=menubar)
 
@@ -68,7 +71,7 @@ class CRP08_editor_win(tk.Toplevel):
 		self.updateList()
 
 	@try_msgbox_decorator
-	def open(self):
+	def open_t4e(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
@@ -76,7 +79,19 @@ class CRP08_editor_win(tk.Toplevel):
 			filetypes = crp08_file
 		)
 		if(answer):
-			self.crp.read_file(answer)
+			self.crp.read_file(answer, for_t6=False)
+			self.updateList()
+
+	@try_msgbox_decorator
+	def open_t6(self):
+		answer = filedialog.askopenfilename(
+			parent = self,
+			initialdir = os.getcwd(),
+			title = please_select_file,
+			filetypes = crp08_file
+		)
+		if(answer):
+			self.crp.read_file(answer, for_t6=True)
 			self.updateList()
 
 	@try_msgbox_decorator
@@ -127,7 +142,7 @@ class CRP08_editor_win(tk.Toplevel):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			initialfile = "calrom.bin",
+			initialfile = "prog.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
@@ -135,6 +150,31 @@ class CRP08_editor_win(tk.Toplevel):
 			self.crp.add_t4e_prog(answer)
 			self.updateList()
 
+	@try_msgbox_decorator
+	def import_t6_cal(self):
+		answer = filedialog.askopenfilename(
+			parent = self,
+			initialdir = os.getcwd(),
+			initialfile = "calrom.bin",
+			title = please_select_file,
+			filetypes = bin_file
+		)
+		if(answer):
+			self.crp.add_t6_cal(answer)
+			self.updateList()
+
+	@try_msgbox_decorator
+	def import_t6_prog(self):
+		answer = filedialog.askopenfilename(
+			parent = self,
+			initialdir = os.getcwd(),
+			initialfile = "prog.bin",
+			title = please_select_file,
+			filetypes = bin_file
+		)
+		if(answer):
+			self.crp.add_t6_prog(answer)
+			self.updateList()
 
 class CRP08_uploader_win(tk.Toplevel):
 	def __init__(self, config, parent=None):
@@ -161,7 +201,7 @@ class CRP08_uploader_win(tk.Toplevel):
 		self.btn_flash.pack(side=tk.LEFT)
 
 		# Backend
-		self.crp = CRP08(True)
+		self.crp = CRP08()
 		self.up = None
 
 	def lock_buttons_decorator(func):
@@ -183,7 +223,7 @@ class CRP08_uploader_win(tk.Toplevel):
 		)
 		if(answer):
 			self.p.log("Load "+answer)
-			self.crp.read_file(answer)
+			self.crp.read_file(answer, is_encrypted=True)
 			for name in self.crp.chunks[0].toc_values[0]:
 				self.p.log(" -> "+name)
 			self.btn_flash['state'] = tk.NORMAL

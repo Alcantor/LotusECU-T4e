@@ -1,4 +1,4 @@
-# Lotus T4/T4e Flasher
+# Lotus T4/T4e/T6 Flasher
 
 ## Disclaimer
 
@@ -64,14 +64,14 @@ possible.
 
 ### Post 2008
 
-The T4e of the black dashboard cars has another bootloader which does the
+The T4e/T6 of the black dashboard cars has another bootloader which does the
 reprogramming with CAN-Bus (500 kbit/s).
 
 This bootloader accepts an encrypted .CRP file and can update the calibration,
 the software or the EEPROM. Only writing with CAN-Bus, no reading...
 
 Destination addresses are verified. So there is no possibilities to write the
-RAM.
+RAM. (T6: Destination addresses are replaced by a number).
 
 ### CRP Files
 
@@ -101,8 +101,8 @@ The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BU
 The [Macchina P1] is my actual recommendation if you want to buy hardware, but I
 have not tested it my-self yet.
 
-For the T4 and the locked T4e, a K-Line adapter is also needed. I use a modified
-VAG-COM Cable.
+For the T4 and locked T4e white dashboard, a K-Line adapter is also needed.
+I use a modified VAG-COM Cable.
 
 The CANable (with slcan firmware) is very simple to use, but it has a bottleneck
 with the serial interface, and does not work well with the "ltacc.py" script.

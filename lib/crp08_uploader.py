@@ -170,8 +170,8 @@ if __name__ == "__main__":
 	can_ch = args['device']
 	crp_file = args['file']
 
-	crp = CRP08(True)
-	crp.read_file(crp_file)
+	crp = CRP08()
+	crp.read_file(crp_file, is_encrypted=True)
 	up = CRP08_uploader(can_if, can_ch, Progress())
 	try:
 		up.bootstrap(self.crp)

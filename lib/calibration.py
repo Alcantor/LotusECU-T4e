@@ -16,9 +16,8 @@ CHARSET = 'ISO-8859-15'
 #
 class Calibration():
 	def __init__(self):
-		self.data = bytearray(15540)
+		self.data = bytearray(27050)
 		self.set_desc("Empty Cal.")
-		self.set_calid("Blank")
 
 	def get_desc(self):
 		return str(bytes(self.data[0:32]), CHARSET).rstrip()
@@ -26,17 +25,12 @@ class Calibration():
 	def set_desc(self, desc):
 		self.data[0:32] = bytes(desc.ljust(32), CHARSET)
 
-	def get_calid(self):
-		return str(bytes(self.data[13910:13942]), CHARSET).rstrip()
-
-	def set_calid(self, calid):
-		self.data[13910:13942] = bytes(calid.ljust(32), CHARSET)
-
 	def get_size(self):
 		return len(self.data)
 
 	def read_file(self, file):
 		with open(file, 'rb') as f:
+			# TODO: If CRC ends with 0xFF? Not a good idea to rstrip...
 			self.data = memoryview(bytearray(f.read().rstrip(b'\xFF')))
 
 	def write_file(self, file):
@@ -100,26 +94,60 @@ class Calibration():
 		crc.update(self.data[32:15538])
 		return crc.get()
 
+	# For t6 calibration ################################################
+	def t6_is_unlocked(self):
+		return self.data[26962:26966] == self.UNLOCK_MAGIC
+
+	def t6_lock(self):
+		self.data[26962:26966] = self.LOCK_MAGIC
+
+	def t6_unlock(self):
+		self.data[26962:26966] = self.UNLOCK_MAGIC
+
+	def t6_get_crc(self):
+		return int.from_bytes(self.data[27046:27050], BO_BE)
+
+	def t6_set_crc(self, crc):
+		self.data[27046:27050] = crc.to_bytes(2, BO_BE)
+
+	def t6_compute_crc(self):
+		crc = CRC16Reflect(0x8005, initvalue=0x0000)
+		crc.update(self.data[32:27046])
+		return crc.get()
+
 	def __str__(self):
 		fmt = """
 Calibration File:
 
 	Description : {:s}
-	CalID       : {:s}
-	Unlocked    : {:s}
-	CRC white   : 0x{:04X}
-	CRC black   : 0x{:04X}
-	CRC stored  : 0x{:04X}
 	Size        : {:d} bytes
+
+T4e White:
+
+	CRC         : 0x{:04X}
+
+T4e Black:
+
+	Unlocked    : {:s}
+	CRC         : 0x{:04X}
+	CRC stored  : 0x{:04X}
+
+T6 Black:
+
+	Unlocked    : {:s}
+	CRC         : 0x{:04X}
+	CRC stored  : 0x{:04X}
 """
 		return fmt.format(
 			self.get_desc(),
-			self.get_calid(),
-			("Yes" if(self.bl_is_unlocked()) else "No"),
+			self.get_size(),
 			self.wh_compute_crc(),
+			("Yes" if(self.bl_is_unlocked()) else "No"),
 			self.bl_compute_crc(),
 			self.bl_get_crc(),
-			self.get_size()
+			("Yes" if(self.t6_is_unlocked()) else "No"),
+			self.t6_compute_crc(),
+			self.t6_get_crc()
 		)
 #def check_eeprom(eeprom_file, size=0x53C):
 #	crc = CRC16Reflect(0x8005, initvalue=0x0000) # CRC for EEPROM

@@ -34,16 +34,21 @@ class CAL_editor_win(tk.Toplevel):
 		menu = tk.Menu(menubar, tearoff=0)
 		menu.add_command(label="Search CRC in T4e program", command=self.wh_search)
 		menu.add_command(label="Modify signature to match CRC", command=self.wh_modify_crc)
-		menubar.add_cascade(label="White", menu=menu)
+		menubar.add_cascade(label="T4e White", menu=menu)
 		menu = tk.Menu(menubar, tearoff=0)
 		menu.add_command(label="Lock", command=self.bl_lock)
 		menu.add_command(label="Unlock", command=self.bl_unlock)
 		menu.add_command(label="Update CRC", command=self.bl_update_crc)
-		menubar.add_cascade(label="Black", menu=menu)
+		menubar.add_cascade(label="T4e Black", menu=menu)
+		menu = tk.Menu(menubar, tearoff=0)
+		menu.add_command(label="Lock", command=self.t6_lock)
+		menu.add_command(label="Unlock", command=self.t6_unlock)
+		menu.add_command(label="Update CRC", command=self.t6_update_crc)
+		menubar.add_cascade(label="T6", menu=menu)
 		self.config(menu=menubar)
 
 		# Infos
-		self.txt = tk.Text(self, height=12, width=64, state=tk.DISABLED)
+		self.txt = tk.Text(self, height=22, width=64, state=tk.DISABLED)
 		self.txt.pack()
 
 		# Backend
@@ -130,5 +135,20 @@ class CAL_editor_win(tk.Toplevel):
 	@try_msgbox_decorator
 	def bl_update_crc(self):
 		self.cal.bl_set_crc(self.cal.bl_compute_crc())
+		self.updateText()
+
+	@try_msgbox_decorator
+	def t6_lock(self):
+		self.cal.t6_lock()
+		self.updateText()
+
+	@try_msgbox_decorator
+	def t6_unlock(self):
+		self.cal.t6_unlock()
+		self.updateText()
+
+	@try_msgbox_decorator
+	def t6_update_crc(self):
+		self.cal.t6_set_crc(self.cal.t6_compute_crc())
 		self.updateText()
 

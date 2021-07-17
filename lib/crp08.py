@@ -22,16 +22,14 @@ class CRP08_exception(Exception):
 # is required.
 #
 class CRP08_xtea():
-	def __init__(self):
+	T4E_KEY = [0x8FCB06DA,0xAC193E62,0x41500C5C,0x64A7B1DB]
+	T6_KEY = [0x340D2EB9,0xC41A93EE,0x73FAFED5,0x47C80F57]
+
+	def __init__(self, for_t6):
 		self.delta = 0x9E3779B9;
 		self.rounds = 32;
 		self.mask = 0xFFFFFFFF
-		self.key = [
-			0x8FCB06DA,
-			0xAC193E62,
-			0x41500C5C,
-			0x64A7B1DB
-		]
+		self.key = self.T6_KEY if(for_t6) else self.T4E_KEY
 		self.iv = [0, 0]
 
 	def encrypt(self, v0, v1):
@@ -201,14 +199,20 @@ CRP08 TOC Chunk:
 # I don't think you can update the bootloader itself. Only calrom and prog.
 #
 class CRP08_data_ecu(BinData):
-	def __init__(self):
+	def __init__(self, for_t6):
+		self.xtea = CRP08_xtea(for_t6)
+
 		# Encryption header (12 Bytes)
 		self.xtea_salt = secrets.token_bytes(8)
 		#self.xtea_plainsize = 76
 
 		# ECU header (64 Bytes)
-		self.ecu_id = "T4E"
-		self.ecu_addr = 0x10000
+		if(for_t6):
+			self.ecu_id = "ECU T6"
+			self.ecu_addr = 0x5
+		else:
+			self.ecu_id = "T4E"
+			self.ecu_addr = 0x10000
 		#ecu_binsize = 0
 		self.ecu_maxversion = 0
 		self.ecu_minversion = 0
@@ -219,7 +223,7 @@ class CRP08_data_ecu(BinData):
 	def parse(self, data):
 		# Decrypt
 		plain = memoryview(bytearray(len(data)))
-		CRP08_xtea().decrypt_cbc(data, plain)
+		self.xtea.decrypt_cbc(data, plain)
 
 		# Encryption header (12 Bytes)
 		self.xtea_salt = plain[0:8]
@@ -260,7 +264,7 @@ class CRP08_data_ecu(BinData):
 		plain[76:76+len(self.ecu_data)] = self.ecu_data
 
 		# Encrypt
-		CRP08_xtea().encrypt_cbc(plain, data)
+		self.xtea.encrypt_cbc(plain, data)
 
 	# Export into a BIN file.
 	def export_bin(self, file):
@@ -308,7 +312,7 @@ CRP08 ECU Data:
 class CRP08_chunk_can(BinData):
 	SIGNATURE = 0x0001010A
 
-	def __init__(self, is_encrypted):
+	def __init__(self, is_encrypted, for_t6):
 		# Configuration header (64 Bytes)
 		#self.signature = self.SIGNATURE
 		self.can_bitrate = 500
@@ -320,7 +324,7 @@ class CRP08_chunk_can(BinData):
 		# Encrypted data
 		self.is_encrypted = is_encrypted
 		if(self.is_encrypted): self.data = None
-		else: self.data = CRP08_data_ecu()
+		else: self.data = CRP08_data_ecu(for_t6)
 
 	def parse(self, data):
 		# Configuration header (64 Bytes)
@@ -332,6 +336,8 @@ class CRP08_chunk_can(BinData):
 		self.can_local_id2 = int.from_bytes(data[20:24], BO_LE)
 		if(signature != self.SIGNATURE):
 			raise CRP08_exception("Chunk signature!")
+
+		# TODO: T6 CRP have a value in data[60:64]... A CRC for the data?
 
 		# Encrypted data
 		if(self.is_encrypted): self.data = data[64:]
@@ -382,13 +388,13 @@ CRP08 CAN Chunk:
 #
 class CRP08(BinData):
 	t4e_desc = "LOTUS_T4E_MY08"
+	t6_desc = "LOTUS_T6_AIN.T6AIN0R01"
 
-	def __init__(self, is_encrypted=False):
+	def __init__(self):
 		# An empty CRP file
 		self.chunks = [CRP08_chunk_toc()]
-		self.is_encrypted = is_encrypted
 
-	def parse(self, data, leave_encrypted=False):
+	def parse(self, data, is_encrypted, for_t6):
 		# Check the sum
 		cksum = sum(data[:-2]) & 0xFFFF
 		if(cksum != int.from_bytes(data[-2:], BO_LE)):
@@ -401,7 +407,7 @@ class CRP08(BinData):
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
 			if(i == 0): chunk = CRP08_chunk_toc()
-			else: chunk = CRP08_chunk_can(self.is_encrypted)
+			else: chunk = CRP08_chunk_can(is_encrypted, for_t6)
 			chunk.parse(data[offset:offset+size])
 			self.chunks[i] = chunk
 
@@ -439,21 +445,36 @@ class CRP08(BinData):
 
 	# Create a chunk for the T4E Calibration
 	def add_t4e_cal(self, file):
-		chk = CRP08_chunk_can(False)
+		chk = CRP08_chunk_can(False, False)
 		chk.data.ecu_addr = 0x10000
 		chk.data.import_bin(file)
 		self.add_chunk(chk, os.path.basename(file), self.t4e_desc)
 
 	# Create a chunk for the T4E Program
 	def add_t4e_prog(self, file):
-		chk = CRP08_chunk_can(False)
+		chk = CRP08_chunk_can(False, False)
 		chk.data.ecu_addr = 0x20000
 		chk.data.import_bin(file)
 		self.add_chunk(chk, os.path.basename(file), self.t4e_desc)
 
+	# Create a chunk for the T6 Calibration
+	def add_t6_cal(self, file):
+		chk = CRP08_chunk_can(False, True)
+		chk.data.ecu_addr = 0x5
+		chk.data.import_bin(file)
+		self.add_chunk(chk, os.path.basename(file), self.t6_desc)
+
+	# Create a chunk for the T6 Program
+	def add_t6_prog(self, file):
+		chk = CRP08_chunk_can(False, True)
+		chk.data.ecu_addr = 0x4
+		chk.data.import_bin(file)
+		self.add_chunk(chk, os.path.basename(file), self.t6_desc)
+
 	# Unpack multiple chunks from a CRP file.
-	def read_file(self, file):
-		with open(file, 'rb') as f: self.parse(memoryview(f.read()))
+	def read_file(self, file, is_encrypted=False, for_t6=False):
+		with open(file, 'rb') as f:
+			self.parse(memoryview(f.read()), is_encrypted, for_t6)
 
 	# Pack multiple chunks into a CRP file.
 	def write_file(self, file):
