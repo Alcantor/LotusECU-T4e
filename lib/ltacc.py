@@ -24,8 +24,8 @@ class LiveTuningAccess:
 		# T6 (FMPC5534) has 1MB flash
 		("L0-L3 (T6 Bootloader)"  , 0x000000, 0x020000, "bootldr.bin"),
 		("L4-L5 (T6 Calibration)" , 0x020000, 0x020000, "calrom.bin"),
-		("M0-H1 (T6 Program)"     , 0x040000, 0x0C0000, "prog.bin"),
-		("L0-H1 (T6 Full ROM)"    , 0x000000, 0x100000, "dump.bin")
+		("M0-H3 (T6 Program)"     , 0x040000, 0x0C0000, "prog.bin"),
+		("L0-H3 (T6 Full ROM)"    , 0x000000, 0x100000, "dump.bin")
 	]
 
 	def __init__(self, fp):
