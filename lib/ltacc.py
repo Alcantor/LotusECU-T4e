@@ -10,6 +10,9 @@ class ECUException(Exception):
 
 class LiveTuningAccess:
 	zones = [
+		# K4 (29F200) has 256KB flash
+		# T4 (29F400) has 512KB flash
+		# T4e (MPC563) has 512KB flash
 		("S0 (T4/T4e Bootloader)" , 0x000000, 0x10000, "bootldr.bin"),
 		("S1 (T4e Calibration)"   , 0x010000, 0x10000, "calrom.bin"),
 		("S2-S7 (T4e Program)"    , 0x020000, 0x60000, "prog.bin"),
@@ -18,11 +21,11 @@ class LiveTuningAccess:
 		("S1-S6 (T4 Program)"     , 0x010000, 0x60000, "prog.bin"),
 		("S7 (T4 Calibration)"    , 0x070000, 0x10000, "calrom.bin"),
 		("S0-S7 (T4/T4e Full ROM)", 0x000000, 0x80000, "dump.bin"),
-		# TODO: T6 has 768KB or more flash?
-		("L0-L3 (T6 Bootloader)"  , 0x000000, 0x20000, "bootldr.bin"),
-		("L4-L5 (T6 Calibration)" , 0x020000, 0x20000, "calrom.bin"),
-		("M0-H1 (T6 Program)"     , 0x040000, 0x80000, "prog.bin"),
-		("L0-H1 (T6 Full ROM)"    , 0x000000, 0xC0000, "dump.bin")
+		# T6 (FMPC5534) has 1MB flash
+		("L0-L3 (T6 Bootloader)"  , 0x000000, 0x020000, "bootldr.bin"),
+		("L4-L5 (T6 Calibration)" , 0x020000, 0x020000, "calrom.bin"),
+		("M0-H1 (T6 Program)"     , 0x040000, 0x0C0000, "prog.bin"),
+		("L0-H1 (T6 Full ROM)"    , 0x000000, 0x100000, "dump.bin")
 	]
 
 	def __init__(self, fp):

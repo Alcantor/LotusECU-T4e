@@ -132,7 +132,7 @@ T4e Black:
 	CRC         : 0x{:04X}
 	CRC stored  : 0x{:04X}
 
-T6 Black:
+T6:
 
 	Unlocked    : {:s}
 	CRC         : 0x{:04X}
