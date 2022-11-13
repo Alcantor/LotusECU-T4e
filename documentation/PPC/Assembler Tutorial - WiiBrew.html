@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html class="client-js" dir="ltr" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<title>Assembler Tutorial - WiiBrew</title>
+<script>document.documentElement.className="client-js";RLCONF={"wgCanonicalNamespace":"","wgCanonicalSpecialPageName":!1,"wgNamespaceNumber":0,"wgPageName":"Assembler_Tutorial","wgTitle":"Assembler Tutorial","wgCurRevisionId":104884,"wgRevisionId":104884,"wgArticleId":9808,"wgIsArticle":!0,"wgIsRedirect":!1,"wgAction":"view","wgUserName":null,"wgUserGroups":["*"],"wgCategories":["Development"],"wgBreakFrames":!1,"wgPageContentLanguage":"en","wgPageContentModel":"wikitext","wgSeparatorTransformTable":["",""],"wgDigitTransformTable":["",""],"wgDefaultDateFormat":"dmy","wgMonthNames":["","January","February","March","April","May","June","July","August","September","October","November","December"],"wgMonthNamesShort":["","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"wgRelevantPageName":"Assembler_Tutorial","wgRelevantArticleId":9808,"wgRequestId":"e51e2d735248f01649614ca5","wgCSPNonce":!1,"wgIsProbablyEditable":!1,"wgRelevantPageIsProbablyEditable":
+!1,"wgRestrictionEdit":[],"wgRestrictionMove":[],"wgMFDisplayWikibaseDescriptions":{"search":!1,"nearby":!1,"watchlist":!1,"tagline":!1}};RLSTATE={"site.styles":"ready","noscript":"ready","user.styles":"ready","user":"ready","user.options":"ready","user.tokens":"loading","mediawiki.legacy.shared":"ready","mediawiki.legacy.commonPrint":"ready","mediawiki.toc.styles":"ready","ext.CookieWarning.styles":"ready","mediawiki.skinning.interface":"ready","skins.vector.styles":"ready"};RLPAGEMODULES=["site","mediawiki.page.startup","mediawiki.page.ready","mediawiki.toc","mediawiki.searchSuggest","ext.CookieWarning","skins.vector.js"];</script>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.loader.implement("user.tokens@tffin",function($,jQuery,require,module){/*@nomin*/mw.user.tokens.set({"editToken":"+\\","patrolToken":"+\\","watchToken":"+\\","csrfToken":"+\\"});
+});});</script>
+<link rel="stylesheet" href="Assembler%20Tutorial%20-%20WiiBrew-Dateien/load.css">
+<script async="" src="Assembler%20Tutorial%20-%20WiiBrew-Dateien/load.php"></script>
+<style>
+.suggestions{overflow:hidden;position:absolute;top:0;left:0;width:0;border:0;z-index:1099;padding:0;margin:-1px 0 0 0}.suggestions-special{position:relative;background-color:#fff;cursor:pointer;border:1px solid #a2a9b1;margin:0;margin-top:-2px;display:none;padding:0.25em 0.25em;line-height:1.25em}.suggestions-results{background-color:#fff;cursor:pointer;border:1px solid #a2a9b1;padding:0;margin:0}.suggestions-result{color:#000;margin:0;line-height:1.5em;padding:0.01em 0.25em;text-align:left; overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.suggestions-result-current{background-color:#2a4b8d;color:#fff}.suggestions-special .special-label{color:#72777d;text-align:left}.suggestions-special .special-query{color:#000;font-style:italic;text-align:left}.suggestions-special .special-hover{background-color:#c8ccd1}.suggestions-result-current .special-label,.suggestions-result-current .special-query{color:#fff}.highlight{font-weight:bold}
+@media screen {
+	.tochidden,.toctoggle{-moz-user-select:none;-webkit-user-select:none;-ms-user-select:none;user-select:none}.toctoggle{font-size:94%}}
+@media print {
+	.toc.tochidden,.toctoggle{display:none}}</style><style>
+.suggestions a.mw-searchSuggest-link,.suggestions a.mw-searchSuggest-link:hover,.suggestions a.mw-searchSuggest-link:active,.suggestions a.mw-searchSuggest-link:focus{color:#000;text-decoration:none}.suggestions-result-current a.mw-searchSuggest-link,.suggestions-result-current a.mw-searchSuggest-link:hover,.suggestions-result-current a.mw-searchSuggest-link:active,.suggestions-result-current a.mw-searchSuggest-link:focus{color:#fff}.suggestions a.mw-searchSuggest-link .special-query{ overflow:hidden;text-overflow:ellipsis;white-space:nowrap}</style><meta name="ResourceLoaderDynamicStyles" content="">
+<link rel="stylesheet" href="Assembler%20Tutorial%20-%20WiiBrew-Dateien/load_002.css">
+<meta name="generator" content="MediaWiki 1.34.0">
+<link rel="shortcut icon" href="https://wiibrew.org/favicon.ico">
+<link rel="search" type="application/opensearchdescription+xml" href="https://wiibrew.org/w/opensearch_desc.php" title="WiiBrew">
+<link rel="EditURI" type="application/rsd+xml" href="https://wiibrew.org/w/api.php?action=rsd">
+<link rel="alternate" type="application/atom+xml" title="WiiBrew Atom feed" href="https://wiibrew.org/w/index.php?title=Special:RecentChanges&amp;feed=atom">
+<script data-ad-client="ca-pub-3899269781065018" async="" src="Assembler%20Tutorial%20-%20WiiBrew-Dateien/adsbygoogle.js"></script>
+<!--[if lt IE 9]><script src="/w/resources/lib/html5shiv/html5shiv.js"></script><![endif]-->
+</head>
+<body class="mediawiki ltr sitedir-ltr mw-hide-empty-elt ns-0 ns-subject page-Assembler_Tutorial rootpage-Assembler_Tutorial skin-vector action-view"><div class="mw-cookiewarning-container banner-container"><div class="mw-cookiewarning-text"><span>Cookies help us deliver our services. By using our services, you agree to our use of cookies.</span><form method="POST"><input name="disablecookiewarning" class="mw-cookiewarning-dismiss" type="submit" value="OK"></form></div></div>
+<div id="mw-page-base" class="noprint"></div>
+<div id="mw-head-base" class="noprint"></div>
+<div id="content" class="mw-body" role="main">
+	<a id="top"></a>
+	<div id="siteNotice" class="mw-body-content"><div id="localNotice" dir="ltr" lang="en"><div style="margin:0px 0px 0px 0px; width:25%; height:100%; border:0px solid #CCCCCC; float:left;">&nbsp;</div>
+<div style="margin:7px 0px 0px 0px; width:75%; height:100%; border:0px solid #CCCCCC; float:left;">
+<center><span style="font-size:125%;">In memory of <b>Ben “bushing” Byer</b>, who <a rel="nofollow" class="external text" href="https://hackmii.com/ben">passed away</a> on Monday, February 8th, 2016.</span></center>
+</div></div><script>(function(){var node=document.getElementById("mw-dismissablenotice-anonplace");if(node){node.outerHTML="\u003Cdiv id=\"localNotice\" lang=\"en\" dir=\"ltr\"\u003E\u003Cdiv style=\"margin:0px 0px 0px 0px; width:25%; height:100%; border:0px solid #CCCCCC; float:left;\"\u003E\u0026#160;\u003C/div\u003E\n\u003Cdiv style=\"margin:7px 0px 0px 0px; width:75%; height:100%; border:0px solid #CCCCCC; float:left;\"\u003E\n\u003Ccenter\u003E\u003Cspan style=\"font-size:125%;\"\u003EIn memory of \u003Cb\u003EBen “bushing” Byer\u003C/b\u003E, who \u003Ca rel=\"nofollow\" class=\"external text\" href=\"https://hackmii.com/ben\"\u003Epassed away\u003C/a\u003E on Monday, February 8th, 2016.\u003C/span\u003E\u003C/center\u003E\n\u003C/div\u003E\u003C/div\u003E";}}());</script></div>
+	<div class="mw-indicators mw-body-content">
+</div>
+
+	<h1 id="firstHeading" class="firstHeading" lang="en">Assembler Tutorial</h1>
+	
+	<div id="bodyContent" class="mw-body-content">
+		<div id="siteSub" class="noprint">From WiiBrew</div>
+		<div id="contentSub"></div>
+		
+		
+		
+		<div id="jump-to-nav"></div>
+		<a class="mw-jump-link" href="#mw-head">Jump to navigation</a>
+		<a class="mw-jump-link" href="#p-search">Jump to search</a>
+		<div id="mw-content-text" dir="ltr" class="mw-content-ltr" lang="en"><div class="mw-parser-output"><div id="toc" class="toc"><input type="checkbox" role="button" id="toctogglecheckbox" class="toctogglecheckbox" style="display:none"><div class="toctitle" dir="ltr" lang="en"><h2>Contents</h2><span class="toctogglespan"><label class="toctogglelabel" for="toctogglecheckbox"></label></span></div>
+<ul>
+<li class="toclevel-1 tocsection-1"><a href="#Introduction"><span class="tocnumber">1</span> <span class="toctext">Introduction</span></a></li>
+<li class="toclevel-1 tocsection-2"><a href="#The_registers"><span class="tocnumber">2</span> <span class="toctext">The registers</span></a></li>
+<li class="toclevel-1 tocsection-3"><a href="#Variables"><span class="tocnumber">3</span> <span class="toctext">Variables</span></a></li>
+<li class="toclevel-1 tocsection-4"><a href="#Constants"><span class="tocnumber">4</span> <span class="toctext">Constants</span></a></li>
+<li class="toclevel-1 tocsection-5"><a href="#Instructions_and_Mnemonics"><span class="tocnumber">5</span> <span class="toctext">Instructions and Mnemonics</span></a>
+<ul>
+<li class="toclevel-2 tocsection-6"><a href="#Integer_Instructions"><span class="tocnumber">5.1</span> <span class="toctext">Integer Instructions</span></a>
+<ul>
+<li class="toclevel-3 tocsection-7"><a href="#Integer_Arithmetic_Instructions"><span class="tocnumber">5.1.1</span> <span class="toctext">Integer Arithmetic Instructions</span></a>
+<ul>
+<li class="toclevel-4 tocsection-8"><a href="#ADD"><span class="tocnumber">5.1.1.1</span> <span class="toctext">ADD</span></a></li>
+<li class="toclevel-4 tocsection-9"><a href="#SUBF_-_Subtract_From"><span class="tocnumber">5.1.1.2</span> <span class="toctext">SUBF - Subtract From</span></a></li>
+<li class="toclevel-4 tocsection-10"><a href="#MUL_-_Multiply"><span class="tocnumber">5.1.1.3</span> <span class="toctext">MUL - Multiply</span></a></li>
+<li class="toclevel-4 tocsection-11"><a href="#DIV_-_Divide"><span class="tocnumber">5.1.1.4</span> <span class="toctext">DIV - Divide</span></a></li>
+</ul>
+</li>
+<li class="toclevel-3 tocsection-12"><a href="#Integer_Compare_und_Logical_Instructions"><span class="tocnumber">5.1.2</span> <span class="toctext">Integer Compare und Logical Instructions</span></a>
+<ul>
+<li class="toclevel-4 tocsection-13"><a href="#OR"><span class="tocnumber">5.1.2.1</span> <span class="toctext">OR</span></a></li>
+<li class="toclevel-4 tocsection-14"><a href="#AND"><span class="tocnumber">5.1.2.2</span> <span class="toctext">AND</span></a></li>
+</ul>
+</li>
+<li class="toclevel-3 tocsection-15"><a href="#Integer_shift_and_rotate_instructions"><span class="tocnumber">5.1.3</span> <span class="toctext">Integer shift and rotate instructions</span></a></li>
+</ul>
+</li>
+<li class="toclevel-2 tocsection-16"><a href="#Floating_point_instructions"><span class="tocnumber">5.2</span> <span class="toctext">Floating point instructions</span></a></li>
+<li class="toclevel-2 tocsection-17"><a href="#Load_and_Store_Instructions"><span class="tocnumber">5.3</span> <span class="toctext">Load and Store Instructions</span></a></li>
+<li class="toclevel-2 tocsection-18"><a href="#Branch_instructions"><span class="tocnumber">5.4</span> <span class="toctext">Branch instructions</span></a></li>
+<li class="toclevel-2 tocsection-19"><a href="#Various_instructions"><span class="tocnumber">5.5</span> <span class="toctext">Various instructions</span></a></li>
+</ul>
+</li>
+<li class="toclevel-1 tocsection-20"><a href="#Application_Binary_Interface_.28SVR4_ABI.29"><span class="tocnumber">6</span> <span class="toctext">Application Binary Interface (SVR4 ABI)</span></a></li>
+</ul>
+</div>
+
+<h2><span class="mw-headline" id="Introduction">Introduction</span></h2>
+<p>This introduction for PowerPC assembler assumes that you are somewhat
+ familiar with the Intel assembler. It is not written as a tutorial for 
+beginners in assembly programming. Hopefully it is possible to 
+understand this tutorial if you just have programed in C before. This 
+tutorial will allow you to write applications in PowerPC assembler. 
+Disassembling compiled code is not covered, however, knowing assembler 
+is a prerequisite to disassemble code.
+</p><p><br>
+The PowerPC is a RISC (Reduced Instruction Set Computing) processor 
+architecture. PowerPC is an acronym which shall stand for Performance 
+Optimization With Enhanced RISC / Performance Chip or Power Performance 
+Computing. The specification for it was released in 1993 and is a 64-bit
+ specification with a 32-bit subset. Almost all PowerPC processors are 
+32-bit now but feature a 64-bit data bus.
+</p><p>The PowerPC was developed jointly by Apple, IBM and Motorola (now
+ named Freescale). There are many different PowerPC processors 
+available. Apple has been using the PowerPC in the Macintosh systems, 
+IBM is using it in its RS/6000 and pSeries computers und Nintendo used 
+it in its Gamecube and in Wii playstations. There are many embedded 
+applications using the PowerPC.
+</p><p>The PowerPC is a Superscalar microprocessor which means it has 
+separate execution units. This are an integer unit, a floating-point 
+unit, a branching unit, and even more depending on the processor type. 
+These units can execute instructions in parallel within one clock cycle.
+</p><p><br>
+</p>
+<h2><span class="mw-headline" id="The_registers">The registers</span></h2>
+<p>The PowerPC has many more registers than the Intel processors and 
+these are named differently. All registers are 4 bytes or 32bits long on
+ the 32-bit versions of the PowerPC. There are 32 (0-31) General Purpose
+ Registers (GPRs or rX), 32 Floating point registers (FPRs or fX) and 
+special purpose registers (SPRs) like the program counter PC or IAR 
+(instruction address register). This keeps track which instruction needs
+ to be executed next. There is a link register (LR) which can hold the 
+address of a procedure for branch instructions, the condition register 
+(CR) which has eight (0-7) 4 bit fields holding the result of e.g. a 
+compare instruction. The count register for loops is called CTR. XER is 
+the fixed-point exception register. FPSCR is the floating point status 
+and control register.
+</p><p>On the PowerPC you cannot move data from one memory address to 
+another. You have to read the data into a register first and then store 
+the contents of the register at the destination address in memory. This 
+design shall allow the processor to operate more efficiently.
+</p><p>The PowerPC uses the big-endian format to store data in memory. 
+The most significant byte (MSB) value is stored at the memory location 
+with the lowest address. So the bit numbering is reversed compared to an
+ Intel processor.
+</p><p><br>
+</p>
+<h2><span class="mw-headline" id="Variables">Variables</span></h2>
+<p>The 32-bit version of the PowerPC supports the following data sizes:
+<tt>
+</tt></p><tt><dl><dd>Byte - 8 bits</dd>
+<dd>Halfword - 16 bits</dd>
+<dd>Word - 32 bits</dd></dl></tt><tt></tt><p><tt></tt>
+</p><p>An integer value of 12 can also be specified as 0x0C in hexadecimal or01100 in binary.
+</p><p><br>
+Variables are defined either in the data section or in the bss section which takes uninitialised data only.
+</p><p>Here are examples how to define variables. The name of the variable is always set as a label followed by a colon.
+<tt>
+</tt></p><tt><dl><dd>bytevar: .byte 0 #length of one byte - init zero</dd>
+<dd>shortvar: .short 0 #length of two byte - init zero</dd>
+<dd>wordvar: .long 0 #length of four byte - init zero</dd></dl></tt><tt><p><br>
+</p></tt><tt><dl><dd>fivebytevar: .byte 11,12,13,14,15 #an array of five variables of one byte each</dd>
+<dd>endof_fivebytevar: #specifies the address immediately following the array</dd></dl></tt><tt><p><br>
+</p></tt><tt><dl><dd>stringvar: .string "Hello\n" #string variable - init to "Hello" plus newline
+<dl><dd>.size stringvarlen, .-stringvar #length of stringvar</dd></dl></dd></dl></tt><tt></tt><p><tt></tt>
+</p><p><br>
+</p>
+<h2><span class="mw-headline" id="Constants">Constants</span></h2>
+<p>The AS assembler allows to define constants. These will be replaced by the assembler before assembling the code.
+</p><p>Example:
+</p><p>.set GPR0,0
+</p><p>This will define the constant "GPR0" having the value zero. This 
+will replace all occurences of GPR0 in the code by the number zero. This
+ can enhance the readability of the code, since the registers are 
+specified as numbers just like immediate values in the instructions. So 
+using constants e.g. the instruction addi 0,0,0 can be written as addi 
+GPR0,GPR0,0 in the code. Without defining constants the assembler will 
+also accept addi %r0,%r0,0.
+</p><p><br>
+</p>
+<h2><span class="mw-headline" id="Instructions_and_Mnemonics">Instructions and Mnemonics</span></h2>
+<p>Assembler instructions for Intel processors have up to two parameters
+ separated by a comma. Typically the first parameter is modified with 
+the second.
+</p><p>The AS assembler will do this for Intel processors in the 
+opposite direction compared with MASM, TASM etc. For the PowerPC, 
+however, the first operand is used as the destination register and there
+ can be up to five parameters separated by commas.
+</p><p>The PowerPC uses fixed-length 32-bit instructions. As an example 
+for an addi instruction this 32-bit integer is divided in the following 
+fields:
+</p><p><tt>
+</tt></p><tt><dl><dd>Opcode: 6 bits</dd>
+<dd>Source register: 5 bits</dd>
+<dd>Destination register: 5 bits</dd>
+<dd>Immediate value: 16 bits</dd></dl></tt><tt></tt><p><tt></tt>
+</p><p>So to fill a 32bit register with an immediate value you have to 
+use two instructions moving 16 bits each. In case of a 64bit processor 
+you need even more instructions since you have to shift the bits here 
+too.
+</p><p>Mnemonics are specializations of a more general instruction. They
+ are used as simplified instructions for easier coding of assembly 
+language programs. They are defined for frequently used instructions. A 
+mnemonic may have two parameters and this will be converted by the 
+assembler to an instruction which may require three or more parameters. 
+Samples of mnemonics can be found among the described instructions 
+below.
+</p><p>The available instructions for the PowerPC can be grouped as follows:
+</p>
+<ol><li>Integer instructions</li>
+<li>Floating point instructions</li>
+<li>Load and store instructions</li>
+<li>Branch and flow control instructions</li>
+<li>Various instructions</li></ol>
+<p>The most common instructions of each group will be discussed here.
+</p><p><br>
+</p>
+<h3><span class="mw-headline" id="Integer_Instructions">Integer Instructions</span></h3>
+<h4><span class="mw-headline" id="Integer_Arithmetic_Instructions">Integer Arithmetic Instructions</span></h4>
+<h5><span class="mw-headline" id="ADD">ADD</span></h5>
+<p>This instructions has several variants:
+</p><p>1. <b>ADD</b>
+</p><p>Syntax: add rD,rA,rB
+</p><p>This command adds two registers (rA and rB) and puts the result into the register rD (destination).
+</p><p>Example: add 3,6,4
+</p><p>In this example GPR6 and GPR4 are added and the result is put into GPR3.
+</p><p>Example: add 3,6,3
+</p><p>In this example GPR6 and GPR3 are added and the result is put into GPR3.
+</p><p>Example: add 3,0,4
+</p><p>Here the value in GPR4 is moved into GPR3 - like an Intel move 
+instruction. If the second parameter is a zero this does not mean a GPR0
+ but the value zero. This is the case for several instructions.
+</p><p><br>
+2. <b>ADDI - Add Immediate</b>
+</p><p>Syntax: addi rD,rA,SIMM
+</p><p>This command adds a 16-bit signed integer (SIMM) to register rA and puts the result into the register rD (destination).
+</p><p>Example: addi 3,6,4
+</p><p>In this example GPR6 and the value 4 are added and the result is put into GPR3.
+</p><p>As you can see the registers are specified as a number and the 
+integer is specified as a number. To improve the readability of the code
+ you can define constants for the registers, e.g.: 
+</p><p>.set r0,0; .set r1,1; .set r2,2; .set r3,3; .set r4,4; .set r5,5; .set r6,6; .....
+</p><p>Then the above command can be written as: addi r3,r6,4
+</p><p>You can also use the addi command as a move instruction:
+</p><p>addi 3,0,4
+</p><p>This sets GPR3 to the value 4. If the second parameter is a zero here this does not mean a GPR0 but the value zero.
+</p><p><br>
+3. <b>ADDIS - Add Immediate Shifted</b>
+</p><p>Syntax: addis rD,rA,SIMM
+</p><p>This command is used to add a 16-bit immediate value to the upper
+ 16 bits of a 32bit register. It adds a 16-bit signed integer (SIMM) to 
+register rA, then shifts left register rA by 16 bits and then puts the 
+result into the register rD (destination). The lower 16 bits are cleared
+ by this command. So to fill a 32 bit register with an immediate 32-bit 
+value you first have to use addis to fill the upper 16 bits and then 
+addi to fill the lower 16 bits. Otherwise the lower 16 bits would be 
+cleared again by the addis command.
+</p><p>Example: addis 3,3,4
+</p><p>In this example GPR3 and the value 4 are added, then GPR3 is 
+shifted 16 bits to the left and the result is put into GPR3. This will 
+then contain 0x00040000 in hexadecimal. If you then execute an addi 
+3,3,4 command GPR3 will contain 0x00040004 in hexadecimal.
+</p><p>To move a pointer to an address of a variable or function into a 
+register there are the @ha/@h and @l modifiers available. If you append 
+these to the variable name you get the lower (@l) 16 bit of the absolute
+ 32-bit address of the variable and with @ha you get the higher 16 bit 
+of the absolute 32-bit address. 
+</p><p>Example:
+</p>
+<dl><dd>addis 3,0,hello@ha</dd>
+<dd>addi 3,0,hello@l</dd></dl>
+<p>With these two instructions the absolute 32-bit address of the string variable hello is moved into the GPR 3 register.
+</p><p>Instead of addis/addi the mnemonics lis/la are often used. These are explained below.
+</p><p><br>
+4. <b>ADD. - ADD with CR Update</b>
+</p><p>Contrary to the Intel processors the ADD instruction will not 
+modify any flags. To achieve this you have to apped a dot to the 
+instruction. So add. will set the CR bits 0-3 (CR0) in the CR register. 
+These bits will then reflect a signed comparison of the result to zero. 
+In effect the dot adds a 
+cmpwi rD,0
+instruction to the ADD instruction. A dot can be added to many PowerPC 
+instructions.
+</p><p><br>
+5. <b>Mnemonics for the ADD instruction</b>
+</p><p><br>
+The following mnemonics are converted into ADD instruction by the assembler:
+</p><p><br>
+LI - Load Immediate
+</p><p>Syntax: li rD,value
+</p><p>This is equivalent to addi rD,0,value
+</p><p>Example: li 3,100
+</p><p>Sets GPR3 to 100 and clears the higher 16 bits.
+</p><p><br>
+LIS - Load Immediate Shifted
+</p><p>Syntax: lis rD,value
+</p><p>This is equivalent to addis rD,0,value
+</p><p>Example: lis 3,100
+</p><p>Sets higher 16 bits of GPR3 to 100 and clears the lower 16 bits.
+</p><p><br>
+LA - Load Address
+</p><p>Syntax: la rD,d(rA)
+</p><p>This is equivalent to addi rD,rA,d
+</p><p>Example: la 3,100(9)
+</p><p>Adds 100 to the address in GPR9 and loads the result in GPR3.
+</p><p><br>
+As a side note this is also equivalent: 
+</p><p>li rD,value = ori rA,0,UIMM (UIMM = unsigned integer value)
+</p><p>So OR immediate can be used to load an immediate too as long as the value is unsigned.
+</p><p>To load an immediate 32-bit value in a register you can use:
+</p>
+<dl><dd>lis 3,100</dd>
+<dd>ori 3,0,200</dd></dl>
+<p>This loads 100 into the higher 16 bits and 200 into the lower 16 bits.
+</p><p><br>
+</p>
+<h5><span class="mw-headline" id="SUBF_-_Subtract_From">SUBF - Subtract From</span></h5>
+<p>1. <b>SUBF</b>
+</p><p>Syntax: subf rD,rA,rB
+</p><p>Example: subf 3,4,5
+</p><p>Similar to the ADD instruction SUBF will subtract GPR4 from GPR5 and place the result in GPR3.
+</p><p><br>
+2. <b>Subfic - Subtract from Immediate Carrying</b>
+</p><p>Syntax: subfic rD,rA,SIMM
+</p><p>Example: subfic 3,4,5
+</p><p>This will subtract GPR4 from signed integer value 5 and place the result in GPR3. CRO is modified.
+</p><p><br>
+</p>
+<h5><span class="mw-headline" id="MUL_-_Multiply">MUL - Multiply</span></h5>
+<p>Multiplying two 32-bit values will often result in a 64-bit value. So
+ there are separate instructions to put the 64-bit result into two 
+32-bit registers:
+</p><p>1. <b>MULLW - Multiply Low Word</b>
+</p><p>Syntax: mullw rD,rA,rB
+</p><p>Example: mullw 3,4,5
+</p><p>This will multiply the contents of GPR4 and GPR5 and place the lower 32 bits of the result in GPR3.
+</p><p><br>
+2. <b>MULLH - Multiply High Word</b>
+</p><p>Syntax: mullh rD,rA,rB
+</p><p>Example: mullh 6,4,5
+</p><p>This will multiply the contents of GPR4 and GPR5 and place the higher 32 bits of the result in GPR6.
+</p><p><br>
+3. <b>MULLI - Multiply Low Immediate</b>
+</p><p>Syntax: mulli rD,rA,SIMM
+</p><p>Example: mulli 3,4,5
+</p><p>This will multiply the contents of GPR4 with the integer 5 and 
+place the lower 32 bits of the result in GPR3. So the higher 32 bits - 
+if any - are lost.
+</p><p><br>
+</p>
+<h5><span class="mw-headline" id="DIV_-_Divide">DIV - Divide</span></h5>
+<p><b>divw - Divide Word</b>
+</p><p>Syntax: divw rD,rA,rB
+</p><p>Example: divw 3,4,5
+</p><p>This will divide the contents of GPR4 with the contents of GPR5 and place the result in GPR3. The remainder is lost.
+</p><p>Assembler programmers somehow design their tasks so that they 
+only need to multiply and divide by powers of two. This way they can use
+ the shift instructions instead of multiply and divide.
+</p><p><br>
+</p>
+<h4><span class="mw-headline" id="Integer_Compare_und_Logical_Instructions">Integer Compare und Logical Instructions</span></h4>
+<p>1. <b>CMP - Compare</b>
+</p><p>Syntax: cmp crfD,L,rA,rB
+</p><p>Example: cmp 7,0,3,4
+</p><p>This will compare the signed contents of the GPR3 and GPR4 
+registers and set the CR7 field of the CR register accordingly. The 
+second parameter has to be set to zero for 32bit processors.
+</p><p>If rA&lt;rB then bit 0 of CR7 will be set. If rA&gt;rB then bit 1 of CR7 will be set. If rA=rB then bit 2 of CR7 will be set.
+</p><p><br>
+2. <b>CMPI - Compare Immediate</b>
+</p><p>Syntax: cmpi crfD,L,rA,SIMM
+</p><p>Example: cmpi 7,0,3,4
+</p><p>This will compare the signed contents of the GPR3 register with 
+the value 4 and set the CR7 field of the CR register accordingly. The 
+second parameter has to be set to zero for 32bit processors.
+</p><p>If rA&lt;4 then bit 0 of CR7 will be set. If rA&gt;4 then bit 1 of CR7 will be set. If rA=4 then bit 2 of CR7 will be set.
+</p><p><br>
+3. <b>Mnemonics for CMP</b>
+</p><p>Sometimes the following mnemonics are used:
+</p><p>CMPWI - compare word immediate
+</p><p>Syntax: cmpwi crD,rA,SIMM
+</p><p>This is equivalent to cmpi crD,0,rA,SIMM
+</p><p>CMPLWI - Compare Logical word immediate
+</p><p>Syntax: cmplwi crD,rA,UIMM
+</p><p>This is equivalent to cmpli crD,0,rA,UIMM (UIMM = unsigned integer value)
+</p><p><br>
+</p>
+<h5><span class="mw-headline" id="OR">OR</span></h5>
+<p>1. <b>OR</b>
+</p><p>Syntax: or rA,rS,rB
+</p><p>Example: or 3,4,5
+</p><p>This instruction will OR the contents of GPR4 and GPR5 and place the result in GPR3. The variant OR. (+dot) will update CR too.
+</p><p><br>
+2. <b>ORI - OR Immediate</b>
+</p><p>Syntax: ori rA,rS,UIMM
+</p><p>Example: ori 3,4,5
+</p><p>This instruction will OR the contents of GPR4 with the unsigned integer 5 and place the result in GPR3.
+</p><p>ori 0,0,0 can be used as a NOP (no operation) instruction. This could be used e.g. as a breakpoint for a debugger.
+</p><p><br>
+3. <b>ORIS - OR Immediate Shifted</b>
+</p><p>Syntax: ori rA,rS,UIMM
+</p><p>Example: oris 3,4,5
+</p><p>This instruction will OR the upper 16 bits contained in GPR4 with the unsigned integer 5 and place the result in GPR3.
+</p><p><br>
+4. <b>Mnemonics for OR</b>
+</p><p>MR - move [to] register
+</p><p>Syntax: mr rA,rS 
+</p><p>This is equivalent to: or rA,rS,rS
+</p><p>Example: mr 31,1
+</p><p>This will move the value in GPR1 to GPR31.
+</p><p><br>
+</p>
+<h5><span class="mw-headline" id="AND">AND</span></h5>
+<p>1. <b>AND</b>
+</p><p>Syntax: and rA,rS,rB
+</p><p>Example: and 3,4,5
+</p><p>This instruction will AND the contents of GPR4 and GPR5 and place the result in GPR3.
+</p><p><br>
+2. <b>ANDI. - AND Immediate</b>
+</p><p>Syntax: andi. rA,rS,UIMM
+</p><p>Example: andi. 3,4,0b00000011
+</p><p>This instruction will AND the contents of GPR4 with the unsigned 
+integer 3 (binary 000011) and place the result in GPR3. Since this 
+instruction ends with a dot, the CR register is updated. The higher 16 
+bits will be cleared. In effect all but the last two bits of GPR4 are 
+cleared in this example.
+</p><p><br>
+3. <b>ANDIS. - AND Immediate Shifted</b>
+</p><p>Syntax: andis. rA,rS,UIMM
+</p><p>Example: andis. 3,4,5
+</p><p>This instruction will AND the upper 16 bits contained in GPR4 
+with the unsigned integer 5 and place the result in GPR3. Since this 
+instruction ends with a dot, the CR register is updated. The lower 16 
+bits will be cleared.
+</p><p><br>
+4. There are equivalent instructions for XOR, NAND etc.
+</p><p><br>
+</p>
+<h4><span class="mw-headline" id="Integer_shift_and_rotate_instructions">Integer shift and rotate instructions</span></h4>
+<p>1. <b>SLW - Shift left word</b>
+</p><p>Syntax: slw rA,rS,rB
+</p><p>Example: slw 3,4,5
+</p><p>The contents of the GPR4 register are shifted left by the value 
+placed in the low-order six bits of the GPR5 register. The 32-bit result
+ is placed in GPR3.
+</p><p><br>
+2. <b>SRW - Shift right word</b>
+</p><p>Syntax: srw rA,rS,rB
+</p><p>Example: srw 3,4,5
+</p><p>The contents of the GPR4 register are shifted right by the value 
+placed in the low-order six bits of the GPR5 register. The 32-bit result
+ is placed in GPR3.
+</p><p><br>
+3. <b>RLWINM - Rotate Left Word Immediate then AND with Mask</b>
+</p><p>Syntax: rlwinm rA,rS,SH,MB,ME
+</p><p>Example: rlwinm 3,4,5,0,31
+</p><p>Here the contents in GPR4 will be rotated left by 5 bits (the 
+immediate value of 5 - parameter three) and the result placed into GPR3.
+ After rotating GPR4 and before placing the result into GPR3 the value 
+is ANDed with the mask specified in the last two parameters. The fourth 
+parameter specifies the beginning of the 1-bits in the mask and the 
+fifth parameter specifies the end of the 1-bits in the mask. In this 
+example the begin is 0 and the end is 31. So all 32 bits are set in the 
+AND mask. This causes no bits to be cleared by the mask. 
+</p><p>A rotate right can be done by specifying a value of 32-n as the third parameter. So
+</p><p>rlwinm 3,4,31,0,31
+</p><p>will rotate GPR4 right by one bit. This is not equal to a 
+division by 2 since a bit may be moved into the sign bit by the 
+rotation. Use the shift mnemonics for that which are described below.
+</p><p><br>
+The PowerPC stores the data in big-endian format. So if you have a value
+ of 31 which is0011111 and you want to clear the lower two bits you have
+ to AND this with a mask of 0,29. Then bits 30 and 31 are set to zero in
+ the mask and these bits will be cleared in the value of 31. The result 
+will then be0011100 or 28.
+</p><p><br>
+If the third parameter is a zero there is no rotation and this command 
+is just used as an AND mask. This is often done by gcc since this allows
+ to execute AND with an immediate 32-bit value.
+</p><p>Example:
+</p><p>li 3,0b11111111
+rlwinm 3,3,0,24,24 
+</p><p>will clear all bits except bit 24 (big-endian format) in register GPR3. So register GPR3 will then contain 128 or10000000.
+</p><p><br>
+4. <b>Mnemonics for shift</b>
+</p><p>SLWI - Shift Left Word Immediate
+</p><p>Syntax: slwi rD,rA,SIMM (SIMM&lt;32) 
+</p><p>This is equivalent to: rlwinm rA,rS,n,0,31–n
+</p><p>Example: slwi 3,4,5
+</p><p>Shifts GPR4 left by 5 bits and places the result in GPR3. This is equal to multiplying GPR4 with 32 (2**5).
+</p><p><br>
+SRWI - Shift Right Word Immediate
+</p><p>Syntax: srwi rD,rA,SIMM (SIMM&lt;32) 
+</p><p>This is equivalent to: rlwinm rA,rS,32 – n,n,31
+</p><p>Example: srwi 3,4,5
+</p><p>Shifts GPR4 right by 5 bits and places the result in GPR3. This is equal to dividing GPR4 by 32 (2**5).
+</p><p><br>
+</p>
+<h3><span class="mw-headline" id="Floating_point_instructions">Floating point instructions</span></h3>
+<p>1. <b>FMR - Floating Move Register</b>
+</p><p>Syntax: fmr frD,frB
+</p><p>Example: fmr 3,4
+</p><p>The integer value in the FPR4 will be moved into the FPR3 (FPR=Floating point register)
+</p><p><br>
+2. <b>LFS - Load Floating-Point Single</b>
+</p><p>Syntax: lfs frD,d(rA)
+</p><p>Example: lsd 3,0(4)
+</p><p>Loads the word of data from the location in memory specified in 
+GPR4 into floating-point register FPR3 and thereby converting it to 
+floating-point double-precision.
+</p><p><br>
+3. <b>STFS - Store Floating-Point Single</b>
+</p><p>Syntax: stfs frS,d(rA)
+</p><p>Example: stfs 3,0(4)
+</p><p>Converts the contents of FPR3 to single-precision and stores it at the location in memory specified in GPR4.
+</p><p><br>
+4. <b>LFD- Load Floating-Point Double</b>
+</p><p>Syntax: lfd frD,d(rA)
+</p><p>Example: lfd 3,0(4)
+</p><p>Loads the doubleword of data from the location in memory specified in GPR4 into floating-point register FPR3.
+</p><p><br>
+5. <b>STFD- Store Floating-Point Double</b>
+</p><p>Syntax: stfd frD,d(rA)
+</p><p>Example: stfd 3,0(4)
+</p><p>Stores the doubleword of data in the floating-point register FPR3 at the location in memory specified in GPR4.
+</p><p><br>
+6. <b>MTFSF - Move to FPSCR Fields</b> 
+</p><p>Syntax: mtfsf FM,frB
+</p><p>Copies the contents of the floating-point register frB into the 
+Floating-Point Status and Control Register (FPSCR) under the control of 
+the field mask in FM.
+</p><p><br>
+7. <b>MTFSB1 - Move to FPSCR Bit 1</b>
+</p><p>Syntax: mtfsb1 crbD
+</p><p>Example: mtfsb1 4
+</p><p>Sets bit 4 of the FBSCR register to 1.
+</p><p><br>
+</p>
+<h3><span class="mw-headline" id="Load_and_Store_Instructions">Load and Store Instructions</span></h3>
+<p>The PowerPC allows you to move data from register to memory and from 
+memory to register. You cannot copy directly from one memory location to
+ another.
+</p><p>Described here are the instruction for word operations. There are
+ equivalent instructions for reading a byte (LBZ) and a halfword (LHZ) 
+or storing a byte (STB) and a halfword (STH).
+</p><p><br>
+1. <b>LWZ - Load Word and Zero</b>
+</p><p>Syntax: lwz rD,d(rA)
+</p><p>Example: lwz 3,10(4)
+</p><p>This will read the word at the memory location specified in GPR4 plus an "offset" of 10 and place it in GPR3.
+</p><p>In the case of LBZ and LHZ the higher bits are cleared to zero when moving the value into a 32-bit register.
+</p><p><br>
+2. <b>LWZX - Load Word and Zero Indexed</b>
+</p><p>Syntax: lwzx rD,rA,rB
+</p><p>Example: lwzx 3,4,5
+</p><p>Here the word at the memory address computed by adding the values in GPR4 and GPR5 is read and placed in GPR3.
+</p><p><br>
+3. <b>LWZU - Load Word and Zero Update</b>
+</p><p>Syntax: lwzu rD,d(rA)
+</p><p>Example: lwzu 3,10(4)
+</p><p>This will read the word at the memory location specified in GPR4 
+plus an "offset" of 10 and place it in GPR3. Then the computed memory 
+address is placed(updated) in GPR4.
+</p><p><br>
+4. <b>STW - Store Word</b>
+</p><p>Syntax: stw rD,d(rA)
+</p><p>Example: stw 3,10(4)
+</p><p>This will store the value in GPR3 at the memory location specified in GPR4 plus an "offset" of 10.
+</p><p><br>
+5. <b>STWX - Store Word Indexed</b>
+</p><p>Syntax: stwx rD,rA,rB
+</p><p>Example: stwx 3,4,5
+</p><p>This will store the value in GPR3 at the memory location computed by adding the values in GPR4 and GPR5.
+</p><p><br>
+6. <b>STWU - Store Word with Update</b>
+</p><p>Syntax: stwu rD,d(rA)
+</p><p>Example: stwu 3,10(4)
+</p><p>This will store the value in GPR3 at the memory location 
+specified in GPR4 plus an "offset" of 10. Then the computed memory 
+address is placed in GPR4.
+</p><p>This instruction is frequently used to set up a stack frame.
+</p><p><br>
+7. <b>MFSPR - Move from Special-Purpose Register</b>
+</p><p>Syntax: mfspr rD,SPR
+</p><p>Example: mfpsr 3,920
+</p><p>Here the value from the special register 920 is moved to GPR3.
+</p><p><br>
+8. <b>MTSPR - Move to Special-Purpose Register</b>
+</p><p>Syntax: mtspr SPR,rS
+</p><p>Example: mtspr 912,3
+</p><p>Here the value in GPR3 is moved to the special register 912.
+</p><p><br>
+9. <b>Mnemonics for MFSPR and MTSPR</b>
+</p><p>a) <b>MFLR - Move from Link Register</b>
+</p><p>It is not possible to use the standard instructions on the link 
+register. So the value of this register first has to be moved into a GPR
+ register.
+</p><p>Example: mflr 0
+</p><p>This will read the value in the link register into GPR0.
+</p><p>b) <b>MTLR - Move to Link Register</b>
+</p><p>Example: mtlr 0
+</p><p>Here the value in GPR0 is written into the link register.
+</p><p>C) <b>MTCTR - Move to Count Register</b>
+</p><p>Example:
+<tt>
+</tt></p><tt><dl><dd>li 4,100</dd>
+<dd>mtctr 4</dd></dl></tt><tt></tt><p><tt></tt>
+</p><p>The count register is set to 100 via the GPR4. You cannot load an immediate value into the CTR.
+</p><p><br>
+10. <b>There are equivalent instructions for the CR, XER, CTR etc. registers.</b>
+</p>
+<h3><span class="mw-headline" id="Branch_instructions">Branch instructions</span></h3>
+<p>The PowerPC branch instructions are similar to the Intel Processor's jmp and call commands.
+</p><p>1. <b>B - Branch</b>
+</p><p>Syntax: b target_addr
+</p><p>Example: b testlabel
+</p><p>Here the execution will continue at the label "testlabel".
+</p><p>This instruction can be compared to a "near jmp" in Intel syntax.
+</p><p><br>
+2. <b>Conditional branch instructions (mnemonics)</b>
+</p><p>Following a cmpi 7,0,3,5 instruction which compares the value in 
+GPR3 with the integer 5 and places the resulting flags in the CR7 field 
+of the CR register, the following conditional branch instructions can be
+ executed. If the condition is true the program will continue at 
+"testlabel" within the code segment. Otherwise it will just continue.
+</p><p><tt>
+</tt></p><tt><dl><dd>beq - branch if equal | example: beq 7,testlabel</dd>
+<dd>bne - branch if not equal | example: bne 7,testlabel</dd>
+<dd>blt - branch if less than | example: blt 7,testlabel</dd>
+<dd>bgt - branch if greater than | example: bgt 7,testlabel</dd>
+<dd>ble - branch if less or equal | example: ble 7,testlabel</dd>
+<dd>bge - branch if greater of equal | example: bge 7,testlabel</dd></dl></tt><tt></tt><p><tt></tt>
+</p><p><br>
+Example:
+<tt>
+</tt></p><tt><dl><dd><dl><dd>cmpwi 4,100 /* Compare value in GPR4 with 100 */</dd>
+<dd>bne else_label /*if not 100 goto else */
+<dl><dd>...if statements...</dd>
+<dd>b endif_label /* jmp over else part */</dd></dl></dd></dl></dd>
+<dd>else_label:
+<dl><dd><dl><dd>...else statements...</dd></dl></dd></dl></dd>
+<dd>endif_label:</dd></dl></tt><tt></tt><p><tt></tt>
+</p><p><br>
+3. <b>BL - Branch then Link</b>
+</p><p>Syntax: bl target_addr
+</p><p>Example: bl testsubroutine
+</p><p>This instruction can be used to call a subroutine or function. 
+Its absolute address has to be loaded into the link register before 
+executing the bl instruction. The bl instruction will save the next 
+instruction address in the link register after branching to allow the 
+called subroutine to return. If bl is executed in a subroutine itself, 
+the link register value has to be saved first before executing a bl 
+instruction since that register will be overwritten by the bl 
+instruction.
+</p><p><br>
+4. <b>BLR - Branch on Link Register</b>
+</p><p>This instruction is frequently used as a return command from a 
+subroutine or function. The link register is filled with the 32-bit 
+return address when a bl (branch then link) instruction is executed (see
+ above). The blr instruction will read that return address from the link
+ register and return to the next instruction in the calling routine.
+</p><p><br>
+5. <b>BDNZ - Branch Decrement not Zero</b>
+</p><p>Syntax: bdnz target
+</p><p>Example:
+<tt>
+</tt></p><tt><dl><dd><dl><dd>li 4, 100</dd>
+<dd>mtctr 4</dd></dl></dd>
+<dd>looplabel:
+<dl><dd>...some statements...</dd>
+<dd>bdnz looplabel</dd></dl></dd></dl></tt><tt></tt><p><tt></tt>
+In this example the count register (CTR) is loaded with the value 100 
+first via GPR4. Then the bdnz instruction will decrement the CTR 
+register and branch to looplabel as long as the CTR (count register) is 
+not zero.
+</p><p><br>
+6. <b>BDNZT - Branch Decrement not Zero True</b>
+</p><p>This mnemonic adds a conditional branch test to the BDNZ instruction.
+</p><p>Syntax: bdnzt BI,target 
+</p><p>Example:
+<tt>
+</tt></p><tt><dl><dd><dl><dd>li 4, 100</dd>
+<dd>mtctr 4</dd></dl></dd>
+<dd>looplabel:
+<dl><dd>...some statements...</dd>
+<dd>cmpwi 5,10</dd>
+<dd>bdnzt eq,looplabel</dd></dl></dd></dl></tt><tt></tt><p><tt></tt>
+In this example the count register (CTR) is loaded with the value 100 
+first via GPR4. Then the bdnzt instruction will decrement the CTR 
+register and branch to looplabel as long as the CTR (count register) is 
+not zero. However, the instruction will also test if the condition is 
+TRUE. So if the cmpwi instruction has determined that GPR5 has the value
+ 10, the loop will be terminated before CTR has reached zero.
+</p><p><br>
+7. <b>BEQLR - Branch then Link if Equal</b>
+</p><p>Syntax: beqlr target_addr
+</p><p>This mnemonic can be used to call a subroutine or function if the preceeding cmp instruction determined equal.
+</p><p><br>
+8. <b>BNELR - Branch then Link if not Equal</b>
+</p><p>Syntax: bnelr target_addr
+</p><p>This mnemonic can be used to call a subroutine or function if the preceeding cmp instruction determined NOT equal.
+</p><p><br>
+9. <b>RFI - Return from interrupt</b>
+</p><p>returns from an interrupt service routine
+</p><p><br>
+</p>
+<h3><span class="mw-headline" id="Various_instructions">Various instructions</span></h3>
+<p>1. <b>CRXOR - Condition Register XOR</b>
+</p><p>Syntax: crxor crbD,crbA,crbB
+</p><p>Example: crxor 6,6,6
+</p><p>Clears bit 6 of the CR register
+</p><p><br>
+2. <b>CLRLWI - Clear left word immediate</b>
+</p><p>Syntax: clrlwi rA,rS,16
+</p><p>Clear the high-order 16 bits of rS and place the result into rA.
+</p><p><br>
+</p><p>3. <b>ISYNC</b>
+</p><p>Delay all following instructions until all previous instructions required for context.
+</p><p>Since the PowerPC has several instruction queues this can make sure that an instruction is executed before the next in the code.
+</p><p><br>
+</p>
+<h2><span id="Application_Binary_Interface_(SVR4_ABI)"></span><span class="mw-headline" id="Application_Binary_Interface_.28SVR4_ABI.29">Application Binary Interface (SVR4 ABI)</span></h2>
+<p>On Intel processors external subroutines and functions are usually 
+called by pushing the arguments to be passed to the subroutine on the 
+stack. The subroutine then sets up a stack frame and reads the 
+parameters from the stack.
+</p><p>The PowerPC has lots of registers but none is defined by the 
+PowerPC architecture as a stack pointer. The programmer can select any 
+register to be a stack register.
+</p><p>To enable interoperatibility between different compilers and 
+object files or libraries an ABI has been defined. There a slightly 
+different versions of ABI's available. Here the Sytem V R4 ABI or SVR4 
+ABI is described since the GCC compiler for 32bit PowerPC's uses this 
+ABI.
+</p><p>The SVR4 ABI specifies that arguments are not passed on the stack
+ but in registers beginning with GPR3. GPR1 is specified to be used as 
+the stack frame pointer. Bit 6 of the CR register indicates that a 
+floating point argument is passed in the registers. If this is not the 
+case this bit can be cleared using the CRXOR 6,6,6 instruction.
+</p><p>The registers are used as follows: 
+</p>
+<pre>   r0          volatile, may be used by function linkage
+   r1          stack pointer
+   r2          reserved for system
+   r3  .. r4   volatile, pass 1st - 2nd int args, return 1st - 2nd ints
+   r5  .. r10  volatile, pass 3rd - 8th int args
+   r11 .. r12  volatile, may be used by function linkage
+   r13         small data area pointer
+   r14 .. r31  saved
+   f0          volatile
+   f1          volatile, pass 1st float arg, return 1st float
+   f2  .. f8   volatile, pass 2nd - 8th float args
+   f9  .. f13  volatile
+   f14 .. f30  saved
+   f31         saved, static chain if needed.
+   lr          volatile, return address
+   ctr         volatile
+   xer         volatile
+   fpscr       volatile
+   cr0         volatile
+   cr1         volatile
+   cr2 .. cr4  saved
+   cr5 .. cr7  volatile
+</pre>
+<p>Volatile means that a called function does not have to preserve its 
+value when it returns, saved means that a called function must restore 
+its value before returning. So the calling function must save these 
+registers before calling a subroutine.
+</p><p>The ABI also defines the stack frame which should be set up by 
+the called subroutine. This a table showing how it shall be set up:
+</p>
+<pre>       SP----&gt; +---------------------------------------+
+               | back chain to caller                  | 0
+               +---------------------------------------+
+               | saved LR                              | 4
+               +---------------------------------------+
+               | Parameter save area (P)               | 8
+               +---------------------------------------+
+               | Alloca space (A)                      | 8+P
+               +---------------------------------------+
+               | Local variable space (L)              | 8+P+A
+               +---------------------------------------+
+               | saved CR (C)                          | 8+P+A+L
+               +---------------------------------------+
+               | Save area for GP registers (G)        | 8+P+A+L+C
+               +---------------------------------------+
+               | Save area for FP registers (F)        | 8+P+A+L+C+G
+               +---------------------------------------+
+       old SP-&gt;| back chain to caller's caller         |
+               +---------------------------------------+
+</pre>
+<p><br>
+GCC uses the .align 2 command to align the SP to two words or 8 bytes. 
+To set up this stack frame the subroutine first decrements the passed 
+SP. This depends how many local variables shall be put into the stack 
+frame, lets assume the SP is decremented by 40 bytes here. This is done 
+using the
+</p><p>stwu 1,-40(1) 
+</p><p>instruction. Hereby the current stack pointer passed from the 
+calling function in GPR1 is stored at SP-40 which then becomes the back 
+link field. Following that this instruction will set the SP in GPR1 to 
+point to GPR1-40, the back link field. In this field the stack pointer 
+of the previous stack frame set up by the calling function has just been
+ stored before setting SP to SP-40. This sets up a linked list of 
+stackframes. It allows to follow this list and write into the preceeding
+ stack frame. GCC writes the link register value into the "LR save word"
+ field of the preceeding stack frame with the
+</p><p>stw 0,44(1) 
+</p><p>instruction after moving the link register into GPR0.
+</p><p>In its own stack frame the called subroutine will store the link register in the "LR save word" field.
+</p><p>If the stack frame has a size of 40 bytes, this results in 10 
+fields of word size. Subtracting two for the back chain and LR save word
+ fields leaves eight words to save data in the stack frame. These fields
+ could be addressed by:
+</p><p>SP+8, SP+12, SP+16, SP+20, SP+24, SP+28, SP+32, SP+36
+</p><p>In the "Hello world" example GCC saved GPR31 in SP+36, GPR3 in SP+28 and GPR4 in SP+24.
+</p><p>To free the stack frame again the SP has to be set back to point 
+to the back chain field of the previous stack frame. The instruction
+</p><p>addi 1,1,40 
+</p><p>will do this in our case here.
+</p><p>GCC will call its exit function instead.
+</p>
+<!-- 
+NewPP limit report
+Cached time: 20201208073009
+Cache expiry: 86400
+Dynamic content: false
+Complications: []
+CPU time usage: 0.169 seconds
+Real time usage: 0.214 seconds
+Preprocessor visited node count: 66/1000000
+Preprocessor generated node count: 0/1000000
+Post‐expand include size: 0/2097152 bytes
+Template argument size: 0/2097152 bytes
+Highest expansion depth: 2/40
+Expensive parser function count: 0/500
+Unstrip recursion depth: 0/20
+Unstrip post‐expand size: 51/5000000 bytes
+-->
+<!--
+Transclusion expansion time report (%,ms,calls,template)
+100.00%    0.000      1 -total
+-->
+
+<!-- Saved in parser cache with key wiibrew-ch0pstik_:pcache:idhash:9808-0!canonical and timestamp 20201208073009 and revision id 104884
+ -->
+</div></div>
+		
+		<div class="printfooter">Retrieved from "<a dir="ltr" href="https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;oldid=104884">https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;oldid=104884</a>"</div>
+		
+		<div id="catlinks" class="catlinks" data-mw="interface"><div id="mw-normal-catlinks" class="mw-normal-catlinks"><a href="https://wiibrew.org/wiki/Special:Categories" title="Special:Categories">Category</a>: <ul><li><a href="https://wiibrew.org/wiki/Category:Development" title="Category:Development">Development</a></li></ul></div></div>
+		<div class="visualClear"></div>
+		
+	</div>
+</div>
+
+
+		<div id="mw-navigation">
+			<h2>Navigation menu</h2>
+			<div id="mw-head">
+									<div id="p-personal" role="navigation" aria-labelledby="p-personal-label">
+						<h3 id="p-personal-label">Personal tools</h3>
+						<ul>
+							<li id="pt-createaccount"><a href="https://wiibrew.org/w/index.php?title=Special:CreateAccount&amp;returnto=Assembler+Tutorial" title="You are encouraged to create an account and log in; however, it is not mandatory">Create account</a></li><li id="pt-login"><a href="https://wiibrew.org/w/index.php?title=Special:UserLogin&amp;returnto=Assembler+Tutorial" title="You are encouraged to log in; however, it is not mandatory [Alt+Umschalt+o]" accesskey="o">Log in</a></li>						</ul>
+					</div>
+									<div id="left-navigation">
+										<div id="p-namespaces" role="navigation" class="vectorTabs" aria-labelledby="p-namespaces-label">
+						<h3 id="p-namespaces-label">Namespaces</h3>
+						<ul>
+							<li id="ca-nstab-main" class="selected"><span><a href="https://wiibrew.org/wiki/Assembler_Tutorial" title="View the content page [Alt+Umschalt+c]" accesskey="c">Page</a></span></li><li id="ca-talk" class="new"><span><a href="https://wiibrew.org/w/index.php?title=Talk:Assembler_Tutorial&amp;action=edit&amp;redlink=1" rel="discussion" title="Discussion about the content page (page does not exist) [Alt+Umschalt+t]" accesskey="t">Discussion</a></span></li>						</ul>
+					</div>
+										<div id="p-variants" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-variants-label">
+												<input type="checkbox" class="vectorMenuCheckbox" aria-labelledby="p-variants-label">
+						<h3 id="p-variants-label">
+							<span>Variants</span>
+						</h3>
+						<ul class="menu">
+													</ul>
+					</div>
+									</div>
+				<div id="right-navigation">
+										<div id="p-views" role="navigation" class="vectorTabs" aria-labelledby="p-views-label">
+						<h3 id="p-views-label">Views</h3>
+						<ul>
+							<li id="ca-view" class="collapsible selected"><span><a href="https://wiibrew.org/wiki/Assembler_Tutorial">Read</a></span></li><li id="ca-viewsource" class="collapsible"><span><a href="https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;action=edit" title="This page is protected.
+You can view its source [Alt+Umschalt+e]" accesskey="e">View source</a></span></li><li id="ca-history" class="collapsible"><span><a href="https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;action=history" title="Past revisions of this page [Alt+Umschalt+h]" accesskey="h">View history</a></span></li>						</ul>
+					</div>
+										<div id="p-cactions" role="navigation" class="vectorMenu emptyPortlet" aria-labelledby="p-cactions-label">
+						<input type="checkbox" class="vectorMenuCheckbox" aria-labelledby="p-cactions-label">
+						<h3 id="p-cactions-label"><span>More</span></h3>
+						<ul class="menu">
+													</ul>
+					</div>
+										<div id="p-search" role="search">
+						<h3>
+							<label for="searchInput">Search</label>
+						</h3>
+						<form action="/w/index.php" id="searchform">
+							<div id="simpleSearch">
+								<input type="search" name="search" placeholder="Search WiiBrew" title="Search WiiBrew [Alt+Umschalt+f]" accesskey="f" id="searchInput" autocomplete="off"><input type="hidden" value="Special:Search" name="title"><input type="submit" name="go" value="Go" title="Go to a page with this exact name if it exists" id="searchButton" class="searchButton">							</div>
+						</form>
+					</div>
+									</div>
+			</div>
+			<div id="mw-panel">
+				<div id="p-logo" role="banner"><a class="mw-wiki-logo" href="https://wiibrew.org/wiki/Main_Page" title="Visit the main page"></a></div>
+						<div class="portal" role="navigation" id="p-navigation" aria-labelledby="p-navigation-label">
+			<h3 id="p-navigation-label">Navigation</h3>
+			<div class="body">
+								<ul>
+					<li id="n-mainpage"><a href="https://wiibrew.org/wiki/Main_Page" title="Visit the main page [Alt+Umschalt+z]" accesskey="z">Main Page</a></li><li id="n-FAQ"><a href="https://wiibrew.org/wiki/WiiBrew:FAQ">FAQ</a></li><li id="n-Glossary"><a href="https://wiibrew.org/wiki/Glossary">Glossary</a></li><li id="n-recentchanges"><a href="https://wiibrew.org/wiki/Special:RecentChanges" title="A list of recent changes in the wiki [Alt+Umschalt+r]" accesskey="r">Recent changes</a></li><li id="n-randompage"><a href="https://wiibrew.org/wiki/Special:Random" title="Load a random page [Alt+Umschalt+x]" accesskey="x">Random page</a></li><li id="n-Wiki-help"><a href="https://www.mediawiki.org/wiki/Special:MyLanguage/Help:Contents">Wiki help</a></li><li id="n-forums"><a href="http://forum.wiibrew.org/" rel="nofollow">WiiBrew forum</a></li>				</ul>
+							</div>
+		</div>
+			<div class="portal" role="navigation" id="p-homebrew" aria-labelledby="p-homebrew-label">
+			<h3 id="p-homebrew-label">homebrew</h3>
+			<div class="body">
+								<ul>
+					<li id="n-News"><a href="https://wiibrew.org/wiki/WiiBrew:News">News</a></li><li id="n-Releases"><a href="https://wiibrew.org/wiki/WiiBrew:Homebrew_releases">Releases</a></li><li id="n-Applications"><a href="https://wiibrew.org/wiki/List_of_homebrew_applications">Applications</a></li><li id="n-Homebrew-channel"><a href="https://wiibrew.org/wiki/Homebrew_Channel">Homebrew channel</a></li>				</ul>
+							</div>
+		</div>
+			<div class="portal" role="navigation" id="p-Community" aria-labelledby="p-Community-label">
+			<h3 id="p-Community-label">Community</h3>
+			<div class="body">
+								<ul>
+					<li id="n-Hackmii"><a href="http://hackmii.com/" rel="nofollow">Hackmii</a></li><li id="n-Other-sites"><a href="https://wiibrew.org/wiki/Other_homebrew_sites">Other sites</a></li>				</ul>
+							</div>
+		</div>
+			<div class="portal" role="navigation" id="p-tb" aria-labelledby="p-tb-label">
+			<h3 id="p-tb-label">Tools</h3>
+			<div class="body">
+								<ul>
+					<li id="t-whatlinkshere"><a href="https://wiibrew.org/wiki/Special:WhatLinksHere/Assembler_Tutorial" title="A list of all wiki pages that link here [Alt+Umschalt+j]" accesskey="j">What links here</a></li><li id="t-recentchangeslinked"><a href="https://wiibrew.org/wiki/Special:RecentChangesLinked/Assembler_Tutorial" rel="nofollow" title="Recent changes in pages linked from this page [Alt+Umschalt+k]" accesskey="k">Related changes</a></li><li id="t-specialpages"><a href="https://wiibrew.org/wiki/Special:SpecialPages" title="A list of all special pages [Alt+Umschalt+q]" accesskey="q">Special pages</a></li><li id="t-print"><a href="https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;printable=yes" rel="alternate" title="Printable version of this page [Alt+Umschalt+p]" accesskey="p">Printable version</a></li><li id="t-permalink"><a href="https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;oldid=104884" title="Permanent link to this revision of the page">Permanent link</a></li><li id="t-info"><a href="https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;action=info" title="More information about this page">Page information</a></li>				</ul>
+							</div>
+		</div>
+				</div>
+		</div>
+				<div id="footer" role="contentinfo">
+						<ul id="footer-info">
+								<li id="footer-info-lastmod"> This page was last edited on 12 November 2016, at 03:55.</li>
+							</ul>
+						<ul id="footer-places">
+								<li id="footer-places-privacy"><a href="https://wiibrew.org/wiki/WiiBrew:Privacy_policy" title="WiiBrew:Privacy policy">Privacy policy</a></li>
+								<li id="footer-places-about"><a href="https://wiibrew.org/wiki/WiiBrew:About" title="WiiBrew:About">About WiiBrew</a></li>
+								<li id="footer-places-disclaimer"><a href="https://wiibrew.org/wiki/WiiBrew:General_disclaimer" title="WiiBrew:General disclaimer">Disclaimers</a></li>
+								<li id="footer-places-mobileview"><a href="https://wiibrew.org/w/index.php?title=Assembler_Tutorial&amp;mobileaction=toggle_view_mobile" class="noprint stopMobileRedirectToggle">Mobile view</a></li>
+							</ul>
+										<ul id="footer-icons" class="noprint">
+										<li id="footer-poweredbyico">
+						<a href="https://www.mediawiki.org/"><img src="Assembler%20Tutorial%20-%20WiiBrew-Dateien/poweredby_mediawiki_88x31.png" alt="Powered by MediaWiki" srcset="Assembler%20Tutorial%20-%20WiiBrew-Dateien/poweredby_mediawiki_132x47.png 1.5x, Assembler%20Tutorial%20-%20WiiBrew-Dateien/poweredby_mediawiki_176x62.png 2x" width="88" height="31"></a>					</li>
+									</ul>
+						<div style="clear: both;"></div>
+		</div>
+		
+
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgPageParseReport":{"limitreport":{"cputime":"0.169","walltime":"0.214","ppvisitednodes":{"value":66,"limit":1000000},"ppgeneratednodes":{"value":0,"limit":1000000},"postexpandincludesize":{"value":0,"limit":2097152},"templateargumentsize":{"value":0,"limit":2097152},"expansiondepth":{"value":2,"limit":40},"expensivefunctioncount":{"value":0,"limit":500},"unstrip-depth":{"value":0,"limit":20},"unstrip-size":{"value":51,"limit":5000000},"timingprofile":["100.00%    0.000      1 -total"]},"cachereport":{"timestamp":"20201208073009","ttl":86400,"transientcontent":false}}});});</script>
+<script>
+        var ct_checkjs_val = '8c9e28c577073095894da426e019ad5a',
+            d = new Date(),
+            ctTimeMs = new Date().getTime(),
+            ctMouseEventTimerFlag = true, //Reading interval flag
+            ctMouseData = "[",
+            ctMouseDataCounter = 0;
+        
+        function ctSetCookie(c_name, value) {
+            document.cookie = c_name + "=" + encodeURIComponent(value) + "; path=/; samesite=lax;";
+        }
+        
+        ctSetCookie("ct_ps_timestamp", Math.floor(new Date().getTime()/1000));
+        ctSetCookie("ct_fkp_timestamp", "0");
+        ctSetCookie("ct_pointer_data", "0");
+        ctSetCookie("ct_timezone", "0");
+        ctSetCookie("ct_checkjs", ct_checkjs_val);        
+        setTimeout(function(){
+            ctSetCookie("ct_timezone", d.getTimezoneOffset()/60*(-1));
+        },1000);
+        
+        //Reading interval
+        var ctMouseReadInterval = setInterval(function(){
+                ctMouseEventTimerFlag = true;
+            }, 150);
+            
+        //Writting interval
+        var ctMouseWriteDataInterval = setInterval(function(){
+                var ctMouseDataToSend = ctMouseData.slice(0,-1).concat("]");
+                ctSetCookie("ct_pointer_data", ctMouseDataToSend);
+            }, 1200);
+        
+        //Stop observing function
+        function ctMouseStopData(){
+            if(typeof window.addEventListener == "function")
+                window.removeEventListener("mousemove", ctFunctionMouseMove);
+            else
+                window.detachEvent("onmousemove", ctFunctionMouseMove);
+            clearInterval(ctMouseReadInterval);
+            clearInterval(ctMouseWriteDataInterval);                
+        }
+        
+        //Logging mouse position each 300 ms
+        var ctFunctionMouseMove = function output(event){
+            if(ctMouseEventTimerFlag === true){
+                var mouseDate = new Date();
+                ctMouseData += "[" + Math.round(event.pageY) + "," + Math.round(event.pageX) + "," + Math.round(mouseDate.getTime() - ctTimeMs) + "],";
+                ctMouseDataCounter++;
+                ctMouseEventTimerFlag = false;
+                if(ctMouseDataCounter >= 100)
+                    ctMouseStopData();
+            }
+        };
+        
+        //Stop key listening function
+        function ctKeyStopStopListening(){
+            if(typeof window.addEventListener == "function"){
+                window.removeEventListener("mousedown", ctFunctionFirstKey);
+                window.removeEventListener("keydown", ctFunctionFirstKey);
+            }else{
+                window.detachEvent("mousedown", ctFunctionFirstKey);
+                window.detachEvent("keydown", ctFunctionFirstKey);
+            }
+        }
+        
+        //Writing first key press timestamp
+        var ctFunctionFirstKey = function output(event){
+            var KeyTimestamp = Math.floor(new Date().getTime()/1000);
+            ctSetCookie("ct_fkp_timestamp", KeyTimestamp);
+            ctKeyStopStopListening();
+        };
+
+        if(typeof window.addEventListener == "function"){
+            window.addEventListener("mousemove", ctFunctionMouseMove);
+            window.addEventListener("mousedown", ctFunctionFirstKey);
+            window.addEventListener("keydown", ctFunctionFirstKey);
+        }else{
+            window.attachEvent("onmousemove", ctFunctionMouseMove);
+            window.attachEvent("mousedown", ctFunctionFirstKey);
+            window.attachEvent("keydown", ctFunctionFirstKey);
+        }</script><noscript><p><b>Please enable JavaScript to pass antispam protection!</b><br />Here are the instructions how to enable JavaScript in your web browser <a href="http://www.enable-javascript.com" rel="nofollow" target="_blank">http://www.enable-javascript.com</a>.<br />Antispam by CleanTalk.</p></noscript>
+<script>(RLQ=window.RLQ||[]).push(function(){mw.config.set({"wgBackendResponseTime":223});});</script>
+
+
+<div style="display: none; font-size: 13px;" class="suggestions"><div class="suggestions-results"></div><div class="suggestions-special"></div></div></body></html>

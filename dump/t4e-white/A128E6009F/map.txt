@@ -1,0 +1,39 @@
+0x02AF88: TouCAN B Receive Function
+Read  Word Function: PID: 0x50 Payload: 32bits address (big-endian)
+Read  Half Function: PID: 0x51 Payload: 32bits address (big-endian)
+Read  Byte Function: PID: 0x52 Payload: 32bits address (big-endian)
+Read  Data Function: PID: 0x53 Payload: 32bits address (big-endian) + 1 Byte Size
+Read  Data Function: PID: 0x53 Payload: 32bits address (big-endian) + 2 Bytes Size
+
+Write Word Function: PID: 0x54 Payload: 32bits address (big-endian) + 4 Bytes Data
+Write Half Function: PID: 0x55 Payload: 32bits address (big-endian) + 2 Bytes Data
+Write Byte Function: PID: 0x56 Payload: 32bits address (big-endian) + 1 Byte Data
+Write Data Function: PID: 0x57 Payload: 32bits address (big-endian) + 1 Byte Size
+Write Data Function: PID: 0x57 Payload: Data (1-8 Bytes) until size = 0
+
+Read  ???? Function: PID: 0x51 Payload: ???? (6 Bytes Length)
+Read  ???? Function: PID: 0x52 Payload: ???? (7 Bytes Length)
+
+0x023234: Main Loop
+0x03B884: Send RPM CANID 0x400 (And oil pressure switch, shifting light...)
+0x03E624: Rebuild DECRAM Data
+0x04BEFC: OBD Command (L-Kine)
+0x06492C: OBD Mode 22 Enhanced Data
+0x0738D4: OBD Reset Learn Table
+
+0x3F974C, Size 0xF27*4+4-2+2=0x3CA0 (@ 0x02FB58) Copy of Calibration (Maps)
+
+0x3F9587 8 Bits Selenoid Output Variable
+0x304A8A 16 Bits ADC Oil Pressure
+0x3FD4FE 16 Bits Oil Pressure Analog Variable (0 -> 1024, 0 -> 5V, Cluster Oil Light Threshold at < 0x200 = < 2.5V)
+0x3FD64C 16 Bits RPM Variable
+
+@0x03BCC8:
+ 0x0206 Value not in XML Def (if rpm < 4300 then put a flag in 0x3F9587)
+ 0x0208 Value not in XML Def (if rpm > 4500 then clear a flag in 0x3F9587)
+
+Free RAM: 0x3FE748 - 0x3FEFFF (2231 bytes)
+
+Extract main loop:
+ powerpc-linux-gnu-objdump -b binary -m powerpc -M ppc32 -EB --adjust-vma=0x20000 --start-address=0x23444 --stop-address=0x23574 -D prog.bin > mainloop.S
+

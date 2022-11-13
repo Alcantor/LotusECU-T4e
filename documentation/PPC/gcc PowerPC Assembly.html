@@ -1,0 +1,353 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+  <meta content="text/html; charset=windows-1252" http-equiv="content-type">
+  <title>gcc PowerPC Assembly</title>
+  <meta content="Orion Sky Lawlor, olawlor@acm.org" name="author">
+</head>
+<body>
+<h1>gcc PowerPC Assembly Quick Reference ("Cheat Sheet")</h1>
+<br>
+This page describes the syntax used by the MacOS X assembler
+"as".&nbsp; Other assemblers, like "gas", use a slightly different
+syntax where registers have a percent sign in front of them, like
+"%r3"; while some IBM assemblers just say "3" for register 3 (so for
+"addi 3,3,3", you have to remember which 3 is a register!).<br>
+<table style="width: 100%; text-align: left;" cellspacing="2" cellpadding="2" border="1">
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">
+      <h2>Instructions</h2>
+      <table style="text-align: left;" cellspacing="2" cellpadding="2" border="1">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top;">Mnemonic<br>
+            </td>
+            <td style="vertical-align: top;">Purpose<br>
+            </td>
+            <td style="vertical-align: top;">Examples<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">li <span style="font-style: italic;">dest,const</span><br>
+            </td>
+            <td style="vertical-align: top;">Move the constant <span style="font-style: italic;">const</span> into the register <span style="font-style: italic;">dest.&nbsp; const</span> can't be more
+than 16 bits long.<br>
+            </td>
+            <td style="vertical-align: top;">li r3, 4<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">addis <span style="font-style: italic;">dest,const</span><br>
+            </td>
+            <td style="vertical-align: top;">Add the constant <span style="font-style: italic;">const</span>&lt;&lt;16 to <span style="font-style: italic;">dest</span>.<br>
+            </td>
+            <td style="vertical-align: top;">addis r3, 0xf&nbsp; <br>
+;&nbsp;&nbsp; r3+=0xf0000<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">b <span style="font-style: italic;">label</span><br>
+            </td>
+            <td style="vertical-align: top;">"Branch".&nbsp; Starts
+executing code at label.<br>
+            </td>
+            <td style="vertical-align: top;">b loop_start<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;"><span style="font-style: italic;"><span style="font-style: italic;"></span></span>bl
+            <span style="font-style: italic;">func</span><br>
+            </td>
+            <td style="vertical-align: top;">"Branch and Link".&nbsp;
+Saves return address in link register, then jumps to <span style="font-style: italic;">func</span>. Used to call
+subroutines.&nbsp; Be sure to save the link register to the stack
+first! (see stack example at right)<br>
+            </td>
+            <td style="vertical-align: top;">bl read_input<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">blr<span style="font-style: italic;"></span><br>
+            </td>
+            <td style="vertical-align: top;">"Branch to Link
+Register".&nbsp; Jumps to lr.&nbsp; Used to end a subroutine.<br>
+            </td>
+            <td style="vertical-align: top;">blr<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">lwz <span style="font-style: italic;">dest, off(ptr)</span><br>
+            </td>
+            <td style="vertical-align: top;">Load word from pointer.<span style="font-style: italic;"><span style="font-style: italic;">&nbsp; </span>dest=*(ptr+off);
+            </span>Copy the integer in memory at address <span style="font-style: italic;">off</span> bytes from the <span style="font-style: italic;">ptr</span> register into the <span style="font-style: italic;">dest</span> register.<br>
+            </td>
+            <td style="vertical-align: top;">lwz r3,8(r4)<br>
+; Copy r3 from memory at 8 off r4</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">lwzu <span style="font-style: italic;">dest, off(ptr)</span><br>
+            </td>
+            <td style="vertical-align: top;">Load word with pointer
+update. <span style="font-style: italic;">dest=*(ptr+=off); </span>Like
+lwz, but then <span style="text-decoration: underline;">changes</span>
+the <span style="font-style: italic;">ptr</span> register to equal <span style="font-style: italic;">ptr+off</span>.<br>
+            </td>
+            <td style="vertical-align: top;">lwzu r3,8(r4)&nbsp; <br>
+; Copy r3 from memory at 8 off r4; and add 8 to r4<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">stw <span style="font-style: italic;">src, off(ptr)</span></td>
+            <td style="vertical-align: top;">Store word. <span style="font-style: italic;">*(ptr+off)=src</span>;&nbsp; There's also
+a "stwu" that does the pointer update like lwzu.<br>
+            </td>
+            <td style="vertical-align: top;">stw r3,8(r4)&nbsp; <br>
+; Copy r3 to memory at 8 off r4<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">add <span style="font-style: italic;">dest, src1, src2</span><br>
+            </td>
+            <td style="vertical-align: top;"><span style="font-style: italic;"><span style="font-style: italic;"><span style="font-style: italic;"></span></span></span>Add.&nbsp; <span style="font-style: italic;"><span style="font-style: italic;"><span style="font-style: italic;"></span></span>dest=src1+src2</span>.&nbsp;
+All three must be registers.&nbsp; Register r0 is treated as if it has
+value zero, so "add %r3, %r5, %r0" is actually a move.<br>
+            </td>
+            <td style="vertical-align: top;">add r3,r3, r4<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">addi <span style="font-style: italic;">dest, src, const<br>
+            </span></td>
+            <td style="vertical-align: top;">Add immediate.&nbsp; <span style="font-style: italic;"><span style="font-style: italic;"><span style="font-style: italic;"></span></span>dest=src+const</span>.&nbsp;
+            <span style="font-style: italic;">src</span> and <span style="font-style: italic;">dest</span> are registers, <span style="font-style: italic;">const</span> is an integer constant. <br>
+            </td>
+            <td style="vertical-align: top;">addi r3, r3, 0x42<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">mullw <span style="font-style: italic;">dest,src1,src2</span><br>
+            </td>
+            <td style="vertical-align: top;"><span style="font-style: italic;">dest=src1*src2</span>.&nbsp; There's a
+corresponding "mulhi" to get the high 32 bits of the product.<br>
+            </td>
+            <td style="vertical-align: top;">mullw r3, r3, r4<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">cmp 0,0,<span style="font-style: italic;">a,b</span><br>
+            <br>
+            <span style="font-style: italic;"></span></td>
+            <td style="vertical-align: top;">Compare two values into
+condition register 0.&nbsp; Sets
+flags that are used by the conditional jumps (below). <br>
+            </td>
+            <td style="vertical-align: top;">cmp 0,0,r3, r4<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">blt <span style="font-style: italic;">label</span></td>
+            <td style="vertical-align: top;">Goto <span style="font-style: italic;">label</span>
+if previous comparison came out as less-than.&nbsp; Other conditionals
+available are: ble (&lt;=), beq (==), bge (&gt;=), bgt (&gt;), and bne
+(!=).</td>
+            <td style="vertical-align: top;">blt loop_again&nbsp; ;
+Jump if r3 &lt; r4<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      </td>
+      <td style="width: 30%; vertical-align: top;">
+      <h2><a href="http://developer.apple.com/documentation/DeveloperTools/Conceptual/PowerPCRuntime/PowerPCRuntime.pdf">Stack
+Frame</a> </h2>
+Example when using frame pointer and two local variables:
+      <table style="width: 100%; text-align: left;" cellspacing="2" cellpadding="2" border="1">
+        <tbody>
+          <tr>
+            <td style="vertical-align: top; font-weight: bold;">Contents<br>
+            </td>
+            <td style="vertical-align: top; font-weight: bold;">offset<br>
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">saved link register<br>
+            </td>
+            <td style="vertical-align: top;">20(r1) </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">ancient r1<br>
+            </td>
+            <td style="vertical-align: top;">16(r1) </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Local variable 1<br>
+            </td>
+            <td style="vertical-align: top;">12(r1) </td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">Local variable 2</td>
+            <td style="vertical-align: top;">8(r1)</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">(next link register)<br>
+            </td>
+            <td style="vertical-align: top;">4(r1)</td>
+          </tr>
+          <tr>
+            <td style="vertical-align: top;">old r1<br>
+            </td>
+            <td style="vertical-align: top;">0(r1)<br>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+my_sub: ; Adds 1 to first argument<br>
+&nbsp; ; Prologue<br>
+&nbsp; stwu r1,-16(r1) ; "push"<br>
+&nbsp; mflr r0&nbsp; ; r0 = link register<br>
+&nbsp; stw r0,20(r1) ; Save link register<br>
+&nbsp; ; Body of subroutine:<br>
+&nbsp; addi r3, r3, 1<br>
+&nbsp; ; Epilogue<br>
+&nbsp; lwz r0,20(r1)<br>
+&nbsp; mtlr r0<br>
+&nbsp; addi r1, r1, 16 ; "pop"<br>
+&nbsp; blr<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <h2>Constants, Registers, Memory</h2>
+Constants
+can just be written normally.&nbsp; Weirdness: if a constant is more
+than 16 bits
+long, you can't load it in one instruction: you need to break it into
+two parts.<br>
+Use the "i" (immediate) form of
+the instruction if you want to put in a constant, or use "li" to load
+the constant into a register.<br>
+All memory access is via the load and store routines--you *can't* just
+get to a random memory location from any instruction.<br>
+      <pre class="displaycode">lis     4,msg@ha    # load top 16 bits of &amp;msg<br>	addi    4,4,msg@l</pre>
+      <br>
+      <br>
+      </td>
+      <td style="vertical-align: top;">
+      <h2><a href="http://the.wall.riscom.net/books/proc/ppc/cwg/a_abi.html">Registers</a></h2>
+r1 is the stack pointer<br>
+Return value in r3<br>
+First 8 integer arguments are in r3 through r10; remainder on stack.<br>
+Free for use (no save needed):<br>
+&nbsp;&nbsp; r0, and r3 through r12<br>
+Must be saved:<br>
+&nbsp;&nbsp; r13 through r31<br>
+      <br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <h2>Floating Point</h2>
+Load and store from memory with lfs/lfd (load float single/double)
+stfs, stfd.<br>
+Arithmetic instructions start with "f", like "fadd", "fmul", "fmadd",
+"fdiv".&nbsp; There are both single- and double-precision versions,
+with the single-precision versions ending in "s" (like fadds), but they
+both use the same register set.<br>
+Weird instructions: "fres" (computes approximate 1.0/x);
+"frsqrte"&nbsp; (1.0/sqrt(x), approximate).<br>
+      </td>
+      <td style="vertical-align: top;">
+      <h2>Floating Point Registers</h2>
+Registers are all 64-bit doubles.<br>
+Floating point args are in f1-f13<br>
+&nbsp;
+f0-f13 are free for any use<br>
+f14-f31 must be saved<br>
+Return value goes in f1<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">
+      <h2>Common Errors</h2>
+Error: operand out of range (123 not between 0 and 31)<br>
+&nbsp;&nbsp; You passed in some constant (here 123); the assembler
+expected a register. <br>
+Error: operand out of range (<span style="font-style: italic;"><span style="font-style: italic;"></span></span>100000 not between -32768
+and 32767)<br>
+&nbsp;&nbsp;
+You passed in a constant that was too big.&nbsp; Use "li" and "addis"
+to stick the constant together from 16-bit pieces (or just choose
+another constant!)<br>
+      </td>
+      <td style="vertical-align: top;"><br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<br>
+There's an <a href="http://pds.twi.tudelft.nl/vakken/in101/labcourse/instruction-set/">excellent
+table of PowerPC instructions here</a>.&nbsp; The IBM 32-Bit <a href="https://www.cs.uaf.edu/2011/fall/cs301/lecture/progenv.pdf">PowerPC Programming Environment</a> gives all the
+instructions in chapter 8.1 and a good overview in chapter 4.&nbsp; The
+IBM <a href="http://the.wall.riscom.net/books/proc/ppc/cwg/a_abi.html">Compiler
+Writer's Guide</a> gives the calling conventions. Readable tutorial
+walkthroughs at <a href="http://www.engr.uconn.edu/%7Ezshi/course/cse4903/refs/ppc_inst.pdf">U.
+Conn (compare OS X and Linux interfaces)</a>, <br>
+<h2>Examples</h2>
+Return a constant:<br>
+<pre>li r3,100<br>blr</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=li%20r3%2C100%0D%0Ablr&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a></p>
+Add two integers:<br>
+<pre>li r7,3<br>li r9,10<br>add r3,r7,r9<br><br>blr</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=li%20r7%2C3%0D%0Ali%20r9%2C10%0D%0Aadd%20r3%2Cr7%2Cr9%0D%0A%0D%0Ablr&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a><br>
+</p>
+<p>Compare integers, and branch.&nbsp; This is nearly identical to the
+x86 version.<br>
+</p>
+<pre>li r4, 10<br>li r5, 100<br>cmp 0,0, r4,r5 ; compare r4 and r5.  Put result into condition register 0<br>blt is_less<br>	li r3,4<br>	blr<br><br>is_less:<br>	li r3,5<br>	blr</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=li%20r4%2C%2010%0D%0Ali%20r5%2C%20100%0D%0Acmp%200%2C0%2C%20r4%2Cr5%20%3B%20compare%20r4%20and%20r5.%20%20Put%20result%20into%20condition%20register%200%0D%0Ablt%20is_less%0D%0A%09li%20r3%2C4%0D%0A%09blr%0D%0A%0D%0Ais_less%3A%0D%0A%09li%20r3%2C5%0D%0A%09blr&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a></p>
+Load the two 16-bit halves of a 32-bit constant.&nbsp; Note most
+Linux/IBM machines use "@ha" and "@l" suffixes instead of the OS X
+"ha16" and "lo16" functions.<br>
+<pre>lis r3,ha16(0xdeadbeef)<br>addi r3,r3,lo16(0xdeadbeef)<br><br>blr</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=lis%20r3%2Cha16%280xdeadbeef%29%0D%0Aaddi%20r3%2Cr3%2Clo16%280xdeadbeef%29%0D%0A%0D%0Ablr&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a><br>
+</p>
+<p>Load a constant from read-only memory:<br>
+</p>
+<pre>lis r5,ha16(myStuff)<br>addi r5,r5,lo16(myStuff)<br>lwz r3,0(r5)<br><br>blr<br><br>myStuff:<br>  .long 1234</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=lis%20r5%2Cha16%28myStuff%29%0D%0Aaddi%20r5%2Cr5%2Clo16%28myStuff%29%0D%0Alwz%20r3%2C0%28r5%29%0D%0A%0D%0Ablr%0D%0A%0D%0AmyStuff%3A%0D%0A%20%20.long%201234&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a></p>
+Store a constant to writeable memory:<br>
+<pre>lis r5,ha16(myStuff)<br>addi r5,r5,lo16(myStuff)<br>stw r3, 0(r5)<br><br>blr<br><br>.data<br>myStuff:<br>  .long 1234</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=lis%20r5%2Cha16%28myStuff%29%0D%0Aaddi%20r5%2Cr5%2Clo16%28myStuff%29%0D%0Astw%20r3%2C%200%28r5%29%0D%0A%0D%0Ablr%0D%0A%0D%0A.data%0D%0AmyStuff%3A%0D%0A%20%20.long%201234&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a></p>
+Call a function: the hard part is saving the link register, so we can
+get back.<br>
+<pre>stwu r1,-16(r1); prologue<br>mflr r0<br>stw r0,20(r1)<br><br>li r3,1234<br>bl _print_int<br><br>lwz r0,20(r1) ; epilogue<br>mtlr r0<br>addi r1, r1, 16<br>blr</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=stwu%20r1%2C-16%28r1%29%3B%20prologue%0D%0Amflr%20r0%0D%0Astw%20r0%2C20%28r1%29%0D%0A%0D%0Ali%20r3%2C1234%0D%0Abl%20_print_int%0D%0A%0D%0Alwz%20r0%2C20%28r1%29%20%3B%20epilogue%0D%0Amtlr%20r0%0D%0Aaddi%20r1%2C%20r1%2C%2016%0D%0Ablr&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a></p>
+It's a little easier to call functions if you don't ever come
+back.&nbsp; Here "b function" branches away to the function, never to
+return.<br>
+<pre>lis r3,ha16(myFloats) ; first argument: pointer to floats<br>addi r3,r3,lo16(myFloats)<br>li r4,1 ; number of floats to print<br>b _farray_print ; tail call to print (returns directly to main)<br><br>.data<br>myFloats:<br>  .long 0x3F9DF3B6 ; float 1.234 as an int, from:  return *(int *)&amp;someFloat</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=lis%20r3%2Cha16%28myFloats%29%20%3B%20first%20argument%3A%20pointer%20to%20floats%0D%0Aaddi%20r3%2Cr3%2Clo16%28myFloats%29%0D%0Ali%20r4%2C1%20%3B%20number%20of%20floats%20to%20print%0D%0Ab%20_farray_print%20%3B%20tail%20call%20to%20print%20%28returns%20directly%20to%20main%29%0D%0A%0D%0A.data%0D%0AmyFloats%3A%0D%0A%20%20.long%200x3F9DF3B6%20%3B%20float%201.234%20as%20an%20int%2C%20from%3A%20%20return%20%2A%28int%20%2A%29%26someFloat&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a></p>
+<span style="text-decoration: underline;"></span>Here we do a little
+floating point arithmetic before printing the value.&nbsp; r3 is doing
+double duty: used by us first, then used as a function parameter.<br>
+<pre>lis r3,ha16(myFloats) ; first argument: pointer to floats<br>addi r3,r3,lo16(myFloats)<br><br>lfs f1,0(r3) ; load the float<br>fadd f1,f1,f1 ; add it to itself<br>stfs f1,0(r3) ; store back to memory <br><br>li r4,1 ; number of floats to print<br>b _farray_print ; tail call to print (returns directly to main)<br><br>.data<br>myFloats:<br>  .long 0x3F9DF3B6 ; float 1.234 as an int, from:  return *(int *)&amp;someFloat</pre>
+<p><a href="https://lawlor.cs.uaf.edu/netrun/run?name=Testing&amp;code=lis%20r3%2Cha16%28myFloats%29%20%3B%20first%20argument%3A%20pointer%20to%20floats%0D%0Aaddi%20r3%2Cr3%2Clo16%28myFloats%29%0D%0A%0D%0Alfs%20f1%2C0%28r3%29%20%3B%20load%20the%20float%0D%0Afadd%20f1%2Cf1%2Cf1%20%3B%20add%20it%20to%20itself%0D%0Astfs%20f1%2C0%28r3%29%20%3B%20store%20back%20to%20memory%20%0D%0A%0D%0Ali%20r4%2C1%20%3B%20number%20of%20floats%20to%20print%0D%0Ab%20_farray_print%20%3B%20tail%20call%20to%20print%20%28returns%20directly%20to%20main%29%0D%0A%0D%0A.data%0D%0AmyFloats%3A%0D%0A%20%20.long%200x3F9DF3B6%20%3B%20float%201.234%20as%20an%20int%2C%20from%3A%20%20return%20%2A%28int%20%2A%29%26someFloat&amp;lang=Assembly&amp;mach=PPC&amp;mode=frag&amp;input=&amp;linkwith=&amp;orun=Run&amp;orun=Disassemble&amp;orun=Grade&amp;ocompile=Optimize&amp;ocompile=Warnings">(Try
+this in NetRun now!)</a></p>
+<hr>
+<div style="text-align: right;"><i =""=""><a href="https://lawlor.cs.uaf.edu/%7Eolawlor/">O. Lawlor</a>, <a href="mailto:ffosl@uaf.edu">ffosl@uaf.edu</a></i><br>
+<i =""="">
+Up to: <a href="file:///home/olawlor/docs/work/uaf/2005/cs301/www/">Class
+Site</a>, <a href="http://www.cs.uaf.edu/">CS</a>, <a href="http://www.uaf.edu/">UAF</a></i></div>
+
+
+</body></html>

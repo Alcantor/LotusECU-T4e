@@ -1,0 +1,12 @@
+EU Lotus Elise S2
+
+bootldr:
+	B120E0029F K0403
+
+calrom:
+	t4e08e01 02-20-2006 11:19
+	B120E0030H MY06 Lotus 2ZZ-GE EU
+
+prog:
+	BCroftT4E080 20/02/2006 Lotus EngV0080
+

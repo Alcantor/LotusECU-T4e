@@ -1,0 +1,483 @@
+import os, sys, random
+
+# Some constants
+BO_LE = 'little'
+BO_BE = 'big'
+CHARSET = 'ISO-8859-15'
+
+class BinData:
+	def parse(self, data: memoryview) -> None:
+		raise NotImplementedError
+	def get_size(self) -> int:
+		raise NotImplementedError
+	def compose(self, data: memoryview) -> None:
+		raise NotImplementedError
+
+class CRP05_exception(Exception):
+	pass
+
+# Encryption algorithm:
+#
+# Note: 2 plain bytes gives 3 encrypted bytes!
+#
+# K = ~(9744 + (Sum each byte of (CRP Final size)))
+#
+# w_plain = 2 plain bytes read in little endian
+# w_bit_flag = w_plain + K
+# w_sum = Sum of table values where the corresponding bit is set in w_bit_flag.
+#
+# The reverse of:
+#   w_sum = (w_cipher * CRP.key_mult) % CRP.key_mod
+# is:
+#   w_cipher = (w_sum * CRP.key_mult_inv) % CRP.key_mod
+#
+# A random value is added to obfuscate the result:
+#   w_cipher += (CRP.key_mod *  random.randint(0, 8))
+#
+# Decrypt: 372 = (257160 * 3182) % 380951
+# Encrypt: 257160 = (372 * 62135) % 380951
+#
+# The key for the T4e (Find in A128E6009F @ sub_6118)
+# Mod: 0x5D017 -> 380951
+# Mult: 0xC6E -> 3182
+# Table:
+#   0x7 0xF 0x17 0x2F 0x5D 0xBA 0x174 0x2E8
+#   0x5D0 0xBA0 0x1740 0x2E80 0x5D00 0xBA00 0x17401 0x2E801
+#
+class CRP05_3by2enc:
+	def __init__(self, crp_size):
+		# The key for the T4 and T4e
+		self.key_mod = 380951
+		self.key_mult = 3182
+		self.key_table = [
+			7, 15, 23, 47,
+			93, 186, 372, 744,
+			1488, 2976, 5952, 11904,
+			23808, 47616, 95233, 190465
+		]
+
+		# This value is needed to encrypt and is not stored in the ECU.
+		self.key_mult_inv = 62135
+
+		# Convert the length into 4 bytes, sum them all + 9744, and invert
+		self.K = ~(9744 + sum(crp_size.to_bytes(4, BO_BE)))
+
+	def encrypt(self, buf_in, buf_out):
+		for i in range(0, len(buf_in)//2, 1):
+			x = i*2
+			w_plain = int.from_bytes(buf_in[x:x+2], BO_LE)
+			w_bit_flag = (w_plain + self.K) & 0xFFFF
+			w_sum = 0;
+			for j in reversed(range(0, 16)):
+				if(w_bit_flag & (1<<j)):
+					w_sum += self.key_table[j]
+			w_cipher = (w_sum * self.key_mult_inv) % self.key_mod
+			w_cipher += (self.key_mod *  random.randint(0, 8))
+			x = i*3
+			buf_out[x:x+3] = w_cipher.to_bytes(3, BO_LE)
+
+	def decrypt(self, buf_in, buf_out):
+		for i in range(0, len(buf_in)//3, 1):
+			x = i*3
+			w_cipher = int.from_bytes(buf_in[x:x+3], BO_LE)
+			w_sum = (w_cipher * self.key_mult) % self.key_mod
+			w_bit_flag = 0;
+			for j in reversed(range(0, 16)):
+				if(w_sum >= self.key_table[j]):
+					w_sum -= self.key_table[j]
+					w_bit_flag |= 1<<j
+			if(w_sum != 0): raise CRP05_exception("Wrong Key! @ "+hex(x))
+			w_plain = (w_bit_flag - self.K) & 0xFFFF
+			x = i*2
+			buf_out[x:x+2] = w_plain.to_bytes(2, BO_LE)
+
+	# Compute the needed space for cipher data
+	def calc_size_encrypted(size):
+		if(size % 2 != 0):
+			raise CRP05_exception("Plain size is not 16 bits aligned!")
+		return size // 2 * 3;
+
+	# Compute the needed space for plain data
+	def calc_size_decrypted(size):
+		if(size % 3 != 0):
+			raise CRP05_exception("Cipher size is not 24 bits aligned!")
+		return size // 3 * 2;
+
+# T4 Header format:
+#
+# 00 00 00 s0 s1 s2 s3 s4 s5 s6 s7
+#
+# s0 to s7 are bit flags 0x01 or 0x00 to erase the sectors or not.
+#
+class CRP05_hdr_ecu_t4(BinData):
+	SIGNATURE =  b'\x00\x00\x00'
+
+	def __init__(self):
+		self.clear()
+
+	def parse(self, data):
+		signature = data[0:3]
+		for i in range(0, 8):
+			self.erase_sector[i] = True if(data[i+3] > 0) else False
+		if(signature != self.SIGNATURE):
+			raise Exception("Wrong Signature")
+
+	def get_size(self):
+		return 11
+
+	def compose(self, data):
+		data[0:3] = self.SIGNATURE
+		for i in range(0, 8):
+			data[i+3] = 1 if(self.erase_sector[i]) else 0
+
+	def clear(self):
+		self.erase_sector = [False]*8
+
+	def set_erase_by_addr(self, addr):
+		sector = addr // 0x10000
+		if(sector < 8): self.erase_sector[sector] = True
+
+	def __str__(self):
+		fmt = """
+T4 Header:
+
+	Erase S0 (Bootloader)  : {:s}
+	Erase S1 (Prog)        : {:s}
+	Erase S2 (Prog)        : {:s}
+	Erase S3 (Prog)        : {:s}
+	Erase S4 (Prog)        : {:s}
+	Erase S5 (Prog)        : {:s}
+	Erase S6 (Prog)        : {:s}
+	Erase S7 (Calibration) : {:s}
+"""
+		return fmt.format(
+			*['Yes' if x else 'No' for x in self.erase_sector]
+		)
+
+# T4e Header format:
+#
+#  T  4  E  _ S0 S2 S1 00 00 00 00
+#
+# S0 to S2 are ASCII flags '1' (0x31) or '0' (0x30) to erase the
+# sectors or not. S2 includes sectors 2 to 7.
+#
+class CRP05_hdr_ecu_t4e(BinData):
+	SIGNATURE =  b'T4E_'
+
+	def __init__(self):
+		self.clear()
+
+	def parse(self, data):
+		signature = data[0:4]
+		for i in range(0, 3):
+			self.erase_sector[i] = True if(data[i+4] == ord('1')) else False
+		if(signature != self.SIGNATURE):
+			raise Exception("Wrong Signature")
+
+	def get_size(self):
+		return 11
+
+	def compose(self, data):
+		data[0:4] = self.SIGNATURE
+		for i in range(0, 3):
+			data[i+4] = ord('1') if(self.erase_sector[i]) else ord('0')
+		data[7:11] = b'\x00\x00\x00\x00'
+
+	def clear(self):
+		self.erase_sector = [False]*3
+
+	def set_erase_by_addr(self, addr):
+		sector = addr // 0x10000
+		if(sector == 0): self.erase_sector[0] = True
+		elif(sector == 1): self.erase_sector[2] = True
+		elif(sector < 8): self.erase_sector[1] = True
+
+	def __str__(self):
+		fmt = """
+T4e Header:
+
+	Erase S0    (Bootloader)  : {:s}
+	Erase S2-S7 (Prog)        : {:s}
+	Erase S1    (Calibration) : {:s}
+"""
+		return fmt.format(
+			*['Yes' if x else 'No' for x in self.erase_sector]
+		)
+
+# Sub-packets format:
+#
+#   1 Byte     - Header, always 0x55
+#   1 Byte     - Length (Excluging header, including checksum)
+#   3 Bytes BE - 24 Bits destination address
+#   x Bytes    - Data to write
+#   1 Bytes    - Checksum
+#
+class CRP05_subpackets(BinData):
+	def __init__(self):
+		self.subpackets = []
+
+	def parse(self, data):
+		self.subpackets = []
+		i = 0
+		while(i < len(data)):
+			if(data[i] == 0xFF):
+				# 0xFF are stuffing bytes
+				i += 1
+			elif(data[i] == 0x55):
+				# Extract the Sub-Packet (Very similar to a S-Record line but binary)
+				size = data[i+1]
+				if(sum(data[i:i+size]) & 0xFF != data[i+size]):
+					raise CRP05_exception("Checksum error of sub-packet")
+				addr = int.from_bytes(data[i+2:i+5], BO_BE)
+				data2 = data[i+5:i+size]
+				i += size+1
+				# Add sub-packet
+				self.subpackets.append((addr, data2))
+			else:
+				raise Exception("Unknow sub-packet "+hex(data_bin[i]))
+
+	def get_size(self):
+		size = 0
+		for s in self.subpackets: size += 6+len(s[1])
+		return size
+
+	def compose(self, data):
+		i = 0
+		for s in self.subpackets:
+			size = 5+len(s[1])
+			data[i  ] = 0x55
+			data[i+1] = size
+			data[i+2:i+5] = s[0].to_bytes(3, BO_BE)
+			data[i+5:i+size] = s[1]
+			data[i+size] = sum(data[i:i+size]) & 0xFF
+			i += size+1
+
+	def delete(self, offset, size):
+		limit = offset + size
+		self.subpackets = [x for x in self.subpackets if not (offset <= x[0] and x[0] < limit)]
+
+	def export_srec(self, file, desc):
+		desc = bytes(desc, CHARSET)
+		with open(file, 'w') as f:
+			srec_bin  = (len(desc)+3).to_bytes(1, BO_BE)
+			srec_bin += b'\x00\x00'
+			srec_bin += desc
+			srec_bin += (~sum(srec_bin) & 0xFF).to_bytes(1, BO_BE)
+			f.write("S0" + ''.join('{:02X}'.format(x) for x in srec_bin) + '\n')
+			for s in self.subpackets:
+				srec_bin  = (len(s[1])+4).to_bytes(1, BO_BE)
+				srec_bin += s[0].to_bytes(3, BO_BE)
+				srec_bin += s[1]
+				srec_bin += (~sum(srec_bin) & 0xFF).to_bytes(1, BO_BE)
+				f.write("S2" + ''.join('{:02X}'.format(x) for x in srec_bin) + '\n')
+
+	def import_srec(self, file):
+		desc = ""
+		with open(file, 'r') as f:
+			data_srec = f.read()
+		for line in data_srec.split('\n'):
+			if(len(line) < 2 or line[0] != 'S'): continue
+			srec_bin = bytearray([int(line[i:i+2], 16) for i in range(2,len(line),2)])
+			length = srec_bin[0]
+			if(~sum(srec_bin[:length]) & 0xFF != srec_bin[length]):
+				raise CRP05_exception("S-Record checksum error")
+			if  (line[1] == "0"):
+				desc = str(srec_bin[3:length], CHARSET)
+				continue
+			elif(line[1] == "1"):
+				addr = int.from_bytes(srec_bin[1:3], BO_BE)
+				data = srec_bin[3:length]
+			elif(line[1] == "2"):
+				addr = int.from_bytes(srec_bin[1:4], BO_BE)
+				data = srec_bin[4:length]
+			elif(line[1] == "3"):
+				addr = int.from_bytes(srec_bin[1:5], BO_BE)
+				data = srec_bin[5:length]
+			else:
+				continue
+			# Build the Sub-Packet
+			if(len(data) % 2 != 0):
+				raise Exception("S-Record uneven length is incompatible with encryption!")
+			self.subpackets.append((addr, data))
+		return desc
+
+	def export_bin(self, file, offset, size):
+		limit = offset + size
+		buf = bytearray([0xFF]*size)
+		for s in self.subpackets:
+			if not (offset <= s[0] and s[0] < limit): continue
+			x = s[0]-offset
+			buf[x:x+len(s[1])] = s[1]
+		buf = buf.rstrip(b'\xFF')
+		with open(file, 'wb') as f:
+			f.write(buf)
+
+	# 246 is the maximal size of data in a subpacket.
+	def import_bin(self, file, offset, spsize=246):
+		with open(file, 'rb') as f:
+			buf = f.read()
+		self.delete(offset, len(buf))
+		# Remove free space
+		buf = buf.rstrip(b'\xFF')
+		for i in range(0, len(buf), spsize):
+			self.subpackets.append((offset+i, buf[i:i+spsize]))
+
+	def __str__(self):
+		fmt = """
+Subpackets:
+
+	Count : {:d}
+"""
+		return fmt.format(
+			len(self.subpackets)
+		)
+
+# Unencrypted data format:
+#
+#  11 Bytes    - Header
+#   5 Bytes    - Padding bytes 0xFF (optional)
+#   x Bytes    - Multiple sub-packets
+#   2 Bytes LE - Checksum
+#
+class CRP05_data_ecu(BinData):
+	def __init__(self, for_t4e):
+		# Binary data
+		self.header = CRP05_hdr_ecu_t4e() if(for_t4e) else CRP05_hdr_ecu_t4()
+		self.subpackets = CRP05_subpackets()
+
+	def parse(self, data):
+		# Decrypt
+		plain = memoryview(bytearray(CRP05_3by2enc.calc_size_decrypted(len(data))))
+		CRP05_3by2enc(len(data)+20).decrypt(data, plain)
+
+		self.header = CRP05_hdr_ecu_t4e() \
+			if(plain[0:4] == CRP05_hdr_ecu_t4e.SIGNATURE) \
+			else CRP05_hdr_ecu_t4()
+		self.header.parse(plain[0:11])
+		self.subpackets.parse(plain[11:-2])
+		cksum = int.from_bytes(plain[-2:], BO_LE)
+
+		# Global Checksum
+		if(cksum != sum(plain[:-2]) & 0xFFFF):
+			raise CRP05_exception("Wrong Checksum!")
+
+	def get_size(self):
+		return CRP05_3by2enc.calc_size_encrypted(18+self.subpackets.get_size())
+
+	def compose(self, data):
+		plain = memoryview(bytearray(18+self.subpackets.get_size()))
+
+		self.header.compose(plain[0:11])
+		plain[11:16] = b'\xFF\xFF\xFF\xFF\xFF'
+		self.subpackets.compose(plain[16:-2])
+		cksum = sum(plain[:-2]) & 0xFFFF
+		plain[-2:] = cksum.to_bytes(2, BO_LE)
+
+		# Encrypt
+		CRP05_3by2enc(self.get_size()+20).encrypt(plain, data)
+
+	def update_header(self):
+		self.header.clear()
+		for s in self.subpackets.subpackets:
+			self.header.set_erase_by_addr(s[0])
+
+	def __str__(self):
+		return str(self.header) + str(self.subpackets)
+
+# CRP 05 Format:
+#
+#   4 Bytes BE - Total length of CRP file.
+#  12 Bytes    - Description (NULL-Terminated + padded with 0xFF)
+#   x Bytes    - Encrypted data
+#   4 Bytes    - Signature " EFi"
+#
+class CRP05(BinData):
+	SIGNATURE = b' EFi'
+
+	def __init__(self, is_encrypted=False, for_t4e=False):
+		self.desc = "CUSTOM"
+		self.is_encrypted = is_encrypted
+		if(self.is_encrypted): self.data = None
+		else: self.data = CRP05_data_ecu(for_t4e)
+		self.file_data = b''
+
+	def parse(self, data):
+		# Parse the CRP
+		crp_size = int.from_bytes(data[0:4], BO_BE)
+		self.desc = str(bytes(data[4:16]).rstrip(b'\x00\xFF'), CHARSET)
+		if(self.is_encrypted): self.data = data[16:-4]
+		else: self.data.parse(data[16:-4])
+		signature = data[-4:]
+
+		# Checks
+		if(crp_size != len(data)):
+			raise CRP05_exception("Header length mismatch")
+		if(signature != self.SIGNATURE):
+			raise Exception("Wrong Signature")
+
+		# Keep a reference to the complete file
+		self.file_data = data
+
+	def get_size(self):
+		if(self.is_encrypted): return 20 + len(self.data)
+		else: return 20 + self.data.get_size()
+
+	def compose(self, data):
+		# Compose the CRP
+		crp_size = self.get_size()
+		data[0:4] = crp_size.to_bytes(4, BO_BE)
+		data[4:16] = (bytes(self.desc, CHARSET) + b'\x00').ljust(12, b'\xFF')
+		if(self.is_encrypted): data[16:-4] = self.data
+		else: self.data.compose(data[16:-4])
+		data[-4:] = self.SIGNATURE
+
+		# Keep a reference to the complete file
+		self.file_data = data
+
+	def read_file(self, file):
+		with open(file, 'rb') as f: self.parse(memoryview(f.read()))
+
+	def write_file(self, file):
+		data = memoryview(bytearray(self.get_size()))
+		self.compose(data)
+		with open(file, 'wb') as f: f.write(data)
+
+	def __str__(self):
+		fmt = """
+CRP05 K-Line File:
+
+	Description : {:s}
+"""
+		return fmt.format(
+			self.desc
+		) + str(self.data)
+
+if __name__ == "__main__":
+	print("SREC to CRP file tool for Lotus T4/T4E ECU\n")
+	if  (len(sys.argv) >= 4 and sys.argv[1] == "pack"):
+		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
+		crp = CRP05(for_t4e=False)
+		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
+		crp.data.update_header()
+		crp.write_file(sys.argv[3])
+		print(crp)
+	elif(len(sys.argv) >= 4 and sys.argv[1] == "pack_t4e"):
+		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
+		crp = CRP05(for_t4e=True)
+		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
+		crp.data.update_header()
+		crp.write_file(sys.argv[3])
+		print(crp)
+	elif(len(sys.argv) >= 4 and sys.argv[1] == "unpack"):
+		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
+		crp = CRP05()
+		crp.read_file(sys.argv[2])
+		crp.data.subpackets.export_srec(sys.argv[3], crp.desc)
+		print(crp)
+	else:
+		prog = os.path.basename(sys.argv[0])
+		print("usage:")
+		print("\t"+prog+" pack SREC_FILE CRP_FILE")
+		print("\t"+prog+" pack_t4e SREC_FILE CRP_FILE")
+		print("\t"+prog+" unpack CRP_FILE SREC_FILE")
+

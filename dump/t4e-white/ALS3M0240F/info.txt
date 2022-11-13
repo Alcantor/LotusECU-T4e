@@ -1,0 +1,12 @@
+FED Lotus Exige CUP 255 - Aftermarket Use Only
+
+bootldr:
+	ALS3M0240J K0412
+
+calrom:
+	CUP09F05 02-11-2006 11:30
+	*Exige 260 Race*NOT FOR ROAD USE
+
+prog:
+	BCroftT4E090 14/07/2006 Lotus EngV0093
+

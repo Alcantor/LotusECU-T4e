@@ -1,0 +1,5 @@
+ffmpeg -video_size 1024x768 -framerate 25 -f x11grab -i :0.0+484,219 -an -c:v huffyuv output.avi
+ffmpeg -i input.avi -c:v libvpx-vp9 -lossless 1 output-lossless.webm
+ffmpeg -loop 1 -i XXmin.png -t 2 -c:v libvpx-vp9 -lossless 1 XXmin.webm
+ffmpeg -f concat -i concat.txt -pix_fmt yuv420p -compression_level 5 -q:v 75 output.webp
+

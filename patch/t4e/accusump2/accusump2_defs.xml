@@ -1,0 +1,38 @@
+<roms>
+	<rom>
+		<romid>
+			<xmlid>XTRACAL0</xmlid>
+			<market>World</market>
+			<make>Lotus</make>
+			<model>Elise/Exige Patched</model>
+			<submodel>2008-2011</submodel>
+			<transmission>MT</transmission>
+			<filesize>64kb</filesize>
+			<memmodel>MPC563</memmodel>
+			<flashmethod>CRP</flashmethod>
+			<internalidaddress>0x3CB4</internalidaddress>
+			<internalidstring>XTRACAL0</internalidstring>
+		</romid>
+		<table type="2D" name="sensor: oil pressure gain" category="sensor" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBC">
+			<scaling name="Millibar/5v" units="mbar/5volt" expression="x" to_byte="x" format="0" fineincrement="10" coarseincrement="50" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>oil pressure gain</data>
+			</table>
+			<description>Oil pressure sensor gain.</description>
+		</table>
+		<table type="2D" name="sensor: oil pressure offset" category="sensor" storagetype="int16" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBE">
+			<scaling name="Millibar" units="mbar" expression="x" to_byte="x" format="0" fineincrement="10" coarseincrement="50" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>oil pressure offset</data>
+			</table>
+			<description>Oil pressure sensor offset.</description>
+		</table>
+		<table type="2D" name="accusump: Open threshold" category="accusump" storagetype="uint8" endian="big" sizex="4" userlevel="1" storageaddress="0x3CC4">
+			<scaling name="Bar" units="bar" expression="x*32/1000" to_byte="x*1000/32" format="0.0" fineincrement="0.1" coarseincrement="1" />
+			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="4" storageaddress="0x3CC0">
+				<scaling name="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
+			</table>
+			<description>When the oil drop below this pressure threshold, open the accusump.</description>
+		</table>
+	</rom>
+</roms>
