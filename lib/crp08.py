@@ -24,12 +24,13 @@ class CRP08_exception(Exception):
 class CRP08_xtea():
 	T4E_KEY = [0x8FCB06DA,0xAC193E62,0x41500C5C,0x64A7B1DB]
 	T6_KEY = [0x340D2EB9,0xC41A93EE,0x73FAFED5,0x47C80F57]
+	T6_CATERHAM_KEY = [0x340B2EB9,0xC51A93EE,0x73EAFED5,0x47C80F53]
 
-	def __init__(self, for_t6):
+	def __init__(self, key):
 		self.delta = 0x9E3779B9;
 		self.rounds = 32;
 		self.mask = 0xFFFFFFFF
-		self.key = self.T6_KEY if(for_t6) else self.T4E_KEY
+		self.key = key
 		self.iv = [0, 0]
 
 	def encrypt(self, v0, v1):
@@ -199,20 +200,16 @@ CRP08 TOC Chunk:
 # I don't think you can update the bootloader itself. Only calrom and prog.
 #
 class CRP08_data_ecu(BinData):
-	def __init__(self, for_t6):
-		self.xtea = CRP08_xtea(for_t6)
+	def __init__(self, key):
+		self.xtea = CRP08_xtea(key)
 
 		# Encryption header (12 Bytes)
 		self.xtea_salt = secrets.token_bytes(8)
 		#self.xtea_plainsize = 76
 
 		# ECU header (64 Bytes)
-		if(for_t6):
-			self.ecu_id = "ECU T6"
-			self.ecu_addr = 0x5
-		else:
-			self.ecu_id = "T4E"
-			self.ecu_addr = 0x10000
+		self.ecu_id = "T4E"
+		self.ecu_addr = 0x10000
 		#ecu_binsize = 0
 		self.ecu_maxversion = 0
 		self.ecu_minversion = 0
@@ -312,7 +309,7 @@ CRP08 ECU Data:
 class CRP08_chunk_can(BinData):
 	SIGNATURE = 0x0001010A
 
-	def __init__(self, is_encrypted, for_t6):
+	def __init__(self, key):
 		# Configuration header (64 Bytes)
 		#self.signature = self.SIGNATURE
 		self.can_bitrate = 500
@@ -322,9 +319,9 @@ class CRP08_chunk_can(BinData):
 		self.can_local_id2 = 0x7A1
 
 		# Encrypted data
-		self.is_encrypted = is_encrypted
+		self.is_encrypted = (key == None)
 		if(self.is_encrypted): self.data = None
-		else: self.data = CRP08_data_ecu(for_t6)
+		else: self.data = CRP08_data_ecu(key)
 
 	def parse(self, data):
 		# Configuration header (64 Bytes)
@@ -387,14 +384,17 @@ CRP08 CAN Chunk:
 #   4 Bytes LE - Size of the chunk
 #
 class CRP08(BinData):
-	t4e_desc = "LOTUS_T4E_MY08"
-	t6_desc = "LOTUS_T6_AIN.T6AIN0R01"
+	variants = [
+		["T4E",CRP08_xtea.T4E_KEY,"T4E",0x10000,0x20000,"LOTUS_T4E_MY08"],
+		["T6",CRP08_xtea.T6_KEY,"ECU T6",0x5,0x4,"LOTUS_T6_AIN.T6AIN0R01"],
+		["T6 Caterham",CRP08_xtea.T6_CATERHAM_KEY,"CATERHAM T6",0x5,0x4,"CATERHAM_ECU_DURATEC"]
+	]
 
 	def __init__(self):
 		# An empty CRP file
 		self.chunks = [CRP08_chunk_toc()]
 
-	def parse(self, data, is_encrypted, for_t6):
+	def parse(self, data, key):
 		# Check the sum
 		cksum = sum(data[:-2]) & 0xFFFF
 		if(cksum != int.from_bytes(data[-2:], BO_LE)):
@@ -407,7 +407,7 @@ class CRP08(BinData):
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
 			if(i == 0): chunk = CRP08_chunk_toc()
-			else: chunk = CRP08_chunk_can(is_encrypted, for_t6)
+			else: chunk = CRP08_chunk_can(key)
 			chunk.parse(data[offset:offset+size])
 			self.chunks[i] = chunk
 
@@ -443,38 +443,29 @@ class CRP08(BinData):
 		self.chunks[0].del_entry(index-1)
 		del self.chunks[index]
 
-	# Create a chunk for the T4E Calibration
-	def add_t4e_cal(self, file):
-		chk = CRP08_chunk_can(False, False)
-		chk.data.ecu_addr = 0x10000
+	# Create a chunk for the Calibration
+	def add_cal(self, file, i=0):
+		v = CRP08.variants[i]
+		chk = CRP08_chunk_can(v[1])
+		chk.data.ecu_id = v[2]
+		chk.data.ecu_addr = v[3]
 		chk.data.import_bin(file)
-		self.add_chunk(chk, os.path.basename(file), self.t4e_desc)
+		self.add_chunk(chk, os.path.basename(file), v[5])
 
-	# Create a chunk for the T4E Program
-	def add_t4e_prog(self, file):
-		chk = CRP08_chunk_can(False, False)
-		chk.data.ecu_addr = 0x20000
+	# Create a chunk for the Program
+	def add_prog(self, file, i=0):
+		v = CRP08.variants[i]
+		chk = CRP08_chunk_can(v[1])
+		chk.data.ecu_id = v[2]
+		chk.data.ecu_addr = v[4]
 		chk.data.import_bin(file)
-		self.add_chunk(chk, os.path.basename(file), self.t4e_desc)
-
-	# Create a chunk for the T6 Calibration
-	def add_t6_cal(self, file):
-		chk = CRP08_chunk_can(False, True)
-		chk.data.ecu_addr = 0x5
-		chk.data.import_bin(file)
-		self.add_chunk(chk, os.path.basename(file), self.t6_desc)
-
-	# Create a chunk for the T6 Program
-	def add_t6_prog(self, file):
-		chk = CRP08_chunk_can(False, True)
-		chk.data.ecu_addr = 0x4
-		chk.data.import_bin(file)
-		self.add_chunk(chk, os.path.basename(file), self.t6_desc)
+		self.add_chunk(chk, os.path.basename(file), v[5])
 
 	# Unpack multiple chunks from a CRP file.
-	def read_file(self, file, is_encrypted=False, for_t6=False):
+	def read_file(self, file, i=0):
+		key = None if (i == None) else CRP08.variants[i][1]
 		with open(file, 'rb') as f:
-			self.parse(memoryview(f.read()), is_encrypted, for_t6)
+			self.parse(memoryview(f.read()), key)
 
 	# Pack multiple chunks into a CRP file.
 	def write_file(self, file):
@@ -490,20 +481,22 @@ if __name__ == "__main__":
 	if  (len(sys.argv) >= 4 and sys.argv[1] == "calrom"):
 		print("-- Add "+sys.argv[2]+" into "+sys.argv[3]+" --")
 		crp = CRP08()
-		crp.add_t4e_cal(sys.argv[2])
+		crp.add_cal(sys.argv[2])
+		print(crp.chunks[1])
 		crp.write_file(sys.argv[3])
 	elif(len(sys.argv) >= 4 and sys.argv[1] == "prog"):
 		print("-- Add "+sys.argv[2]+" into "+sys.argv[3]+" --")
 		crp = CRP08()
-		crp.add_t4e_prog(sys.argv[2])
+		crp.add_prog(sys.argv[2])
+		print(crp.chunks[1])
 		crp.write_file(sys.argv[3])
 	elif(len(sys.argv) >= 5 and sys.argv[1] == "both"):
 		print("-- Add "+sys.argv[2]+" into "+sys.argv[4]+" --")
 		crp = CRP08()
-		crp.add_t4e_cal(sys.argv[2])
+		crp.add_cal(sys.argv[2])
 		print(crp.chunks[1])
 		print("-- Add "+sys.argv[3]+" into "+sys.argv[4]+" --")
-		crp.add_t4e_prog(sys.argv[3])
+		crp.add_prog(sys.argv[3])
 		print(crp.chunks[2])
 		crp.write_file(sys.argv[4])
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "unpack"):

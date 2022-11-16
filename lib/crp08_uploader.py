@@ -171,10 +171,10 @@ if __name__ == "__main__":
 	crp_file = args['file']
 
 	crp = CRP08()
-	crp.read_file(crp_file, is_encrypted=True)
+	crp.read_file(crp_file, None)
 	up = CRP08_uploader(can_if, can_ch, Progress())
 	try:
-		up.bootstrap(self.crp)
+		up.bootstrap(crp)
 	finally:
 		up.close_can()
 
