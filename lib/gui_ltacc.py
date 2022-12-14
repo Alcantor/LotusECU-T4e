@@ -21,7 +21,8 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			"RAM+0x1330 - White BCroftT4E090 14/07/2006 Lotus EngV0091",
 			"RAM+0x1330 - White BCroftT4E090 14/07/2006 Lotus EngV0093",
 			"RAM+0x1324 - White BCroftT4E090 27/02/2007 Lotus EngV0097",
-			"RAM+0x4000 - White CCroft221  2nd Dec  10 Lotus Eng"
+			"RAM+0x4000 - White CCroft221  2nd Dec  10 Lotus Eng",
+			"RAM+0x0000 - T6 L4 Lotus/Caterham"
 		])
 		self.cb.current(0)
 		self.cb.pack(fill=tk.X, expand=True)
@@ -36,12 +37,13 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 
 	def validate(self):
 		self.base = [
-			0x3F974C,
-			0x3F98D0,
-			0x3F9330,
-			0x3F9330,
-			0x3F9324,
-			0x084000
+			0x003F974C,
+			0x003F98D0,
+			0x003F9330,
+			0x003F9330,
+			0x003F9324,
+			0x00084000,
+			0x40000000
 		][self.cb.current()]
 		self.size = [
 			0x3CA0,
@@ -49,7 +51,8 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			0x3CA0,
 			0x3C8E,
 			0x3C94,
-			0x6000
+			0x6000,
+			0x69A8
 		][self.cb.current()]
 		self.copy = (self.docopy.get() == 1)
 		self.verify = (self.doverify.get() == 1)

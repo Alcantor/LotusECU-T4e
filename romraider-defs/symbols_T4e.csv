@@ -1,0 +1,1092 @@
+"Name","Location","Data Type","EOL Comment"
+"LEA_base","002f8000","char[32]","EEPROM copy in RAM"
+"LEA_ecu_engine_speed_byte_coefficient","002f8020","uint16_t",""
+"LEA_ecu_engine_speed_byte_offset","002f8022","uint16_t",""
+"LEA_load_alphaN_adj_X_engine_speed","002f8028","u8_rspeed_125/4+500rpm[16]",""
+"LEA_load_alphaN_adj_Y_tps","002f8038","u8_factor_1/255[16]",""
+"LEA_load_alphaN_adj","002f8048","u8_factor_1/100[256]",""
+"LEA_ltft_low_adj","002f8148","u8_factor_1/512-1/2",""
+"LEA_ltft_high_adj","002f8149","u8_factor_1/512-1/2",""
+"LEA_knock_retard2","002f814a","u16_factor_1/65536[4]",""
+"LEA_ltft_idle_adj","002f8152","i16_time_us",""
+"LEA_idle_flow_adj1","002f81d4","i16_flow_100/1024mg/s",""
+"LEA_idle_flow_adj1_ac_on","002f81d6","i16_flow_100/1024mg/s",""
+"LEA_ecu_VIN","002f81d8","char[17]",""
+"LEA_sensor_pps1_offset","002f82c6","u16_voltage_5/1023v",""
+"LEA_sensor_pps2_offset","002f82c8","u16_voltage_5/1023v",""
+"LEA_obd2_freeze_dtc","002f8300","uint16_t",""
+"LEA_obd2_freeze_engine_speed","002f8302","u16_rspeed_1/4rpm",""
+"LEA_obd2_freeze_fuel_sytem_status","002f8304","uint8_t",""
+"LEA_obd2_freeze_load","002f8305","u8_factor_1/255",""
+"LEA_obd2_freeze_car_speed","002f8306","u8_speed_kph",""
+"LEA_obd2_freeze_tps","002f8307","u8_factor_1/255",""
+"LEA_obd2_freeze_maf_flow","002f8308","u16_flow_10mg/s",""
+"LEA_obd2_freeze_temp_coolant","002f830a","u8_temp_1-40c",""
+"LEA_obd2_freeze_stft","002f830b","u8_factor_1/128-1",""
+"LEA_obd2_freeze_ltft","002f830c","u8_factor_1/128-1",""
+"LEA_obd2_freeze2_dtc","002f8324","uint16_t",""
+"LEA_obd2_freeze2_engine_speed","002f8326","u16_rspeed_1/4rpm",""
+"LEA_obd2_freeze2_maf_flow","002f8328","u16_flow_10mg/s",""
+"LEA_obd2_freeze2_stft","002f832a","i16_factor_1/2000",""
+"LEA_obd2_freeze2_ltft","002f832c","i16_factor_1/2000",""
+"LEA_obd2_freeze2_temp_coolant","002f832e","u8_temp_5/8-40c",""
+"LEA_obd2_freeze2_temp_coolant_engine_stop","002f832f","u8_temp_5/8-40c",""
+"LEA_obd2_freeze2_temp_engine_air","002f8330","u8_temp_5/8-40c",""
+"LEA_obd2_freeze2_tps","002f8331","u8_factor_1/255",""
+"LEA_obd2_freeze2_engine_runtime","002f8334","u32_time_5ms",""
+"LEA_obd2_freeze2_sensor_adc_pre_O2","002f8338","u16_voltage_5/1023v",""
+"LEA_obd2_freeze2_sensor_adc_post_O2","002f833a","u16_voltage_5/1023v",""
+"LEA_obd2_freeze2_car_speed","002f8340","u8_speed_kph",""
+"LEA_tc_lauchcontrol_revlimit","002f835e","u16_rspeed_rpm",""
+"CAL_base","003f98d0","char[32]","Calibration copy in RAM"
+"CAL_ecu_engine_speed_byte_coefficient","003f98f4","uint16_t","DO NOT EDIT THIS VALUE. Internal engine speed byte used within the ECU to index many lookup tables.
+
+Formula: engine_speed = COEFFICIENT / flywheel_tooth_count_period - offset."
+"CAL_ecu_engine_speed_byte_offset","003f98f6","uint16_t","DO NOT EDIT THIS VALUE. Internal engine speed byte used within the ECU to index many lookup tables.
+
+Formula: engine_speed = coefficient / flywheel_tooth_count_period - OFFSET."
+"CAL_sensor_baro_gain","003f98f8","u16_ratio_mbar/5v","Barometric pressure sensor build into the ECU. Datasheet MXP4100A: 1/0.01059 * 10 mbar/kPa = 944"
+"CAL_sensor_baro_offset","003f98fa","i16_pressure_mbar","Barometric pressure sensor build into the ECU. Datasheet MXP4100A: 0.1518/0.01059 * 10 mbar/kPa = 143"
+"CAL_sensor_evap_gain","003f98fc","u16_ratio_mbar/5v","Pressure sensor calibration of the evaporative system.
+
+Formula: pressure = signal * GAIN + offset"
+"CAL_sensor_evap_offset","003f98fe","i16_pressure_mbar","Pressure sensor calibration of the evaporative system.
+
+Formula: pressure = signal * gain + OFFSET"
+"CAL_sensor_map_gain","003f9900","u16_ratio_mbar/5v","Pressure sensor calibration of the intake manifold.
+
+Formula: pressure = signal * GAIN + offset"
+"CAL_sensor_map_offset","003f9902","i16_pressure_mbar","Pressure sensor calibration of the intake manifold.
+
+Formula: pressure = signal * gain + OFFSET"
+"CAL_load_use_alphaN_timer","003f9914","u8_time_5ms","Once the negative/positive tps change or the absolute tps threshold is triggered\, the alphaN will be used for this amount of time."
+"CAL_misc_use_tmap","003f9915","uint8_t","On supercharged car\, there is an additional sensor build after the intercooler. 0 = Use temperature of MAF\, 1 = Use this sensor for engine air temperature."
+"CAL_ign_cranking_max_runtime","003f9916","u8_time_10ms","Time after startup to use the cranking ignition advance."
+"CAL_sensor_dt_tps1_age","003f9917","u8_time_5ms","Throttle body position differential value 1\, the current tps and an old tps values are used. This value sets how old should be the second value. Between 0 and 75ms."
+"CAL_tc_rear_tyre_circumference","003f9918","u16_length_mm","Circumference of the rear tyres. Needed to convert the rotational speed of the wheels into a car speed."
+"CAL_tc_abs_ring_teeth_count","003f991a","uint8_t","Number of teeth of holes of the abs ring. Needed to convert the abs signal into a rotational speed of the wheel."
+"CAL_dfso_delay","003f991b","u8_time_5ms","A delay is used before activating deceleration fuel shut off in order to allow for gear shift without DFSO."
+"CAL_load_reactivity","003f991c","u8_factor_1/256","Every 5ms\, the sampled load value (maf or alphaN) is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_ign_min_stop_coolant_to_use_adj2","003f991d","u8_temp_5/8-40c","When the engine coolant is below this startup temperature threshold\, adj2 is always 0."
+"CAL_ign_max_stop_coolant_to_use_adj2","003f991e","u8_temp_5/8-40c","When the engine coolant is above this startup temperature threshold\, adj2 is always 0."
+"CAL_ign_advance_dfso","003f991f","u8_angle_1/4deg","Ignition advance (degree before top dead center) when dfso is activated.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (cranking): adv = ADVANCE_DFSO
+Formula (cranking): adv = advance_cranking"
+"CAL_injtip_in_adj_gears","003f9921","u8_factor_1/128[6]","Add extra fuel (injection time) based on change in the tps. It's like the accelerator pump of a carburator.
+
+Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * adj3 * ADJ_GEAR"
+"CAL_sensor_dt_engine_speed_age","003f9927","uint8_t","Engine speed differential\, the current speed and an old speed are used. This value sets how old should be the second value. Between 0 and 7 (7 is the less sensitive)."
+"CAL_knock_signal_avg_min","003f9928","u8_x256","Minimum value allowed for signal_avg."
+"CAL_ign_advance_adj_cyl","003f992c","u8_angle_1/4-32deg[4]","Ignition advance adjustment per cylinder."
+"CAL_ac_disable_coolant","003f9930","u8_temp_5/8-40c","When the engine coolant is above this temperature threshold\, disable the A/C compressor."
+"CAL_ac_enable_coolant","003f9931","u8_temp_5/8-40c","When the engine coolant is below this temperature threshold\, enable the A/C compressor."
+"CAL_ac_disable_pps","003f9932","u8_factor_1/255","When the pps is above this position threshold\, disable the A/C compressor."
+"CAL_ac_enable_tps","003f9933","u8_factor_1/255","When the tps is below this position threshold\, enable the A/C compressor."
+"CAL_ac_disable_user_min_time","003f9934","u8_time_5ms","Once the A/C is disabled by the user\, the A/C compressor will be held off at least this amount of time. Only afterwards it will be allowed to be turned back on."
+"CAL_fan_low_on","003f9935","u8_temp_5/8-40c","When the engine coolant is above this temperature threshold\, turn on the low speed fan."
+"CAL_fan_low_off","003f9936","u8_temp_5/8-40c","When the engine coolant is below this temperature threshold\, turn off the low speed fan."
+"CAL_fan_low_on_engine_off","003f9937","u8_temp_5/8-40c","WITH ENGINE OFF (HEAT SOAK): When the engine coolant is above this temperature threshold\, turn on the low speed fan."
+"CAL_fan_low_off_engine_off","003f9938","u8_temp_5/8-40c","WITH ENGINE OFF (HEAT SOAK): When the engine coolant is below this temperature threshold\, turn off the low speed fan."
+"CAL_fan_high_on","003f9939","u8_temp_5/8-40c","When the engine coolant is above this temperature threshold\, turn on the high speed fan."
+"CAL_fan_high_off","003f993a","u8_temp_5/8-40c","When the engine coolant is below this temperature threshold\, turn off the high speed fan."
+"CAL_fan_cutoff","003f993b","u8_speed_kph","When the car is above this speed threshold\, turn off the fan."
+"CAL_idle_flow_adj1_corr_max_threshold","003f993c","u8_flow_100mg/s","The ECU will make a +10.24mg/s correction to the learned_flow_adj1 value\, if the flow_adj8 is above this threshold."
+"CAL_idle_flow_adj1_corr_min_threshold","003f993d","u8_flow_-100mg/s","The ECU will make a -10.24mg/s correction to the learned_flow_adj1 value\, if the flow_adj8 is below this threshold."
+"CAL_idle_flow_adj1_corr_max","003f993e","u8_flow_100mg/s","Maximum learned_flow_adj1 value. The ECU will not make correction above this value."
+"CAL_idle_flow_adj1_corr_min","003f993f","u8_flow_-100mg/s","Minimum learned_flow_adj1 value. The ECU will not make correction below this value."
+"CAL_closedloop_min_engine_air","003f9940","u8_temp_5/8-40c","Minimum engine air temperature to enable the closed loop operation."
+"CAL_closedloop_stft_idle_time_between_step","003f9943","u8_time_5ms","WITH IDLING ENGINE: Minimum time between stft corrections. At 1200rpm.
+
+Formula: time = TIME_BETWEEN_STEP * 1200 / engine_speed"
+"CAL_ac_disable_engine_speed","003f9944","u8_rspeed_125/4+500rpm","When the engine is above this speed threshold\, disable the A/C compressor."
+"CAL_ac_enable_engine_speed","003f9945","u8_rspeed_125/4+500rpm","When the engine is below this speed threshold\, enable the A/C compressor."
+"CAL_ac_disable_pps_min_time","003f9946","u8_time_100ms","If the A/C compressor is disabled by the pps position threshold\, it will be held off for at least this amount of time."
+"CAL_ac_enable_user_min_time","003f9948","u8_time_5ms","Once the A/C is enabled by the user\, the A/C compressor will be held on at least this amount of time. Only afterwards it will be allowed to be turned back off."
+"CAL_misc_recirculation_pump_on_engine_off","003f9949","u8_temp_5/8-40c","WITH ENGINE OFF (HEAT SOAK): When the engine coolant is above this temperature threshold\, turn on the recirculation pump."
+"CAL_misc_recirculation_pump_off_engine_off","003f994a","u8_temp_5/8-40c","WITH ENGINE OFF (HEAT SOAK): When the engine coolant is below this temperature threshold\, turn off the recirculation pump."
+"CAL_load_alphaN_adj_corr_max","003f994b","u8_factor_1/100","Maximum alphaN adj value. The ECU will not make correction above this value."
+"CAL_load_alphaN_adj_corr_min","003f994c","u8_factor_1/100","Minimum alphaN adj value. The ECU will not make correction below this value."
+"CAL_tc_car_speed_reactivity","003f994f","u8_factor_1/256","At every cycle\, the sampled car speed value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_load_alphaN_adj_corr_min_coolant","003f9950","u8_temp_5/8-40c","The ECU will not make correction to the alphaN adj table\, unless the engine coolant is above this temperature threshold."
+"CAL_fan_high_off_user_delay","003f9951","u8_time_s","The signal AC REQ FAN also controls the high speed fan. But when this signal is deasserted\, a delay defined by this value is used before the fan is turned off."
+"CAL_sensor_engine_air_reactivity","003f9953","u8_factor_1/2560","At every cycle\, the sampled engine air value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_sensor_coolant_reactivity","003f9954","u8_factor_1/2560","At every cycle\, the sampled coolant value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_sensor_intake_air_reactivity","003f9955","u8_factor_1/2560","At every cycle\, the sampled intake air value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_sensor_fuel_reactivity","003f9957","u8_factor_1/256","At every cycle\, the sampled fuel level value is mixed with the previous value.
+Note: This does not have an influence on the fuel gauge of the instrument cluster.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_ac_disable_car_speed","003f9958","u8_speed_kph","When the car is above this speed threshold\, disable the A/C compressor."
+"CAL_ac_enable_car_speed","003f9959","u8_speed_kph","When the car is below this speed threshold\, enable the A/C compressor."
+"CAL_ecu_ign_threshold","003f995b","u8_voltage_72/1023v","By turning the key on the IGN position\, power is asserted to a dedicated input of the ECU and is considered active if above this threshold."
+"CAL_dfso_enable_car_speed","003f995c","u8_speed_kph","When the car is above this speed threshold\, enable the deceleration fuel shut off."
+"CAL_dfso_disable_car_speed","003f995d","u8_speed_kph","When the car is below this speed threshold\, disable the deceleration fuel shut off."
+"CAL_knock_retard1_limit","003f9962","u8_angle_1/4deg","Maximium allowed value for retard1."
+"CAL_knock_retard2_corr_inc_coef","003f9965","uint8_t","The ECU will make corrections to the retard2 value\, if the engine load is above the retard2_corr_threshold.
+
+Formula (retard1 is 0): retard2 = retard2 - retard2_corr_dec_step
+Formula (retard1  > 0): retard2 = retard2 + retard1 * RETARD2_CORR_INC_COEF
+
+Note: retard2 is saved in the eeprom."
+"CAL_knock_retard2_corr_dec_step","003f9966","uint8_t","The ECU will make corrections to the retard2 value\, if the engine load is above the retard2_corr_threshold.
+
+Formula (retard1 is 0): retard2 = retard2 - RETARD2_CORR_DEC_STEP
+Formula (retard1  > 0): retard2 = retard2 + retard1 * retard2_corr_inc_coef
+
+Note: retard2 is saved in the eeprom."
+"CAL_knock_retard1_engine_speed_max","003f9967","u8_rspeed_125/4+500rpm","If the engine is above this speed threshold\, disable retard1. It will be re-enable when the engine speed will be below this threshold minus the speed_margin."
+"CAL_knock_retard1_engine_speed_min","003f9968","u8_rspeed_125/4+500rpm","If the engine is below this speed threshold\, disable retard1. It will be re-enable when the engine speed will be above this threshold plus the speed_margin."
+"CAL_knock_retard1_min_coolant","003f9969","u8_temp_5/8-40c","If the engine coolant is below this temperature threshold\, disable retard1."
+"CAL_knock_signal_fadeout_step","003f996a","uint8_t","WHEN KNOCK IS DETECTED: Fadeout the peak by incrementing the average.
+
+Formula: signal_avg = signal_avg + SIGNAL_FADEOUT_STEP"
+"CAL_knock_signal_reactivity","003f996b","u8_factor_1/256","To separate real knock from noise\, a peak detection is build for every cylinders.
+
+Formula:
+
+signal_avg = (100% - REACTIVITY) * signal_avg + REACTIVITY * signal
+peak = (signal * 10) / (signal_avg + 1)
+peak_over_threshold = peak - threshold"
+"CAL_knock_speed_margin","003f996c","u8_rspeed_125/4+500rpm","Engine speed margin for retard1_engine_speed_min and retard1_engine_speed_max thresholds."
+"CAL_knock_load_margin","003f996d","u8_load_4mg/stroke","Engine load margin for retard_threshold and retard2_corr_threshold thresholds."
+"CAL_knock_retard1_dt_tps2_time","003f996e","u8_time_5ms","If the retard1 is disabled by a change in tps\, it will be re-enable after this amount of time."
+"CAL_knock_retard1_max_?","003f996f","undefined1",""
+"CAL_knock_retard1_dt_tps2_threshold","003f9970","u16_factor_1/1023","If the tps is above this change threshold\, disable retard1."
+"CAL_evap_mode_?_0_1_2","003f9972","uint8_t",""
+"CAL_closedloop_stft_avg_reactivity","003f9973","u8_factor_1/256","Every 5ms\, the stft value is mixed with the previous value to build an average. The stft average is then used in the ltft.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_evap_?a","003f9974","u8_time_5ms",""
+"CAL_evap_?b","003f9979","u8_time_5ms",""
+"CAL_evap_vacuum_reactivity","003f997a","u8_factor_1/256",""
+"CAL_fan_high_on_ac_on","003f997d","u8_temp_5/8-40c","WITH A/C ON: When the engine coolant is above this temperature threshold\, turn on the high speed fan."
+"CAL_fan_high_off_ac_on","003f997e","u8_temp_5/8-40c","WITH A/C ON: When the engine coolant is below this temperature threshold\, turn off the high speed fan."
+"CAL_ign_advance_idle_adj_ac_on","003f997f","u8_angle_1/4deg","Ignition advance adjustment when A/C is on.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + IDLE_ADJ_AC_ON
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_ign_advance_min","003f9980","u8_angle_1/4-32deg","Minimum allowable ignition advance."
+"CAL_injtip_in_adj_gears_6","003f9981","u8_factor_1/128","Add extra fuel (injection time) based on change in the tps. It's like the accelerator pump of a carburator.
+
+Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * adj3 * ADJ_GEAR"
+"CAL_sensor_engine_speed_period_avg_size","003f9982","uint8_t","Sometimes an average is used on the sampled engine speed period values. This value sets how many samples are used to build the average. Between 1 and 7 (1 no average\, 7 very smooth)."
+"CAL_evap_?c","003f9989","u8_time_40ms",""
+"CAL_evap_?d","003f998a","u8_time_5ms",""
+"CAL_inj_afr_adj_per_advance_adj","003f998b","u8_afr_1/100","Fuel enrichment based on ignition advance (No enleanment allowed).
+
+Formula:
+
+afr_adj = AFR_ADJ_PER_ADVANCE_IGNITION_ADJ * (knock_ign_retard2 - ign_advance_adj1 - ign_advance_adj3)
+
+a = (load / (afr_base - afr_adj)) - evap
+b = a / (efficiency * flow_rate)
+c = b * adj1 * adj2 * adj3 + tip_in + tip_out + reactive
+d = base + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_evap_?e","003f998c","u8_time_5ms",""
+"CAL_closedloop_ltft_idle_step","003f998d","u8_time_us","Decrement/Increment for the ltft correction when idling.
+
+Formula (idle): idle_adj = idle_adj -/+ IDLE_STEP"
+"CAL_sensor_pps1_gain","003f998f","u8_factor_1/64","Pedal position sensor 1 calibration.
+
+Formula: pps1 = GAIN * (signal - offset)"
+"CAL_sensor_pps2_gain","003f9990","u8_factor_1/64","Pedal position sensor 2 calibration. There is 2 potentiometers in the gas pedal for redundancy. The second is usually half of the first.
+
+Formula: pps2 = GAIN * (signal - offset)"
+"CAL_sensor_pps_reactivity","003f9992","u8_factor_1/256","Every 5ms\, the sampled pps value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_sensor_map_avg_size","003f9993","uint8_t","An average is used on the sampled MAP values. This value sets how many samples are used to build the average. Between 1 and 31 (1 no average\, 31 very smooth)."
+"CAL_tc_front_tyre_circumference","003f9994","u16_length_mm","Circumference of the front tyres. Needed to convert the rotational speed of the wheels into a car speed."
+"CAL_tc_mode","003f9996","uint8_t","Traction control mode: 0 = no traction control\, 1 = normal traction control\, 2 = variable traction control."
+"CAL_tc_slip_adj2","003f9997","u8_factor_1/100","When the car is slipping the ecu apply a factor to the advance of the ignition. A retard to the ignition makes the engine loose torque.
+
+Formula: ign_adv_adj = 100% - steps - (slip - adj1 - ADJ2) * slip_to_retard_ratio"
+"CAL_tc_max_front_speed","003f9998","u8_speed_kph","When the car is above this speed threshold\, disable the traction control."
+"CAL_tc_min_front_speed","003f9999","u8_speed_kph","When the car is below this speed threshold\, disable the traction control."
+"CAL_tc_min_engine_speed","003f999a","u16_rspeed_rpm","When the engine is below this speed threshold\, disable the traction control."
+"CAL_tc_slip_adj2_enable_left_right_threshold","003f999c","u16_speed_1/100kph","When the difference between left and right wheel (front or rear axle) is above this speed threshold\, the adj2 is immediately enable."
+"CAL_tc_slip_adj2_disable_delay","003f999e","u16_time_5ms","The adj2 is disable after this amount of time."
+"CAL_tc_time_between_step","003f99a0","u16_time_5ms","When the car is slipping\, steps is increment at this time interval. And once the car is stabilised\, steps is also decrement at this time interval.
+
+Formula: ign_adv_adj = 100% - STEPS - (slip - adj1 - adj2) * slip_to_retard_ratio"
+"CAL_tc_min_slip","003f99a2","u8_factor_1/100","When the slip is above this value threshold\, activate the traction control.
+
+Formula: slip = wheel_speed_rear / wheel_speed_front"
+"CAL_tc_slip_to_retard_ratio","003f99a3","u8_factor_10/1632","When the car is slipping the ecu apply a factor to the advance of the ignition. A retard to the ignition makes the engine loose torque.
+
+Formula: ign_adv_adj = 100% - steps - (slip - adj) * SLIP_TO_RETARD_RATIO"
+"CAL_tc_ign_advance_adj_limit","003f99a4","u8_factor_1/255","Maximum ignition retard allowed for traction control."
+"CAL_tc_slip_reactivity","003f99a5","u8_factor_1/256","At every cycle\, the sampled slip value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_ign_advance_idle_adj3_dt_engine_speed_age","003f99a6","uint8_t","Engine speed differential\, the current speed and an old speed are used. This value sets how old should be the second value. Between 0 and 10 (10 is the less sensitive)."
+"CAL_idle_flow_base","003f99ab","u8_flow_100mg/s","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = FLOW_BASE + learned_adj1 - adj2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + adj7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_ecu_startrelay_max_runtime","003f99f0","u16_time_5ms","When the engine has run longer than this time threshold\, disable the start relay."
+"CAL_evap_period","003f99f2","u16_time_25ns","TODO: Check scale\, it could be u16_time_50ns too."
+"CAL_load_alphaN_adj_corr_limit_dt_engine_speed","003f99f6","u16_rspeed_rpm","The ECU will not make correction to the alphaN adj table\, if the negative or positive engine speed change is above this limit threshold."
+"CAL_revlimit_offset_misfire_eval","003f99f8","u16_rspeed_rpm",""
+"CAL_misc_engine_detection_on","003f99fa","u16_time_4us","When the engine is above this speed threshold\, the engine is considered as started."
+"CAL_misc_engine_detection_off","003f99fc","u16_time_4us","When the engine is below this speed threshold\, the engine is considered as stopped."
+"CAL_fan_high_off_min_time","003f99fe","u16_time_5ms","The high speed fan will be held off for at least this amount of time. Only afterwards it will be allowed to be turned back on."
+"CAL_closedloop_O2_test_min_runtime","003f9a00","u16_time_5ms",""
+"CAL_misc_gears","003f9a04","u16_ratio_rpm/kph[10]","The ECU estimates the current gear based on rpm and vehicle speed and these are the thresholds for that determination."
+"CAL_closedloop_afr","003f9a18","u16_afr_1/100","Target afr value to enable the closed loop operation."
+"CAL_closedloop_O2_test_low_threshold","003f9a1a","u16_voltage_5/1023v",""
+"CAL_closedloop_O2_test_high_threshold","003f9a1c","u16_voltage_5/1023v",""
+"CAL_closedloop_stft_limit","003f9a1e","u16_factor_1/2000","Maximum allowed negative or positive value for stft."
+"CAL_fan_low_off_min_time","003f9a20","u16_time_5ms","The low speed fan will be held off for at least this amount of time. Only afterwards it will be allowed to be turned back on."
+"CAL_ecu_fuelpump_prime","003f9a22","u16_time_5ms","When the ignition is switched on\, the ECU energises the fuel pump during this amount of time to prime the system before switching off."
+"CAL_sensor_pps1_offset","003f9a2a","u16_voltage_5/1023v","Pedal position sensor 1 calibration.
+
+Formula: pps1 = gain * (signal - OFFSET)"
+"CAL_ac_min_runtime","003f9a2c","u16_time_5ms","The engine has to be running at least this amount of time\, before the A/C compressor can be turned on."
+"CAL_load_alphaN_adj_corr_time_between_step","003f9a2e","u16_time_5ms","Minimum time between ECU correction of the alphaN adj table."
+"CAL_load_alphaN_adj_corr_high_threshold","003f9a30","u16_factor_1/100","The ECU will make a -1% correction to the alphaN adj table\, if the ratio between the alphaN and the maf load is above this threshold."
+"CAL_load_alphaN_adj_corr_low_threshold","003f9a32","u16_factor_1/100","The ECU will make a +1% correction to the alphaN adj table\, if the ratio between the alphaN and the maf load is below this threshold."
+"CAL_load_alphaN_adj_corr_min_time","003f9a36","u16_time_5ms","Once the ECU is allowed to make corrections to the alphaN adj table\, wait this amount of time before the first correction. "
+"CAL_sensor_pps2_offset","003f9a38","u16_voltage_5/1023v","Pedal position sensor 2 calibration. There is 2 potentiometers in the gas pedal for redundancy.
+
+Formula: pps2 = gain * (signal - OFFSET)"
+"CAL_idle_flow_adj8_corr_time_between_step","003f9a3e","u8_time_5ms","Minimum time between ECU correction of the flow_adj8 value."
+"CAL_idle_flow_adj8_corr_max","003f9a3f","u8_flow_100mg/s","Maximum flow_adj8 value. The ECU will not make correction above this value."
+"CAL_idle_flow_adj8_corr_min","003f9a40","u8_flow_-100mg/s","Minimum flow_adj8 value. The ECU will not make correction below this value."
+"CAL_idle_flow_adj5_threshold","003f9a41","u8_speed_kph","When the car is above this speed threshold\, the flow_adj5 will be used.
+
+Note: The ignition adj1_alternative will also be used instead of adj1."
+"CAL_idle_flow_pps_threshold","003f9a42","u8_factor_1/1023","When the pps is above this position threshold\, disble the correction of the adj1_learned\, adj8 and more..."
+"CAL_idle_flow_adj7_disable_threshold","003f9a43","u8_rspeed_8rpm","When the engine speed is below the target_speed+threshold\, the flow_adj7 is disable.
+
+Note: Between the disable and enable threshold\, adj7 is factorized."
+"CAL_idle_flow_adj7_enable_threshold","003f9a44","u8_rspeed_8rpm","When the engine speed is above the target_speed+threshold\, the flow_adj7 is enable.
+
+Note: Between the disable and enable threshold\, adj7 is factorized."
+"CAL_closedloop_stft_enrichment_step_adj","003f9a45","u8_factor_1/64","When a lean condition is detected\, the stft will enrich the mixture.
+
+Formula (first)     : stft = stft + initial
+Formula (subsequent): stft = stft + step
+Formula (with adj)  : stft = stft + step * ADJ"
+"CAL_sensor_maf_avg_size","003f9a48","uint8_t","An average is used on the sampled maf values. This value sets how many samples are used to build the average. Between 1 and 31 (1 no average\, 31 very smooth)."
+"CAL_idle_flow_time_between_decrement","003f9a49","u8_time_5ms","When the flow is reduced\, it will be smoothly decremented (-0.1g/s) using the flow_time_between_decrement time interval."
+"CAL_injtip_time_base","003f9a4a","u8_time_us","Standard: 60us for 330cc/min and 40us for 440cc/min injector."
+"CAL_sensor_dt_tps2_age","003f9a4b","u8_time_5ms","Throttle body position differential value 2\, the current tps and an old tps values are used. This value sets how old should be the second value. Between 0 and 75ms."
+"CAL_injtip_in_dt_tps2_limit","003f9a4e","u16_factor_1/1023","Positive limit value for dt_tps2. 
+
+Formula: tip_out(t) = time_base * (DT_TPS2 - (adj2 * t)) * adj1 * adj3"
+"CAL_injtip_in_dt_tps2_threshold","003f9a50","u16_factor_1/1023","Minimal dt_tps2 value to trigger the tip-in algorithm (t = 0)."
+"CAL_injtip_out_dt_tps2_limit","003f9a52","u16_factor_1/1023","Negative limit value for dt_tps2. 
+
+Formula: tip_out(t) = time_base * (DT_TPS2 - (adj2 * t)) * adj1 * adj3"
+"CAL_injtip_out_dt_tps2_threshold","003f9a54","u16_factor_1/1023","Minimal dt_tps2 value to trigger the tip-out algorithm (t = 0)."
+"CAL_closedloop_stft_time_between_step","003f9a56","u8_time_5ms","Minimum time between stft corrections."
+"CAL_closedloop_stft_enleanment_step_adj","003f9a57","u8_factor_1/64","When a rich condition is detected\, the stft will enlean the mixture.
+
+Formula (first)     : stft = stft - initial
+Formula (subsequent): stft = stft - step
+Formula (with adj)  : stft = stft - step * ADJ"
+"CAL_closedloop_ltft_min_engine_air","003f9a58","u8_temp_5/8-40c","Minimum engine air temperature to enable the ltft correction."
+"CAL_closedloop_ltft_min_fuel","003f9a59","u8_factor_1/255","Minimum fuel level to enable the ltft correction."
+"CAL_misc_shift_lights_offset","003f9a5a","u16_rspeed_rpm",""
+"CAL_misc_tps_max","003f9a5c","u16_factor_1/1023","Maximum target tps position (including the idle target tps position)."
+"CAL_misc_tps_min","003f9a5e","u16_factor_1/1023","Minimum target tps position (including the idle target tps position)."
+"CAL_idle_tps_max","003f9a60","u16_factor_1/1023","Maximum allowed tps position for idling.
+
+Note: tps_max does not limit the tps engine stop value."
+"CAL_dfso_disable_pps","003f9a62","u8_factor_1/1023","When the pps is below this position threshold\, disable the deceleration fuel shut off."
+"CAL_dfso_enable_pps","003f9a63","u8_factor_1/1023","When the pps is above this position threshold\, enable the deceleration fuel shut off."
+"CAL_dfso_enable_engine_speed","003f9a64","u16_rspeed_rpm","When the engine is above this speed threshold\, enable the deceleration fuel shut off."
+"CAL_dfso_disable_engine_speed","003f9a66","u16_rspeed_rpm","When the engine is below this speed threshold\, disable the deceleration fuel shut off."
+"CAL_dfso_enable_coolant","003f9a68","u8_temp_5/8-40c","When the engine coolant is above this temperature threshold\, enable the deceleration fuel shut off."
+"CAL_dfso_disable_coolant","003f9a69","u8_temp_5/8-40c","When the engine coolant is below this temperature threshold\, disable the deceleration fuel shut off."
+"CAL_idle_speed_time_between_decrement","003f9a6b","u8_time_5ms","Desired engine idle speed. When the speed is reduced\, it will be smoothly decremented (-10rpm) using the speed_time_between_decrement time interval."
+"CAL_injtip_catalyst_adj_fadeout","003f9a6c","u8_factor_1/256","During DFSO the catalyst is oxidized. Add extra fuel (injection time) to reactivate the catalyst.
+
+Formula: reactivate = (time_base * adj) * (ADJ_FADEOUT ^ t)"
+"CAL_dfso_min_runtime","003f9a6d","u8_time_50ms","Minimum engine run time to allow deceleration fuel shut off."
+"CAL_load_use_alphaN_speed_limit","003f9a6e","u16_rspeed_rpm","When the engine is above this speed limit\, ignore the alphaN table (only maf)."
+"CAL_load_use_alphaN_dt_tps1_negative_threshold","003f9a70","u16_factor_1/1023","When the negative tps change (dt_tps1) is above this threshold\, use the alphaN load calculation."
+"CAL_closedloop_ltft_min_atmo","003f9a78","i16_pressure_mbar","Minimum atmospheric pressure to enable the ltft correction."
+"CAL_evap_?f","003f9a7a","u8_time_5ms",""
+"CAL_evap_?g","003f9a7b","u8_time_80ms",""
+"CAL_evap_?h","003f9a7c","u8_time_5ms",""
+"CAL_evap_duty_cycle_max","003f9a7e","u8_factor_1/255","Maximum allowed duty cycle for purge."
+"CAL_evap_duty_cycle_min","003f9a7f","u8_factor_1/255","Minimum allowed duty cycle for purge."
+"CAL_vvt_period","003f9a80","u16_time_25ns","Period of the pwm signal for the vvt."
+"CAL_vvl_period","003f9a82","u16_time_25ns","Period of the pwm signal for the vvl."
+"CAL_vvl_enable_rpm","003f9a84","u16_rspeed_rpm","When the engine is above this speed threshold\, engage the vvl."
+"CAL_vvl_disable_rpm","003f9a86","u16_rspeed_rpm","When the engine is below this speed threshold\, disengage the vvl."
+"CAL_vvl_enable_coolant","003f9a88","u8_temp_5/8-40c","When the engine coolant is above this temperature threshold\, enable the vvl."
+"CAL_vvl_disable_coolant","003f9a89","u8_temp_5/8-40c","When the engine coolant is below this temperature threshold\, disable the vvl."
+"CAL_vvl_enable_duty_cycle","003f9a8a","u16_factor_1/2048","Duty cycle of the pwm signal for the engaged vvl."
+"CAL_vvl_disable_duty_cycle","003f9a8c","u16_factor_1/2048","Duty cycle of the pwm signal for the disengaged vvl."
+"CAL_idle_flow_adj1_corr_min_maf_accumulated","003f9a92","u16_mass_g","The ECU will not make correction to the learned_flow_adj1 value\, unless the air is above this mass threshold."
+"CAL_load_alphaN_adj_corr_limit_dt_tps","003f9a94","u16_factor_1/1023","The ECU will not make correction to the alphaN adj table\, if the negative or positive tps change is above this limit threshold."
+"CAL_revlimit_offset_reset_timer","003f9a9c","u16_rspeed_rpm",""
+"CAL_load_use_alphaN_dt_tps1_positive_threshold","003f9a9e","u16_factor_1/1023","When the positive tps change (dt_tps1) is above this threshold\, use the alphaN load calculation."
+"CAL_misc_gears_6","003f9aa0","u16_ratio_rpm/kph[2]","Thresholds for the 6th gear."
+"CAL_idle_speed_adj_ac_on","003f9aa4","u16_rspeed_rpm","Desired engine idle speed.
+
+Formula: speed_target = speed_base + speed_adj + SPEED_ADJ_AC_ON"
+"CAL_closedloop_ltft_idle_max_flow_threshold","003f9aa6","u16_flow_10mg/s","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the maximum maf flow for the idle range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_idle_max_engine_speed_threshold","003f9aa8","u16_rspeed_rpm","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the maximum engine speed for the idle range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_low_max_flow_threshold","003f9aaa","u16_flow_10mg/s","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the maximum maf flow for the low range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_low_min_flow_threshold","003f9aac","u16_flow_10mg/s","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the minimum maf flow for the low range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_low_max_load_threshold","003f9aae","u16_load_mg/stroke","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the maximum engine load for the low range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_low_min_load_threshold","003f9ab0","u16_load_mg/stroke","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the minimum engine load for the low range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_high_min_flow_threshold","003f9ab2","u16_flow_10mg/s","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the minimum maf flow for the high range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_high_min_load_threshold","003f9ab4","u16_load_mg/stroke","The ltft has 3 distincts ranges. The first range is when the engine is idling\, the second for low power and the third for high power.
+
+This threshold defines the minimum engine load for the high range.
+
+Formula (idle)      : ltft = 100%
+Formula (low range) : ltft = low_adj
+Formula (between)   : ltft = (low_adj * low_ratio) + (high_adj * high_ratio)
+Formula (high range): ltft = high_adj
+
+low_ratio = (maf - ltft_low_max_flow_threshold) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+high_ratio = (ltft_high_min_flow_threshold - maf) / (ltft_high_min_flow_threshold - ltft_low_max_flow_threshold)
+
+Note: low_adj and high_adj are saved in the eeprom."
+"CAL_closedloop_ltft_min_coolant","003f9ab6","u8_temp_5/8-40c","Minimum engine coolant temperature to enable the ltft correction."
+"CAL_closedloop_ltft_time_between_step","003f9ab7","u8_time_5s","Minimum time between ltft corrections."
+"CAL_closedloop_ltft_stft_avg_high_threshold","003f9ab8","u16_factor_1/2000-2048/125","When the average stft is above this correction threshold\, the ltft is incremented.
+
+Formula (idle)      : idle_adj = idle_adj + idle_step
+Formula (low range) : low_adj = low_adj + 0.2%
+Formula (between)   : -
+Formula (high range): high_adj = high_adj + 0.2%"
+"CAL_closedloop_ltft_stft_avg_low_threshold","003f9aba","u16_factor_1/2000-2048/125","When the average stft is below this correction threshold\, the ltft is decremented.
+
+Formula (idle)      : idle_adj = idle_adj - idle_step
+Formula (low range) : low_adj = low_adj - 0.2%
+Formula (between)   : -
+Formula (high range): high_adj = high_adj - 0.2%"
+"CAL_closedloop_ltft_idle_max","003f9abc","u8_time_10us","Maximum allowed value for idle_adj."
+"CAL_closedloop_ltft_idle_min","003f9abd","u8_time_-10us","Minimum allowed value for idle_adj."
+"CAL_closedloop_ltft_low_max","003f9abe","u8_factor_1/512-1/2","Maximum allowed value for low_adj."
+"CAL_closedloop_ltft_low_min","003f9abf","u8_factor_1/512-1/2","Minimum allowed value for low_adj."
+"CAL_closedloop_ltft_high_max","003f9ac0","u8_factor_1/512-1/2","Maximum allowed value for high_adj."
+"CAL_closedloop_ltft_high_min","003f9ac1","u8_factor_1/512-1/2","Minimum allowed value for high_adj."
+"CAL_closedloop_stft_idle_enrichment_step","003f9ac2","u16_factor_1/2000","WITH IDLING ENGINE: When a lean condition is detected\, the stft will enrich the mixture.
+
+Formula (first)     : stft = stft + initial
+Formula (subsequent): stft = stft + STEP"
+"CAL_closedloop_stft_idle_enleanment_step","003f9ac4","u16_factor_1/2000","WITH IDLING ENGINE: When a rich condition is detected\, the stft will enlean the mixture.
+
+Formula (first)     : stft = stft - initial
+Formula (subsequent): stft = stft - STEP"
+"CAL_closedloop_stft_idle_enrichment_initial","003f9ac6","u16_factor_1/2000","WITH IDLING ENGINE: When a lean condition is detected\, the stft will enrich the mixture.
+
+Formula (first)     : stft = stft + INITIAL
+Formula (subsequent): stft = stft + step"
+"CAL_closedloop_stft_idle_enleanment_initial","003f9ac8","u16_factor_1/2000","WITH IDLING ENGINE: When a rich condition is detected\, the stft will enlean the mixture.
+
+Formula (first)     : stft = stft - INITIAL
+Formula (subsequent): stft = stft - step"
+"CAL_closedloop_stft_rich_threshold","003f9aca","u16_voltage_5/1023v","When the pre O2 sensor is above this voltage threshold\, a rich condition is detected and the stft will enlean the mixture."
+"CAL_closedloop_stft_lean_threshold","003f9acc","u16_voltage_5/1023v","When the pre O2 sensor is below this voltage threshold\, a lean condition is detected and the stft will enrich the mixture."
+"CAL_inj_flow_rate","003f9ad0","u16_flow_mg/s","Injector size: 4600mg/s = 330cc/min and 6200mg/s = 440cc/min. This parameter doesn't affect the tip-in/out value\, change the base time of tip accordingly.
+
+Formula:
+
+a = (load / (afr_base - afr_adj)) - evap
+b = a / (efficiency * FLOW_RATE)
+c = b * adj1 * adj2 * adj3 + tip_in + tip_out + reactive
+d = base + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_misc_airbox_flap_close","003f9ad6","u16_rspeed_rpm","When the engine is below this speed threshold\, close the flap in the airbox."
+"CAL_misc_airbox_flap_open","003f9ad8","u16_rspeed_rpm","When the engine is above this speed threshold\, open the flap in the airbox."
+"CAL_vvl_enable_rpm_high_load","003f9ada","u16_rspeed_rpm","HIGH LOAD: When the engine is above this speed threshold\, engage the vvl."
+"CAL_vvl_disable_rpm_high_load","003f9adc","u16_rspeed_rpm","HIGH LOAD: When the engine is below this speed threshold\, disengage the vvl."
+"CAL_vvl_enable_high_load_threshold","003f9ade","u8_load_4mg/stroke","HIGH LOAD: When the load is above this threshold\, use the high load thresholds."
+"CAL_vvl_disable_high_load_threshold","003f9adf","u8_load_4mg/stroke","HIGH LOAD: When the load is below this threshold\, use the normal thresholds."
+"CAL_sensor_engine_air_scaling","003f9af0","u8_temp_5/8-40c[33]","Scaling of the engine air temperature sensor.
+
+If use tmap = 0: The air temperature sensor from maf is used.
+If use tmap = 1: The air temperature sensor from map is used."
+"CAL_sensor_coolant_scaling","003f9b12","u8_temp_5/8-40c[33]","Scaling of the engine coolant temperature sensor."
+"CAL_sensor_intake_air_scaling","003f9b34","u8_temp_5/8-40c[33]","Scaling of the air temperature sensor. Build into the maf."
+"CAL_sensor_O2_scaling_X_signal","003f9b56","u8_voltage_5/1023v[16]",""
+"CAL_sensor_O2_scaling","003f9b66","u8_lambda_1/100[16]","Scaling of the both oxygen (lambda) sensors."
+"CAL_inj_time_base_X_car_voltage","003f9b76","u8_voltage_72/1023v[16]",""
+"CAL_inj_time_base","003f9b86","u8_time_20us[16]","Injector dead time.
+
+Formula:
+
+a = (load / (afr_base - afr_adj)) - evap
+b = a / (efficiency * flow_rate)
+c = b * adj1 * adj2 * adj3 + tip_in + tip_out + reactive
+d = BASE + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_ign_advance_cranking_X_stop_coolant","003f9b98","u8_temp_5/8-40c[8]",""
+"CAL_ign_advance_cranking","003f9ba0","u8_angle_1/4deg[8]","Ignition advance (degree before top dead center) when cranking.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = ADVANCE_CRANKING"
+"CAL_injtip_catalyst_adj","003f9c08","uint8_t[17]","During DFSO the catalyst is oxidized. Add extra fuel (injection time) to reactivate the catalyst.
+
+Formula: reactivate = (time_base * ADJ) * (adj_fadeout ^ t)"
+"CAL_ign_advance_idle_adj1_alternative_X_idle_error","003f9c1a","u8_rspeed_4-512rpm[16]",""
+"CAL_ign_advance_idle_adj1_alternative","003f9c2a","u8_angle_1/4-32deg[16]","Ignition advance idle adjustment.
+
+Note: The ignition adj1_alternative will be used instead of adj1\, when the car is above the idle_flow_adj5_threshold speed.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_idle_flow_adj2_X_atmo_pressure","003f9cd2","u8_pressure_4mbar[8]",""
+"CAL_idle_flow_adj2","003f9cda","u8_flow_100mg/s[8]","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = flow_base + learned_adj1 - ADJ2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + adj7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_sensor_fuel_scaling","003f9ce2","u8_factor_1/156-14/156[9]","Scaling of the fuel level sensor."
+"CAL_closedloop_min_runtime","003f9cec","u8_time_s[17]","The engine has to be running at least this amount of time\, before the closed loop operation can be activated."
+"CAL_vvt_advance_low_cam_base_X_engine_speed","003f9d04","u8_rspeed_125/4+500rpm[16]",""
+"CAL_vvt_advance_low_cam_base_Y_engine_load","003f9d14","u8_load_4mg/stroke[16]",""
+"CAL_vvt_advance_low_cam_base","003f9d24","u8_angle_1/4deg[256]","Intake camshaft advance when vvl is disengaged.
+
+Formula: advance = BASE - adj"
+"CAL_vvt_advance_adj_X_coolant","003f9e24","u8_temp_5/8-40c[16]",""
+"CAL_vvt_advance_adj","003f9e34","u8_angle_1/4deg[16]","Intake camshaft advance adjustment.
+
+Formula: advance = base - ADJ"
+"CAL_inj_time_adj1_X_stop_coolant","003f9e44","u8_temp_5/8-40c[16]",""
+"CAL_inj_time_adj1_Y_maf_accumulated","003f9e54","u8_mass_g[24]",""
+"CAL_inj_time_adj1","003f9e6c","u8_factor_1/32[384]","Fueling adjustment at startup. It's like a carburetor choke. The last line should always be 100%.
+
+Formula:
+
+a = (load / (afr_base - afr_adj)) - evap
+b = a / (efficiency * flow_rate)
+c = b * ADJ1 * adj2 * adj3 + tip_in + tip_out + reactive
+d = base + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_load_alphaN_engine_stop_X_tps","003f9fec","u8_factor_1/255[16]",""
+"CAL_load_alphaN_engine_stop","003f9ffc","u8_load_4mg/stroke[16]","Initial alphaN load calculation for cranking.
+
+Formula: load = BASE * (atmo_pressure / 1013mbar) * (298°K / temp_engine_air)
+
+Note: temp_engine_air in Kelvin degrees."
+"CAL_inj_time_adj2_X_engine_air","003fa00c","u8_temp_5/8-40c[16]",""
+"CAL_inj_time_adj2","003fa01c","u8_factor_1/128[16]","Fueling adjustment with the air temperature.
+
+Formula:
+
+a = (load / (afr_base - afr_adj)) - evap
+b = a / (efficiency * flow_rate)
+c = b * adj1 * ADJ2 * adj3 + tip_in + tip_out + reactive
+d = base + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_ign_advance_adj1_X_engine_air","003fa02c","u8_temp_5/8-40c[16]",""
+"CAL_ign_advance_adj1","003fa03c","u8_angle_1/4-32deg[16]","Ignition advance adjustement with the engine air temperature.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_idle_speed_base_X_coolant","003fa04c","u8_temp_5/8-40c[16]",""
+"CAL_idle_speed_base","003fa05c","u8_rspeed_4+500rpm[16]","Desired engine idle speed.
+
+Formula: speed_target = SPEED_BASE + speed_adj + speed_adj_ac_on"
+"CAL_idle_flow_adj4_adj_X_coolant","003fa06c","u8_temp_5/8-40c[16]",""
+"CAL_idle_flow_adj4_adj_Y_maf_accumulated","003fa07c","u8_mass_4g[8]",""
+"CAL_idle_flow_adj4_adj","003fa084","u8_factor_1/64[128]","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = flow_base + learned_adj1 - adj2 + adj3 + (adj4 * ADJ4_ADJ) + adj5 + adj6 + adj7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_idle_flow_adj3_X_car_voltage","003fa104","u8_voltage_72/1023v[8]",""
+"CAL_idle_flow_adj3","003fa10c","u8_flow_100-12800mg/s[8]","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = flow_base + learned_adj1 - adj2 + ADJ3 + (adj4 * adj4_adj) + adj5 + adj6 + adj7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_idle_flow_adj4_X_target_idle","003fa114","u8_rspeed_4+500rpm[8]",""
+"CAL_idle_flow_adj4","003fa11c","u8_flow_100mg/s[8]","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = flow_base + learned_adj1 - adj2 + adj3 + (ADJ4 * adj4_adj) + adj5 + adj6 + adj7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_idle_flow_adj5_X_engine_speed_idle_error","003fa124","u8_rspeed_4-512rpm[16]",""
+"CAL_idle_flow_adj5","003fa134","u8_flow_100-12800mg/s[16]","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = flow_base + learned_adj1 - adj2 + adj3 + (adj4 * adj4_adj) + ADJ5 + adj6 + adj7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_idle_flow_adj8_corr_step_X_engine_speed_idle_error","003fa144","u8_rspeed_4-512rpm[16]",""
+"CAL_idle_flow_adj8_corr_step","003fa154","u8_flow_100/1024mg/s[16]","When the engine speed is not equal to the speed_target\, adj8 will be corrected by this value.
+
+Formula: flow_adj8 = flow_adj8 +/- flow_adj8_corr_step"
+"CAL_ign_advance_idle_base_X_coolant","003fa164","u8_temp_5/8-40c[16]",""
+"CAL_ign_advance_idle_base","003fa174","u8_angle_1/4deg[16]","Ignition advance (degree before top dead center) when the engine is idling.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = IDLE_BASE + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_ign_advance_idle_adj1_X_idle_error","003fa184","u8_rspeed_4-512rpm[16]",""
+"CAL_ign_advance_idle_adj1","003fa194","u8_angle_1/4-32deg[16]","Ignition advance idle adjustment.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + IDLE_ADJ1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_ign_advance_idle_adj2_X_engine_air","003fa1a4","u8_temp_5/8-40c[16]",""
+"CAL_ign_advance_idle_adj2","003fa1b4","u8_angle_1/4-32deg[16]","Ignition advance idle adjustment.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + IDLE_ADJ2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_injtip_in_adj1_X_engine_speed","003fa1c4","u8_rspeed_125/4+500rpm[16]",""
+"CAL_injtip_in_adj1","003fa1d4","u8_factor_1/128[16]","Add extra fuel (injection time) based on positive change in the tps. It's like the accelerator pump of a carburator.
+
+Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * ADJ1 * adj3 * adj_gear"
+"CAL_injtip_in_adj2_X_engine_speed","003fa1e4","u8_rspeed_125/4+500rpm[16]",""
+"CAL_injtip_in_adj2","003fa1f4","u8_dt_factor_1/100/5ms[16]","Add extra fuel (injection time) based on positive change in the tps. It's like the accelerator pump of a carburator.
+
+This adjustment will reduce the effect over time (t).
+
+Formula: tip_in(t) = time_base * (dt_tps2 - (ADJ2 * t)) * adj1 * adj3 * adj_gear"
+"CAL_injtip_in_adj3_X_coolant","003fa204","u8_temp_5/8-40c[16]",""
+"CAL_injtip_in_adj3","003fa214","u8_factor_1/64[16]","Add extra fuel (injection time) based on positive change in the tps. It's like the accelerator pump of a carburator.
+
+Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * ADJ3 * adj_gear"
+"CAL_injtip_out_adj1_X_engine_speed","003fa224","u8_rspeed_125/4+500rpm[16]",""
+"CAL_injtip_out_adj1","003fa234","u8_factor_1/128[16]","Remove fuel (injection time) based on negative change in the tps.
+
+Formula: tip_out(t) = time_base * (dt_tps2 - (adj2 * t)) * ADJ1 * adj3"
+"CAL_injtip_out_adj2_X_engine_speed","003fa244","u8_rspeed_125/4+500rpm[16]",""
+"CAL_injtip_out_adj2","003fa254","u8_dt_factor_1/100/5ms[16]","Remove fuel (injection time) based on negative change in the tps.
+
+This adjustment will reduce the effect over time (t).
+
+Formula: tip_out(t) = time_base * (dt_tps2 - (ADJ2 * t)) * adj1 * adj3"
+"CAL_injtip_out_adj3_X_coolant","003fa264","u8_temp_5/8-40c[16]",""
+"CAL_injtip_out_adj3","003fa274","u8_factor_1/64[16]","Remove fuel (injection time) based on negative change in the tps.
+
+This adjustment will reduce the effect over time (t).
+
+Formula: tip_out(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * ADJ3"
+"CAL_idle_tps_X_target_flow","003fa2a4","u8_flow_100mg/s[8]",""
+"CAL_idle_tps_Y_vacuum","003fa2ac","u8_pressure_4mbar[8]",""
+"CAL_idle_tps","003fa2b4","u8_factor_1/1023[64]","Once the needed air flow to keep the engine idling is knowned\, the ECU must drive the throttle body to the according position. The differential air pressure over the throttle body is estimated."
+"CAL_ign_advance_high_cam_base_X_engine_speed","003fa2f4","u8_rspeed_125/4+500rpm[8]",""
+"CAL_ign_advance_high_cam_base_Y_engine_load","003fa2fc","u8_load_4mg/stroke[8]",""
+"CAL_ign_advance_high_cam_base","003fa304","u8_angle_1/4-10deg[64]","Ignition advance (degree before top dead center) when the VVL is engaged.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = HIGH_CAM_BASE * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_closedloop_stft_enrichment_step_X_engine_speed","003fa344","u8_rspeed_125/4+500rpm[8]",""
+"CAL_closedloop_stft_enrichment_step_Y_load","003fa34c","u8_load_4mg/stroke[8]",""
+"CAL_closedloop_stft_enrichment_step","003fa354","u8_factor_1/2000[64]","When a lean condition is detected\, the stft will enrich the mixture.
+
+Formula (first)     : stft = stft + initial
+Formula (subsequent): stft = stft + STEP
+Formula (with adj)  : stft = stft + STEP * adj"
+"CAL_closedloop_stft_enleanment_step_X_engine_speed","003fa394","u8_rspeed_125/4+500rpm[8]",""
+"CAL_closedloop_stft_enleanment_step_Y_load","003fa39c","u8_load_4mg/stroke[8]",""
+"CAL_closedloop_stft_enleanment_step","003fa3a4","u8_factor_1/2000[64]","When a rich condition is detected\, the stft will enlean the mixture.
+
+Formula (first)     : stft = stft - initial
+Formula (subsequent): stft = stft - STEP
+Formula (with adj)  : stft = stft - STEP * adj"
+"CAL_closedloop_stft_enrichment_initial_X_engine_speed","003fa3e4","u8_rspeed_125/4+500rpm[8]",""
+"CAL_closedloop_stft_enrichment_initial_Y_load","003fa3ec","u8_load_4mg/stroke[8]",""
+"CAL_closedloop_stft_enrichment_initial","003fa3f4","u8_factor_1/2000[64]","When a lean condition is detected\, the stft will enrich the mixture.
+
+Formula (first)     : stft = stft + INITIAL
+Formula (subsequent): stft = stft + step
+Formula (with adj)  : stft = stft + step * adj"
+"CAL_closedloop_stft_enleanment_initial_X_engine_speed","003fa434","u8_rspeed_125/4+500rpm[8]",""
+"CAL_closedloop_stft_enleanment_initial_Y_load","003fa43c","u8_load_4mg/stroke[8]",""
+"CAL_closedloop_stft_enleanment_initial","003fa444","u8_factor_1/2000[64]","When a rich condition is detected\, the stft will enlean the mixture.
+
+Formula (first)     : stft = stft - INITIAL
+Formula (subsequent): stft = stft - step
+Formula (with adj)  : stft = stft - step * adj"
+"CAL_inj_efficiency_X_engine_speed","003fa484","u8_rspeed_125/4+500rpm[32]",""
+"CAL_inj_efficiency_Y_engine_load","003fa4a4","u8_load_4mg/stroke[32]",""
+"CAL_inj_efficiency","003fa4c4","u8_factor_1/200[1024]","Injector efficiency. Depending on the fuel rail and the manifold pressure\, the efficiency of the injectors change.
+
+Formula:
+
+a = (load / (afr_base - afr_adj)) - evap
+b = a / (EFFICIENCY * flow_rate)
+c = b * adj1 * adj2 * adj3 + tip_in + tip_out + reactive
+d = base + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_vvt_advance_high_cam_base_X_engine_speed","003fa904","u8_rspeed_125/4+500rpm[16]",""
+"CAL_vvt_advance_high_cam_base_Y_engine_load","003fa914","u8_load_4mg/stroke[16]",""
+"CAL_vvt_advance_high_cam_base","003fa924","u8_angle_1/4deg[256]","Intake camshaft advance when vvl is engaged.
+
+Formula: advance = BASE - adj"
+"CAL_misc_shift_lights_before_rev_limit","003faa24","u8_rspeed_4rpm[16]",""
+"CAL_load_possible_max_X_engine_speed","003faa34","u8_rspeed_125/4+500rpm[16]",""
+"CAL_load_possible_max","003faa44","u8_load_4mg/stroke[16]","The engine load is also available as a ratio to the possible max load (OBD Mode 0x01 PID 0x04).
+
+Formula: load(%) = load(mg/stroke) / LOAD_MAX * (1013mbar / atmo_pressure)"
+"CAL_load_use_alphaN_tps_threshold_X_engine_speed","003faa64","u8_rspeed_125/4+500rpm[16]",""
+"CAL_load_use_alphaN_tps_threshold","003faa74","u8_factor_1/255[16]","When the tps is above this position threshold\, use the alphaN load calculation."
+"CAL_inj_time_adj3_X_engine_load","003faa84","u8_load_4mg/stroke[16]",""
+"CAL_inj_time_adj3_Y_coolant","003faa94","u8_temp_5/8-40c[16]",""
+"CAL_inj_time_adj3","003faaa4","u8_factor_1/64[256]","Fueling adjustment with the coolant temperature.
+
+Formula:
+
+a = (load / (afr_base - afr_adj)) - evap
+b = a / (efficiency * flow_rate)
+c = b * adj1 * adj2 * ADJ3 + tip_in + tip_out + reactive
+d = base + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_tc_slip_adj1_X_speed_front","003faba4","u8_speed_kph[4]",""
+"CAL_tc_slip_adj1_Y_pps","003faba8","u8_factor_1/255[4]",""
+"CAL_tc_slip_adj1","003fabac","u8_factor_1/100[16]","When the car is slipping the ecu apply a factor to the advance of the ignition. A retard to the ignition makes the engine loose torque.
+
+Formula: ign_adv_adj = 100% - steps - (slip - ADJ1 - adj2) * slip_to_retard_ratio
+
+Note: When using variable control knob: ADJ1 = (knob_position / 2^ADJ1)"
+"CAL_tc_fuelcut_X_slip","003fabec","u8_factor_1/100[16]",""
+"CAL_tc_fuelcut","003fabfc","uint8_t[16]","Every # stroke will have no fuel. The value 255 means no fuel cut.
+
+Example: 8 means that 1 of 8 strokes will have no fuel."
+"CAL_ign_advance_high_cam_knock_safe_X_engine_speed","003fac0c","u8_rspeed_125/4+500rpm[8]",""
+"CAL_ign_advance_high_cam_knock_safe_Y_engine_load","003fac14","u8_load_4mg/stroke[8]",""
+"CAL_ign_advance_high_cam_knock_safe","003fac1c","u8_angle_1/4-10deg[64]","Knock safe ignition advance used by knock_retard2 when the VVL is engaged."
+"CAL_idle_tps_engine_stop_X_atmo_pressure","003fac5c","u8_pressure_4mbar[4]",""
+"CAL_idle_tps_engine_stop_Y_coolant","003fac60","u8_temp_5/8-40c[16]",""
+"CAL_idle_tps_engine_stop","003fac70","u8_factor_1/1023[64]","Throttle body position for cranking."
+"CAL_ecu_shutdown_delay_X_engine_air","003fad14","u8_temp_5/8-40c[8]",""
+"CAL_ecu_shutdown_delay_Y_coolant","003fad1c","u8_temp_5/8-40c[8]",""
+"CAL_ecu_shutdown_delay","003fad24","u8_time_5s[64]","HEAT SOAK: How long should the ECU running after turning the key on the OFF position."
+"CAL_idle_flow_adj_ac_X_on_time","003fad64","u8_time_5ms[8]",""
+"CAL_idle_flow_adj_ac","003fad6c","u8_flow_100mg/s[8]","WITH A/C ON: Compensate the power of the A/C compressor.
+
+Formula: flow = flow_base + learned_adj1 - ADJ2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + adj7 + adj8 + ADJ_AC + adj_fan_low + adj_fan_high - evap_flow"
+"CAL_idle_flow_adj_fan_low_X_on_time","003fad74","u8_time_5ms[8]",""
+"CAL_idle_flow_adj_fan_low","003fad7c","u8_flow_100mg/s[8]","WITH FAN LOW ON: Compensate the power of the low speed fan.
+
+Formula: flow = flow_base + learned_adj1 - ADJ2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + adj7 + adj8 + adj_ac + ADJ_FAN_LOW + adj_fan_high - evap_flow"
+"CAL_idle_flow_adj_fan_high_X_on_time","003fad84","u8_time_5ms[8]",""
+"CAL_idle_flow_adj_fan_high","003fad8c","u8_flow_100mg/s[8]","WITH FAN HIGH ON: Compensate the power of the high speed fan.
+
+Formula: flow = flow_base + learned_adj1 - ADJ2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + adj7 + adj8 + adj_ac + adj_low_fan + ADJ_HIGH_FAN - evap_flow"
+"CAL_inj_time_adj_cranking_X_coolant","003fad94","u8_temp_5/8-40c[16]",""
+"CAL_inj_time_adj_cranking","003fada4","u8_time_256us[16]","Fueling adjustment when cranking.
+
+Formula: inj_time = base + adj_cranking"
+"CAL_idle_speed_adj_X_car_speed","003fadb4","u8_speed_kph[8]",""
+"CAL_idle_speed_adj","003fadbc","u8_rspeed_4rpm[8]","Desired engine idle speed.
+
+Formula: speed_target = speed_base + SPEED_ADJ + speed_adj_ac_on"
+"CAL_idle_flow_adj6_X_car_speed","003fadc4","u8_speed_kph[8]",""
+"CAL_idle_flow_adj6","003fadcc","u8_flow_100mg/s[8]","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = flow_base + learned_adj1 - adj2 + adj3 + (adj4 * adj4_adj) + adj5 + ADJ6 + adj7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_inj_angle_X_engine_speed","003fadd4","u8_rspeed_125/4+500rpm[8]",""
+"CAL_inj_angle_Y_engine_load","003faddc","u8_load_4mg/stroke[8]",""
+"CAL_inj_angle","003fade4","u8_angle_720/256deg[64]","Target engine position to begin fuel injection (with an offset for each cylinder's relative position)."
+"CAL_ign_advance_adj2_X_maf_accumulated","003fae2c","u8_mass_8g[8]",""
+"CAL_ign_advance_adj2_Y_tps","003fae34","u8_factor_1/255[8]",""
+"CAL_ign_advance_adj2","003fae3c","u8_factor_1/255[64]","Ignition advance adjustement for startup.
+
+Formula (low cam) : adv = low_cam_base * ADJ2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * ADJ2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_ign_time_base_X_engine_speed","003fae7c","u8_rspeed_125/4+500rpm[8]",""
+"CAL_ign_time_base_Y_car_voltage","003fae84","u8_voltage_72/1023v[8]",""
+"CAL_ign_time_base","003fae8c","u8_time_64us[64]","Spark firing length."
+"CAL_ign_advance_low_cam_knock_safe_X_engine_speed","003faecc","u8_rspeed_125/4+500rpm[32]",""
+"CAL_ign_advance_low_cam_knock_safe_Y_engine_load","003faeec","u8_load_4mg/stroke[32]",""
+"CAL_ign_advance_low_cam_knock_safe","003faf0c","u8_angle_1/4-10deg[1024]","Knock safe ignition advance used by knock_retard2 when the VVL is disengaged."
+"CAL_ign_advance_low_cam_base_X_engine_speed","003fb30c","u8_rspeed_125/4+500rpm[32]",""
+"CAL_ign_advance_low_cam_base_Y_engine_load","003fb32c","u8_load_4mg/stroke[32]",""
+"CAL_ign_advance_low_cam_base","003fb34c","u8_angle_1/4-10deg[1024]","Ignition advance (degree before top dead center) when the VVL is disengaged.
+
+Formula (low cam) : adv = LOW_CAM_BASE * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_sensor_maf_scaling_X_signal","003fb74c","u16_voltage_5/1023v[32]",""
+"CAL_sensor_maf_scaling","003fb78c","u16_flow_10mg/s[32]","Scaling of the mass air flow sensor."
+"CAL_idle_flow_adj7_X_engine_speed","003fb7cc","u8_rspeed_125/4+500rpm[16]",""
+"CAL_idle_flow_adj7","003fb7dc","u8_flow_100mg/s[16]","Compute the needed engine power (air flow) to keep a stabilized idling.
+
+Formula: flow = flow_base + learned_adj1 - adj2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + ADJ7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
+
+Note: adj8 is a dynamic adjustment."
+"CAL_revlimit_speed_base_X_coolant","003fb7fc","u8_temp_5/8-40c[8]",""
+"CAL_revlimit_speed_base_Y_timer","003fb804","u8_time_100ms[8]",""
+"CAL_revlimit_speed_base","003fb80c","u8_rspeed_10+6000rpm[64]",""
+"CAL_ign_advance_adj3_X_engine_speed","003fb84c","u8_rspeed_125/4+500rpm[16]",""
+"CAL_ign_advance_adj3","003fb85c","u8_angle_1/4-32deg[16]","Ignition advance adjustement with the engine speed.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (ADJ3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (ADJ3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_ign_advance_adj3_adj_X_coolant","003fb86c","u8_temp_5/8-40c[8]",""
+"CAL_ign_advance_adj3_adj","003fb874","u8_factor_1/128[8]","Ignition advance adjustement with the engine speed.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * ADJ3_ADJ) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * ADJ3_ADJ) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_ign_advance_idle_adj3_X_dt_engine_speed","003fb87c","uint8_t[16]",""
+"CAL_ign_advance_idle_adj3","003fb88c","u8_angle_1/4-32deg[16]","Ignition advance idle adjustment.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + IDLE_ADJ3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_vvt_min_runtime_X_stop_coolant","003fb89c","u8_temp_5/8-40c[8]",""
+"CAL_vvt_min_runtime","003fb8a4","u8_time_100ms[8]","The engine has to be running at least this amount of time\, before the vvt can be engaged."
+"CAL_closedloop_stft_time_use_adj_X_engine_speed","003fb8ac","u8_rspeed_125/4+500rpm[8]",""
+"CAL_closedloop_stft_time_use_adj","003fb8b4","u8_time_25ms[8]","If all corrections after this amount of time are insufficient\, the step value is adjusted."
+"CAL_ign_advance_adj4_X_dt_tps_injtip","003fb8bc","u8_factor_1/100[8]",""
+"CAL_ign_advance_adj4","003fb8c4","u8_angle_1/4deg[8]","Ignition advance adjustement with the change in the tps.
+
+Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + ADJ4
+Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + ADJ4
+Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
+Formula (dfso)    : adv = advance_dfso
+Formula (cranking): adv = advance_cranking"
+"CAL_knock_sensitivity_cylinder1_X_engine_speed","003fbb0c","u8_rspeed_125/4+500rpm[16]",""
+"CAL_knock_sensitivity_cylinder1_Y_engine_load","003fbb1c","u8_load_4mg/stroke[16]",""
+"CAL_knock_sensitivity_cylinder1","003fbb2c","uint8_t[256]","Knock sensitivity cylinder 1 value send to the L9119D."
+"CAL_knock_sensitivity_cylinder2_X_engine_speed","003fbc2c","u8_rspeed_125/4+500rpm[16]",""
+"CAL_knock_sensitivity_cylinder2_Y_engine_load","003fbc3c","u8_load_4mg/stroke[16]",""
+"CAL_knock_sensitivity_cylinder2","003fbc4c","uint8_t[256]","Knock sensitivity cylinder 2 value send to the L9119D."
+"CAL_knock_sensitivity_cylinder3_X_engine_speed","003fbd4c","u8_rspeed_125/4+500rpm[16]",""
+"CAL_knock_sensitivity_cylinder3_Y_engine_load","003fbd5c","u8_load_4mg/stroke[16]",""
+"CAL_knock_sensitivity_cylinder3","003fbd6c","uint8_t[256]","Knock sensitivity cylinder 3 value send to the L9119D."
+"CAL_knock_sensitivity_cylinder4_X_engine_speed","003fbe6c","u8_rspeed_125/4+500rpm[16]",""
+"CAL_knock_sensitivity_cylinder4_Y_engine_load","003fbe7c","u8_load_4mg/stroke[16]",""
+"CAL_knock_sensitivity_cylinder4","003fbe8c","uint8_t[256]","Knock sensitivity cylinder 4 value send to the L9119D."
+"CAL_knock_peak_threshold_X_engine_speed","003fbf8c","u8_rspeed_125/4+500rpm[8]",""
+"CAL_knock_peak_threshold_Y_load","003fbf94","u8_load_4mg/stroke[8]",""
+"CAL_knock_peak_threshold","003fbf9c","uint8_t[64]","When the peak is above this threshold\, the ECU takes it as a real knock.
+
+Formula:
+
+signal_avg = (100% - reactivity) * signal_avg + reactivity * signal
+peak = (signal * 10) / (signal_avg + 1)
+peak_over_threshold = peak - THRESHOLD"
+"CAL_knock_retard1_step_X_peak_over_threshold","003fbfdc","uint8_t[8]",""
+"CAL_knock_retard1_step","003fbfe4","u8_angle_1/4deg[8]","Increment retard1 in proportion to the knock peak.
+
+Formula (per cylinder): retard1 = retard1 + STEP"
+"CAL_knock_retard_threshold_X_engine_speed","003fbfec","u8_rspeed_125/4+500rpm[8]",""
+"CAL_knock_retard_threshold","003fbff4","u8_load_4mg/stroke[8]","The ECU will apply the retard1 and the retard2 values\, if the engine is above this load threshold.
+
+If the load is below this threshold minus the load_margin\, the retard1 is reset to 0 and the retard2 is not more applied.
+
+Formula (per cylinder): retard = RETARD1 + (ign_advance_xxx_cam_base - ign_advance_xxx_cam_knock_safe) * RETARD2"
+"CAL_knock_retard2_corr_threshold_X_engine_speed","003fbffc","u8_rspeed_125/4+500rpm[8]",""
+"CAL_knock_retard2_corr_threshold","003fc004","u8_load_4mg/stroke[8]","The ECU will make corrections to the retard2 value\, if the engine is above this load threshold.
+
+If the load is below this threshold minus the load_margin\, no more corrections will occur.
+
+Formula (per cylinder): retard = RETARD1 + (ign_advance_xxx_cam_base - ign_advance_xxx_cam_knock_safe) * RETARD2"
+"CAL_evap_purge_X_?","003fc00c","uint8_t[16]",""
+"CAL_evap_purge_Y_vacuum_avg","003fc01c","u8_pressure_4mbar[16]",""
+"CAL_evap_purge","003fc02c","u8_factor_1/255[256]","The evap purge valve is normally closed.
+
+Formula: opening = duty_cylce_min + PURGE"
+"CAL_misc_tps_X_pps","003fc13c","u16_factor_1/1023[16]",""
+"CAL_misc_tps","003fc15c","u16_factor_1/1023[16]","Target tps position for a given pps position."
+"CAL_misc_coolant_warning_threshold","003fc4e4","u8_temp_5/8-40c","When the engine coolant is above this temperature threshold\, display the warning on the instrument cluster."
+"CAL_obd2_P0103_threshold","003fc4e6","u16_voltage_5/1023v",""
+"CAL_obd2_P0102_threshold","003fc4e8","u16_voltage_5/1023v",""
+"CAL_sensor_evap_reactivity","003fc4ed","u8_factor_1/256","At every cycle\, the sampled evaporative value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
+"CAL_obd2_P0131_threshold","003fc4f2","u16_voltage_5/1023v",""
+"CAL_obd2_P0132_threshold","003fc4f4","u16_voltage_5/1023v",""
+"CAL_obd2_P0137_threshold","003fc4f6","u16_voltage_5/1023v",""
+"CAL_obd2_P0138_threshold","003fc4f8","u16_voltage_5/1023v",""
+"CAL_obd2_P0113_threshold","003fc4fa","u16_voltage_5/1023v",""
+"CAL_obd2_P0112_threshold","003fc4fc","u16_voltage_5/1023v",""
+"CAL_obd2_P0108_threshold","003fc50c","u16_voltage_5/1023v",""
+"CAL_obd2_P0107_threshold","003fc50e","u16_voltage_5/1023v",""
+"CAL_obd2_P0118_threshold","003fc510","u16_voltage_5/1023v",""
+"CAL_obd2_P0117_threshold","003fc512","u16_voltage_5/1023v",""
+"CAL_revlimit_speed_adj_limp_reduced","003fc514","u16_rspeed_rpm",""
+"CAL_obd2_P0563_threshold","003fc518","u16_voltage_18/1023v",""
+"CAL_obd2_P0562_threshold","003fc51a","u16_voltage_18/1023v",""
+"CAL_obd2_P0135_P0141_threshold","003fc576","u16_current_mA",""
+"CAL_sensor_O2_heater_threshold","003fc578","u16_current_mA","The electrical resistance of the O2 sensor heater increases with temperature. The ECU will stop the heater when the current drop below this current threshold."
+"CAL_obd2_P0116_threshold","003fc59f","u8_temp_5/8-40c",""
+"CAL_obd2_P0453_threshold","003fc5f0","u16_voltage_5/1023v",""
+"CAL_obd2_P0452_threshold","003fc5f2","u16_voltage_5/1023v",""
+"CAL_obd2_P0116_min_engine_runtime","003fc5f4","u16_time_s",""
+"CAL_obd2_P0463_threshold","003fc5f6","u16_voltage_5/1023v",""
+"CAL_obd2_P0462_threshold","003fc5f8","u16_voltage_5/1023v",""
+"CAL_obd2_P0238_threshold","003fc620","u16_voltage_5/1023v",""
+"CAL_obd2_P0237_threshold","003fc622","u16_voltage_5/1023v",""
+"CAL_misc_use_tpms","003fc669","uint8_t","Tyre pressure management system: 0 = no module\, 1 = module present."
+"CAL_obd2_P0106","003fc8d1","u8_obd2level","Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance Problem"
+"CAL_obd2_P0107","003fc8d2","u8_obd2level","Manifold Absolute Pressure/Barometric Pressure Circuit Low Input"
+"CAL_obd2_P0108","003fc8d3","u8_obd2level","Manifold Absolute Pressure/Barometric Pressure Circuit High Input"
+"CAL_obd2_P0111","003fc8d5","u8_obd2level","Intake Air Temperature Circuit Range/Performance Problem"
+"CAL_obd2_P0112","003fc8d6","u8_obd2level","Intake Air Temperature Circuit Low Input"
+"CAL_obd2_P0113","003fc8d7","u8_obd2level","Intake Air Temperature Circuit High Input"
+"CAL_obd2_P0116","003fc8d9","u8_obd2level","Engine Coolant Temperature Circuit Range/Performance Problem"
+"CAL_obd2_P0117","003fc8da","u8_obd2level","Engine Coolant Temperature Circuit Low Input"
+"CAL_obd2_P0118","003fc8db","u8_obd2level","Engine Coolant Temperature Circuit High Input"
+"CAL_obd2_P0122","003fc8de","u8_obd2level","Throttle Position Sensor/Switch A Circuit Low Input"
+"CAL_obd2_P0123","003fc8df","u8_obd2level","Throttle Position Sensor/Switch A Circuit High Input"
+"CAL_obd2_P0128","003fc8e1","u8_obd2level","Coolant Thermostat (Coolant Temperature Below Thermostat Regulating Temperature)"
+"CAL_obd2_P0131","003fc8e2","u8_obd2level","O2 Sensor Circuit Low Voltage (Pre Catalyst)"
+"CAL_obd2_P0132","003fc8e3","u8_obd2level","O2 Sensor Circuit High Voltage (Pre Catalyst)"
+"CAL_obd2_P0133","003fc8e4","u8_obd2level","O2 Sensor Circuit Slow Response (Pre Catalyst)"
+"CAL_obd2_P0134","003fc8e5","u8_obd2level","O2 Sensor Circuit No Activity Detected (Pre Catalyst)"
+"CAL_obd2_P0135","003fc8e6","u8_obd2level","O2 Sensor Heater Circuit (Pre Catalyst)"
+"CAL_obd2_P0137","003fc8e8","u8_obd2level","O2 Sensor Circuit Low Voltage (Post Catalyst)"
+"CAL_obd2_P0138","003fc8e9","u8_obd2level","O2 Sensor Circuit High Voltage (Post Catalyst)"
+"CAL_obd2_P0139","003fc8ea","u8_obd2level","O2 Sensor Circuit Slow Response (Post Catalyst)"
+"CAL_obd2_P0140","003fc8eb","u8_obd2level","O2 Sensor Circuit No Activity Detected (Post Catalyst)"
+"CAL_obd2_P0141","003fc8ec","u8_obd2level","O2 Sensor Heater Circuit (Post Catalyst)"
+"CAL_obd2_P0102","003fc8ed","u8_obd2level","Mass or Volume Air Flow Circuit Low Input"
+"CAL_obd2_P0103","003fc8ee","u8_obd2level","Mass or Volume Air Flow Circuit High Input"
+"CAL_obd2_P0101","003fc8ef","u8_obd2level","Mass or Volume Air Flow Circuit Range/Performance Problem"
+"CAL_obd2_P2122","003fc8f0","u8_obd2level","Pedal Position Sensor D Circuit Low"
+"CAL_obd2_P2123","003fc8f1","u8_obd2level","Pedal Position Sensor D Circuit High"
+"CAL_obd2_P2127","003fc8f2","u8_obd2level","Pedal Position Sensor E Circuit Low"
+"CAL_obd2_P2128","003fc8f3","u8_obd2level","Pedal Position Sensor E Circuit High"
+"CAL_obd2_P0222","003fc8f4","u8_obd2level","Throttle Position Sensor B Circuit Low"
+"CAL_obd2_P0223","003fc8f5","u8_obd2level","Throttle Position Sensor B Circuit High"
+"CAL_obd2_P2135","003fc8f6","u8_obd2level","Throttle Position Sensor A/B Voltage Correlation"
+"CAL_obd2_P0638","003fc8f7","u8_obd2level","Throttle Actuator Control Range/Performance"
+"CAL_obd2_P0171","003fc8fa","u8_obd2level","System Too Lean"
+"CAL_obd2_P0172","003fc8fb","u8_obd2level","System Too Rich"
+"CAL_obd2_P0076","003fc8fd","u8_obd2level","Intake Valve Control Solenoid Circuit Low"
+"CAL_obd2_P0077","003fc8fe","u8_obd2level","Intake Valve Control Solenoid Circuit High"
+"CAL_obd2_P0201","003fc8ff","u8_obd2level","Injector Circuit/Open - Cylinder 1"
+"CAL_obd2_P0202","003fc900","u8_obd2level","Injector Circuit/Open - Cylinder 2"
+"CAL_obd2_P0203","003fc901","u8_obd2level","Injector Circuit/Open - Cylinder 3"
+"CAL_obd2_P0204","003fc902","u8_obd2level","Injector Circuit/Open - Cylinder 4"
+"CAL_obd2_P0205","003fc903","u8_obd2level","Injector Circuit/Open - Extra Injector"
+"CAL_obd2_P0237","003fc904","u8_obd2level","Supercharger Boost Sensor A Circuit Low"
+"CAL_obd2_P0238","003fc905","u8_obd2level","Supercharger Boost Sensor A Circuit High"
+"CAL_obd2_P0627","003fc909","u8_obd2level","Fuel Pump Control Circuit/Open"
+"CAL_obd2_P0351","003fc90a","u8_obd2level","Ignition Coil A Primary/Secondary Circuit"
+"CAL_obd2_P0352","003fc90b","u8_obd2level","Ignition Coil B Primary/Secondary Circuit"
+"CAL_obd2_P0353","003fc90c","u8_obd2level","Ignition Coil C Primary/Secondary Circuit"
+"CAL_obd2_P0354","003fc90d","u8_obd2level","Ignition Coil D Primary/Secondary Circuit"
+"CAL_obd2_P0768","003fc90f","u8_obd2level","Shift Solenoid D Electrical"
+"CAL_obd2_P0301","003fc910","u8_obd2level","Cylinder 1 Misfire Detected"
+"CAL_obd2_P0302","003fc911","u8_obd2level","Cylinder 2 Misfire Detected"
+"CAL_obd2_P0303","003fc912","u8_obd2level","Cylinder 3 Misfire Detected"
+"CAL_obd2_P0304","003fc913","u8_obd2level","Cylinder 4 Misfire Detected"
+"CAL_obd2_P0327","003fc91a","u8_obd2level","Knock Sensor 1 Circuit Low"
+"CAL_obd2_P0328","003fc91b","u8_obd2level","Knock Sensor 1 Circuit High"
+"CAL_obd2_P0335","003fc91c","u8_obd2level","Crankshaft Position Sensor A Circuit Range/Performance"
+"CAL_obd2_P0340","003fc91d","u8_obd2level","Camshaft Position Sensor A Circuit"
+"CAL_obd2_P1301","003fc91e","u8_obd2level","Misfire level causing emissions increase"
+"CAL_obd2_P1302","003fc91f","u8_obd2level","Misfire level causing catalyst system damage"
+"CAL_obd2_P0420","003fc928","u8_obd2level","Catalyst System Efficiency Below Threshold"
+"CAL_obd2_P0441","003fc933","u8_obd2level","Evaporative Emission System Incorrect Purge Flow"
+"CAL_obd2_P0442","003fc934","u8_obd2level","Evaporative Emission System Leak Detected (small leak)"
+"CAL_obd2_P0444","003fc936","u8_obd2level","Evaporative Emission System Purge Control Valve Circuit Open"
+"CAL_obd2_P0445","003fc937","u8_obd2level","Evaporative Emission System Purge Control Valve Circuit Shorted"
+"CAL_obd2_P0446","003fc938","u8_obd2level","Evaporative Emission System Vent Control Circuit"
+"CAL_obd2_P0447","003fc939","u8_obd2level","Evaporative Emission System Vent Control Circuit Open"
+"CAL_obd2_P0448","003fc93a","u8_obd2level","Evaporative Emission System Vent Control Circuit Shorted"
+"CAL_obd2_P0451","003fc93c","u8_obd2level","Evaporative Emission System Pressure Sensor/Switch Range/Performance"
+"CAL_obd2_P0452","003fc93d","u8_obd2level","Evaporative Emission System Pressure Sensor/Switch Low"
+"CAL_obd2_P0453","003fc93e","u8_obd2level","Evaporative Emission System Pressure Sensor/Switch High"
+"CAL_obd2_P0480","003fc93f","u8_obd2level","Fan 1 Control Circuit"
+"CAL_obd2_P0481","003fc940","u8_obd2level","Fan 2 Control Circuit"
+"CAL_obd2_P2646","003fc941","u8_obd2level","A Rocker Arm Actuator System Performance or Stuck Off"
+"CAL_obd2_P2647","003fc942","u8_obd2level","A Rocker Arm Actuator System Stuck On"
+"CAL_obd2_P2648","003fc943","u8_obd2level","A Rocker Arm Actuator Control Circuit Low"
+"CAL_obd2_P2649","003fc944","u8_obd2level","A Rocker Arm Actuator Control Circuit High"
+"CAL_obd2_P0461","003fc946","u8_obd2level","Fuel Level Sensor A Circuit Range/Performance"
+"CAL_obd2_P0462","003fc947","u8_obd2level","Fuel Level Sensor A Circuit Low"
+"CAL_obd2_P0463","003fc948","u8_obd2level","Fuel Level Sensor A Circuit High"
+"CAL_obd2_P0563","003fc94a","u8_obd2level","System Voltage High"
+"CAL_obd2_P0562","003fc94b","u8_obd2level","System Voltage Low"
+"CAL_obd2_P0646","003fc94e","u8_obd2level","A/C Clutch Relay Control Circuit Low"
+"CAL_obd2_P0647","003fc94f","u8_obd2level","A/C Clutch Relay Control Circuit High"
+"CAL_obd2_P1280","003fc950","u8_obd2level","Fuel System Relay Circuit"
+"CAL_obd2_P0506","003fc951","u8_obd2level","Idle Air Control System RPM Lower Than Expected"
+"CAL_obd2_P0507","003fc952","u8_obd2level","Idle Air Control System RPM Higher Than Expected"
+"CAL_obd2_P0630","003fc958","u8_obd2level","VIN Not Programmed or Incompatible - ECU"
+"CAL_obd2_P2138","003fc959","u8_obd2level","Pedal Position Sensor D/E Voltage Correlation"
+"CAL_obd2_P2602","003fc95a","u8_obd2level","Coolant Pump Control Circuit Low"
+"CAL_obd2_P2603","003fc95b","u8_obd2level","Coolant Pump Control Circuit High"
+"CAL_obd2_P0011","003fc95c","u8_obd2level","Camshaft Position - Timing Over-Advanced or System Performance"
+"CAL_obd2_P0012","003fc95d","u8_obd2level","Camshaft Position - Timing Over-Retarded"
+"CAL_obd2_P0601","003fc95e","u8_obd2level","Watchdog"
+"CAL_obd2_P0606","003fc95f","u8_obd2level","Checksum"
+"CAL_obd2_P0455","003fc960","u8_obd2level","Evaporative Emission System Leak Detected (large leak)"
+"CAL_obd2_P0456","003fc961","u8_obd2level","Evaporative Emission System Leak Detected (very small leak)"
+"CAL_obd2_P0016","003fc962","u8_obd2level","Crankshaft Position - Camshaft Position Correlation Error"
+"CAL_obd2_P2173","003fc963","u8_obd2level","Throttle Actuator Control System - High Airflow Detected"
+"CAL_obd2_P2104","003fc964","u8_obd2level","Throttle Actuator Control System - Forced Idle"
+"CAL_obd2_P2105","003fc965","u8_obd2level","Throttle Actuator Control System - Forced Engine Shutdown"
+"CAL_obd2_P2106","003fc966","u8_obd2level","Throttle Actuator Control System - Forced Limited Power"
+"CAL_obd2_P2107","003fc967","u8_obd2level","Throttle Actuator Control Module Processor"
+"CAL_obd2_P2100","003fc968","u8_obd2level","Throttle Actuator Control Motor Circuit/Open"
+"CAL_obd2_P2102","003fc969","u8_obd2level","Throttle Actuator Control Motor Circuit/Low"
+"CAL_obd2_P2103","003fc96a","u8_obd2level","Throttle Actuator Control Motor Circuit/High"
+"CAL_obd2_P2108","003fc96b","u8_obd2level","Throttle Actuator Control Module Performance"
+"CAL_load_alphaN_base_X_engine_speed","003fd1d6","u8_rspeed_125/4+500rpm[16]",""
+"CAL_load_alphaN_base_Y_tps","003fd1e6","u8_factor_1/255[16]",""
+"CAL_load_alphaN_base","003fd1f6","u8_load_4mg/stroke[256]","Rapid changes in tps create too much turbulence to have a reliable maf information. So the ECU falls back into a traditional alphaN load calculation for a small amount of time.
+
+An absolute tps position threshold also trigger the usage of the alphaN table.
+
+Formula: load = BASE * (atmo_pressure / 1013mbar) * (298°K / temp_engine_air) * learned_adj
+
+Note: temp_engine_air in Kelvin degrees."
+"CAL_inj_afr_base_X_engine_speed","003fd2f6","u8_rspeed_125/4+500rpm[16]",""
+"CAL_inj_afr_base_Y_engine_load","003fd306","u8_load_4mg/stroke[16]",""
+"CAL_inj_afr_base","003fd316","u8_afr_1/20+5[256]","Ratio between air and fuel.
+
+Formula:
+
+a = (load / (AFR_BASE - afr_adj)) - evap
+b = a / (efficiency * flow_rate)
+c = b * adj1 * adj2 * adj3 + tip_in + tip_out + reactive
+d = base + ltft_idle + (1 + stft + 2 * ltft) * c
+
+inj_time = d"
+"CAL_ecu_generic_VIN","003fd54c","char[17]",""
+"CAL_ecu_model_name","003fd55e","char[32]",""
+"CAL_ecu_unlock_magic","003fd57e","char[4]","Unlocked ECU have a read/write access through CAN-Bus (Live-Tuning)."
+"CAL_ecu_CRC_stored","003fd582","uint16_t",""

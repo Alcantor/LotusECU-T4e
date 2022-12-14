@@ -45,6 +45,16 @@ class Calibration():
 	def write_file(self, file):
 		with open(file, 'wb') as f: f.write(self.data)
 
+	def resize_file(self, newsize):
+		if(newsize <= len(self.data)):
+			self.data = memoryview(self.data[0:newsize])
+		else:
+			newbuffer = bytearray(newsize)
+			newbuffer[0:len(self.data)] = self.data;
+			for i in range(len(self.data), newsize):
+				newbuffer[i] = 0xFF
+			self.data = memoryview(newbuffer)
+
 	def map(self, i):
 		o = Calibration.offsets[i]
 		self.name = o[0]
@@ -174,6 +184,7 @@ class Calibration():
 	Unlocked    : {:s}
 	CRC         : 0x{:04X}
 	CRC stored  : {:s}
+	File size   : {:d} bytes
 """
 		return fmt.format(
 			self.name,
@@ -181,7 +192,8 @@ class Calibration():
 			self.size,
 			text_unlock,
 			self.compute_crc(),
-			text_crc
+			text_crc,
+			len(self.data)
 		)
 
 #def check_eeprom(eeprom_file, size=0x53C):

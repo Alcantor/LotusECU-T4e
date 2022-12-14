@@ -40,10 +40,15 @@ class CAL_editor_win(tk.Toplevel):
 		menu.add_command(label="Unlock", command=self.unlock)
 		self.menu_edit = menu
 		menubar.add_cascade(label="Edit", menu=menu)
+		menu = tk.Menu(menubar, tearoff=0)
+		menu.add_command(label="Shrink to size", command=self.shrink)
+		menu.add_command(label="Extend to 64kb", command=self.ext64)
+		menu.add_command(label="Extend to 128kb", command=self.ext128)
+		menubar.add_cascade(label="Size", menu=menu)
 		self.config(menu=menubar)
 
 		# Infos
-		self.txt = tk.Text(self, height=9, width=64, state=tk.DISABLED)
+		self.txt = tk.Text(self, height=10, width=64, state=tk.DISABLED)
 		self.txt.pack()
 
 		# Backend
@@ -175,5 +180,20 @@ class CAL_editor_win(tk.Toplevel):
 	@try_msgbox_decorator
 	def unlock(self):
 		self.cal.unlock()
+		self.update()
+
+	@try_msgbox_decorator
+	def shrink(self):
+		self.cal.resize_file(self.cal.size)
+		self.update()
+
+	@try_msgbox_decorator
+	def ext64(self):
+		self.cal.resize_file(0x10000)
+		self.update()
+
+	@try_msgbox_decorator
+	def ext128(self):
+		self.cal.resize_file(0x20000)
 		self.update()
 

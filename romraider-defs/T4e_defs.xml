@@ -10,8 +10,8 @@
 			<filesize>64kb</filesize>
 			<memmodel>MPC563</memmodel>
 			<flashmethod>CRP</flashmethod>
-			<internalidaddress>0x19</internalidaddress>
-			<internalidstring> </internalidstring>
+			<internalidaddress>0x3C8E</internalidaddress>
+			<internalidstring>Lotus </internalidstring>
 		</romid>
 		<table type="2D" name="ecu: engine speed byte coefficient" category="ecu" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x0024">
 			<scaling category="Number" units="#" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="100" />
@@ -844,7 +844,7 @@ Formula: ign_adv_adj = 100% - steps - (slip - adj) * SLIP_TO_RETARD_RATIO</descr
 			<description>Maximum ignition retard allowed for traction control.</description>
 		</table>
 		<table type="2D" name="tc: slip reactivity" category="tc" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00D5">
-			<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>slip reactivity</data>
 			</table>
@@ -2562,11 +2562,11 @@ Note: adj8 is a dynamic adjustment.</description>
 		</table>
 		<table type="3D" name="ign: advance adj2" category="ign" storagetype="uint8" endian="big" sizex="8" sizey="8" userlevel="1" storageaddress="0x156C">
 			<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
-			<table type="X Axis" name="tps" storagetype="uint8" endian="big" sizex="8" storageaddress="0x155C">
-				<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
-			</table>
-			<table type="Y Axis" name="maf accumulated" storagetype="uint8" endian="big" sizey="8" storageaddress="0x1564">
+			<table type="X Axis" name="maf accumulated" storagetype="uint8" endian="big" sizex="8" storageaddress="0x155C">
 				<scaling category="Gram" units="g" expression="x*8" to_byte="x/8" format="0" fineincrement="8" coarseincrement="40" />
+			</table>
+			<table type="Y Axis" name="tps" storagetype="uint8" endian="big" sizey="8" storageaddress="0x1564">
+				<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			</table>
 			<description>Ignition advance adjustement for startup.
 
@@ -4436,6 +4436,7 @@ inj_time = d</description>
 		</table>
 		<table type="Switch" name="ecu: unlock magic" category="ecu" sizey="4" userlevel="1" storageaddress="0x3CAE">
 			<state name="Locked" data="00 00 00 00" />
+			<state name="Locked (Spaces)" data="20 20 20 20" />
 			<state name="Unlocked" data="57 54 46 3F" />
 			<description>Unlocked ECU have a read/write access through CAN-Bus (Live-Tuning).</description>
 		</table>
@@ -4458,8 +4459,7 @@ inj_time = d</description>
 			<filesize>2kb</filesize>
 			<memmodel>EEPROM</memmodel>
 			<flashmethod>CRP</flashmethod>
-			<internalidaddress>0x0</internalidaddress>
-			<internalidstring>CroftT4E</internalidstring>
+			<internalidstring>CroftT4E090</internalidstring>
 		</romid>
 		<table type="2D" name="ecu: engine speed byte coefficient" category="ecu" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x0020">
 			<scaling category="Number" units="#" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="100" />
