@@ -199,6 +199,22 @@ CRP08 TOC Chunk:
 #
 # I don't think you can update the bootloader itself. Only calrom and prog.
 #
+# Valid addresses for a T6 are:
+#
+#  Flash:
+#   0x1 (0x000800)
+#   0x2 (0x000808) - Payload 4 Bytes (0xFFFFFFFF (Accept unencrypted) -> 0x1 Only CRP)
+#   0x3 (0x000838) - Payload 32 Bytes
+#   0x4 (0x040000) - Payload max. size 0xC0000 (prog)
+#   0x5 (0x020000) - Payload max. size 0x10000 (calrom)
+#   0x7 (0x01C000) - Payload 32 Bytes
+#   0x8 (0x01C000) - Payload 32 Bytes
+#   0x9 (0x01C020) - Payload 32 Bytes
+#   0xA (0x000858) - Payload 32 Bytes
+#   0xB (0x000878) - Payload 32 Bytes
+#
+# Addresses in the T6 are reference number and not *real* addresses.
+#
 class CRP08_data_ecu(BinData):
 	def __init__(self, key):
 		self.xtea = CRP08_xtea(key)

@@ -74,7 +74,7 @@ def xml_add_signature_calrom_T6caterham(rom):
 	ET.SubElement(romid, "model").text = "Seven"
 	ET.SubElement(romid, "submodel").text = "2012-2022"
 	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "128kb"
+	ET.SubElement(romid, "filesize").text = "64kb"
 	ET.SubElement(romid, "memmodel").text = "MPC5534"
 	ET.SubElement(romid, "flashmethod").text = "CRP"
 	ET.SubElement(romid, "internalidaddress").text = "0x61A2"
@@ -91,12 +91,40 @@ def xml_add_signature_decram_T6caterham(rom):
 	ET.SubElement(romid, "model").text = "Seven"
 	ET.SubElement(romid, "submodel").text = "2012-2022"
 	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "8kb" # TODO: Check size
+	ET.SubElement(romid, "filesize").text = "48kb"
 	ET.SubElement(romid, "memmodel").text = "EEPROM"
 	ET.SubElement(romid, "flashmethod").text = "CRP"
 	ET.SubElement(romid, "internalidaddress").text = "0x0"
 	ET.SubElement(romid, "internalidstring").text = "CD0MB000"
 	#ET.SubElement(romid, "internalidstring").text = "CD0MB000    Oct  3 2011 15:26:36"
+
+def xml_add_signature_calrom_T6lotusL4(rom):
+	romid = ET.SubElement(rom, "romid")
+	ET.SubElement(romid, "xmlid").text = "T6lotusL4"
+	ET.SubElement(romid, "market").text = "World"
+	ET.SubElement(romid, "make").text = "Lotus"
+	ET.SubElement(romid, "model").text = "Elise/Exige"
+	ET.SubElement(romid, "submodel").text = "2012-2022"
+	ET.SubElement(romid, "transmission").text = "MT"
+	ET.SubElement(romid, "filesize").text = "64kb"
+	ET.SubElement(romid, "memmodel").text = "MPC5534"
+	ET.SubElement(romid, "flashmethod").text = "CRP"
+	ET.SubElement(romid, "internalidaddress").text = "0x61A2"
+	ET.SubElement(romid, "internalidstring").text = "LOTUS "
+
+def xml_add_signature_decram_T6lotusL4(rom):
+	romid = ET.SubElement(rom, "romid")
+	ET.SubElement(romid, "xmlid").text = "T6lotusL4 - Learned data"
+	ET.SubElement(romid, "market").text = "World"
+	ET.SubElement(romid, "make").text = "Lotus"
+	ET.SubElement(romid, "model").text = "Elise/Exige"
+	ET.SubElement(romid, "submodel").text = "2012-2022"
+	ET.SubElement(romid, "transmission").text = "MT"
+	ET.SubElement(romid, "filesize").text = "48kb"
+	ET.SubElement(romid, "memmodel").text = "EEPROM"
+	ET.SubElement(romid, "flashmethod").text = "CRP"
+	ET.SubElement(romid, "internalidaddress").text = "0x0"
+	ET.SubElement(romid, "internalidstring").text = "T6AIN V000Q"
 
 def xml_add_scaling(table, unit):
 	ET.SubElement(table, "scaling",
@@ -350,7 +378,7 @@ if __name__ == "__main__":
 	do(symbols, units, xaxis, calrom, decram)
 
 	tree = ET.ElementTree(roms)
-	ET.indent(tree, space="\t", level=0) # Python 3.9+ only
+	ET.indent(tree, space="\t", level=0)
 	tree.write("T4e_defs.xml")
 
 	print("### Build T6caterham definition ###")
@@ -363,5 +391,19 @@ if __name__ == "__main__":
 	do(symbols, units, xaxis, calrom, decram)
 
 	tree = ET.ElementTree(roms)
-	ET.indent(tree, space="\t", level=0) # Python 3.9+ only
+	ET.indent(tree, space="\t", level=0)
 	tree.write("T6caterham_defs.xml")
+
+	print("### Build T6lotusL4 definition ###")
+	symbols = read_csv("symbols_T6lotusL4.csv")
+	roms = ET.Element("roms")
+	calrom = ET.SubElement(roms, "rom")
+	decram = ET.SubElement(roms, "rom")
+	xml_add_signature_calrom_T6lotusL4(calrom)
+	xml_add_signature_decram_T6lotusL4(decram)
+	do(symbols, units, xaxis, calrom, decram)
+
+	tree = ET.ElementTree(roms)
+	ET.indent(tree, space="\t", level=0)
+	tree.write("T6lotusL4_defs.xml")
+

@@ -16,13 +16,14 @@ of "calrom.bin" at the given offset into "calram.bin".
 Choosing the wrong RAM offset can cause bad side effects with a running engine!
 """).pack()
 		self.cb = ttk.Combobox(master, state="readonly", values = [
-			"RAM+0x174C - White BCroftT4E070 01/11/2005 Lotus EngV0078",
-			"RAM+0x18D0 - Black BCroftT4E090 14/07/2006 Lotus EngV0091",
-			"RAM+0x1330 - White BCroftT4E090 14/07/2006 Lotus EngV0091",
-			"RAM+0x1330 - White BCroftT4E090 14/07/2006 Lotus EngV0093",
-			"RAM+0x1324 - White BCroftT4E090 27/02/2007 Lotus EngV0097",
-			"RAM+0x4000 - White CCroft221  2nd Dec  10 Lotus Eng",
-			"RAM+0x0000 - T6 L4 Lotus/Caterham"
+			"RAM+0x174C - White CroftT4E070 01/11/2005 Lotus EngV0078",
+			"RAM+0x18D0 - Black CroftT4E090 14/07/2006 Lotus EngV0091",
+			"RAM+0x1330 - White CroftT4E090 14/07/2006 Lotus EngV0091",
+			"RAM+0x1330 - White CroftT4E090 14/07/2006 Lotus EngV0093",
+			"RAM+0x1324 - White CroftT4E090 27/02/2007 Lotus EngV0097",
+			"RAM+0x4000 - White Croft221  2nd Dec  10 Lotus Eng      ",
+			"RAM+0x0000 - Caterham CD0MB000    Oct  3 2011 15:26:36000VC",
+			"RAM+0x2920 - Lotus T6 T6AIN V000Q 02/01/2014 LotusEng      "
 		])
 		self.cb.current(0)
 		self.cb.pack(fill=tk.X, expand=True)
@@ -43,7 +44,8 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			0x003F9330,
 			0x003F9324,
 			0x00084000,
-			0x40000000
+			0x40000000,
+			0x40002920
 		][self.cb.current()]
 		self.size = [
 			0x3CA0,
@@ -52,6 +54,7 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			0x3C8E,
 			0x3C94,
 			0x6000,
+			0x69A8,
 			0x69A8
 		][self.cb.current()]
 		self.copy = (self.docopy.get() == 1)

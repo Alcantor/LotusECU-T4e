@@ -16,16 +16,18 @@ class LiveTuningAccess:
 		("S0 (T4/T4e Bootloader)" , 0x00000000, 0x010000, "bootldr.bin"),
 		("S1 (T4e Calibration)"   , 0x00010000, 0x010000, "calrom.bin"),
 		("S2-S7 (T4e Program)"    , 0x00020000, 0x060000, "prog.bin"),
-		("RAM1 (T4e EEPROM Copy)" , 0x002F8000, 0x000800, "decram.bin"),
+		("RAM1 (T4e Learned)"     , 0x002F8000, 0x000800, "decram.bin"),
 		("RAM2 (T4e Main RAM)"    , 0x003F8000, 0x008000, "calram.bin"),
 		("S1-S6 (T4 Program)"     , 0x00010000, 0x060000, "prog.bin"),
 		("S7 (T4 Calibration)"    , 0x00070000, 0x010000, "calrom.bin"),
 		("RAM3 (T4 Main RAM)"     , 0x00080000, 0x010000, "calram.bin"),
 		("S0-S7 (T4/T4e Full ROM)", 0x00000000, 0x080000, "dump.bin"),
 		# T6 (MPC5534) has 2MB flash
-		("L0-L3 (T6 Bootloader)"  , 0x00000000, 0x020000, "bootldr.bin"),
-		("L4-L5 (T6 Calibration)" , 0x00020000, 0x020000, "calrom.bin"),
-		("M0-H11 (T6 Program)"    , 0x00040000, 0x1C0000, "prog.bin"),
+		("L0-L1 (T6 Bootloader)"  , 0x00000000, 0x010000, "bootldr.bin"),
+		("L2 (T6 Learned)"        , 0x00010000, 0x00C000, "decram.bin"),
+		("L3 (T6 Coding)"         , 0x0001C000, 0x004000, "coding.bin"),
+		("L4 (T6 Calibration)"    , 0x00020000, 0x010000, "calrom.bin"),
+		("M0-H3 (T6 Program)"     , 0x00040000, 0x0C0000, "prog.bin"),
 		("RAM4 (T6 Main RAM)"     , 0x40000000, 0x010000, "calram.bin"),
 		("L0-H11 (T6 Full ROM)"   , 0x00000000, 0x200000, "dump.bin")
 	]

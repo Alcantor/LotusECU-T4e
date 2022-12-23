@@ -43,7 +43,6 @@ class CAL_editor_win(tk.Toplevel):
 		menu = tk.Menu(menubar, tearoff=0)
 		menu.add_command(label="Shrink to size", command=self.shrink)
 		menu.add_command(label="Extend to 64kb", command=self.ext64)
-		menu.add_command(label="Extend to 128kb", command=self.ext128)
 		menubar.add_cascade(label="Size", menu=menu)
 		self.config(menu=menubar)
 
@@ -191,9 +190,3 @@ class CAL_editor_win(tk.Toplevel):
 	def ext64(self):
 		self.cal.resize_file(0x10000)
 		self.update()
-
-	@try_msgbox_decorator
-	def ext128(self):
-		self.cal.resize_file(0x20000)
-		self.update()
-
