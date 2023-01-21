@@ -18,7 +18,7 @@ class CRP08_exception(Exception):
 
 # Encryption algorithm:
 #
-# Standard XTEA. XTEA data size needs to be a mulitple of 16 bytes. So padding
+# Standard XTEA. XTEA data size needs to be a mulitple of 8 bytes. So padding
 # is required.
 #
 class CRP08_xtea():

@@ -42,14 +42,17 @@ class CRP08_uploader:
 		self.bus = can.Bus(
 			interface = self.interface,
 			channel = self.channel,
+			can_filters = [{
+				"extended": False,
+				"can_id": chunk_can.can_local_id2,
+				"can_mask": 0x7FF
+			}],
 			bitrate = chunk_can.can_bitrate*1000
 		)
-		self.bus.set_filters([{
-			"extended": False,
-			"can_id": chunk_can.can_local_id2,
-			"can_mask": 0x7FF
-		}])
-		self.remote_id = chunk_can.can_remote_id2
+		# Workaround for socketcan interface.
+		# The kernel filtering does not filter out the error messages.
+		# So force library filtering.
+		self.bus._is_filtered = False
 
 	def close_can(self):
 		if(self.bus == None): return
@@ -94,7 +97,7 @@ class CRP08_uploader:
 		self.crc.update(msg.data[0:-1])
 		if(self.crc.get() != msg.data[-1]):
 			raise CRP08_exception("Wrong CRC!")
-		return (msg.data[0], msg.data[1:])
+		return (msg.data[0], msg.data[1:-1])
 
 	def bootstrap(self, crp, timeout=60, ui_cb=lambda:None):
 		if(len(crp.chunks)<2):
