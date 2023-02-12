@@ -74,6 +74,7 @@
 "u16_time_s","uint16","s","x","x","0","1","5","Second"
 "u8_time_5s","uint8","s","x*5","x/5","0","5","25","Second"
 "u8_load_4mg/stroke","uint8","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"
+"u8_load_1173mg/255stroke","uint8","mg/stroke","x*1173/255","x*255/1173","0.0","4","20","Milligram/Stroke"
 "u16_load_4mg/stroke","uint16","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"
 "u16_load_mg/stroke","uint16","mg/stroke","x","x","0","1","20","Milligram/Stroke"
 "u8_flow_100mg/s","uint8","g/s","x/10","x*10","0.0","0.1","10","Gram/Second"

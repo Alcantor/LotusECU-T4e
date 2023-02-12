@@ -4438,6 +4438,7 @@ inj_time = d</description>
 			<state name="Locked" data="00 00 00 00" />
 			<state name="Locked (Spaces)" data="20 20 20 20" />
 			<state name="Unlocked" data="57 54 46 3F" />
+			<state name="Unlocked (Caterham C1D3M000)" data="43 31 44 33" />
 			<description>Unlocked ECU have a read/write access through CAN-Bus (Live-Tuning).</description>
 		</table>
 		<table type="2D" name="ecu: CRC stored" category="ecu" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x3CB2">
@@ -4459,6 +4460,7 @@ inj_time = d</description>
 			<filesize>2kb</filesize>
 			<memmodel>EEPROM</memmodel>
 			<flashmethod>CRP</flashmethod>
+			<internalidaddress>0x0</internalidaddress>
 			<internalidstring>CroftT4E090</internalidstring>
 		</romid>
 		<table type="2D" name="ecu: engine speed byte coefficient" category="ecu" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x0020">

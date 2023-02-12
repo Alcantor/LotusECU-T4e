@@ -23,6 +23,7 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			"RAM+0x1324 - White CroftT4E090 27/02/2007 Lotus EngV0097",
 			"RAM+0x4000 - White Croft221  2nd Dec  10 Lotus Eng      ",
 			"RAM+0x0000 - Caterham CD0MB000    Oct  3 2011 15:26:36000VC",
+			"RAM+0x27D8 - Caterham C1D3M000____Dec 10 2013 15:47:31V0000",
 			"RAM+0x2920 - Lotus T6 T6AIN V000Q 02/01/2014 LotusEng      "
 		])
 		self.cb.current(0)
@@ -45,6 +46,7 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			0x003F9324,
 			0x00084000,
 			0x40000000,
+			0x400027D8,
 			0x40002920
 		][self.cb.current()]
 		self.size = [
@@ -54,6 +56,7 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			0x3C8E,
 			0x3C94,
 			0x6000,
+			0x69A8,
 			0x69A8,
 			0x69A8
 		][self.cb.current()]

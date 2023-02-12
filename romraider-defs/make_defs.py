@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import re, csv
+import re, csv, os
 import xml.etree.ElementTree as ET
 
 # Read a CSV file into a dictionary, the first fow is ignored and
@@ -35,96 +35,21 @@ def parse_var(s):
 def format_name(name):
 	return name.replace("_", " ")
 
-def xml_add_signature_calrom_T4e(rom):
+def xml_add_signature(rom, s):
 	romid = ET.SubElement(rom, "romid")
-	ET.SubElement(romid, "xmlid").text = "T4E2008"
-	ET.SubElement(romid, "market").text = "World"
-	ET.SubElement(romid, "make").text = "Lotus"
-	ET.SubElement(romid, "model").text = "Elise/Exige"
-	ET.SubElement(romid, "submodel").text = "2008-2011"
-	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "64kb"
-	ET.SubElement(romid, "memmodel").text = "MPC563"
-	ET.SubElement(romid, "flashmethod").text = "CRP"
-	ET.SubElement(romid, "internalidaddress").text = "0x3C8E"
-	ET.SubElement(romid, "internalidstring").text = "Lotus "
-	# This works better for pre-2008 cars but is ugly and not perfect!
-	#ET.SubElement(romid, "internalidaddress").text = "0x19"
-	#ET.SubElement(romid, "internalidstring").text = " "
-
-def xml_add_signature_decram_T4e(rom):
-	romid = ET.SubElement(rom, "romid")
-	ET.SubElement(romid, "xmlid").text = "T4E2008 - Learned data"
-	ET.SubElement(romid, "market").text = "World"
-	ET.SubElement(romid, "make").text = "Lotus"
-	ET.SubElement(romid, "model").text = "Elise/Exige"
-	ET.SubElement(romid, "submodel").text = "2008-2011"
-	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "2kb"
-	ET.SubElement(romid, "memmodel").text = "EEPROM"
-	ET.SubElement(romid, "flashmethod").text = "CRP"
-	ET.SubElement(romid, "internalidstring").text = "CroftT4E090"
-	#ET.SubElement(romid, "internalidstring").text = "CroftT4E090 14/07/2006 Lotus Eng"
-
-def xml_add_signature_calrom_T6caterham(rom):
-	romid = ET.SubElement(rom, "romid")
-	ET.SubElement(romid, "xmlid").text = "T6caterham"
-	ET.SubElement(romid, "market").text = "World"
-	ET.SubElement(romid, "make").text = "Caterham"
-	ET.SubElement(romid, "model").text = "Seven"
-	ET.SubElement(romid, "submodel").text = "2012-2022"
-	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "64kb"
-	ET.SubElement(romid, "memmodel").text = "MPC5534"
-	ET.SubElement(romid, "flashmethod").text = "CRP"
-	ET.SubElement(romid, "internalidaddress").text = "0x61A2"
-	ET.SubElement(romid, "internalidstring").text = "Caterham_"
-	# This works better for Lotus T6 cars but is ugly and not perfect!
-	#ET.SubElement(romid, "internalidaddress").text = "0xC"
-	#ET.SubElement(romid, "internalidstring").text = "    "
-
-def xml_add_signature_decram_T6caterham(rom):
-	romid = ET.SubElement(rom, "romid")
-	ET.SubElement(romid, "xmlid").text = "T6caterham - Learned data"
-	ET.SubElement(romid, "market").text = "World"
-	ET.SubElement(romid, "make").text = "Caterham"
-	ET.SubElement(romid, "model").text = "Seven"
-	ET.SubElement(romid, "submodel").text = "2012-2022"
-	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "48kb"
-	ET.SubElement(romid, "memmodel").text = "EEPROM"
-	ET.SubElement(romid, "flashmethod").text = "CRP"
-	ET.SubElement(romid, "internalidaddress").text = "0x0"
-	ET.SubElement(romid, "internalidstring").text = "CD0MB000"
-	#ET.SubElement(romid, "internalidstring").text = "CD0MB000    Oct  3 2011 15:26:36"
-
-def xml_add_signature_calrom_T6lotusL4(rom):
-	romid = ET.SubElement(rom, "romid")
-	ET.SubElement(romid, "xmlid").text = "T6lotusL4"
-	ET.SubElement(romid, "market").text = "World"
-	ET.SubElement(romid, "make").text = "Lotus"
-	ET.SubElement(romid, "model").text = "Elise/Exige"
-	ET.SubElement(romid, "submodel").text = "2012-2022"
-	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "64kb"
-	ET.SubElement(romid, "memmodel").text = "MPC5534"
-	ET.SubElement(romid, "flashmethod").text = "CRP"
-	ET.SubElement(romid, "internalidaddress").text = "0x61A2"
-	ET.SubElement(romid, "internalidstring").text = "LOTUS "
-
-def xml_add_signature_decram_T6lotusL4(rom):
-	romid = ET.SubElement(rom, "romid")
-	ET.SubElement(romid, "xmlid").text = "T6lotusL4 - Learned data"
-	ET.SubElement(romid, "market").text = "World"
-	ET.SubElement(romid, "make").text = "Lotus"
-	ET.SubElement(romid, "model").text = "Elise/Exige"
-	ET.SubElement(romid, "submodel").text = "2012-2022"
-	ET.SubElement(romid, "transmission").text = "MT"
-	ET.SubElement(romid, "filesize").text = "48kb"
-	ET.SubElement(romid, "memmodel").text = "EEPROM"
-	ET.SubElement(romid, "flashmethod").text = "CRP"
-	ET.SubElement(romid, "internalidaddress").text = "0x0"
-	ET.SubElement(romid, "internalidstring").text = "T6AIN V000Q"
+	d = s.split('#')
+	if(len(d) < 11): raise Exception("XXX_base has not enough info!")
+	ET.SubElement(romid, "xmlid").text = d[0]
+	ET.SubElement(romid, "market").text = d[1]
+	ET.SubElement(romid, "make").text = d[2]
+	ET.SubElement(romid, "model").text = d[3]
+	ET.SubElement(romid, "submodel").text = d[4]
+	ET.SubElement(romid, "transmission").text = d[5]
+	ET.SubElement(romid, "filesize").text = d[6]
+	ET.SubElement(romid, "memmodel").text = d[7]
+	ET.SubElement(romid, "flashmethod").text = d[8]
+	ET.SubElement(romid, "internalidaddress").text = d[9]
+	ET.SubElement(romid, "internalidstring").text = d[10]
 
 def xml_add_scaling(table, unit):
 	ET.SubElement(table, "scaling",
@@ -279,7 +204,8 @@ OBD2LEVEL = [
 UNLOCK_MAGIC = [
 	("Locked", "00 00 00 00"),
 	("Locked (Spaces)", "20 20 20 20"),
-	("Unlocked", "57 54 46 3F")
+	("Unlocked", "57 54 46 3F"),
+	("Unlocked (Caterham C1D3M000)", "43 31 44 33")
 ]
 
 USE_TMAP = [
@@ -364,46 +290,30 @@ def do(symbols, units, xaxis, calrom, decram):
 		else:
 			print("WARNING - Ignoring: "+s)
 
+def find_symbols_files():
+	result = []
+	regex = re.compile("symbols_(.*)\.csv")
+	for filename in os.listdir("."):
+		if(not os.path.isfile(filename)): continue
+		m = regex.match(filename)
+		if(m): result.append((filename, m.group(1)+"_defs.xml"))
+	return result
+
+
 if __name__ == "__main__":
 	units = read_csv("units.csv")
 	xaxis = read_csv("xaxis.csv")
 
-	print("### Build T4e definition ###")
-	symbols = read_csv("symbols_T4e.csv")
-	roms = ET.Element("roms")
-	calrom = ET.SubElement(roms, "rom")
-	decram = ET.SubElement(roms, "rom")
-	xml_add_signature_calrom_T4e(calrom)
-	xml_add_signature_decram_T4e(decram)
-	do(symbols, units, xaxis, calrom, decram)
-
-	tree = ET.ElementTree(roms)
-	ET.indent(tree, space="\t", level=0)
-	tree.write("T4e_defs.xml")
-
-	print("### Build T6caterham definition ###")
-	symbols = read_csv("symbols_T6caterham.csv")
-	roms = ET.Element("roms")
-	calrom = ET.SubElement(roms, "rom")
-	decram = ET.SubElement(roms, "rom")
-	xml_add_signature_calrom_T6caterham(calrom)
-	xml_add_signature_decram_T6caterham(decram)
-	do(symbols, units, xaxis, calrom, decram)
-
-	tree = ET.ElementTree(roms)
-	ET.indent(tree, space="\t", level=0)
-	tree.write("T6caterham_defs.xml")
-
-	print("### Build T6lotusL4 definition ###")
-	symbols = read_csv("symbols_T6lotusL4.csv")
-	roms = ET.Element("roms")
-	calrom = ET.SubElement(roms, "rom")
-	decram = ET.SubElement(roms, "rom")
-	xml_add_signature_calrom_T6lotusL4(calrom)
-	xml_add_signature_decram_T6lotusL4(decram)
-	do(symbols, units, xaxis, calrom, decram)
-
-	tree = ET.ElementTree(roms)
-	ET.indent(tree, space="\t", level=0)
-	tree.write("T6lotusL4_defs.xml")
+	for inname, outname in find_symbols_files():
+		print("### Build "+outname+" ###")
+		symbols = read_csv(inname)
+		roms = ET.Element("roms")
+		calrom = ET.SubElement(roms, "rom")
+		decram = ET.SubElement(roms, "rom")
+		xml_add_signature(calrom, symbols["CAL_base"][2])
+		xml_add_signature(decram, symbols["LEA_base"][2])
+		do(symbols, units, xaxis, calrom, decram)
+		tree = ET.ElementTree(roms)
+		ET.indent(tree, space="\t", level=0)
+		tree.write(outname)
 

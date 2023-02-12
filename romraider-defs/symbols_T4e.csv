@@ -1,5 +1,5 @@
 "Name","Location","Data Type","EOL Comment"
-"LEA_base","002f8000","char[32]","EEPROM copy in RAM"
+"LEA_base","002f8000","char[32]","T4E2008 - Learned data#World#Lotus#Elise/Exige#2008-2011#MT#2kb#EEPROM#CRP#0x0#CroftT4E090"
 "LEA_ecu_engine_speed_byte_coefficient","002f8020","uint16_t",""
 "LEA_ecu_engine_speed_byte_offset","002f8022","uint16_t",""
 "LEA_load_alphaN_adj_X_engine_speed","002f8028","u8_rspeed_125/4+500rpm[16]",""
@@ -38,7 +38,7 @@
 "LEA_obd2_freeze2_sensor_adc_post_O2","002f833a","u16_voltage_5/1023v",""
 "LEA_obd2_freeze2_car_speed","002f8340","u8_speed_kph",""
 "LEA_tc_lauchcontrol_revlimit","002f835e","u16_rspeed_rpm",""
-"CAL_base","003f98d0","char[32]","Calibration copy in RAM"
+"CAL_base","003f98d0","char[32]","T4E2008#World#Lotus#Elise/Exige#2008-2011#MT#64kb#MPC563#CRP#0x3C8E#Lotus "
 "CAL_ecu_engine_speed_byte_coefficient","003f98f4","uint16_t","DO NOT EDIT THIS VALUE. Internal engine speed byte used within the ECU to index many lookup tables.
 
 Formula: engine_speed = COEFFICIENT / flywheel_tooth_count_period - offset."
