@@ -19,6 +19,12 @@ class PPC32:
 	def ppc_cmpli(rA, uimm):
 		return PPC32.__build2(10, 0, rA, uimm)
 
+	def ppc_addis(rD, rA, uimm):
+		return PPC32.__build2(15, rD, rA, uimm)
+
+	def ppc_lis(rD, uimm):
+		return PPC32.ppc_addis(rD, 0, uimm)
+
 	def ppc_b(addr):
 		return PPC32.__build1(18, addr >> 2, 0, 0)
 
@@ -64,7 +70,8 @@ def print_hex(array):
 if __name__ == "__main__":
 	print("Small PPC32 library... Make some tests:\n")
 
-	print("cmplwi %r2,30       "+print_hex(PPC32.ppc_cmpli(2, 0x30)))
+	print("cmplwi %r2,30       "+print_hex(PPC32.ppc_cmpli(2, 30)))
+	print("lis    %r3,1        "+print_hex(PPC32.ppc_lis(3, 1)))
 	print("b      -0x12B       "+print_hex(PPC32.ppc_b(-0x12B)))
 	print("ba     0x3DC400     "+print_hex(PPC32.ppc_ba(0x3DC400)))
 	print("blr                 "+print_hex(PPC32.ppc_blr()))
