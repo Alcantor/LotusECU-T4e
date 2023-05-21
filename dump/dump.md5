@@ -31,6 +31,6 @@ e8a671148a8243af25b1852c62d90bc2  ../flasher/t4e/canstrap-black.bin
 da10b7aa1b9756970fdac6bc46e84dbb  ../flasher/t4e/func_test.bin
 1279cc9de23f2f6fe59f3ea2eb8ff42d  ../flasher/t4e/plugin_crc.bin
 9f9f7f55dcf77ede2f1f6ae2676f3855  ../flasher/t4e/plugin_eeprom.bin
-d52fb4666a1da9108b87daf4f162f34d  ../flasher/t4e/plugin_flash.bin
+8d20ddcdc0532846cf1a55f1aa705719  ../flasher/t4e/plugin_flash.bin
 47a03f9d3428a59485ad7463f263d96e  ../patch/t4e/accusump/calrom.bin
 c57b57dbb03c15c7c78a4e927ed3964a  ../patch/t4e/accusump/prog.bin

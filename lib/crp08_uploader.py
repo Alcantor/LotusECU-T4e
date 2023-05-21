@@ -8,24 +8,27 @@ BO_BE = 'big'
 
 class CRP08_uploader:
 	errors = {
-		0x81: "Not a 7,1 or 8,0 or 9,0 message received",
-		0x82: "Error count > 3 (too many Errors)",
-		0x83: "Stage3: r13-0x7FED Bit 2 is not set",
-		0x85: "Error during flash programming (Hardware related, verify failed - multiple causes)",
-		0x87: "Message 9,1 related ?",
-		0x88: "Error during flash erase",
-		0x89: "Databyte0 of expected First/Next/Subsequent Frame message was not 0x6",
-		0x8A: "Programmed Bootloader Version is 0x0 and destination flash address was not 0xA00. Decrypted header Min/Max Bootloader versions are not matching or are zero",
-		0x8B: "Decrypted header 'T4E'+0x1F<0x20> is not matching !",
-		0x8C: "Header A00_val1(+0x34) > flashed 0xA00 value OR Header A00_val2(+0x38) < flashed 0xA00 value",
-		0x8D: "Invalid destination address and/or size",
-		0x8E: "Timeout while waiting for data.",
-		0x8F: "Test for emptiness of the flash destination address failed. This is valid for 0xA00, 0xA2C, 0xA4C, 0x7C0 (SPI) addresses",
-		0x90: "HC908: Error unlocking HC908 with 8 byte passphrase",
-		0x96: "More than 0x400 byte received in frame",
-		0x97: "First/Next/Subsequent Frame message (0x6) had invalid len (<6 bytes) and/or the CRC was invalid",
-		0x98: "Databyte1/2 of expected First/Next/Subsequent Frame message (0x6) did not match the expected frame count value",
-		0x99: "Databyte 3/4 of the expected First/Next/Subsequent Frame message (0x6) did not match (total number of frame bytes received)-6 or unknown"
+		0x80: "Max enquiry error",
+		0x81: "Preamble error (Message 7,1 or 8,0 or 9,0 expected)",
+		0x82: "Max retry error",
+		0x83: "Rx timeout error",
+		0x84: "Decipher error",
+		0x85: "Programming error",
+		0x86: "Memory copy error",
+		0x87: "End procedure error (Message 9,1 related)",
+		0x88: "Erase error",
+		0x89: "Protocol error (Message 6 excepted)",
+		0x8A: "Blank serial number (Flash address is not 0xA00)",
+		0x8B: "ECU information error (T4E/T6 not matching)",
+		0x8C: "Serial number error (Version 0xA00 is not between Min and Max)",
+		0x8D: "Device information error (Invalid destination address and/or size)",
+		0x8E: "Max unanswered request data",
+		0x8F: "Device not blank (For addresses: 0xA00, 0xA2C, 0xA4C, 0x7C0)",
+		0x90: "Wrong HC908 passphrase (8 bytes)",
+		0x96: "Rx buffer overflow error (>0x400 bytes)",
+		0x97: "CRC error",
+		0x98: "Index error",
+		0x99: "Length error"
 	}
 
 	def __init__(self, interface, channel, p):

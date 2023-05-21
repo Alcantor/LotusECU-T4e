@@ -6,3 +6,6 @@
 "CAL_misc_gears","Min 1st gear","Max 1st gear","Min 2nd gear","Max 2nd gear","Min 3rd gear","Max 3rd gear","Min 4th gear","Max 4th gear","Min 5th gear","Max 5th gear"
 "CAL_misc_gears_6","Min 6th gear","Max 6th gear"
 "CAL_misc_gears_?b","Min 1st gear","Max 1st gear","Min 2nd gear","Max 2nd gear","Min 3rd gear","Max 3rd gear","Min 4th gear","Max 4th gear","Min 5th gear","Max 5th gear","Min 6th gear","Max 6th gear"
+"CAL_tpssmooth_decrement_adj1_a?","N","1st","2nd","3rd","4th","5th","6th"
+"CAL_tpssmooth_decrement_adj1_b?","N","1st","2nd","3rd","4th","5th","6th"
+"CAL_tpssmooth_increment_adj1_b?","1st","2nd","3rd","4th","5th","6th"
