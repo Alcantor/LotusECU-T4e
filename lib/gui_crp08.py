@@ -49,7 +49,7 @@ class CRP08_editor_win(tk.Toplevel):
 		self.lb.pack(fill=tk.X)
 
 		# Infos
-		self.txt = tk.Text(self, height=16, width=45, state=tk.DISABLED)
+		self.txt = tk.Text(self, height=17, width=45, state=tk.DISABLED)
 		self.txt.pack()
 
 		# Backend

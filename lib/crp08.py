@@ -313,7 +313,7 @@ CRP08 ECU Data:
 #
 # Chunk CAN format:
 #
-#   4 Bytes LE - Sould always be 0x0001010A
+#   4 Bytes LE - Sould always be 0x0001010A for EMS and 0x0002010C for TCU
 #   4 Bytes LE - CAN Bitrate
 #   4 Bytes LE - CAN Remote ID 1
 #   4 Bytes LE - CAN Local ID 1
@@ -323,11 +323,12 @@ CRP08 ECU Data:
 #   x Bytes    - XTEA Encrypted data (see Data ECU format)
 #
 class CRP08_chunk_can(BinData):
-	SIGNATURE = 0x0001010A
+	SIGNATURE_EMS = 0x0001010A # EMS
+	SIGNATURE_TCU = 0x0002010C # TCU
 
 	def __init__(self, key):
 		# Configuration header (64 Bytes)
-		#self.signature = self.SIGNATURE
+		self.signature = self.SIGNATURE_EMS
 		self.can_bitrate = 500
 		self.can_remote_id1 = 0x50
 		self.can_local_id1 = 0x7A0
@@ -339,16 +340,21 @@ class CRP08_chunk_can(BinData):
 		if(self.is_encrypted): self.data = None
 		else: self.data = CRP08_data_ecu(key)
 
+	def setTCUaddr(self):
+		self.signature = self.SIGNATURE_TCU
+		self.can_remote_id1 = 0x60
+		self.can_local_id1 = 0x7B0
+		self.can_remote_id2 = 0x52
+		self.can_local_id2 = 0x7A2
+
 	def parse(self, data):
 		# Configuration header (64 Bytes)
-		signature = int.from_bytes(data[0:4], BO_LE)
+		self.signature = int.from_bytes(data[0:4], BO_LE)
 		self.can_bitrate = int.from_bytes(data[4:8], BO_LE)
 		self.can_remote_id1 = int.from_bytes(data[8:12], BO_LE)
 		self.can_local_id1 = int.from_bytes(data[12:16], BO_LE)
 		self.can_remote_id2 = int.from_bytes(data[16:20], BO_LE)
 		self.can_local_id2 = int.from_bytes(data[20:24], BO_LE)
-		if(signature != self.SIGNATURE):
-			raise CRP08_exception("Chunk signature!")
 
 		# TODO: T6 CRP have a value in data[60:64]... A CRC for the data?
 
@@ -362,7 +368,7 @@ class CRP08_chunk_can(BinData):
 
 	def compose(self, data):
 		# Configuration header (64 Bytes)
-		data[0:4] = self.SIGNATURE.to_bytes(4, BO_LE)
+		data[0:4] = self.signature.to_bytes(4, BO_LE)
 		data[4:8] = self.can_bitrate.to_bytes(4, BO_LE)
 		data[8:12] = self.can_remote_id1.to_bytes(4, BO_LE)
 		data[12:16] = self.can_local_id1.to_bytes(4, BO_LE)
@@ -377,11 +383,13 @@ class CRP08_chunk_can(BinData):
 		fmt = """
 CRP08 CAN Chunk:
 
+	Signature : 0x{:8X}
 	Bitrate   : {:d} kbits/s
 	Remote ID : 0x{:3X} / 0x{:3X}
 	Local ID  : 0x{:3X} / 0x{:3X}
 """
 		return fmt.format(
+			self.signature,
 			self.can_bitrate,
 			self.can_remote_id1, self.can_remote_id2,
 			self.can_local_id1, self.can_local_id2
@@ -401,9 +409,10 @@ CRP08 CAN Chunk:
 #
 class CRP08(BinData):
 	variants = [
-		["T4E",CRP08_xtea.T4E_KEY,"T4E",0x10000,0x20000,"LOTUS_T4E_MY08"],
-		["T6",CRP08_xtea.T6_KEY,"ECU T6",0x5,0x4,"LOTUS_T6_AIN.T6AIN0R01"],
-		["T6 Caterham",CRP08_xtea.T6_CATERHAM_KEY,"CATERHAM T6",0x5,0x4,"CATERHAM_ECU_DURATEC"]
+		["T4E",CRP08_xtea.T4E_KEY,"T4E",0x10000,0x20000,False,"LOTUS_T4E"],
+		["T6",CRP08_xtea.T6_KEY,"ECU T6",0x5,0x4,False,"LOTUS_T6"],
+		["T6 Caterham",CRP08_xtea.T6_CATERHAM_KEY,"CATERHAM T6",0x5,0x4,False,"CATERHAM_ECU_DURATEC"],
+		["TCU",CRP08_xtea.T6_KEY,"TCU MMT/AT REVC",0x5,0x4,True,"LOTUS_TCU"]
 	]
 
 	def __init__(self):
@@ -465,8 +474,9 @@ class CRP08(BinData):
 		chk = CRP08_chunk_can(v[1])
 		chk.data.ecu_id = v[2]
 		chk.data.ecu_addr = v[3]
+		if(v[5]): chk.setTCUaddr()
 		chk.data.import_bin(file)
-		self.add_chunk(chk, os.path.basename(file), v[5])
+		self.add_chunk(chk, os.path.basename(file), v[6])
 
 	# Create a chunk for the Program
 	def add_prog(self, file, i=0):
@@ -474,8 +484,9 @@ class CRP08(BinData):
 		chk = CRP08_chunk_can(v[1])
 		chk.data.ecu_id = v[2]
 		chk.data.ecu_addr = v[4]
+		if(v[5]): chk.setTCUaddr()
 		chk.data.import_bin(file)
-		self.add_chunk(chk, os.path.basename(file), v[5])
+		self.add_chunk(chk, os.path.basename(file), v[6])
 
 	# Unpack multiple chunks from a CRP file.
 	def read_file(self, file, i=0):

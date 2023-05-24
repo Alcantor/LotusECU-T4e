@@ -52,6 +52,8 @@ class CRP08_uploader:
 			}],
 			bitrate = chunk_can.can_bitrate*1000
 		)
+		# Should be 0x51 for EMS and 0x52 for TCU
+		self.arbitration_id = chunk_can.can_remote_id2
 		# Workaround for socketcan interface.
 		# The kernel filtering does not filter out the error messages.
 		# So force library filtering.
@@ -74,7 +76,8 @@ class CRP08_uploader:
 			chunk_size = min(8, size)
 			chunk = data[offset:offset+chunk_size]
 			msg = can.Message(
-				is_extended_id = False, arbitration_id = 0x51,
+				is_extended_id = False,
+				arbitration_id = self.arbitration_id,
 				data = chunk
 			)
 			self.bus.send(msg)
