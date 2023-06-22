@@ -201,6 +201,13 @@ OBD2LEVEL = [
 	("Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)", "54")
 ]
 
+OBD2MONITORS = [
+	("Components, Fuel System, Misfire, O2 Sensor Heater, O2 Sensor, Evaporative System, Catalyst", "07 65"),
+	("Components, Fuel System, Misfire, O2 Sensor Heater, O2 Sensor, Catalyst", "07 61"),
+	("Components, Fuel System, Misfire, O2 Sensor, Catalyst", "07 21"),
+	("Components, Fuel System, Misfire", "07 00")
+]
+
 UNLOCK_MAGIC = [
 	("Locked", "00 00 00 00"),
 	("Locked (Spaces)", "20 20 20 20"),
@@ -258,6 +265,7 @@ def do(symbols, units, xaxis, calrom, decram):
 
 		#print(data)
 		if  (data[3] == "u8_obd2level"): xml_add_switch(rom, data, OBD2LEVEL)
+		elif(s == "CAL_obd2_monitors"): xml_add_switch(rom, data, OBD2MONITORS)
 		elif(s == "CAL_ecu_unlock_magic"): xml_add_switch(rom, data, UNLOCK_MAGIC)
 		elif(s == "CAL_misc_use_tmap"): xml_add_switch(rom, data, USE_TMAP)
 		elif(s == "CAL_misc_use_tpms"): xml_add_switch(rom, data, USE_TPMS)

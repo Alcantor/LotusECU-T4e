@@ -2933,6 +2933,13 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			</table>
 			<description />
 		</table>
+		<table type="Switch" name="obd2: monitors" category="obd2" sizey="2" userlevel="1" storageaddress="0x2C96">
+			<state name="Components, Fuel System, Misfire, O2 Sensor Heater, O2 Sensor, Evaporative System, Catalyst" data="07 65" />
+			<state name="Components, Fuel System, Misfire, O2 Sensor Heater, O2 Sensor, Catalyst" data="07 61" />
+			<state name="Components, Fuel System, Misfire, O2 Sensor, Catalyst" data="07 21" />
+			<state name="Components, Fuel System, Misfire" data="07 00" />
+			<description />
+		</table>
 		<table type="2D" name="obd2: P0135 P0141 threshold" category="obd2" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x2CA6">
 			<scaling category="Ampere" units="A" expression="x/1000" to_byte="x*1000" format="0.00" fineincrement="0.01" coarseincrement="0.2" />
 			<table type="Static X Axis" name="" sizex="1">
@@ -4613,6 +4620,13 @@ inj_time = d</description>
 			<scaling category="Percent" units="%" expression="(x*100/128)-100" to_byte="(x+100)*128/100" format="0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>freeze ltft</data>
+			</table>
+			<description />
+		</table>
+		<table type="2D" name="obd2: monitors completeness" category="obd2" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x0323">
+			<scaling category="Number" units="#" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="10" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>monitors completeness</data>
 			</table>
 			<description />
 		</table>
