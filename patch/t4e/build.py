@@ -66,109 +66,174 @@ class Patcher_T4eCalibration(Patcher):
 	def get_free_cal(self):
 		return self.free_cal
 
-	def add_cal(self, file):
-		self.merge_file(self.get_free_cal(), file, check_blank=True)
-
-class Segment:
-	def __init__(self, src, dest, size):
-		self.src = src
-		self.dest = dest
-		self.size = size
-	def get_src(self): return int.from_bytes(self.src, BO_BE)
-	def get_dest(self): return int.from_bytes(self.dest, BO_BE)
-	def get_size(self): return int.from_bytes(self.size, BO_BE)
-	def get_src_end(self): return self.get_src()+self.get_size()
-	def get_dest_end(self): return self.get_dest()+self.get_size()
-	def inc_size(self, size):
-		self.size[:] = (self.get_size()+size).to_bytes(4, BO_BE)
-	def __str__(self):
-		if(self.src == None): src = "--------"
-		else: src = "0x{:06X}".format(self.get_src())
-		return "{:s} 0x{:06X} 0x{:06X}".format(
-			src,
-			self.get_dest(),
-			self.get_size()
-		)
+	def add_cal(self, file, rom_addr):
+		self.merge_file(rom_addr, file, check_blank=True)
 
 class Patcher_T4eProg(Patcher):
 	def __init__(self, prog_file):
 		super().__init__(prog_file, 0x20000)
-		self.detect_segments()
+		self.read_segments()
+		self.search_last_segments()
 
-	def detect_segments(self):
+	def read_segments(self):
 		i = self.data.tobytes().find(b"\x00\x02\x00\x00\x00\x02\x00\x00")
 		if(i == -1): raise Exception("First segment not found!")
+		self.segments_table_offset = i
 		self.segments = []
+
+		# Search opcode which point to i.
+		j = self.data.tobytes().find(PPC32.ppc_addi(31, 3, i & 0xFFFF))
+		if(j == -1): raise Exception(".text/.data opcode not found!")
+		self.opcode1_offset = j
+
 		# Initialized data
 		while(True):
-			segment = Segment(
-				self.data[i:i+4],
-				self.data[i+4:i+8],
-				self.data[i+8:i+12]
+			s = (
+				int.from_bytes(self.data[i  :i+ 4], BO_BE),
+				int.from_bytes(self.data[i+4:i+ 8], BO_BE),
+				int.from_bytes(self.data[i+8:i+12], BO_BE)
 			)
 			i += 12
-			if(segment.get_size() == 0): break
-			self.segments.append(segment)
-		# Ignore 0x0
+			if(s[2] == 0): break
+			self.segments.append(s)
+
+		# Ignore 0x0 (In some old versions).
 		while(self.data[i:i+4] == b"\x00\x00\x00\x00"): i+=4
+
+		# Search opcode which point to i.
+		j = self.data.tobytes().find(PPC32.ppc_addi(30, 3, i & 0xFFFF))
+		if(j == -1): raise Exception(".bss opcode not found!")
+		self.opcode2_offset = j
+
 		# Uninitialized data
 		while(True):
-			segment = Segment(
+			s = (
 				None,
-				self.data[i:i+4],
-				self.data[i+4:i+8]
+				int.from_bytes(self.data[i  :i+4], BO_BE),
+				int.from_bytes(self.data[i+4:i+8], BO_BE)
 			)
 			i += 8
-			if(segment.get_size() == 0): break
-			self.segments.append(segment)
+			if(s[2] == 0): break
+			self.segments.append(s)
+
+		# How much free space is left?
+		while(self.data[i:i+4] == b"\xFF\xFF\xFF\xFF"): i+=4
+		self.blank_limit = i
+
+	def write_segments(self):
+		i = self.segments_table_offset
+
+		# Replace opcode
+		j = self.opcode1_offset
+		self.data[j:j+4] = PPC32.ppc_addi(31, 3, i & 0xFFFF)
+
+		# Initialized data
+		for s in self.segments:
+			if(s[0] == None): continue
+			self.data[i  :i+ 4] = s[0].to_bytes(4, BO_BE)
+			self.data[i+4:i+ 8] = s[1].to_bytes(4, BO_BE)
+			self.data[i+8:i+12] = s[2].to_bytes(4, BO_BE)
+			i += 12
+
+		# End of initizialized data
+		self.data[i:i+12] = bytes([0] * 12)
+		i += 12
+
+		# Replace opcode
+		j = self.opcode2_offset
+		self.data[j:j+4] = PPC32.ppc_addi(30, 3, i & 0xFFFF)
+
+		# Uninitialized data
+		for s in self.segments:
+			if(s[0] != None): continue
+			self.data[i  :i+ 4] = s[1].to_bytes(4, BO_BE)
+			self.data[i+4:i+ 8] = s[2].to_bytes(4, BO_BE)
+			i += 8
+
+		# End of uninitizialized data
+		self.data[i:i+8] = bytes([0] * 8)
+		i += 8
+
+		# Verify that we do not overwrite something important.
+		if(i > self.blank_limit):
+			raise Exception("Not enough free space for segments!")
+
+	def search_last_segments(self):
 		# Search the upper segment in ROM and RAM
-		upper_addr = 0
+		upper_addr_src = 0
+		upper_addr_dst = 0
 		for s in self.segments:
-			if(s.src != None and upper_addr < s.get_src()):
+			if(s[0] != None and upper_addr_src < s[0]):
 				self.segment_last_rom = s
-				upper_addr = s.get_src()
-		upper_addr = 0
-		for s in self.segments:
-			if(upper_addr < s.get_dest()):
+				upper_addr_src = s[0]
+			if(upper_addr_dst < s[1]):
 				self.segment_last_ram = s
-				upper_addr = s.get_dest()
+				upper_addr_dst = s[1]
 
 	def get_free_rom(self):
-		return self.segment_last_rom.get_src_end()
+		return self.segment_last_rom[0]+self.segment_last_rom[2]
 
 	def get_free_ram(self):
-		return self.segment_last_ram.get_dest_end()
+		return self.segment_last_ram[1]+self.segment_last_ram[2]
 
-	def add_rom(self, file):
-		size = self.merge_file(self.get_free_rom(), file, check_blank=True)
-		self.segment_last_rom.inc_size(size)
+	def add_text(self, file, rom_addr):
+		size = self.merge_file(rom_addr, file, check_blank=True)
+		self.segments.append((rom_addr, rom_addr, size))
+		self.search_last_segments()
 
-	def add_ram(self, size):
-		self.segment_last_ram.inc_size(size)
+	def add_data(self, file, rom_addr, ram_addr):
+		size = self.merge_file(rom_addr, file, check_blank=True)
+		self.segments.append((rom_addr, ram_addr, size))
+		self.search_last_segments()
+
+	def add_bss(self, size, ram_addr):
+		self.segments.append((None, ram_addr, size))
+		self.search_last_segments()
 
 	def print_segments(self):
-		for s in self.segments: print(s)
+		print("Segments table 0x{:06X}:".format(self.segments_table_offset))
+		for s in self.segments:
+			if(s[0] == None): src = "--------"
+			else: src = "0x{:06X}".format(s[0])
+			print("  {:s} 0x{:06X} 0x{:06X}".format(src,s[1],s[2]))
 		print("Free ROM space 0x{:06X}".format(self.get_free_rom()))
 		print("Free RAM space 0x{:06X}".format(self.get_free_ram()))
+		print("Opcode to .text/.data segments list 0x{:06X}".format(self.opcode1_offset))
+		print("Opcode to .bss segments list 0x{:06X}".format(self.opcode2_offset))
+
+class SYMMap:
+	def __init__(self, file):
+		self.syms = {}
+		r = re.compile("^(.*) = (0x[0-9a-f]*);")
+		with open(file,'r') as f:
+			for line in f.readlines():
+				m = r.match(line)
+				if(m): self.syms[m.group(1)] = int(m.group(2), 16)
+
+	def get_sym_addr(self, symbol):
+		return self.syms[symbol]
 
 class LDMap:
 	def __init__(self, file):
+		self.syms = {}
+		self.segs = {}
+		r_sym = re.compile("^ *(0x[0-9a-f]*) *([0-9a-zA-Z_]*)$")
+		r_seg = re.compile("^(\.[a-z]*) *(0x[0-9a-f]*) *(0x[0-9a-f]*)$")
 		with open(file,'r') as f:
-			self.lines = f.readlines()
+			for line in f.readlines():
+				m = r_sym.match(line)
+				if(m): self.syms[m.group(2)] = int(m.group(1), 16)
+				m = r_seg.match(line)
+				if(m): self.segs[m.group(1)] = (int(m.group(2), 16), int(m.group(3), 16))
 
 	def get_sym_addr(self, symbol):
-		r = re.compile("^ *(0x[0-9a-f]*) *"+symbol+"$")
-		for line in self.lines:
-			m = r.match(line)
-			if(m): return int(m.group(1), 16)
-		raise Exception("Symbol not found!")
+		return self.syms[symbol]
+
+	def get_seg_addr(self, segment):
+		return self.segs[segment][0]
 
 	def get_seg_size(self, segment):
-		r = re.compile("^"+segment+" *0x[0-9a-f]* *(0x[0-9a-f]*)")
-		for line in self.lines:
-			m = r.match(line)
-			if(m): return int(m.group(1), 16)
-		raise Exception("Segment not found!")
+		return self.segs[segment][1]
 
 # Bootloader from ALS3M0240J seems ugly. Look at 0x400 for example.
 # Bootloader A128E6009F, ALS3M0240F, ALS3M0244F and B120E0029F are identical
@@ -196,18 +261,20 @@ def build_accusump():
 	print("Build accusump control...")
 	c = Patcher_T4eCalibration("../../dump/t4e-white/A128E6009F/calrom.bin")
 	p = Patcher_T4eProg("../../dump/t4e-white/A128E6009F/prog.bin")
-	acis=0x3BC58
+	s = SYMMap("white78.sym")
+	acis=s.get_sym_addr("airbox_flap")
 	os.system("make -C accusump CAL=0x{:X} ROM=0x{:X} RAM=0x{:X}".format(
 		c.get_free_cal(),
 		acis, # p.get_free_rom(),
 		p.get_free_ram(),
 	))
+	m = LDMap("accusump/map.txt")
 
 	# If we replace the digital oil sensor with an analogic one,
 	# the oil pressure warning on the cluster will light up constantly!
 	# We need to patch that too.
 	p.check_and_replace(
-		0x3BAB4,
+		s.get_sym_addr("oilpressure_cmp"),
 		PPC32.ppc_cmpli(0, 0x200), # Threshold at 2.5 V
 		PPC32.ppc_cmpli(0, 0x0B8)  # Threshold at 1.0 bar.
 	)
@@ -216,7 +283,7 @@ def build_accusump():
 	p.merge_file(acis, "accusump/accusump.text.bin", size=0x100)
 
 	# Default accusump calibration
-	c.add_cal("accusump/accusump.data.bin")
+	c.add_cal("accusump/accusump.data.bin", m.get_seg_addr(".data"))
 
 	# Save
 	p.save("accusump/prog.bin")
@@ -232,35 +299,37 @@ def build_obdoil():
 		p.get_free_ram(),
 		"../black91.sym"
 	))
+	s = SYMMap("black91.sym")
 	m = LDMap("obdoil/map.txt")
 
 	# If we replace the digital oil sensor with an analogic one,
 	# the oil pressure warning on the cluster will light up constantly!
 	# We need to patch that too.
 	p.check_and_replace(
-		0x03cb04,
+		s.get_sym_addr("oilpressure_cmp"),
 		PPC32.ppc_cmpli(3, 0x200), # Threshold at 2.5 V
 		PPC32.ppc_cmpli(3, 0x0B8)  # Threshold at 1.0 bar.
 	)
 
 	# Hook: Main Loop
 	p.check_and_replace(
-		0x023578,
+		s.get_sym_addr("hook_loop_loc"),
 		PPC32.ppc_b(-0x12B),
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
 
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
-		0x05d778,
+		s.get_sym_addr("hook_OBD_mode_0x01_loc"),
 		PPC32.ppc_rlwinm(0, 30, 0, 24, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)
 
 	# Merge and save.
-	p.add_rom("obdoil/obdoil.text.bin")
-	c.add_cal("obdoil/obdoil.data.bin")
-	p.add_ram(m.get_seg_size(".bss")) # TODO: Why 0x10, so much fill?
+	p.add_text("obdoil/obdoil.text.bin", m.get_seg_addr(".text"))
+	c.add_cal("obdoil/obdoil.data.bin", m.get_seg_addr(".data"))
+	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 0x10, so much fill?
+	p.write_segments()
 	p.save("obdoil/prog.bin")
 	c.save("obdoil/calrom.bin")
 
@@ -278,35 +347,51 @@ def build_accusump2():
 		p.get_free_ram(),
 		"../black91.sym"
 	))
+	s = SYMMap("black91.sym")
 	m = LDMap("accusump2/map.txt")
 
 	# If we replace the digital oil sensor with an analogic one,
 	# the oil pressure warning on the cluster will light up constantly!
 	# We need to patch that too.
 	p.check_and_replace(
-		0x03cb04,
+		s.get_sym_addr("oilpressure_cmp"),
 		PPC32.ppc_cmpli(3, 0x200), # Threshold at 2.5 V
 		PPC32.ppc_cmpli(3, 0x0B8)  # Threshold at 1.0 bar.
 	)
 
+	# Hook: Init
+	p.check_and_replace(
+		s.get_sym_addr("hook_init_loc"),
+		PPC32.ppc_blr(),
+		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
+	)
+
 	# Main Loop - Replace the call to the airbox_flap function
 	p.check_and_replace(
-		0x23564,
+		s.get_sym_addr("airbox_flap"),
 		PPC32.ppc_bl(0x01a9dc),
 		PPC32.ppc_bla(m.get_sym_addr("accusump"))
 	)
 
+	# Hook: Timer 5ms
+	p.check_and_replace(
+		s.get_sym_addr("hook_timer_5ms_loc"),
+		PPC32.ppc_li(5, 10),
+		PPC32.ppc_ba(m.get_sym_addr("hook_timer_5ms"))
+	)
+
 	# Hook: OBD Mode 0x22
 	p.check_and_replace(
-		0x06486c,
+		s.get_sym_addr("hook_OBD_mode_0x22_loc"),
 		PPC32.ppc_rlwinm(29, 8, 0, 16, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x22"))
 	)
 
 	# Merge and save.
-	p.add_rom("accusump2/accusump2.text.bin")
-	c.add_cal("accusump2/accusump2.data.bin")
-	p.add_ram(m.get_seg_size(".bss")) # TODO: Why 8, so much fill?
+	p.add_text("accusump2/accusump2.text.bin", m.get_seg_addr(".text"))
+	c.add_cal("accusump2/accusump2.data.bin", m.get_seg_addr(".data"))
+	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 8, so much fill?
+	p.write_segments()
 	p.save("accusump2/prog.bin")
 	c.save("accusump2/calrom.bin")
 
@@ -323,25 +408,26 @@ def build_flexfuel():
 		p.get_free_ram(),
 		"../black91.sym"
 	))
+	s = SYMMap("black91.sym")
 	m = LDMap("flexfuel/map.txt")
 
 	# Hook: Init
 	p.check_and_replace(
-		0x03009c,
+		s.get_sym_addr("hook_init_loc"),
 		PPC32.ppc_blr(),
 		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
 	)
 
 	# Hook: Main Loop
 	p.check_and_replace(
-		0x023578,
+		s.get_sym_addr("hook_loop_loc"),
 		PPC32.ppc_b(-0x12B),
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
 
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
-		0x05d778,
+		s.get_sym_addr("hook_OBD_mode_0x01_loc"),
 		PPC32.ppc_rlwinm(0, 30, 0, 24, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)
@@ -354,9 +440,10 @@ def build_flexfuel():
 	#)
 
 	# Merge and save.
-	p.add_rom("flexfuel/flexfuel.text.bin")
-	c.add_cal("flexfuel/flexfuel.data.bin")
-	p.add_ram(m.get_seg_size(".bss")) # TODO: Why 0x18, so much fill?
+	p.add_text("flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
+	c.add_cal("flexfuel/flexfuel.data.bin", m.get_seg_addr(".data"))
+	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 0x18, so much fill?
+	p.write_segments()
 	p.save("flexfuel/prog.bin")
 	c.save("flexfuel/calrom.bin")
 

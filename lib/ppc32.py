@@ -6,9 +6,9 @@ class PPC32:
 		li &= 0xFFFFFF
 		return (opcd<<26|li<<2|aa<<1|lk).to_bytes(4,BO_BE)
 
-	def __build2(opcd, rSD, rA, uimm):
-		uimm &= 0xFFFF
-		return (opcd<<26|rSD<<21|rA<<16|uimm).to_bytes(4,BO_BE)
+	def __build2(opcd, rSD, rA, imm):
+		imm &= 0xFFFF
+		return (opcd<<26|rSD<<21|rA<<16|imm).to_bytes(4,BO_BE)
 
 	def __build3(opcd, rSD, rA, rB, xo):
 		return (opcd<<26|rSD<<21|rA<<16|rB<<11|xo<<1).to_bytes(4,BO_BE)
@@ -19,11 +19,17 @@ class PPC32:
 	def ppc_cmpli(rA, uimm):
 		return PPC32.__build2(10, 0, rA, uimm)
 
-	def ppc_addis(rD, rA, uimm):
-		return PPC32.__build2(15, rD, rA, uimm)
+	def ppc_addi(rD, rA, simm):
+		return PPC32.__build2(14, rD, rA, simm)
 
-	def ppc_lis(rD, uimm):
-		return PPC32.ppc_addis(rD, 0, uimm)
+	def ppc_li(rD, simm):
+		return PPC32.ppc_addi(rD, 0, simm)
+
+	def ppc_addis(rD, rA, simm):
+		return PPC32.__build2(15, rD, rA, simm)
+
+	def ppc_lis(rD, simm):
+		return PPC32.ppc_addis(rD, 0, simm)
 
 	def ppc_b(addr):
 		return PPC32.__build1(18, addr >> 2, 0, 0)
@@ -71,6 +77,7 @@ if __name__ == "__main__":
 	print("Small PPC32 library... Make some tests:\n")
 
 	print("cmplwi %r2,30       "+print_hex(PPC32.ppc_cmpli(2, 30)))
+	print("li     %r3,1        "+print_hex(PPC32.ppc_li(3, 1)))
 	print("lis    %r3,1        "+print_hex(PPC32.ppc_lis(3, 1)))
 	print("b      -0x12B       "+print_hex(PPC32.ppc_b(-0x12B)))
 	print("ba     0x3DC400     "+print_hex(PPC32.ppc_ba(0x3DC400)))

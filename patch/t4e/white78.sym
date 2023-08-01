@@ -1,0 +1,2 @@
+airbox_flap = 0x03bc58;
+oilpressure_cmp = 0x03bab4;

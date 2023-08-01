@@ -12,15 +12,27 @@ CAL_accusump_X_engine_speed:
 CAL_accusump:
 #	 1,  1.5,  3.5,  3.5   bar
 .byte	31,   46,  109,  109 # Pressure threshold in 32mbar
+CAL_accusump_max_open_time:
+.byte	30 # Maximum open time to protect the coil in u8_time_s
 
 .section .bss
 
 .lcomm	oil_pressure,	2 # i16_pressure_mbar
+.lcomm	timer,		2 # u16_time_5ms
 
 .section .text
-.globl _start, accusump, hook_OBD_mode_0x22
+.globl _start, hook_init, accusump, hook_timer_5ms, hook_OBD_mode_0x22
 
 _start:
+hook_init:
+	/* Initialize the timer to the value of the calibration */
+	lis	%r3, CAL_accusump_max_open_time@ha
+	lbz	%r3, CAL_accusump_max_open_time@l(%r3)
+	mulli	%r3, %r3, 200
+	lis	%r4, timer@ha
+	sth	%r3, timer@l(%r4)
+	blr
+
 accusump:
 	/* Push link register on stack */
 	stwu	%r1, -8(%r1)
@@ -68,7 +80,14 @@ accusump_normal:
 	extsh	%r4, %r4
 
 	cmpw	%r4, %r3
-	bge	accusump_close
+	bge	accusump_close_reset_timer
+
+accusump_open_with_timer:
+	/* If the time is out, close the accusump */
+	lis	%r3, timer@ha
+	lhz	%r3, timer@l(%r3)
+	cmplwi	%r3, 0
+	beq	accusump_close
 
 accusump_open:
 	/* Open accusump */
@@ -77,6 +96,14 @@ accusump_open:
 	ori	%r4, %r4, 0x40
 	stb	%r4, L9822E_outputs@l(%r3)
 	b	accusump_return
+
+accusump_close_reset_timer:
+	/* Reset the timer to the value of the calibration */
+	lis	%r3, CAL_accusump_max_open_time@ha
+	lbz	%r3, CAL_accusump_max_open_time@l(%r3)
+	mulli	%r3, %r3, 200
+	lis	%r4, timer@ha
+	sth	%r3, timer@l(%r4)
 
 accusump_close:
 	/* Close accusump */
@@ -91,6 +118,20 @@ accusump_return:
 	mtlr	%r0
 	addi	%r1, %r1, 8
 	blr
+
+hook_timer_5ms:
+	/* Decrement the timer every 5ms */
+	/* It's ok to use r3, r4 and r5 here. */
+	lis	%r3, timer@ha
+	lhz	%r4, timer@l(%r3)
+	cmplwi	%r4, 0
+	beq	timeout
+	subi	%r4, %r4, 1
+	sth	%r4, timer@l(%r3)
+timeout:
+	/* Load 10 (Erase by patch in original code) */
+	li	%r5, 10
+	ba	hook_timer_5ms_continue
 
 hook_OBD_mode_0x22:
 	# %r31 is index in obd_resp

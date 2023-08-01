@@ -50,7 +50,7 @@ one in miles and I needed to display kilometers. See folder [cluster-black].
 
 ## Licensing
 
-Under [CC-NC-SA].
+Under [CC-NC-SA]. You may not use this material for commercial purposes.
 
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
@@ -186,6 +186,18 @@ to flash the ECU, think twice before erasing the program.
 
 The ECU seems fine to boot without a valid calibration, so erasing this part is
 quite safe. Of course the car won't run in this case.
+
+## The infamous P0340 Camshaft Position Sensor BUG
+
+I've encountered numerous times that a freshly programmed ECU throws this error.
+The engine starts, runs for 1 or 2 seconds and die, then an OBD scanner reports
+the P0340 error.
+
+In the T4e the car model is stored into the EEPROM at 0x7C0, and if you flash
+another tune, the ECU will see it and set a flag. I recommend to fill with zeros
+the EEPROM from 0x7C0 to 0x7E0 as an unprogrammed ECU would be.
+
+In the T6 the car model is stored into the coding area from 0x01C020 to 0x01C040.
 
 ## Need more help?
 
