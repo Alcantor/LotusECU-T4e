@@ -8,7 +8,7 @@
 
 This is my attempt to tune my Lotus Exige S2 (T4e ECU White Dash).
 
-It's based on the work of [Obeisance] and [Cybernet].
+I've started with the work of [Obeisance] and [Cybernet].
 
 [Obeisance]: https://www.lotustalk.com/threads/daft-disassembly.352193/
 [Cybernet]: https://www.lotustalk.com/threads/t4e-ecu-editor-preview.372258/
@@ -18,8 +18,7 @@ So I made my own Python-Script (Linux and Windows) to make the dump. It should
 also work with a RaspberryPi and a CAN Hat (SocketCAN Driver).
 
 After that I've realized that the Calibration ROM located at 0x10000 looks like
-identical to the T4 ECU at address 0x70000. So I've edited the [XML] to use the
-new offset.
+identical to the T4 ECU at address 0x70000.
 
 But how to upload the modification back? Hum, after somes hours of disassembling,
 I've figured out how to write to the RAM but not to the Flash.
@@ -50,9 +49,16 @@ one in miles and I needed to display kilometers. See folder [cluster-black].
 
 ## Licensing
 
-Under [CC-NC-SA]. You may not use this material for commercial purposes.
+Under [CC-NC-SA]. You may not use this material for commercial purposes without my approval.
 
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+Commercial application lisenced to [Phil's Targed Tuning], [FRS performance engineering]
+and [VF Tuner].
+
+[Phil's Targed Tuning]: https://targedtuning.ch
+[FRS performance engineering]: https://www.fujiirs.com
+[VF Tuner]: https://vftuner.com/
 
 ## Factory Method 
 

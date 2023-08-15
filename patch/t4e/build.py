@@ -361,9 +361,9 @@ def build_accusump2():
 
 	# Hook: Init
 	p.check_and_replace(
-		s.get_sym_addr("hook_init_loc"),
+		s.get_sym_addr("hook_init2_loc"),
 		PPC32.ppc_blr(),
-		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
+		PPC32.ppc_ba(m.get_sym_addr("hook_init2"))
 	)
 
 	# Main Loop - Replace the call to the airbox_flap function
@@ -414,7 +414,7 @@ def build_flexfuel():
 	# Hook: Init
 	p.check_and_replace(
 		s.get_sym_addr("hook_init_loc"),
-		PPC32.ppc_blr(),
+		PPC32.ppc_li(0, 0x80),
 		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
 	)
 
@@ -425,6 +425,13 @@ def build_flexfuel():
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
 
+	# Hook: Timer 5ms
+	p.check_and_replace(
+		s.get_sym_addr("hook_timer_5ms_loc"),
+		PPC32.ppc_li(5, 10),
+		PPC32.ppc_ba(m.get_sym_addr("hook_timer_5ms"))
+	)
+
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
 		s.get_sym_addr("hook_OBD_mode_0x01_loc"),
@@ -432,18 +439,84 @@ def build_flexfuel():
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)
 
-	# Blend: AFR
-	#p.check_and_replace(
-	#	0x036594,
-	#	b"\x4b\xfe\xd3\x9d", # TODO: Replace with PPC32.ppc_bl(-?)
-	#	PPC32.ppc_bla(0x07ead8) # TODO: Parse map.txt to get this value!
-	#)
+	# Hook: High cam ignition
+	p.check_and_replace(
+		s.get_sym_addr("hook_ign_advance_high_cam_base_loc"),
+		PPC32.ppc_bl(-0x1061C),
+		PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_high_cam_base"))
+	)
+
+	# Hook: Low cam ignition
+	p.check_and_replace(
+		s.get_sym_addr("hook_ign_advance_low_cam_base_loc"),
+		PPC32.ppc_bl(-0x106E0),
+		PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_low_cam_base"))
+	)
+
+	# Hook: Ignition adj1
+	p.check_and_replace(
+		s.get_sym_addr("hook_ign_advance_adj1_loc"),
+		PPC32.ppc_bl(-0x10C50),
+		PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_adj1"))
+	)
+
+	# Hook: Injection cranking
+	p.check_and_replace(
+		s.get_sym_addr("hook_inj_time_adj_cranking_loc"),
+		PPC32.ppc_bl(-0x12F50),
+		PPC32.ppc_ba(m.get_sym_addr("hook_inj_time_adj_cranking"))
+	)
+
+	# Hook: Injection efficiency
+	p.check_and_replace(
+		s.get_sym_addr("hook_inj_efficiency_loc"),
+		PPC32.ppc_bl(-0x12E5C),
+		PPC32.ppc_ba(m.get_sym_addr("hook_inj_efficiency"))
+	)
+
+	# Hook: Injection warmup
+	p.check_and_replace(
+		s.get_sym_addr("hook_inj_time_adj3_loc"),
+		PPC32.ppc_bl(-0x1301C),
+		PPC32.ppc_ba(m.get_sym_addr("hook_inj_time_adj3"))
+	)
 
 	# Merge and save.
 	p.add_text("flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
 	c.add_cal("flexfuel/flexfuel.data.bin", m.get_seg_addr(".data"))
 	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 0x18, so much fill?
 	p.write_segments()
+
+	# Copy Ignition adj
+	addr_src = s.get_sym_addr("CAL_ign_advance_adj1")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_adj1") - c.offset
+	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i])
+
+	# Copy ignition (high cam) table for ethanol.
+	addr_src = s.get_sym_addr("CAL_ign_advance_high_cam_base")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_high_cam_base") - c.offset
+	for i in range(0, 64): c.data[addr_dst+i] = int(c.data[addr_src+i])
+
+	# Copy fuel efficieny table for ethanol, add 35% fuel.
+	addr_src = s.get_sym_addr("CAL_inj_efficiency")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_inj_efficiency") - c.offset
+	for i in range(0, 1024): c.data[addr_dst+i] = int(c.data[addr_src+i]/1.35)
+
+	# Copy fuel warmup table for ethanol.
+	addr_src = s.get_sym_addr("CAL_inj_time_adj3")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj3") - c.offset
+	for i in range(0, 256): c.data[addr_dst+i] = int(c.data[addr_src+i])
+
+	# Copy fuel cranking table for ethanol, add 35% fuel.
+	addr_src = s.get_sym_addr("CAL_inj_time_adj_cranking")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj_cranking") - c.offset
+	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*1.35)
+
+	# Copy ignition (low cam) table for ethanol.
+	addr_src = s.get_sym_addr("CAL_ign_advance_low_cam_base")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_low_cam_base") - c.offset
+	for i in range(0, 1024): c.data[addr_dst+i] = int(c.data[addr_src+i])
+
 	p.save("flexfuel/prog.bin")
 	c.save("flexfuel/calrom.bin")
 

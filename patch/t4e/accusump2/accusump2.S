@@ -21,10 +21,10 @@ CAL_accusump_max_open_time:
 .lcomm	timer,		2 # u16_time_5ms
 
 .section .text
-.globl _start, hook_init, accusump, hook_timer_5ms, hook_OBD_mode_0x22
+.globl _start, hook_init2, accusump, hook_timer_5ms, hook_OBD_mode_0x22
 
 _start:
-hook_init:
+hook_init2:
 	/* Initialize the timer to the value of the calibration */
 	lis	%r3, CAL_accusump_max_open_time@ha
 	lbz	%r3, CAL_accusump_max_open_time@l(%r3)

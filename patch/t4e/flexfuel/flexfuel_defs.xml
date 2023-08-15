@@ -1,0 +1,85 @@
+<roms>
+	<rom>
+		<romid>
+			<xmlid>XTRACAL1</xmlid>
+			<market>World</market>
+			<make>Lotus</make>
+			<model>Elise/Exige Patched</model>
+			<submodel>2008-2011</submodel>
+			<transmission>MT</transmission>
+			<filesize>64kb</filesize>
+			<memmodel>MPC563</memmodel>
+			<flashmethod>CRP</flashmethod>
+			<internalidaddress>0x3CB4</internalidaddress>
+			<internalidstring>XTRACAL1</internalidstring>
+		</romid>
+		<table type="2D" name="ethanol: sensor temp reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBC">
+			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>reactivity</data>
+			</table>
+			<description>Sensivity of the fuel temperature sensor.</description>
+		</table>
+		<table type="2D" name="ethanol: sensor content reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBD">
+			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>reactivity</data>
+			</table>
+			<description>Sensivity of the fuel ethanol content sensor.</description>
+		</table>
+		<table type="2D" name="ethanol: ign advance adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3CC0">
+			<scaling category="Degree" units="&#176;" expression="(x/4)-32" to_byte="(x+32)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
+			<table type="X Axis" name="engine air" storagetype="uint8" endian="big" sizex="16" storageaddress="0x075C">
+				<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
+			</table>
+			<description>See "ign: advance adj1" map. For 100% ethanol. Do NOT edit Axis.</description>
+		</table>
+		<table type="3D" name="ethanol: ign advance high cam base" category="ethanol" storagetype="uint8" endian="big" sizex="8" sizey="8" userlevel="1" storageaddress="0x3CD0">
+			<scaling category="Degree" units="&#176;" expression="(x/4)-10" to_byte="(x+10)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
+			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="8" storageaddress="0x0A24">
+				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
+			</table>
+			<table type="Y Axis" name="engine load" storagetype="uint8" endian="big" sizey="8" storageaddress="0x0A2C">
+				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
+			</table>
+			<description>See "ign: advance high cam base" map. For 100% ethanol. Do NOT edit Axis.</description>
+		</table>
+		<table type="3D" name="ethanol: inj efficiency" category="ethanol" storagetype="uint8" endian="big" sizex="32" sizey="32" userlevel="1" storageaddress="0x3D10">
+			<scaling category="Percent" units="%" expression="x*100/200" to_byte="x*200/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="32" storageaddress="0x0BB4">
+				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
+			</table>
+			<table type="Y Axis" name="engine load" storagetype="uint8" endian="big" sizey="32" storageaddress="0x0BD4">
+				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
+			</table>
+			<description>See: "inj: efficiency" map. For 100% ethanol. Do NOT edit Axis.</description>
+		</table>
+		<table type="3D" name="ethanol: inj time adj3" category="ethanol" storagetype="uint8" endian="big" sizex="16" sizey="16" userlevel="1" storageaddress="0x4110">
+			<scaling category="Percent" units="%" expression="x*100/64" to_byte="x*64/100" format="0" fineincrement="1" coarseincrement="5" />
+			<table type="X Axis" name="engine load" storagetype="uint8" endian="big" sizex="16" storageaddress="0x11B4">
+				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
+			</table>
+			<table type="Y Axis" name="coolant" storagetype="uint8" endian="big" sizey="16" storageaddress="0x11C4">
+				<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
+			</table>
+			<description>See: "inj: time adj3" map. For 100% ethanol. Do NOT edit Axis.</description>
+		</table>
+		<table type="2D" name="ethanol: inj time adj cranking" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x4210">
+			<scaling category="Millisecond" units="ms" expression="x*256/1000" to_byte="x*1000/256" format="0.0" fineincrement="0.2" coarseincrement="1" />
+			<table type="X Axis" name="coolant" storagetype="uint8" endian="big" sizex="16" storageaddress="0x14C4">
+				<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
+			</table>
+			<description>See: "inj: time adj cranking" map. For 100% ethanol. Do NOT edit Axis.</description>
+		</table>
+		<table type="3D" name="ethanol: ign advance low cam base" category="ethanol" storagetype="uint8" endian="big" sizex="32" sizey="32" userlevel="1" storageaddress="0x4220">
+			<scaling category="Degree" units="&#176;" expression="(x/4)-10" to_byte="(x+10)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
+			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="32" storageaddress="0x1A3C">
+				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
+			</table>
+			<table type="Y Axis" name="engine load" storagetype="uint8" endian="big" sizey="32" storageaddress="0x1A5C">
+				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
+			</table>
+			<description>See: "ign: advance low cam base" map. For 100% ethanol. Do NOT edit Axis.</description>
+		</table>
+	</rom>
+</roms>
