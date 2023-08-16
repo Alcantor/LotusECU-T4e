@@ -53,7 +53,7 @@ Under [CC-NC-SA]. You may not use this material for commercial purposes without 
 
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-Commercial application lisenced to [Phil's Targed Tuning], [FRS performance engineering]
+Commercial rights lisenced to [Phil's Targed Tuning], [FRS performance engineering]
 and [VF Tuner].
 
 [Phil's Targed Tuning]: https://targedtuning.ch

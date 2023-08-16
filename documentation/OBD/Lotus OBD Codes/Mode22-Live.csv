@@ -1,0 +1,188 @@
+Address,Text,Response,DataPos,DataSize,DataMask,isSigned,SimpleScale,TextUnit
+22 02 01,System Leak Status,62 02 01,0,1,255,FALSE,1,
+22 02 02,Purge DC,62 02 02,0,1,255,FALSE,0.390625,%
+22 02 03,Idle Learn,62 02 03,0,2,65535,TRUE,9.77E-05,g/sec
+22 02 04,Idle Air Output,62 02 04,0,1,255,FALSE,0.1,g/sec
+22 02 05,Injection Pulse Time (B1),62 02 05,2,2,65535,FALSE,1,us
+22 02 06,Idle Status,62 02 06,0,1,255,FALSE,1,
+22 02 07,VVT Target Cam Position (inlet),62 02 07,0,2,65535,TRUE,0.25,degrees
+22 02 08,VVT Actual Cam Position (B1 inlet),62 02 08,0,2,65535,TRUE,0.25,degrees
+22 02 09,VVL Status,62 02 09,0,1,1,FALSE,1,
+22 02 0A,Cat Diag Pre-Cat Sw B1,62 02 0A,0,2,65535,FALSE,1,
+22 02 0B,Cat Diag Pre-Cat Max Sw,62 02 0B,0,2,65535,FALSE,1,
+22 02 0C,Gear Position,62 02 0C,0,1,255,FALSE,1,
+22 02 0D,Idle Speed Target,62 02 0D,0,1,255,FALSE,5,RPM
+22 02 12,Purge Vacuum Pressure,62 02 12,0,2,65535,TRUE,0.1,mbar
+22 02 13,Air Fuel Ratio Target,62 02 13,0,2,65535,FALSE,0.01,Ratio
+22 02 14,Recirc Pump Relay,62 02 14,0,1,2,FALSE,0.5,
+22 02 14,Fuel Pump Relay,62 02 14,0,1,1,FALSE,1,
+22 02 14,Traction Contorl Status LED,62 02 14,0,1,32,FALSE,0.03125,
+22 02 14,Cranking Relay,62 02 14,0,1,128,FALSE,0.0078125,
+22 02 14,A/C Clutch Relay,62 02 14,0,1,16,FALSE,0.0625,
+22 02 14,ACIS Intake Air Control,62 02 14,0,1,64,FALSE,0.015625,
+22 02 14,Radiator Fan #2 relay,62 02 14,0,1,4,FALSE,0.25,
+22 02 14,Radiator Fan #1 relay,62 02 14,0,1,8,FALSE,0.125,
+22 02 15,Left front tyre pressure,62 02 15,0,1,255,FALSE,0.04,bar
+22 02 15,Right front tyre pressure,62 02 15,1,1,255,FALSE,0.04,bar
+22 02 15,Right rear tyre pressure,62 02 15,3,1,255,FALSE,0.04,bar
+22 02 15,Left front tyre pressure,62 02 15,0,1,255,FALSE,0.04,bar
+22 02 15,Right rear tyre pressure,62 02 15,3,1,255,FALSE,0.04,bar
+22 02 15,Right front tyre pressure,62 02 15,1,1,255,FALSE,0.04,bar
+22 02 15,Left rear tyre pressure,62 02 15,2,1,255,FALSE,0.04,bar
+22 02 15,Left rear tyre pressure,62 02 15,2,1,255,FALSE,0.04,bar
+22 02 16,Rear Right Low Pressure,62 02 16,1,1,128,FALSE,0.0078125,
+22 02 16,Rear Right Tyre Pressure Not Valid,62 02 16,1,1,8,FALSE,0.125,
+22 02 16,Rear Right Tyre Pressure Not Valid,62 02 16,1,1,8,FALSE,0.125,
+22 02 16,Rear Left Tyre Pressure Not Valid,62 02 16,1,1,4,FALSE,0.25,
+22 02 16,Rear Left Tyre Pressure Not Valid,62 02 16,1,1,4,FALSE,0.25,
+22 02 16,Front Right Tyre Pressure Not Valid,62 02 16,1,1,2,FALSE,0.5,
+22 02 16,Rear Right Low Pressure,62 02 16,1,1,128,FALSE,0.0078125,
+22 02 16,Rear Left Low Pressure,62 02 16,1,1,64,FALSE,0.015625,
+22 02 16,Rear Left Low Pressure,62 02 16,1,1,64,FALSE,0.015625,
+22 02 16,Tyre Pressure Monitor System fault,62 02 16,0,1,256,FALSE,0.00390625,
+22 02 16,Front Right Tyre Pressure Not Valid,62 02 16,1,1,2,FALSE,0.5,
+22 02 16,Tyre Pressure Monitor System fault,62 02 16,0,1,1,FALSE,1,
+22 02 16,Front Left Low Pressure,62 02 16,1,1,16,FALSE,0.0625,
+22 02 16,Front Right Low Pressure,62 02 16,1,1,32,FALSE,0.03125,
+22 02 16,Front Left Tyre Pressure Not Valid,62 02 16,1,1,1,FALSE,1,
+22 02 16,Front Right Low Pressure,62 02 16,1,1,32,FALSE,0.03125,
+22 02 16,Front Left Low Pressure,62 02 16,1,1,16,FALSE,0.0625,
+22 02 16,Front Left Tyre Pressure Not Valid,62 02 16,1,1,1,FALSE,1,
+22 02 17,Injection Pulse Time (B2),62 02 17,2,2,65535,FALSE,1,us
+22 02 18,Octane Scaler Cylinder 1,62 02 18,0,2,65535,FALSE,0.001526,%
+22 02 19,Octane Scaler Cylinder 3,62 02 19,0,2,65535,FALSE,0.001526,%
+22 02 1A,Octane Scaler Cylinder 4,62 02 1A,0,2,65535,FALSE,0.001526,%
+22 02 1B,Octane Scaler Cylinder 2,62 02 1B,0,2,65535,FALSE,0.001526,%
+22 02 25,Ambient Air Temperature,62 02 25,0,1,255,FALSE,0.625,degC
+22 02 26,Mass Air Per Stroke,62 02 26,0,1,255,FALSE,4,mg
+22 02 27,Start-Up Coolant Temperature,62 02 27,0,1,255,FALSE,0.625,degC
+22 02 28,Accumulated Mass Air,62 02 28,0,4,-1,FALSE,1,mg
+22 02 29,ECU Shutdown Timer,62 02 29,0,4,-1,FALSE,0.005,Seconds
+22 02 2A,Engine Load,62 02 2A,0,1,255,FALSE,1,%
+22 02 2B,Cam Angle Error (B1 inlet),62 02 2B,0,2,65535,TRUE,0.25,degrees
+22 02 2C,Idle Speed Error,62 02 2C,0,2,65535,TRUE,1,RPM
+22 02 2D,ECU On Timer,62 02 2D,0,2,65535,FALSE,0.1,Seconds
+22 02 2E,Fuel Learn Dead Time (B1),62 02 2E,0,2,65535,TRUE,1,us
+22 02 2F,Evaporative Vapour Concentration,62 02 2F,0,2,65535,FALSE,2,
+22 02 30,Cam Angle Error,62 02 30,0,2,65535,TRUE,0.25,degrees
+22 02 31,Knock Spark Advance Retard Cylinder 1,62 02 31,0,1,255,FALSE,0.25,degrees
+22 02 31,Knock Spark Advance Retard Cylinder 3,62 02 31,2,1,255,FALSE,0.25,degrees
+22 02 31,Knock Spark Advance Retard Cylinder 4,62 02 31,3,1,255,FALSE,0.25,degrees
+22 02 31,Knock Spark Advance Retard Cylinder 2,62 02 31,1,1,255,FALSE,0.25,degrees
+22 02 32,Idle Control Proportional Term,62 02 32,0,2,65535,TRUE,0.1,g/sec
+22 02 33,Idle Control Integral Term,62 02 33,0,4,-1,TRUE,9.77E-05,g/sec
+22 02 34,Misfire Cylinder 1,62 02 34,0,2,65535,FALSE,1,
+22 02 35,Misfire Cylinder 3,62 02 35,0,2,65535,FALSE,1,
+22 02 36,Misfire Cylinder 4,62 02 36,0,2,65535,FALSE,1,
+22 02 37,Misfire Cylinder 2,62 02 37,0,2,65535,FALSE,1,
+22 02 38,Max Misfire Result (emissions),62 02 38,0,2,65535,FALSE,0.1,%
+22 02 39,Max Misfire Result (cat damage),62 02 39,0,2,65535,FALSE,0.1,%
+22 02 3A,Fuel Learn Timer,62 02 3A,0,2,65535,FALSE,0.1,Seconds
+22 02 3B,Throttle - Target Position,62 02 3B,0,2,65535,FALSE,0.0977517,%
+22 02 3C,Idle Learn (AC on),62 02 3C,0,2,65535,TRUE,9.77E-05,g/sec
+22 02 3D,Wheel Speed - LR,62 02 3D,0,2,65535,FALSE,0.01,km/h
+22 02 3E,Wheel Speed - RR,62 02 3E,0,2,65535,FALSE,0.01,km/h
+22 02 3F,Wheel Speed - LF,62 02 3F,0,2,65535,FALSE,0.01,km/h
+22 02 41,Wheel Speed - RF,62 02 41,0,2,65535,FALSE,0.01,km/h
+22 02 42,Traction Control - Slip,62 02 42,0,2,65535,FALSE,1,
+22 02 43,Traction Control - Target Slip,62 02 43,0,2,65535,FALSE,1,
+22 02 44,Pre-Cat O2 Diag Timer (B1),62 02 44,0,2,65535,FALSE,0.005,Seconds
+22 02 45,Throttle Position (0-100%),62 02 45,0,2,65535,FALSE,0.0977517,%
+22 02 46,Pedal Position (0-100%),62 02 46,0,2,65535,FALSE,0.0977517,%
+22 02 47,"Evap Leak Check Result (0.040"")",62 02 47,0,2,65535,TRUE,0.1,mbar
+22 02 48,Fuel Learn Zone 2 (B1),62 02 48,0,1,255,FALSE,0.390625,%
+22 02 49,Fuel Learn Zone 3 (B1),62 02 49,0,1,255,FALSE,0.390625,%
+22 02 4B,VVT Actual Cam Position (B2 inlet),62 02 4B,0,2,65535,TRUE,0.25,degrees
+22 02 4C,Cat Diag Pre-Cat Sw B2,62 02 4C,0,2,65535,FALSE,1,
+22 02 4D,Octane Scaler Cylinder 5,62 02 4D,0,2,65535,FALSE,0.001526,%
+22 02 4E,Octane Scaler Cylinder 6,62 02 4E,0,2,65535,FALSE,0.001526,%
+22 02 4F,Cam Angle Error (B2 inlet),62 02 4F,0,2,65535,TRUE,0.25,degrees
+22 02 50,VVT Actual Cam Position (B1 exhaust),62 02 50,0,2,65535,TRUE,0.25,degrees
+22 02 51,VVT Actual Cam Position (B2 exhaust),62 02 51,0,2,65535,TRUE,0.25,degrees
+22 02 52,VVT Target Cam Position (exhaust),62 02 52,0,2,65535,TRUE,0.25,degrees
+22 02 53,Cam Angle Error (B1 exhaust),62 02 53,0,2,65535,TRUE,0.25,degrees
+22 02 54,Cam Angle Error (B2 exhaust),62 02 54,0,2,65535,TRUE,0.25,degrees
+22 02 55,Fuel Learn Dead Time (B2),62 02 55,0,2,65535,TRUE,1,us
+22 02 56,Knock Spark Advance Retard Cylinder 6,62 02 56,1,1,255,FALSE,0.25,degrees
+22 02 56,Knock Spark Advance Retard Cylinder 5,62 02 56,0,1,255,FALSE,0.25,degrees
+22 02 57,Misfire Cylinder 5,62 02 57,0,2,65535,FALSE,1,
+22 02 58,Misfire Cylinder 6,62 02 58,0,2,65535,FALSE,1,
+22 02 59,Pre-Cat O2 Diag Timer (B2),62 02 59,0,2,65535,FALSE,0.005,Seconds
+22 02 5A,Fuel Learn Zone 2 (B2),62 02 5A,0,1,255,FALSE,0.390625,%
+22 02 5B,Fuel Learn Zone 3 (B2),62 02 5B,0,1,255,FALSE,0.390625,%
+22 02 5C,Traction Control Switch,62 02 5C,0,1,255,FALSE,1,
+22 02 5D,Sport Button,62 02 5D,0,1,255,FALSE,1,
+22 02 5E,Clutch Sensor,62 02 5E,0,1,255,FALSE,1,
+22 02 5F,Brake Switch (Upper),62 02 5F,0,1,255,FALSE,1,
+22 02 61,Cruise Status,62 02 61,0,1,255,FALSE,1,
+22 02 62,A/C Evaporator Temperature,62 02 62,0,1,255,FALSE,0.1,degrees
+22 02 65,Brake Switch (Lower),62 02 65,0,1,3,FALSE,1,
+22 02 66,ValveMatic Target Angle,62 02 66,0,2,65535,FALSE,0.009766,degrees
+22 02 67,ValveMatic Actuator Angle,62 02 67,0,2,65535,FALSE,0.009766,degrees
+22 02 68,Engine Bay Cooling Fan,62 02 68,0,1,1,FALSE,1,
+22 02 69,Clutch Sensor (Raw Data),62 02 69,0,2,65535,FALSE,1,
+22 02 6A,Engine Torque,62 02 6A,0,2,65535,TRUE,1,Nm
+22 02 6B,Cold Idle Learn,62 02 6B,0,2,65535,TRUE,9.77E-05,g/sec
+22 02 6C,Cold Idle Learn (AC on),62 02 6C,0,2,65535,TRUE,9.77E-05,g/sec
+22 02 6D,DPM Switch Position,62 02 6D,0,1,3,FALSE,1,
+22 02 6E,Exhaust Valve Override Switch Status,62 02 6E,0,1,3,FALSE,1,
+22 02 6F,Vehicle Mode,62 02 6F,0,1,7,FALSE,1,
+22 02 70,Paddle Shift Sensor (Raw Data),62 02 70,0,2,65535,FALSE,1,
+22 02 71,Dura Position Learn Status,62 02 71,0,1,255,FALSE,1,
+22 02 72,Manifold Temperature,62 02 72,0,1,255,FALSE,1,degC
+22 02 73,TCU sport switch status,62 02 73,0,1,3,FALSE,1,
+22 02 75,Oil Temperature,62 02 75,0,1,255,FALSE,1,degC
+22 02 76,Auto Gear,62 02 76,0,1,255,FALSE,1,
+22 02 77,Engine Speed (Received from ECU),62 02 77,0,2,65535,FALSE,0.25,RPM
+22 02 78,Gear Request,62 02 78,0,1,255,FALSE,1,
+22 02 79,Input Shaft Speed,62 02 79,0,2,65535,FALSE,1,RPM
+22 02 7A,Output Shaft Speed,62 02 7A,0,2,65535,FALSE,1,RPM
+22 02 7B,SL1 Pressure Switch Status,62 02 7B,0,1,3,FALSE,1,
+22 02 7C,SL2 Pressure Switch Status,62 02 7C,0,1,3,FALSE,1,
+22 02 7D,SLU Pressure Switch Status,62 02 7D,0,1,3,FALSE,1,
+22 02 7E,Dura Position Sensor 1,62 02 7E,0,2,65535,FALSE,0.01,%
+22 02 7F,Dura Position Sensor 2,62 02 7F,0,2,65535,FALSE,0.01,%
+22 02 81,Current Dura Position,62 02 81,0,2,65535,FALSE,0.1,%
+22 02 82,Learnt Dura Position Park,62 02 82,0,2,65535,FALSE,0.1,%
+22 02 83,Learnt Dura Position Reverse,62 02 83,0,2,65535,FALSE,0.1,%
+22 02 84,Learnt Dura Position Neutral,62 02 84,0,2,65535,FALSE,0.1,%
+22 02 85,Learnt Dura Position Drive,62 02 85,0,2,65535,FALSE,0.1,%
+22 02 86,PRND Feedback Switch status - Park,62 02 86,0,1,3,FALSE,1,
+22 02 87,PRND Feedback Switch status - Reverse,62 02 87,0,1,3,FALSE,1,
+22 02 88,PRND Feedback Switch status - Neutral,62 02 88,0,1,3,FALSE,1,
+22 02 89,PRND Feedback Switch status - Drive,62 02 89,0,1,3,FALSE,1,
+22 02 8A,Park Request Switch,62 02 8A,0,1,3,FALSE,1,
+22 02 8B,Reverse Request Switch,62 02 8B,0,1,3,FALSE,1,
+22 02 8C,Neutral Request Switch,62 02 8C,0,1,3,FALSE,1,
+22 02 8D,Drive Request Switch,62 02 8D,0,1,3,FALSE,1,
+22 02 8E,Gear Ratio,62 02 8E,0,2,65535,FALSE,0.001,
+22 02 8F,Commanded Torque Converter Status,62 02 8F,0,1,3,FALSE,1,
+22 02 90,Green Learn Status,62 02 90,0,1,1,FALSE,1,
+22 02 91,Slip learn status flags - Gear 5 High Index,62 02 91,0,1,64,FALSE,0.015625,
+22 02 91,Slip learn status flags - Gear 6,62 02 91,0,1,128,FALSE,0.0078125,
+22 02 91,Slip learn status flags - Gear 4 High Index,62 02 91,0,1,16,FALSE,0.0625,
+22 02 91,Slip learn status flags - Gear 3 High Index,62 02 91,0,1,4,FALSE,0.25,
+22 02 91,Slip learn status flags - Gear 5 Low Index,62 02 91,0,1,32,FALSE,0.03125,
+22 02 91,Slip learn status flags - Gear 2,62 02 91,0,1,1,FALSE,1,
+22 02 91,Slip learn status flags - Gear 3 Low Index,62 02 91,0,1,2,FALSE,0.5,
+22 02 91,Slip learn status flags - Gear 4 Low Index,62 02 91,0,1,8,FALSE,0.125,
+22 02 92,Green Learn Target Load Minimum,62 02 92,0,1,255,FALSE,2.588235,Nm
+22 02 93,Green Learn Target Load Maximum,62 02 93,0,1,255,FALSE,2.588235,Nm
+22 02 94,Input Shaft Load,62 02 94,0,1,255,FALSE,2.588235,Nm
+22 02 95,Green Learn No. Complete current bin,62 02 95,0,1,255,FALSE,1,
+22 02 96,Green Learn Target No. current bin,62 02 96,0,1,255,FALSE,1,
+22 02 97,Torque Converter Slip,62 02 97,0,2,65535,FALSE,1,RPM
+22 02 98,Solenoid SL Duty Cycle,62 02 98,0,2,65535,TRUE,0.01,%
+22 02 99,Solenoid SL1 Duty Cycle,62 02 99,0,2,65535,TRUE,0.01,%
+22 02 9A,Solenoid SL2 Duty Cycle,62 02 9A,0,2,65535,TRUE,0.01,%
+22 02 9B,Solenoid SL3 Duty Cycle,62 02 9B,0,2,65535,TRUE,0.01,%
+22 02 9C,Solenoid SL4 Duty Cycle,62 02 9C,0,2,65535,TRUE,0.01,%
+22 02 9D,Solenoid SLT Duty Cycle,62 02 9D,0,2,65535,TRUE,0.01,%
+22 02 9E,Solenoid SLU Duty Cycle,62 02 9E,0,2,65535,TRUE,0.01,%
+22 02 9F,Solenoid SL Demand,62 02 9F,0,2,65535,TRUE,0.01,%
+22 02 A1,Solenoid SL1 Demand,62 02 A1,0,2,65535,TRUE,0.01,%
+22 02 A2,Solenoid SL2 Demand,62 02 A2,0,2,65535,TRUE,0.01,%
+22 02 A3,Solenoid SL3 Demand,62 02 A3,0,2,65535,TRUE,0.01,%
+22 02 A4,Solenoid SL4 Demand,62 02 A4,0,2,65535,TRUE,0.01,%
+22 02 A5,Solenoid SLT Demand,62 02 A5,0,2,65535,TRUE,0.01,%
+22 02 A6,Solenoid SLU Demand,62 02 A6,0,2,65535,TRUE,0.01,%

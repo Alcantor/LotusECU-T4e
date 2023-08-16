@@ -21,7 +21,6 @@ T6 definition please contact me.
  T4e_defs.xml                     | T4e RomRaider definition.
  T6caterham_defs.xml              | T6 Caterham RomRaider definition.
  T6lotusL4_defs.xml               | T6 Lotus Elise RomRaider definition.
- T4_defs_plust4e.xml              | Definition file from Obeisance adapted for the T4e.
 
 ## Opening *.CPT files
 
