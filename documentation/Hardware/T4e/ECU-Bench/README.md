@@ -2,16 +2,17 @@
 
 ## Minimal connections
 
-	L G3 - Ignition ACC - 12V
-	L K4 - BATT - 12V (Optional)
-	L M1 - Main Power In - 12V
+	L G3 - Ignition ACC
+	L M1 - Main Power In
 
-	R M1 - Chassis Ground - GND
+	R M1 - Chassis Ground
 
-	L A1 - Diagnostic Connector CAN High - CAN High
-	L B1 - Diagnostic Connector CAN Low - CAN Low
+	L A1 - Diagnostic Connector CAN High
+	L B1 - Diagnostic Connector CAN Low
+
+	L C4 - Diagnostic Connector L Line
+	L G4 - Diagnostic Connector K Line
 
 ## Power consumption
 
 About 130 mA
-
