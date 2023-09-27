@@ -481,11 +481,27 @@ def build_flexfuel():
 		PPC32.ppc_ba(m.get_sym_addr("hook_inj_time_adj3"))
 	)
 
+	# Hook: Tip-In
+	p.check_and_replace(
+		s.get_sym_addr("hook_injtip_in_adj1_loc"),
+		PPC32.ppc_bl(-0x16274),
+		PPC32.ppc_ba(m.get_sym_addr("hook_injtip_in_adj1"))
+	)
+
+	# Hook: Tip-Out
+	p.check_and_replace(
+		s.get_sym_addr("hook_injtip_out_adj1_loc"),
+		PPC32.ppc_bl(-0x1631C),
+		PPC32.ppc_ba(m.get_sym_addr("hook_injtip_out_adj1"))
+	)
+
 	# Merge and save.
 	p.add_text("flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
 	c.add_cal("flexfuel/flexfuel.data.bin", m.get_seg_addr(".data"))
 	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 0x18, so much fill?
 	p.write_segments()
+
+	afr_ratio = 1.3 # 14.7/9
 
 	# Copy Ignition adj
 	addr_src = s.get_sym_addr("CAL_ign_advance_adj1")-s.get_sym_addr("CAL_base")
@@ -497,10 +513,20 @@ def build_flexfuel():
 	addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_high_cam_base") - c.offset
 	for i in range(0, 64): c.data[addr_dst+i] = int(c.data[addr_src+i])
 
+	# Copy Tip-In table for ethanol, add 35% fuel.
+	addr_src = s.get_sym_addr("CAL_injtip_in_adj1")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_injtip_in_adj1") - c.offset
+	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*afr_ratio)
+
+	# Copy Tip-Out table for ethanol, add 35% fuel.
+	addr_src = s.get_sym_addr("CAL_injtip_out_adj1")-s.get_sym_addr("CAL_base")
+	addr_dst = m.get_sym_addr("CAL_ethanol_injtip_out_adj1") - c.offset
+	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*afr_ratio)
+
 	# Copy fuel efficieny table for ethanol, add 35% fuel.
 	addr_src = s.get_sym_addr("CAL_inj_efficiency")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_inj_efficiency") - c.offset
-	for i in range(0, 1024): c.data[addr_dst+i] = int(c.data[addr_src+i]/1.35)
+	for i in range(0, 1024): c.data[addr_dst+i] = int(c.data[addr_src+i]/afr_ratio)
 
 	# Copy fuel warmup table for ethanol.
 	addr_src = s.get_sym_addr("CAL_inj_time_adj3")-s.get_sym_addr("CAL_base")
@@ -510,7 +536,7 @@ def build_flexfuel():
 	# Copy fuel cranking table for ethanol, add 35% fuel.
 	addr_src = s.get_sym_addr("CAL_inj_time_adj_cranking")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj_cranking") - c.offset
-	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*1.35)
+	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*afr_ratio)
 
 	# Copy ignition (low cam) table for ethanol.
 	addr_src = s.get_sym_addr("CAL_ign_advance_low_cam_base")-s.get_sym_addr("CAL_base")
@@ -523,10 +549,57 @@ def build_flexfuel():
 	# Test
 	#p.print_segments()
 
+def build_wideband():
+	print("Wideband support...")
+	c = Patcher_T4eCalibration("../../dump/t4e-black/A129E0002/calrom.bin")
+	p = Patcher_T4eProg("../../dump/t4e-black/A129E0002/prog.bin")
+	os.system("make -C wideband CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s}".format(
+		c.get_free_cal(),
+		p.get_free_rom(),
+		p.get_free_ram(),
+		"../black91.sym"
+	))
+	s = SYMMap("black91.sym")
+	m = LDMap("wideband/map.txt")
+
+	# Hook: OBD Mode 0x01
+	p.check_and_replace(
+		s.get_sym_addr("hook_OBD_mode_0x01_loc"),
+		PPC32.ppc_rlwinm(0, 30, 0, 24, 31),
+		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
+	)
+
+	# Patch to always have power to the pre-lambda (for a wideband controller).
+	# Power comes only when engine is running.
+	p.check_and_replace(
+		0x0339b0,
+		PPC32.ppc_li(4, 0),
+		PPC32.ppc_li(4, 1)
+	)
+
+	# Simulate a Narrow-Band lambda
+	p.check_and_replace(
+		s.get_sym_addr("hook_narrow_sim_loc"),
+		b"\x54\x00\x04\x3e",
+		PPC32.ppc_ba(m.get_sym_addr("hook_narrow_sim"))
+	)
+
+	# Merge and save.
+	p.add_text("wideband/wideband.text.bin", m.get_seg_addr(".text"))
+	c.add_cal("wideband/wideband.data.bin", m.get_seg_addr(".data"))
+	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss"))
+	p.write_segments()
+	p.save("wideband/prog.bin")
+	c.save("wideband/calrom.bin")
+
+	# Test
+	#p.print_segments()
+
 if __name__ == "__main__":
 	build_stage15()
 	build_accusump()
 	build_obdoil()
 	build_accusump2()
 	build_flexfuel()
+	build_wideband()
 

@@ -2,8 +2,6 @@
 
 An attempt to add a flexfuel sensor.
 
-*** Only OBD Tested with real hardware. Blending not tested yet!!! ***
-
 ## Hardware
 
  1. Add a Continental flexfuel sensor on the PIN LG1.

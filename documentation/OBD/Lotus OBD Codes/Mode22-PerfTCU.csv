@@ -1,0 +1,84 @@
+Address,Text,Category,DataPos,DataSize,SimpleScale,TextUnit
+22 04 01,Drive mode Sport Manual,,0,4,0.1,sec
+22 04 02,Drive mode Sport Auto,,0,4,0.1,sec
+22 04 03,Drive mode Normal Manual,,0,4,0.1,sec
+22 04 04,Drive mode Normal Auto,,0,4,0.1,sec
+22 04 05,Time at Input shaft speed 500 - 1500 rpm,,0,4,0.1,sec
+22 04 06,Time at Input shaft speed 1500 - 2500 rpm,,0,4,0.1,sec
+22 04 07,Time at Input shaft speed 2500 - 3500 rpm,,0,4,0.1,sec
+22 04 08,Time at Input shaft speed 3500 - 4500 rpm,,0,4,0.1,sec
+22 04 09,Time at Input shaft speed 4500 - 5500 rpm,,0,4,0.1,sec
+22 04 0A,Time at Input shaft speed 5500 - 6000 rpm,,0,4,0.1,sec
+22 04 0B,Time at Input shaft speed 6000 - 6500 rpm,,0,4,0.1,sec
+22 04 0C,Time at Input shaft speed 6500 - 8000 rpm,,0,4,0.1,sec
+22 04 0D,Time at Transmission Oil Temp 60 - 80 degC,,0,4,0.1,sec
+22 04 0E,Time at Transmission Oil Temp 80 - 100 degC,,0,4,0.1,sec
+22 04 0F,Time at Transmission Oil Temp 100 - 120 degC,,0,4,0.1,sec
+22 04 10,Time at Transmission Oil Temp 120 - 130 degC,,0,4,0.1,sec
+22 04 11,Time at Transmission Oil Temp 130 - 140 degC,,0,4,0.1,sec
+22 04 12,Time at Transmission Oil Temp 140 - 160 degC,,0,4,0.1,sec
+22 04 13,Engine run timer,Total,0,4,0.1,sec
+22 04 14,Max fill time 0,,0,1,0.005,sec
+22 04 15,Max fill time 1,,0,1,0.005,sec
+22 04 16,Max fill time 2,,0,1,0.005,sec
+22 04 17,Max fill time 3,,0,1,0.005,sec
+22 04 18,Max Input Shaft speed 0,,0,2,1,RPM
+22 04 19,Max Input Shaft speed 1,,0,2,1,RPM
+22 04 1A,Max Input Shaft speed 2,,0,2,1,RPM
+22 04 1B,Max Input Shaft speed 3,,0,2,1,RPM
+22 04 1C,Max Input Shaft speed 4,,0,2,1,RPM
+22 04 1D,Max Input Shaft speed 5,,0,2,1,RPM
+22 04 1E,Max Input Shaft speed 6,,0,2,1,RPM
+22 04 1F,Max Input Shaft speed 7,,0,2,1,RPM
+22 04 21,Max Input Shaft speed 8,,0,2,1,RPM
+22 04 22,Max Input Shaft speed 9,,0,2,1,RPM
+22 04 23,Torque at Max Input Shaft 0,,0,2,1,Nm
+22 04 24,Torque at Max Input Shaft 1,,0,2,1,Nm
+22 04 25,Torque at Max Input Shaft 2,,0,2,1,Nm
+22 04 26,Torque at Max Input Shaft 3,,0,2,1,Nm
+22 04 27,Torque at Max Input Shaft 4,,0,2,1,Nm
+22 04 28,Torque at Max Input Shaft 5,,0,2,1,Nm
+22 04 29,Torque at Max Input Shaft 6,,0,2,1,Nm
+22 04 2A,Torque at Max Input Shaft 7,,0,2,1,Nm
+22 04 2B,Torque at Max Input Shaft 8,,0,2,1,Nm
+22 04 2C,Torque at Max Input Shaft 9,,0,2,1,Nm
+22 04 2D,Gear of Max Input Shaft speed 0,,0,1,1,
+22 04 2E,Gear of Max Input Shaft speed 1,,0,1,1,
+22 04 2F,Gear of Max Input Shaft speed 2,,0,1,1,
+22 04 30,Gear of Max Input Shaft speed 3,,0,1,1,
+22 04 31,Gear of Max Input Shaft speed 4,,0,1,1,
+22 04 32,Gear of Max Input Shaft speed 5,,0,1,1,
+22 04 33,Gear of Max Input Shaft speed 6,,0,1,1,
+22 04 34,Gear of Max Input Shaft speed 7,,0,1,1,
+22 04 35,Gear of Max Input Shaft speed 8,,0,1,1,
+22 04 36,Gear of Max Input Shaft speed 9,,0,1,1,
+22 04 37,Time at Max Input Shaft speed 0,,0,4,0.1,sec
+22 04 38,Time at Max Input Shaft speed 1,,0,4,0.1,sec
+22 04 39,Time at Max Input Shaft speed 2,,0,4,0.1,sec
+22 04 3A,Time at Max Input Shaft speed 3,,0,4,0.1,sec
+22 04 3B,Time at Max Input Shaft speed 4,,0,4,0.1,sec
+22 04 3C,Time at Max Input Shaft speed 5,,0,4,0.1,sec
+22 04 3D,Time at Max Input Shaft speed 6,,0,4,0.1,sec
+22 04 3E,Time at Max Input Shaft speed 7,,0,4,0.1,sec
+22 04 3F,Time at Max Input Shaft speed 8,,0,4,0.1,sec
+22 04 41,Time at Max Input Shaft speed 9,,0,4,0.1,sec
+22 04 42,Max transmission oil temp 0,,0,1,1-40,degC
+22 04 43,Max transmission oil temp 1,,0,1,1-40,degC
+22 04 44,Max transmission oil temp 2,,0,1,1-40,degC
+22 04 45,Max transmission oil temp 3,,0,1,1-40,degC
+22 04 46,Max transmission oil temp 4,,0,1,1-40,degC
+22 04 47,Max transmission oil temp 5,,0,1,1-40,degC
+22 04 48,Max transmission oil temp 6,,0,1,1-40,degC
+22 04 49,Max transmission oil temp 7,,0,1,1-40,degC
+22 04 4A,Max transmission oil temp 8,,0,1,1-40,degC
+22 04 4B,Max transmission oil temp 9,,0,1,1-40,degC
+22 04 4C,Vehicle speed at Max Toil temp 0,,0,2,1,km/h
+22 04 4D,Vehicle speed at Max Toil temp 1,,0,2,1,km/h
+22 04 4E,Vehicle speed at Max Toil temp 2,,0,2,1,km/h
+22 04 4F,Vehicle speed at Max Toil temp 3,,0,2,1,km/h
+22 04 50,Vehicle speed at Max Toil temp 4,,0,2,1,km/h
+22 04 51,Vehicle speed at Max Toil temp 5,,0,2,1,km/h
+22 04 52,Vehicle speed at Max Toil temp 6,,0,2,1,km/h
+22 04 53,Vehicle speed at Max Toil temp 7,,0,2,1,km/h
+22 04 54,Vehicle speed at Max Toil temp 8,,0,2,1,km/h
+22 04 55,Vehicle speed at Max Toil temp 9,,0,2,1,km/h

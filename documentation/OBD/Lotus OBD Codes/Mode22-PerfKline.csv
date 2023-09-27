@@ -1,0 +1,72 @@
+Address,Text,Category,DataPos,DataSize,SimpleScale,TextUnit
+22 02 25,Time at TPS1,0 - 1.5 %,0,4,0.1,sec
+22 02 26,Time at TPS2,1.5 - 15 %,0,4,0.1,sec
+22 02 27,Time at TPS3,15 - 25 %,0,4,0.1,sec
+22 02 28,Time at TPS4,25 - 35 %,0,4,0.1,sec
+22 02 29,Time at TPS5,35 - 50 %,0,4,0.1,sec
+22 02 2A,Time at TPS6,50 - 65 %,0,4,0.1,sec
+22 02 2B,Time at TPS7,65 - 80 %,0,4,0.1,sec
+22 02 2C,Time at TPS8,80 - 100 %,0,4,0.1,sec
+22 02 2D,Time at RPM1,500 - 1500 RPM,0,4,0.1,sec
+22 02 2E,Time at RPM2,1500 - 2500 RPM,0,4,0.1,sec
+22 02 2F,Time at RPM3,2500 - 3500 RPM,0,4,0.1,sec
+22 02 30,Time at RPM4,3500 - 4500 RPM,0,4,0.1,sec
+22 02 31,Time at RPM5,4500 - 5500 RPM,0,4,0.1,sec
+22 02 32,Time at RPM6,5500 - 6500 RPM,0,4,0.1,sec
+22 02 33,Time at RPM7,6500 - 7000 RPM,0,4,0.1,sec
+22 02 34,Time at RPM8,7000 RPM +,0,4,0.1,sec
+22 02 35,Time at KMH1,0 - 30 KMH,0,4,0.1,sec
+22 02 36,Time at KMH2,30 - 60 KMH,0,4,0.1,sec
+22 02 37,Time at KMH3,60 - 90 KMH,0,4,0.1,sec
+22 02 38,Time at KMH4,90 - 120 KMH,0,4,0.1,sec
+22 02 39,Time at KMH5,120 - 150 KMH,0,4,0.1,sec
+22 02 3A,Time at KMH6,150 - 180 KMH,0,4,0.1,sec
+22 02 3B,Time at KMH7,180 - 210 KMH,0,4,0.1,sec
+22 02 3C,Time at KMH8,210 KMH +,0,4,0.1,sec
+22 02 3D,Time at Mass Air Pressure,0 - 15 KPA,0,4,0.1,sec
+22 02 3E,Time at Mass Air Pressure,15 - 30 KPA,0,4,0.1,sec
+22 02 3F,Time at Mass Air Pressure,30 - 45 KPA,0,4,0.1,sec
+22 02 41,Time at Mass Air Pressure,45 - 60 KPA,0,4,0.1,sec
+22 02 42,Time at Mass Air Pressure,60 - 75 KPA,0,4,0.1,sec
+22 02 43,Time at Mass Air Pressure,75 - 90 KPA,0,4,0.1,sec
+22 02 44,Time at Mass Air Pressure,90 - 105 KPA,0,4,0.1,sec
+22 02 45,Time at Mass Air Pressure,105 - 120 KPA,0,4,0.1,sec
+22 02 46,Time at Coolant Temp,105 - 110 Deg C,0,4,0.1,sec
+22 02 47,Time at Coolant Temp,110 - 115 Deg C,0,4,0.1,sec
+22 02 48,Time at Coolant Temp,115 - 119 Deg C,0,4,0.1,sec
+22 02 49,Time at Coolant Temp,119 Deg C +,0,4,0.1,sec
+22 02 4A,Time at Oil Temp,140 - 145 Deg C,0,4,0.1,sec
+22 02 4B,Time at Oil Temp,145 - 150 Deg C,0,4,0.1,sec
+22 02 4C,Time at Oil Temp,150 - 155 Deg C,0,4,0.1,sec
+22 02 4D,Time at Oil Temp,155 Deg C +,0,4,0.1,sec
+22 02 4E,Max Engine Speed 5,,0,2,1,RPM
+22 02 4F,Max Engine Speed 4,,0,2,1,RPM
+22 02 50,Max Engine Speed 3,,0,2,1,RPM
+22 02 51,Max Engine Speed 2,,0,2,1,RPM
+22 02 52,Max Engine Speed 1,,0,2,1,RPM
+22 02 53,Max Engine Speed 5,Coolant Temp,0,1,5/8-40,degC
+22 02 56,Max Engine Speed 4,Coolant Temp,0,1,5/8-40,degC
+22 02 59,Max Engine Speed 3,Coolant Temp,0,1,5/8-40,degC
+22 02 5C,Max Engine Speed 2,Coolant Temp,0,1,5/8-40,degC
+22 02 5F,Max Engine Speed 1,Coolant Temp,0,1,5/8-40,degC
+22 02 54,Max Engine Speed 5,Oil Temp,0,2,5/8-40,degC
+22 02 57,Max Engine Speed 4,Oil Temp,0,2,5/8-40,degC
+22 02 5A,Max Engine Speed 3,Oil Temp,0,2,5/8-40,degC
+22 02 5D,Max Engine Speed 2,Oil Temp,0,2,5/8-40,degC
+22 02 61,Max Engine Speed 1,Oil Temp,0,2,5/8-40,degC
+22 02 55,Max Engine Speed 5,Engine Run Timer,0,4,0.1,sec
+22 02 58,Max Engine Speed 4,Engine Run Timer,0,4,0.1,sec
+22 02 5B,Max Engine Speed 3,Engine Run Timer,0,4,0.1,sec
+22 02 5E,Max Engine Speed 2,Engine Run Timer,0,4,0.1,sec
+22 02 62,Max Engine Speed 1,Engine Run Timer,0,4,0.1,sec
+22 02 63,Max Vehicle Speed 5,,0,1,1,km/h
+22 02 64,Max Vehicle Speed 4,,0,1,1,km/h
+22 02 65,Max Vehicle Speed 3,,0,1,1,km/h
+22 02 66,Max Vehicle Speed 2,,0,1,1,km/h
+22 02 67,Max Vehicle Speed 1,,0,1,1,km/h
+22 02 68,Fastest Standing Start,0 - 100 KMH,0,1,0.1,sec
+22 02 69,Fastest Standing Start,0 - 160 KMH,0,1,0.1,sec
+22 02 6A,Last Standing Start,0 - 100 KMH,0,1,0.1,sec
+22 02 6B,Last Standing Start,0 - 160 KMH,0,1,0.1,sec
+22 02 6C,Engine Run Timer,Total,0,4,0.1,sec
+22 02 6D,Number of Standing Starts,,0,2,1,

@@ -1,0 +1,62 @@
+Address,Text,Category,DataPos,DataSize,SimpleScale,TextUnit
+22 03 01,Time at TPS1,0 - 1.5 %,0,4,0.1,sec
+22 03 02,Time at TPS2,1.5 - 15 %,0,4,0.1,sec
+22 03 03,Time at TPS3,15 - 25 %,0,4,0.1,sec
+22 03 04,Time at TPS4,25 - 35 %,0,4,0.1,sec
+22 03 05,Time at TPS5,35 - 50 %,0,4,0.1,sec
+22 03 06,Time at TPS6,50 - 65 %,0,4,0.1,sec
+22 03 07,Time at TPS7,65 - 80 %,0,4,0.1,sec
+22 03 08,Time at TPS8,80 - 100 %,0,4,0.1,sec
+22 03 09,Time at RPM1,500 - 1500 RPM,0,4,0.1,sec
+22 03 0A,Time at RPM2,1500 - 2500 RPM,0,4,0.1,sec
+22 03 0B,Time at RPM3,2500 - 3500 RPM,0,4,0.1,sec
+22 03 0C,Time at RPM4,3500 - 4500 RPM,0,4,0.1,sec
+22 03 0D,Time at RPM5,4500 - 5500 RPM,0,4,0.1,sec
+22 03 0E,Time at RPM6,5500 - 6500 RPM,0,4,0.1,sec
+22 03 0F,Time at RPM7,6500 - 7000 RPM,0,4,0.1,sec
+22 03 10,Time at RPM8,7000 RPM +,0,4,0.1,sec
+22 03 11,Time at KMH1,0 - 30 KMH,0,4,0.1,sec
+22 03 12,Time at KMH2,30 - 60 KMH,0,4,0.1,sec
+22 03 13,Time at KMH3,60 - 90 KMH,0,4,0.1,sec
+22 03 14,Time at KMH4,90 - 120 KMH,0,4,0.1,sec
+22 03 15,Time at KMH5,120 - 150 KMH,0,4,0.1,sec
+22 03 16,Time at KMH6,150 - 180 KMH,0,4,0.1,sec
+22 03 17,Time at KMH7,180 - 210 KMH,0,4,0.1,sec
+22 03 18,Time at KMH8,210 KMH +,0,4,0.1,sec
+22 03 1A,Time at Coolant Temp 1,105 - 110 Deg C,0,4,0.1,sec
+22 03 1B,Time at Coolant Temp 2,110 - 115 Deg C,0,4,0.1,sec
+22 03 1C,Time at Coolant Temp 3,115 - 119 Deg C,0,4,0.1,sec
+22 03 1D,Time at Coolant Temp 4,119 Deg C +,0,4,0.1,sec
+22 03 1E,Max Engine Speed 5,,0,4,1,RPM
+22 03 1F,Max Engine Speed 4,,0,4,1,RPM
+22 03 21,Max Engine Speed 3,,0,4,1,RPM
+22 03 22,Max Engine Speed 2,,0,4,1,RPM
+22 03 23,Max Engine Speed 1,,0,4,1,RPM
+22 03 24,Max Engine Speed 5,Coolant Temp,0,4,5/8-40,degC
+22 03 26,Max Engine Speed 4,Coolant Temp,0,4,5/8-40,degC
+22 03 28,Max Engine Speed 3,Coolant Temp,0,4,5/8-40,degC
+22 03 2A,Max Engine Speed 2,Coolant Temp,0,4,5/8-40,degC
+22 03 2C,Max Engine Speed 1,Coolant Temp,0,4,5/8-40,degC
+22 03 25,Max Engine Speed 5,Engine Run Timer,0,4,0.1,sec
+22 03 27,Max Engine Speed 4,Engine Run Timer,0,4,0.1,sec
+22 03 29,Max Engine Speed 3,Engine Run Timer,0,4,0.1,sec
+22 03 2B,Max Engine Speed 2,Engine Run Timer,0,4,0.1,sec
+22 03 2E,Max Engine Speed 1,Engine Run Timer,0,4,0.1,sec
+22 03 2F,Max Vehicle Speed 5,,0,2,1,km/h
+22 03 30,Max Vehicle Speed 4,,0,2,1,km/h
+22 03 31,Max Vehicle Speed 3,,0,2,1,km/h
+22 03 32,Max Vehicle Speed 2,,0,2,1,km/h
+22 03 33,Max Vehicle Speed 1,,0,2,1,km/h
+22 03 34,Fastest Standing Start,0 - 100 KMH,0,1,0.1,sec
+22 03 35,Fastest Standing Start,0 - 160 KMH,0,1,0.1,sec
+22 03 36,Last Standing Start,0 - 100 KMH,0,1,0.1,sec
+22 03 37,Last Standing Start,0 - 160 KMH,0,1,0.1,sec
+22 03 38,Engine Run Timer,Total,0,4,0.1,sec
+22 03 39,Number of Standing Starts,,0,2,1,
+22 03 3B,Time at Lateral G,0 - 0.6g,0,4,0.1,sec
+22 03 3C,Time at Lateral G,0.6 - 0.8g,0,4,0.1,sec
+22 03 3D,Time at Lateral G,0.8 - 1.0g,0,4,0.1,sec
+22 03 3E,Time at Lateral G,1.0 - 1.2g,0,4,0.1,sec
+22 03 3F,Time at Lateral G,1.2 - 1.4g,0,4,0.1,sec
+22 03 41,Total Vehicle Distance Travelled,,0,4,1,
+22 03 61,Total Number of low oil pressure events,,0,1,1,

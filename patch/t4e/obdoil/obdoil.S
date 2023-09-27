@@ -20,29 +20,7 @@ CAL_sensor_oil_pressure_offset:
 
 _start:
 hook_loop:
-	# Oil temperature scaling
-	li	%r3, 3
-	lis	%r4, sensor_adc_oil_temp@ha
-	lhz	%r4, sensor_adc_oil_temp@l(%r4)
-	lis	%r5, CAL_sensor_oil_temp_scaling@ha
-	addi	%r5, %r5, CAL_sensor_oil_temp_scaling@l
-	bl	lookup_2D_uint8_interpolated_noaxis
-	lis	%r4, oil_temp@ha
-	stb	%r3, oil_temp@l(%r4)
-
-	# Oil pressure scaling
-	lis	%r3, sensor_adc_oil_pressure@ha
-	lhz	%r3, sensor_adc_oil_pressure@l(%r3)
-	lis	%r4, CAL_sensor_oil_pressure_gain@ha
-	lhz	%r4, CAL_sensor_oil_pressure_gain@l(%r4)
-	lis	%r5, CAL_sensor_oil_pressure_offset@ha
-	lhz	%r5, CAL_sensor_oil_pressure_offset@l(%r5)
-	mullw	%r6, %r3, %r4
-	srawi	%r6, %r6, 10
-	addze	%r6, %r6
-	add	%r6, %r6, %r5
-	lis	%r7, oil_pressure@ha
-	sth	%r6, oil_pressure@l(%r7)
+	bl	obdoil
 	ba	hook_loop_continue
 
 hook_OBD_mode_0x01:
@@ -77,33 +55,49 @@ hook_OBD_mode_0x01:
 
 OBD_mode_0x01_pid_0x20:
 	# Available PID 0x21-0x40
-	addi	%r31, %r31, 1
+	addi	%r31, %r31, 5 # Answer 5 bytes
 	stb	%r3, 0(%r5)
 
 	lis	%r3, 0xA0062001@ha
 	addi	%r3, %r3, 0xA0062001@l
-	add	%r5, %r4, %r31
-	addi	%r31, %r31, 4
-	stw	%r3, 0(%r5)
+	stw	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
 
 OBD_mode_0x01_pid_0x40:
 	# Available PID 0x41-0x60
-	addi	%r31, %r31, 1
+	addi	%r31, %r31, 5 # Answer 5 bytes
 	stb	%r3, 0(%r5)
 
 	lis	%r3, 0x6AC00010@ha
 	addi	%r3, %r3, 0x6AC00010@l
-	add	%r5, %r4, %r31
-	addi	%r31, %r31, 4
-	stw	%r3, 0(%r5)
+	stw	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
 	
+OBD_mode_0x01_pid_0x23:
+	# Fuel Pressure, but we use it for oil.
+	addi	%r31, %r31, 3 # Answer 3 bytes
+	stb	%r3, 0(%r5)
+
+	lis	%r3, oil_pressure@ha
+	lhz	%r3, oil_pressure@l(%r3)
+	extsh	%r3, %r3
+
+	# Convert and do not allow negative values!
+	li	%r0, 100
+	divw	%r3, %r3, %r0
+	cmpwi	%r3, 0
+	bge	pres_gt0
+	li	%r3, 0
+pres_gt0:
+	sth	%r3, 1(%r5)
+
+	ba	hook_OBD_mode_0x01_jump
+
 OBD_mode_0x01_pid_0x5C:
 	# Oil temperature
-	addi	%r31, %r31, 1
+	addi	%r31, %r31, 2 # Answer 2 bytes
 	stb	%r3, 0(%r5)
 
 	lis	%r3, oil_temp@ha
@@ -115,30 +109,33 @@ OBD_mode_0x01_pid_0x5C:
 	srawi	%r3, %r3, 8
 	addze	%r3, %r3
 
-	add	%r5, %r4, %r31
-	addi	%r31, %r31, 1
-	stb	%r3, 0(%r5)
+	stb	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
 
-OBD_mode_0x01_pid_0x23:
-	# Fuel Pressure, but we use it for oil.
-	addi	%r31, %r31, 1
-	stb	%r3, 0(%r5)
+obdoil:
+	# Oil temperature scaling
+	li	%r3, 3
+	lis	%r4, sensor_adc_oil_temp@ha
+	lhz	%r4, sensor_adc_oil_temp@l(%r4)
+	lis	%r5, CAL_sensor_oil_temp_scaling@ha
+	addi	%r5, %r5, CAL_sensor_oil_temp_scaling@l
+	bl	lookup_2D_uint8_interpolated_noaxis
+	lis	%r4, oil_temp@ha
+	stb	%r3, oil_temp@l(%r4)
 
-	lis	%r3, oil_pressure@ha
-	lhz	%r3, oil_pressure@l(%r3)
-	extsh	%r3, %r3
+	# Oil pressure scaling
+	lis	%r3, sensor_adc_oil_pressure@ha
+	lhz	%r3, sensor_adc_oil_pressure@l(%r3)
+	lis	%r4, CAL_sensor_oil_pressure_gain@ha
+	lhz	%r4, CAL_sensor_oil_pressure_gain@l(%r4)
+	lis	%r5, CAL_sensor_oil_pressure_offset@ha
+	lhz	%r5, CAL_sensor_oil_pressure_offset@l(%r5)
+	mullw	%r6, %r3, %r4
+	srawi	%r6, %r6, 10
+	addze	%r6, %r6
+	add	%r6, %r6, %r5
+	lis	%r7, oil_pressure@ha
+	sth	%r6, oil_pressure@l(%r7)
+	blr
 
-	# Convert and do not allow negative values!
-	li	%r5, 100
-	divw	%r3, %r3, %r5
-	cmpwi	%r3, 0
-	bge	pres_gt0
-	li	%r3, 0
-pres_gt0:
-	add	%r5, %r4, %r31
-	addi	%r31, %r31, 2
-	sth	%r3, 0(%r5)
-
-	ba	hook_OBD_mode_0x01_jump

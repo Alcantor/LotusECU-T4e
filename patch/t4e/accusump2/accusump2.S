@@ -153,9 +153,9 @@ hook_OBD_mode_0x22:
 
 OBD_mode_0x22_pid_0x115C:
 	/* Oil Pressure like GM pid 0x22115C (0x221154 Oil-Temp) */
+	addi	%r31, %r31, 2 # Answer 2 bytes
 	lis	%r3, oil_pressure@ha
 	lhz	%r3, oil_pressure@l(%r3)
 	sth	%r3, 0(%r5)
-	addi	%r31, %r31, 2
 	ba	hook_OBD_mode_0x22_jump
 

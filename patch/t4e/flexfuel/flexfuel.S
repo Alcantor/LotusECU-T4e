@@ -1,5 +1,5 @@
 .section .data
-.globl CAL_ethanol_ign_advance_adj1, CAL_ethanol_ign_advance_high_cam_base, CAL_ethanol_inj_efficiency, CAL_ethanol_inj_time_adj3, CAL_ethanol_inj_time_adj_cranking, CAL_ethanol_ign_advance_low_cam_base
+.globl CAL_ethanol_ign_advance_adj1, CAL_ethanol_ign_advance_high_cam_base, CAL_ethanol_injtip_in_adj1, CAL_ethanol_injtip_out_adj1, CAL_ethanol_inj_efficiency, CAL_ethanol_inj_time_adj3, CAL_ethanol_inj_time_adj_cranking, CAL_ethanol_ign_advance_low_cam_base
 
 # Calibration size must be a multiple of 4
 CAL_extra:
@@ -14,6 +14,10 @@ CAL_ethanol_ign_advance_adj1:
 .space 16
 CAL_ethanol_ign_advance_high_cam_base:
 .space 64
+CAL_ethanol_injtip_in_adj1:
+.space 16
+CAL_ethanol_injtip_out_adj1:
+.space 16
 CAL_ethanol_inj_efficiency:
 .space 1024
 CAL_ethanol_inj_time_adj3:
@@ -25,6 +29,7 @@ CAL_ethanol_ign_advance_low_cam_base:
 CAL_extra_end:
 
 .section .bss
+.global ethanol_temp, ethanol_content, CAL_base_extra
 
 .lcomm	ethanol_timer,		1
 .lcomm	ethanol_temp_avg,	4
@@ -34,7 +39,7 @@ CAL_extra_end:
 .lcomm	CAL_base_extra,	(CAL_extra_end-CAL_extra) # Copy in RAM of extra CALibration.
 
 .section .text
-.globl _start, hook_init, hook_loop, hook_timer_5ms, hook_OBD_mode_0x01, hook_ign_advance_high_cam_base, hook_ign_advance_low_cam_base, hook_ign_advance_adj1, hook_inj_time_adj_cranking, hook_inj_efficiency, hook_inj_time_adj3
+.globl _start, hook_init, hook_loop, hook_timer_5ms, hook_OBD_mode_0x01, hook_ign_advance_high_cam_base, hook_ign_advance_low_cam_base, hook_ign_advance_adj1, hook_inj_time_adj_cranking, hook_inj_efficiency, hook_inj_time_adj3, hook_injtip_in_adj1, hook_injtip_out_adj1
 
 _start:
 hook_init:
@@ -57,40 +62,60 @@ hook_timer_5ms:
 	ba	hook_timer_5ms_continue
 
 hook_ign_advance_high_cam_base:
-	lis	%r10, CAL_ethanol_ign_advance_high_cam_base@ha
-	addi	%r10, %r10, CAL_ethanol_ign_advance_high_cam_base@l
+	lis	%r10, CAL_base_extra@ha
+	addi	%r10, %r10, CAL_base_extra@l
+	addi	%r10, %r10, (CAL_ethanol_ign_advance_high_cam_base-CAL_extra)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_ign_advance_high_cam_base_continue
 
 hook_ign_advance_low_cam_base:
-	lis	%r10, CAL_ethanol_ign_advance_low_cam_base@ha
-	addi	%r10, %r10, CAL_ethanol_ign_advance_low_cam_base@l
+	lis	%r10, CAL_base_extra@ha
+	addi	%r10, %r10, CAL_base_extra@l
+	addi	%r10, %r10, (CAL_ethanol_ign_advance_low_cam_base-CAL_extra)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_ign_advance_low_cam_base_continue
 
 hook_ign_advance_adj1:
-	lis	%r7, CAL_ethanol_ign_advance_adj1@ha
-	addi	%r7, %r7, CAL_ethanol_ign_advance_adj1@l
+	lis	%r7, CAL_base_extra@ha
+	addi	%r7, %r7, CAL_base_extra@l
+	addi	%r7, %r7, (CAL_ethanol_ign_advance_adj1-CAL_extra)
 	bl	lookup_2D_uint8_interpolated_withblend
 	ba	hook_ign_advance_adj1_continue
 
 hook_inj_time_adj_cranking:
-	lis	%r7, CAL_ethanol_inj_time_adj_cranking@ha
-	addi	%r7, %r7, CAL_ethanol_inj_time_adj_cranking@l
+	lis	%r7, CAL_base_extra@ha
+	addi	%r7, %r7, CAL_base_extra@l
+	addi	%r7, %r7, (CAL_ethanol_inj_time_adj_cranking-CAL_extra)
 	bl	lookup_2D_uint8_interpolated_withblend
 	ba	hook_inj_time_adj_cranking_continue
 
 hook_inj_efficiency:
-	lis	%r10, CAL_ethanol_inj_efficiency@ha
-	addi	%r10, %r10, CAL_ethanol_inj_efficiency@l
+	lis	%r10, CAL_base_extra@ha
+	addi	%r10, %r10, CAL_base_extra@l
+	addi	%r10, %r10, (CAL_ethanol_inj_efficiency-CAL_extra)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_inj_efficiency_continue
 
 hook_inj_time_adj3:
-	lis	%r10, CAL_ethanol_inj_time_adj3@ha
-	addi	%r10, %r10, CAL_ethanol_inj_time_adj3@l
+	lis	%r10, CAL_base_extra@ha
+	addi	%r10, %r10, CAL_base_extra@l
+	addi	%r10, %r10, (CAL_ethanol_inj_time_adj3-CAL_extra)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_inj_time_adj3_continue
+
+hook_injtip_in_adj1:
+	lis	%r7, CAL_base_extra@ha
+	addi	%r7, %r7, CAL_base_extra@l
+	addi	%r7, %r7, (CAL_ethanol_injtip_in_adj1-CAL_extra)
+	bl	lookup_2D_uint8_interpolated_withblend
+	ba	hook_injtip_in_adj1_continue
+
+hook_injtip_out_adj1:
+	lis	%r7, CAL_base_extra@ha
+	addi	%r7, %r7, CAL_base_extra@l
+	addi	%r7, %r7, (CAL_ethanol_injtip_out_adj1-CAL_extra)
+	bl	lookup_2D_uint8_interpolated_withblend
+	ba	hook_injtip_out_adj1_continue
 
 hook_OBD_mode_0x01:
 	# %r30 is index in obd_req
@@ -122,20 +147,18 @@ hook_OBD_mode_0x01:
 
 OBD_mode_0x01_pid_0x40:
 	# Available PID 0x41-0x60
-	addi	%r31, %r31, 1
+	addi	%r31, %r31, 5 # Answer 5 bytes
 	stb	%r3, 0(%r5)
 
 	lis	%r3, 0x6EC04000@ha
 	addi	%r3, %r3, 0x6EC04000@l
-	add	%r5, %r4, %r31
-	addi	%r31, %r31, 4
-	stw	%r3, 0(%r5)
+	stw	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
 
 OBD_mode_0x01_pid_0x46:
 	# Fuel temperature (reported as ambiant air)
-	addi	%r31, %r31, 1
+	addi	%r31, %r31, 2 # Answer 2 bytes
 	stb	%r3, 0(%r5)
 
 	lis	%r3, ethanol_temp@ha
@@ -147,23 +170,19 @@ OBD_mode_0x01_pid_0x46:
 	srawi	%r3, %r3, 8
 	addze	%r3, %r3
 
-	add	%r5, %r4, %r31
-	addi	%r31, %r31, 1
-	stb	%r3, 0(%r5)
+	stb	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
 
 OBD_mode_0x01_pid_0x52:
 	# Ethanol fuel %
-	addi	%r31, %r31, 1
+	addi	%r31, %r31, 2 # Answer 2 bytes
 	stb	%r3, 0(%r5)
 
 	lis	%r3, ethanol_content@ha
 	lbz	%r3, ethanol_content@l(%r3)
 
-	add	%r5, %r4, %r31
-	addi	%r31, %r31, 1
-	stb	%r3, 0(%r5)
+	stb	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
 
@@ -378,17 +397,17 @@ timer_4:
 	blr
 
 # Params:
-#	r3 : value for 100% gasoline
-#	r4 : value for 100% ethanol
+#	r3 : value for 100% ethanol
+#	r4 : value for 100% gasoline
 #
-#	result = (%r3 * (255 - ethanol_content) + %r4 * ethanol_content) / 255
+#	result = (%r3 * ethanol_content + %r4 * (255 - ethanol_content)) / 255
 fuelblend:
 	li	%r5, 255
 	lis	%r6, ethanol_content@ha
 	lbz	%r6, ethanol_content@l(%r6)
 	sub	%r7, %r5, %r6
-	mullw	%r3, %r3, %r7
-	mullw	%r4, %r4, %r6
+	mullw	%r3, %r3, %r6
+	mullw	%r4, %r4, %r7
 	add	%r3, %r3, %r4
 	divw	%r3, %r3, %r5
 	blr
@@ -424,7 +443,7 @@ lookup_2D_uint8_interpolated_withblend:
 	bla	lookup_2D_uint8_interpolated
 
 	# Both result are in %r3 and %r4
-	lwz	%r4,  24(%r1)
+	lwz	%r4, 24(%r1)
 	bl	fuelblend
 
 	# Pop link register from stack
@@ -473,7 +492,7 @@ lookup_3D_uint8_interpolated_withblend:
 	bla	lookup_3D_uint8_interpolated
 
 	# Both result are in %r3 and %r4
-	lwz	%r4,  36(%r1)
+	lwz	%r4, 36(%r1)
 	bl	fuelblend
 
 	# Pop link register from stack
@@ -481,3 +500,4 @@ lookup_3D_uint8_interpolated_withblend:
 	mtlr	%r0
 	addi	%r1, %r1, 40
 	blr
+
