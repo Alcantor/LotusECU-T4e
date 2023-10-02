@@ -501,47 +501,51 @@ def build_flexfuel():
 	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 0x18, so much fill?
 	p.write_segments()
 
-	afr_ratio = 1.3 # 14.7/9
+	afr_ratio = 14.7/9
 
 	# Copy Ignition adj
 	addr_src = s.get_sym_addr("CAL_ign_advance_adj1")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_adj1") - c.offset
-	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i])
+	for i in range(0, 16): c.data[addr_dst+i] = c.data[addr_src+i]
 
 	# Copy ignition (high cam) table for ethanol.
 	addr_src = s.get_sym_addr("CAL_ign_advance_high_cam_base")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_high_cam_base") - c.offset
-	for i in range(0, 64): c.data[addr_dst+i] = int(c.data[addr_src+i])
+	for i in range(0, 64): c.data[addr_dst+i] = c.data[addr_src+i]
 
-	# Copy Tip-In table for ethanol, add 35% fuel.
+	# Copy Tip-In table for ethanol, add more fuel.
 	addr_src = s.get_sym_addr("CAL_injtip_in_adj1")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_injtip_in_adj1") - c.offset
-	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*afr_ratio)
+	for i in range(0, 16):
+		c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
-	# Copy Tip-Out table for ethanol, add 35% fuel.
+	# Copy Tip-Out table for ethanol, add more fuel.
 	addr_src = s.get_sym_addr("CAL_injtip_out_adj1")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_injtip_out_adj1") - c.offset
-	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*afr_ratio)
+	for i in range(0, 16):
+		c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
-	# Copy fuel efficieny table for ethanol, add 35% fuel.
+	# Copy fuel efficieny table for ethanol, add more fuel.
 	addr_src = s.get_sym_addr("CAL_inj_efficiency")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_inj_efficiency") - c.offset
-	for i in range(0, 1024): c.data[addr_dst+i] = int(c.data[addr_src+i]/afr_ratio)
+	for i in range(0, 1024):
+		c.data[addr_dst+i] = int(c.data[addr_src+i]/afr_ratio)
 
 	# Copy fuel warmup table for ethanol.
 	addr_src = s.get_sym_addr("CAL_inj_time_adj3")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj3") - c.offset
-	for i in range(0, 256): c.data[addr_dst+i] = int(c.data[addr_src+i])
+	for i in range(0, 256): c.data[addr_dst+i] = c.data[addr_src+i]
 
-	# Copy fuel cranking table for ethanol, add 35% fuel.
+	# Copy fuel cranking table for ethanol, add more fuel.
 	addr_src = s.get_sym_addr("CAL_inj_time_adj_cranking")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj_cranking") - c.offset
-	for i in range(0, 16): c.data[addr_dst+i] = int(c.data[addr_src+i]*afr_ratio)
+	for i in range(0, 16):
+		c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 	# Copy ignition (low cam) table for ethanol.
 	addr_src = s.get_sym_addr("CAL_ign_advance_low_cam_base")-s.get_sym_addr("CAL_base")
 	addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_low_cam_base") - c.offset
-	for i in range(0, 1024): c.data[addr_dst+i] = int(c.data[addr_src+i])
+	for i in range(0, 1024): c.data[addr_dst+i] = c.data[addr_src+i]
 
 	p.save("flexfuel/prog.bin")
 	c.save("flexfuel/calrom.bin")
