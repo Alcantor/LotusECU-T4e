@@ -122,11 +122,13 @@ class FileProgress(Progress):
 				i = 0
 				while(i < min(len(cache_data),len(data))):
 					j = i
-					while(cache_data[j] != data[j]): j += 1
+					while(cache_data[j] != data[j] and (j-i) < 255): j += 1
 					if(j > i):
 						self.log("Update "+str(j-i)+" bytes @ "+hex(i))
 						write_fnct(address+i, data[i:j])
-					i = j + 1
+						i = j
+					else:
+						i += 1
 				cache_ts = ts
 				cache_data = data
 		self.progress_end()

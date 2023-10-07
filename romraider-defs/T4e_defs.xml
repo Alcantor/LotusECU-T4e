@@ -121,12 +121,12 @@ Formula: pressure = signal * gain + OFFSET</description>
 			</table>
 			<description>Number of teeth of holes of the abs ring. Needed to convert the abs signal into a rotational speed of the wheel.</description>
 		</table>
-		<table type="2D" name="dfso: delay" category="dfso" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x004B">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+		<table type="2D" name="dfso: delay recovery multiplicator" category="dfso" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x004B">
+			<scaling category="Number" units="#" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="10" />
 			<table type="Static X Axis" name="" sizex="1">
-				<data>delay</data>
+				<data>delay recovery multiplicator</data>
 			</table>
-			<description>A delay is used before activating deceleration fuel shut off in order to allow for gear shift without DFSO.</description>
+			<description>In certain conditions, the DFSO delay is consumed. If this parameter is set to 1, the delay will recover in the same amount of time that has been consumed.</description>
 		</table>
 		<table type="2D" name="load: reactivity" category="load" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x004C">
 			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
@@ -2559,6 +2559,13 @@ Note: adj8 is a dynamic adjustment.</description>
 				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
 			</table>
 			<description>Target engine position to begin fuel injection (with an offset for each cylinder's relative position).</description>
+		</table>
+		<table type="2D" name="dfso: delay" category="dfso" storagetype="uint8" endian="big" sizex="4" userlevel="1" storageaddress="0x1558">
+			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<table type="X Axis" name="pps" storagetype="uint8" endian="big" sizex="4" storageaddress="0x1554">
+				<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			</table>
+			<description>A delay is used before activating deceleration fuel shut off.</description>
 		</table>
 		<table type="3D" name="ign: advance adj2" category="ign" storagetype="uint8" endian="big" sizex="8" sizey="8" userlevel="1" storageaddress="0x156C">
 			<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />

@@ -66,7 +66,7 @@ Formula: pressure = signal * gain + OFFSET"
 "CAL_sensor_dt_tps1_age","003f9917","u8_time_5ms","Throttle body position differential value 1\, the current tps and an old tps values are used. This value sets how old should be the second value. Between 0 and 75ms."
 "CAL_tc_rear_tyre_circumference","003f9918","u16_length_mm","Circumference of the rear tyres. Needed to convert the rotational speed of the wheels into a car speed."
 "CAL_tc_abs_ring_teeth_count","003f991a","uint8_t","Number of teeth of holes of the abs ring. Needed to convert the abs signal into a rotational speed of the wheel."
-"CAL_dfso_delay","003f991b","u8_time_5ms","A delay is used before activating deceleration fuel shut off in order to allow for gear shift without DFSO."
+"CAL_dfso_delay_recovery_multiplicator","003f991b","uint8_t","In certain conditions\, the DFSO delay is consumed. If this parameter is set to 1\, the delay will recover in the same amount of time that has been consumed."
 "CAL_load_reactivity","003f991c","u8_factor_1/256","Every 5ms\, the sampled load value (maf or alphaN) is mixed with the previous value.
 
 Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
@@ -814,6 +814,8 @@ Note: adj8 is a dynamic adjustment."
 "CAL_inj_angle_X_engine_speed","003fadd4","u8_rspeed_125/4+500rpm[8]",""
 "CAL_inj_angle_Y_engine_load","003faddc","u8_load_4mg/stroke[8]",""
 "CAL_inj_angle","003fade4","u8_angle_720/256deg[64]","Target engine position to begin fuel injection (with an offset for each cylinder's relative position)."
+"CAL_dfso_delay_X_pps","003fae24","u8_factor_1/255[4]",""
+"CAL_dfso_delay","003fae28","u8_time_5ms[4]","A delay is used before activating deceleration fuel shut off."
 "CAL_ign_advance_adj2_X_maf_accumulated","003fae2c","u8_mass_8g[8]",""
 "CAL_ign_advance_adj2_Y_tps","003fae34","u8_factor_1/255[8]",""
 "CAL_ign_advance_adj2","003fae3c","u8_factor_1/255[64]","Ignition advance adjustement for startup.
