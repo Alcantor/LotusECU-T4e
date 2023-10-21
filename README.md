@@ -1,4 +1,4 @@
-# Lotus T4/T4e/T6 Flasher
+# Lotus K4/T4/T4e/T6 Flasher
 
 ## Disclaimer
 

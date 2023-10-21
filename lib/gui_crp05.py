@@ -19,35 +19,36 @@ class CRP05_editor_win(tk.Toplevel):
 		# Menu
 		menubar = tk.Menu(self)
 		menu = tk.Menu(menubar, tearoff=0)
-		menu.add_command(label="New T4", command=self.new_t4)
-		menu.add_command(label="New T4e", command=self.new_t4e)
+		menu.add_command(label="New", command=self.new)
 		menu.add_command(label="Open", command=self.open)
 		menu.add_command(label="Save as...", command=self.save)
 		menu.add_separator()
 		menu.add_command(label="Exit", command=self.destroy)
 		menubar.add_cascade(label="File", menu=menu)
 		menu = tk.Menu(menubar, tearoff=0)
-		menu.add_command(label="Remove S0 (Bootloader)", command=lambda:self.remove(0x00000, 0x10000))
+		menu.add_command(label="Remove Bootloader", command=self.remove_boot)
 		menu.add_separator()
-		menu.add_command(label="Remove S1-S6 (T4 Program)", command=lambda:self.remove(0x10000, 0x60000))
-		menu.add_command(label="Remove S7 (T4 Calibration)", command=lambda:self.remove(0x70000, 0x10000))
+		menu.add_command(label="Remove Calibration", command=self.remove_cal)
+		menu.add_command(label="Export BIN Calibration", command=self.export_cal)
+		menu.add_command(label="Import BIN Calibration", command=self.import_cal)
 		menu.add_separator()
-		menu.add_command(label="Remove S1 (T4e Calibration)", command=lambda:self.remove(0x10000, 0x10000))
-		menu.add_command(label="Remove S2-S7 (T4e Program)", command=lambda:self.remove(0x20000, 0x60000))
+		menu.add_command(label="Remove Program", command=self.remove_prog)
+		menu.add_command(label="Export BIN Program", command=self.export_prog)
+		menu.add_command(label="Import BIN Program", command=self.import_prog)
 		menu.add_separator()
 		menu.add_command(label="Export SREC", command=self.export_srec)
 		menu.add_command(label="Import SREC", command=self.import_srec)
-		menu.add_separator()
-		menu.add_command(label="Export BIN S7 (T4 Calibration)", command=lambda:self.export_bin("calrom.bin", 0x70000, 0x10000))
-		menu.add_command(label="Import BIN S7 (T4 Calibration)", command=lambda:self.import_bin("calrom.bin", 0x70000))
-		menu.add_command(label="Export BIN S1-S6 (T4 Program)", command=lambda:self.export_bin("prog.bin", 0x10000, 0x60000))
-		menu.add_command(label="Import BIN S1-S6 (T4 Program)", command=lambda:self.import_bin("prog.bin", 0x10000))
-		menu.add_separator()
-		menu.add_command(label="Export BIN S1 (T4e Calibration)", command=lambda:self.export_bin("calrom.bin", 0x10000, 0x10000))
-		menu.add_command(label="Import BIN S1 (T4e Calibration)", command=lambda:self.import_bin("calrom.bin", 0x10000))
-		menu.add_command(label="Export BIN S2-S7 (T4e Program)", command=lambda:self.export_bin("prog.bin", 0x20000, 0x60000))
-		menu.add_command(label="Import BIN S2-S7 (T4e Program)", command=lambda:self.import_bin("prog.bin", 0x20000))
 		menubar.add_cascade(label="Edit", menu=menu)
+		menu = tk.Menu(menubar, tearoff=0)
+		self.variant = tk.IntVar()
+		for i in range(0, len(CRP05.variants)):
+			menu.add_radiobutton(
+				label=CRP05.variants[i][0],
+				value=i,
+				variable=self.variant,
+				command=self.new
+			)
+		menubar.add_cascade(label="Variant", menu=menu)
 		self.config(menu=menubar)
 
 		# Infos
@@ -65,13 +66,8 @@ class CRP05_editor_win(tk.Toplevel):
 		self.txt.config(state=tk.DISABLED)
 
 	@try_msgbox_decorator
-	def new_t4(self):
-		self.crp = CRP05(for_t4e=False)
-		self.updateText()
-
-	@try_msgbox_decorator
-	def new_t4e(self):
-		self.crp = CRP05(for_t4e=True)
+	def new(self):
+		self.crp = CRP05(self.variant.get())
 		self.updateText()
 
 	@try_msgbox_decorator
@@ -83,6 +79,7 @@ class CRP05_editor_win(tk.Toplevel):
 			filetypes = crp05_file
 		)
 		if(answer):
+			self.crp = CRP05(self.variant.get())
 			self.crp.read_file(answer)
 			self.updateText()
 
@@ -98,8 +95,20 @@ class CRP05_editor_win(tk.Toplevel):
 			self.crp.write_file(answer)
 
 	@try_msgbox_decorator
-	def remove(self, offset, size):
-		self.crp.data.subpackets.delete(offset, size)
+	def remove_boot(self):
+		self.crp.data.subpackets.delete(0x00000, 0x10000)
+		self.crp.data.update_header()
+		self.updateText()
+
+	def remove_cal(self):
+		v = CRP05.variants[self.variant.get()]
+		self.crp.data.subpackets.delete(v[3], v[4])
+		self.crp.data.update_header()
+		self.updateText()
+
+	def remove_prog(self):
+		v = CRP05.variants[self.variant.get()]
+		self.crp.data.subpackets.delete(v[5], v[6])
 		self.crp.data.update_header()
 		self.updateText()
 
@@ -130,28 +139,58 @@ class CRP05_editor_win(tk.Toplevel):
 			self.updateText()
 
 	@try_msgbox_decorator
-	def export_bin(self, name, offset, size):
+	def export_cal(self, name):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			initialfile = name,
+			initialfile = "calrom.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
-			self.crp.data.subpackets.export_bin(answer, offset, size)
+			v = CRP05.variants[self.variant.get()]
+			self.crp.data.subpackets.export_bin(answer, v[3], v[4])
 
 	@try_msgbox_decorator
-	def import_bin(self, name, offset):
+	def import_cal(self, name, offset):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
-			initialfile = name,
+			initialfile = "calrom.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
-			self.crp.data.subpackets.import_bin(answer, offset)
+			v = CRP05.variants[self.variant.get()]
+			self.crp.data.subpackets.import_bin(answer, v[3])
+			self.crp.data.update_header()
+			self.updateText()
+
+	@try_msgbox_decorator
+	def export_prog(self, name):
+		answer = filedialog.asksaveasfilename(
+			parent = self,
+			initialdir = os.getcwd(),
+			initialfile = "prog.bin",
+			title = please_select_file,
+			filetypes = bin_file
+		)
+		if(answer):
+			v = CRP05.variants[self.variant.get()]
+			self.crp.data.subpackets.export_bin(answer, v[5], v[6])
+
+	@try_msgbox_decorator
+	def import_prog(self, name, offset):
+		answer = filedialog.askopenfilename(
+			parent = self,
+			initialdir = os.getcwd(),
+			initialfile = "prog.bin",
+			title = please_select_file,
+			filetypes = bin_file
+		)
+		if(answer):
+			v = CRP05.variants[self.variant.get()]
+			self.crp.data.subpackets.import_bin(answer, v[5])
 			self.crp.data.update_header()
 			self.updateText()
 
@@ -181,7 +220,7 @@ class CRP05_uploader_win(tk.Toplevel):
 		self.btn_flash.pack(side=tk.LEFT)
 
 		# Backend
-		self.crp = CRP05(is_encrypted=True)
+		self.crp = CRP05(None)
 
 	def lock_buttons_decorator(func):
 		def wrapper(self):

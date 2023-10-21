@@ -45,19 +45,32 @@ class CRP05_exception(Exception):
 #   0x5D0 0xBA0 0x1740 0x2E80 0x5D00 0xBA00 0x17401 0x2E801
 #
 class CRP05_3by2enc:
-	def __init__(self, crp_size):
-		# The key for the T4 and T4e
-		self.key_mod = 380951
-		self.key_mult = 3182
-		self.key_table = [
+	K4_KEY = [
+		119619,
+		20096,
+		[
+			1, 3, 6, 12,
+			25, 48, 100, 200,
+			396, 1003, 1800, 3748,
+			7350, 15211, 29904, 59809
+		],
+		125 # This value is needed to encrypt and is not stored in the ECU.
+	]
+	T4_KEY = [
+		380951,
+		3182,
+		[
 			7, 15, 23, 47,
 			93, 186, 372, 744,
 			1488, 2976, 5952, 11904,
 			23808, 47616, 95233, 190465
-		]
+		],
+		62135 # This value is needed to encrypt and is not stored in the ECU.
+	]
 
-		# This value is needed to encrypt and is not stored in the ECU.
-		self.key_mult_inv = 62135
+	def __init__(self, crp_size, key):
+		# The key for the T4 and T4e
+		self.key_mod, self.key_mult, self.key_table, self.key_mult_inv = key
 
 		# Convert the length into 4 bytes, sum them all + 9744, and invert
 		self.K = ~(9744 + sum(crp_size.to_bytes(4, BO_BE)))
@@ -103,60 +116,107 @@ class CRP05_3by2enc:
 			raise CRP05_exception("Cipher size is not 24 bits aligned!")
 		return size // 3 * 2;
 
-# T4 Header format:
+# K4 Header format:
 #
-# 00 00 00 s0 s1 s2 s3 s4 s5 s6 s7
+# 00 00 00 s3 s4 s5 s6 FF FF FF FF FF FF FF FF FF
 #
-# s0 to s7 are bit flags 0x01 or 0x00 to erase the sectors or not.
+# s3 to s6 are bit flags 0x01 or 0x00 to erase the sectors or not.
 #
-class CRP05_hdr_ecu_t4(BinData):
-	SIGNATURE =  b'\x00\x00\x00'
-
+class CRP05_hdr_ecu_k4(BinData):
 	def __init__(self):
 		self.clear()
 
 	def parse(self, data):
-		signature = data[0:3]
-		for i in range(0, 8):
-			self.erase_sector[i] = True if(data[i+3] > 0) else False
-		if(signature != self.SIGNATURE):
-			raise Exception("Wrong Signature")
+		for i in range(0, 7):
+			if(data[i] == 0): self.erase_sector[i] = False
+			elif(data[i] == 1): self.erase_sector[i] = True
+			else: raise Exception("Invalid header")
 
 	def get_size(self):
-		return 11
+		return 16
 
 	def compose(self, data):
-		data[0:3] = self.SIGNATURE
-		for i in range(0, 8):
-			data[i+3] = 1 if(self.erase_sector[i]) else 0
+		for i in range(0, 7):
+			data[i] = 1 if(self.erase_sector[i]) else 0
+		data[7:16] = b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
 
 	def clear(self):
-		self.erase_sector = [False]*8
+		self.erase_sector = [False]*7
 
 	def set_erase_by_addr(self, addr):
-		sector = addr // 0x10000
-		if(sector < 8): self.erase_sector[sector] = True
+		if(addr >= 0x10000):
+			sector = 3 + (addr // 0x10000)
+		elif(addr >= 0x8000):
+			sector = 3
+		if(sector < 7): self.erase_sector[sector] = True
+
+	def __str__(self):
+		fmt = """
+K4 Header:
+
+	Erase S3 (Boot Stage 2) : {:s}
+	Erase S4 (Prog)         : {:s}
+	Erase S5 (Prog)         : {:s}
+	Erase S6 (Calibration)  : {:s}
+"""
+		return fmt.format(
+			*['Yes' if x else 'No' for x in self.erase_sector[3:]]
+		)
+
+# T4 Header format:
+#
+# 00 00 00 s3 s4 s5 s6 s7 s8 s9 s10 FF FF FF FF FF
+#
+# s3 to s10 are bit flags 0x01 or 0x00 to erase the sectors or not.
+#
+class CRP05_hdr_ecu_t4(BinData):
+	def __init__(self):
+		self.clear()
+
+	def parse(self, data):
+		for i in range(0, 11):
+			if(data[i] == 0): self.erase_sector[i] = False
+			elif(data[i] == 1): self.erase_sector[i] = True
+			else: raise Exception("Invalid header")
+
+	def get_size(self):
+		return 16
+
+	def compose(self, data):
+		for i in range(0, 11):
+			data[i] = 1 if(self.erase_sector[i]) else 0
+		data[11:16] = b'\xFF\xFF\xFF\xFF\xFF'
+
+	def clear(self):
+		self.erase_sector = [False]*11
+
+	def set_erase_by_addr(self, addr):
+		if(addr >= 0x10000):
+			sector = 3 + (addr // 0x10000)
+		elif(addr >= 0x8000):
+			sector = 3
+		if(sector < 11): self.erase_sector[sector] = True
 
 	def __str__(self):
 		fmt = """
 T4 Header:
 
-	Erase S0 (Bootloader)  : {:s}
-	Erase S1 (Prog)        : {:s}
-	Erase S2 (Prog)        : {:s}
-	Erase S3 (Prog)        : {:s}
-	Erase S4 (Prog)        : {:s}
-	Erase S5 (Prog)        : {:s}
-	Erase S6 (Prog)        : {:s}
-	Erase S7 (Calibration) : {:s}
+	Erase  S3 (Boot Stage 2) : {:s}
+	Erase  S4 (Prog)         : {:s}
+	Erase  S5 (Prog)         : {:s}
+	Erase  S6 (Prog)         : {:s}
+	Erase  S7 (Prog)         : {:s}
+	Erase  S8 (Prog)         : {:s}
+	Erase  S9 (Prog)         : {:s}
+	Erase S10 (Calibration)  : {:s}
 """
 		return fmt.format(
-			*['Yes' if x else 'No' for x in self.erase_sector]
+			*['Yes' if x else 'No' for x in self.erase_sector[3:]]
 		)
 
 # T4e Header format:
 #
-#  T  4  E  _ S0 S2 S1 00 00 00 00
+#  T  4  E  _ S0 S2 S1 00 00 00 00 FF FF FF FF FF
 #
 # S0 to S2 are ASCII flags '1' (0x31) or '0' (0x30) to erase the
 # sectors or not. S2 includes sectors 2 to 7.
@@ -169,19 +229,21 @@ class CRP05_hdr_ecu_t4e(BinData):
 
 	def parse(self, data):
 		signature = data[0:4]
-		for i in range(0, 3):
-			self.erase_sector[i] = True if(data[i+4] == ord('1')) else False
 		if(signature != self.SIGNATURE):
 			raise Exception("Wrong Signature")
+		for i in range(0, 3):
+			if(data[i+4] == ord('0')): self.erase_sector[i] = False
+			elif(data[i+4] == ord('1')): self.erase_sector[i] = True
+			else: raise Exception("Invalid header")
 
 	def get_size(self):
-		return 11
+		return 16
 
 	def compose(self, data):
 		data[0:4] = self.SIGNATURE
 		for i in range(0, 3):
 			data[i+4] = ord('1') if(self.erase_sector[i]) else ord('0')
-		data[7:11] = b'\x00\x00\x00\x00'
+		data[7:16] = b'\x00\x00\x00\x00\xFF\xFF\xFF\xFF\xFF'
 
 	def clear(self):
 		self.erase_sector = [False]*3
@@ -196,9 +258,9 @@ class CRP05_hdr_ecu_t4e(BinData):
 		fmt = """
 T4e Header:
 
-	Erase S0    (Bootloader)  : {:s}
-	Erase S2-S7 (Prog)        : {:s}
-	Erase S1    (Calibration) : {:s}
+	Erase S0    (Boot Stage 2) : {:s}
+	Erase S2-S7 (Prog)         : {:s}
+	Erase S1    (Calibration)  : {:s}
 """
 		return fmt.format(
 			*['Yes' if x else 'No' for x in self.erase_sector]
@@ -334,27 +396,23 @@ Subpackets:
 
 # Unencrypted data format:
 #
-#  11 Bytes    - Header
-#   5 Bytes    - Padding bytes 0xFF (optional)
+#  16 Bytes    - Header
 #   x Bytes    - Multiple sub-packets
 #   2 Bytes LE - Checksum
 #
 class CRP05_data_ecu(BinData):
-	def __init__(self, for_t4e):
+	def __init__(self, hdr, key):
 		# Binary data
-		self.header = CRP05_hdr_ecu_t4e() if(for_t4e) else CRP05_hdr_ecu_t4()
+		self.header = hdr()
+		self.key = key
 		self.subpackets = CRP05_subpackets()
 
 	def parse(self, data):
 		# Decrypt
 		plain = memoryview(bytearray(CRP05_3by2enc.calc_size_decrypted(len(data))))
-		CRP05_3by2enc(len(data)+20).decrypt(data, plain)
-
-		self.header = CRP05_hdr_ecu_t4e() \
-			if(plain[0:4] == CRP05_hdr_ecu_t4e.SIGNATURE) \
-			else CRP05_hdr_ecu_t4()
-		self.header.parse(plain[0:11])
-		self.subpackets.parse(plain[11:-2])
+		CRP05_3by2enc(len(data)+20, self.key).decrypt(data, plain)
+		self.header.parse(plain[0:16])
+		self.subpackets.parse(plain[16:-2])
 		cksum = int.from_bytes(plain[-2:], BO_LE)
 
 		# Global Checksum
@@ -367,14 +425,13 @@ class CRP05_data_ecu(BinData):
 	def compose(self, data):
 		plain = memoryview(bytearray(18+self.subpackets.get_size()))
 
-		self.header.compose(plain[0:11])
-		plain[11:16] = b'\xFF\xFF\xFF\xFF\xFF'
+		self.header.compose(plain[0:16])
 		self.subpackets.compose(plain[16:-2])
 		cksum = sum(plain[:-2]) & 0xFFFF
 		plain[-2:] = cksum.to_bytes(2, BO_LE)
 
 		# Encrypt
-		CRP05_3by2enc(self.get_size()+20).encrypt(plain, data)
+		CRP05_3by2enc(self.get_size()+20, self.key).encrypt(plain, data)
 
 	def update_header(self):
 		self.header.clear()
@@ -394,11 +451,17 @@ class CRP05_data_ecu(BinData):
 class CRP05(BinData):
 	SIGNATURE = b' EFi'
 
-	def __init__(self, is_encrypted=False, for_t4e=False):
+	variants = [
+		["K4",CRP05_hdr_ecu_k4,CRP05_3by2enc.K4_KEY,0x30000,0x10000,0x10000,0x20000],
+		["T4",CRP05_hdr_ecu_t4,CRP05_3by2enc.T4_KEY,0x70000,0x10000,0x10000,0x60000],
+		["T4e",CRP05_hdr_ecu_t4e,CRP05_3by2enc.T4_KEY,0x10000,0x10000,0x20000,0x60000]
+	]
+
+	def __init__(self, i=0):
 		self.desc = "CUSTOM"
-		self.is_encrypted = is_encrypted
+		self.is_encrypted = (i == None)
 		if(self.is_encrypted): self.data = None
-		else: self.data = CRP05_data_ecu(for_t4e)
+		else: self.data = CRP05_data_ecu(CRP05.variants[i][1], CRP05.variants[i][2])
 		self.file_data = b''
 
 	def parse(self, data):
@@ -453,31 +516,23 @@ CRP05 K-Line File:
 		) + str(self.data)
 
 if __name__ == "__main__":
-	print("SREC to CRP file tool for Lotus T4/T4E ECU\n")
-	if  (len(sys.argv) >= 4 and sys.argv[1] == "pack"):
-		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
-		crp = CRP05(for_t4e=False)
-		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
+	print("SREC to CRP file tool for Lotus K4/T4/T4e ECU\n")
+	if(len(sys.argv) >= 2):
+		crp = CRP05({"K4": 0, "T4": 1, "T4e": 2}[sys.argv[1]])
+	if  (len(sys.argv) >= 5 and sys.argv[2] == "pack"):
+		print("-- Convert "+sys.argv[3]+" into "+sys.argv[4]+" --")
+		crp.desc = crp.data.subpackets.import_srec(sys.argv[3])[:11]
 		crp.data.update_header()
-		crp.write_file(sys.argv[3])
+		crp.write_file(sys.argv[4])
 		print(crp)
-	elif(len(sys.argv) >= 4 and sys.argv[1] == "pack_t4e"):
-		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
-		crp = CRP05(for_t4e=True)
-		crp.desc = crp.data.subpackets.import_srec(sys.argv[2])[:11]
-		crp.data.update_header()
-		crp.write_file(sys.argv[3])
-		print(crp)
-	elif(len(sys.argv) >= 4 and sys.argv[1] == "unpack"):
-		print("-- Convert "+sys.argv[2]+" into "+sys.argv[3]+" --")
-		crp = CRP05()
-		crp.read_file(sys.argv[2])
-		crp.data.subpackets.export_srec(sys.argv[3], crp.desc)
+	elif(len(sys.argv) >= 5 and sys.argv[2] == "unpack"):
+		print("-- Convert "+sys.argv[3]+" into "+sys.argv[4]+" --")
+		crp.read_file(sys.argv[3])
+		crp.data.subpackets.export_srec(sys.argv[4], crp.desc)
 		print(crp)
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+prog+" pack SREC_FILE CRP_FILE")
-		print("\t"+prog+" pack_t4e SREC_FILE CRP_FILE")
-		print("\t"+prog+" unpack CRP_FILE SREC_FILE")
+		print("\t"+prog+" [K4|T4|T4e] pack SREC_FILE CRP_FILE")
+		print("\t"+prog+" [K4|T4|T4e] unpack CRP_FILE SREC_FILE")
 

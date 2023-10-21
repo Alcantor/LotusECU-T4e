@@ -504,41 +504,40 @@ class CRP08(BinData):
 		return "".join([str(c) for c in self.chunks])
 
 if __name__ == "__main__":
-	print("BIN to CRP file tool for Lotus T4e ECU\n")
-	if  (len(sys.argv) >= 4 and sys.argv[1] == "calrom"):
-		print("-- Add "+sys.argv[2]+" into "+sys.argv[3]+" --")
+	print("BIN to CRP file tool for Lotus T4e/T6 ECU\n")
+	if(len(sys.argv) >= 2):
+		i = {"T4e": 0, "T6": 1, "CAT": 2, "TCU": 3}[sys.argv[1]]
 		crp = CRP08()
-		crp.add_cal(sys.argv[2])
-		print(crp.chunks[1])
-		crp.write_file(sys.argv[3])
-	elif(len(sys.argv) >= 4 and sys.argv[1] == "prog"):
-		print("-- Add "+sys.argv[2]+" into "+sys.argv[3]+" --")
-		crp = CRP08()
-		crp.add_prog(sys.argv[2])
-		print(crp.chunks[1])
-		crp.write_file(sys.argv[3])
-	elif(len(sys.argv) >= 5 and sys.argv[1] == "both"):
-		print("-- Add "+sys.argv[2]+" into "+sys.argv[4]+" --")
-		crp = CRP08()
-		crp.add_cal(sys.argv[2])
-		print(crp.chunks[1])
+	if  (len(sys.argv) >= 5 and sys.argv[2] == "calrom"):
 		print("-- Add "+sys.argv[3]+" into "+sys.argv[4]+" --")
-		crp.add_prog(sys.argv[3])
-		print(crp.chunks[2])
+		crp.add_cal(sys.argv[3], i)
+		print(crp.chunks[1])
 		crp.write_file(sys.argv[4])
-	elif(len(sys.argv) >= 3 and sys.argv[1] == "unpack"):
-		crp = CRP08()
-		crp.read_file(sys.argv[2])
+	elif(len(sys.argv) >= 5 and sys.argv[2] == "prog"):
+		print("-- Add "+sys.argv[3]+" into "+sys.argv[4]+" --")
+		crp.add_prog(sys.argv[3], i)
+		print(crp.chunks[1])
+		crp.write_file(sys.argv[4])
+	elif(len(sys.argv) >= 6 and sys.argv[2] == "both"):
+		print("-- Add "+sys.argv[3]+" into "+sys.argv[5]+" --")
+		crp.add_cal(sys.argv[3], i)
+		print(crp.chunks[1])
+		print("-- Add "+sys.argv[4]+" into "+sys.argv[5]+" --")
+		crp.add_prog(sys.argv[4], i)
+		print(crp.chunks[2])
+		crp.write_file(sys.argv[5])
+	elif(len(sys.argv) >= 4 and sys.argv[2] == "unpack"):
+		crp.read_file(sys.argv[3], i)
 		for i in range(1, len(crp.chunks)):
 			bin_file = crp.chunks[0].toc_values[0][i-1]
-			print("-- Extract "+bin_file+" from "+sys.argv[2]+" --")
+			print("-- Extract "+bin_file+" from "+sys.argv[3]+" --")
 			crp.chunks[i].data.export_bin(bin_file)
 			print(crp.chunks[i])
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+prog+" calrom BIN_FILE CRP_FILE")
-		print("\t"+prog+" prog BIN_FILE CRP_FILE")
-		print("\t"+prog+" both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
-		print("\t"+prog+" unpack CRP_FILE")
+		print("\t"+prog+" [T4e|T6|CAT|TCU] calrom BIN_FILE CRP_FILE")
+		print("\t"+prog+" [T4e|T6|CAT|TCU] prog BIN_FILE CRP_FILE")
+		print("\t"+prog+" [T4e|T6|CAT|TCU] both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
+		print("\t"+prog+" [T4e|T6|CAT|TCU] unpack CRP_FILE")
 
