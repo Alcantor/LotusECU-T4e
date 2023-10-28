@@ -21,10 +21,10 @@ Choosing the wrong RAM offset can cause bad side effects with a running engine!
 			"RAM+0x1330 - White CroftT4E090 14/07/2006 Lotus EngV0091",
 			"RAM+0x1330 - White CroftT4E090 14/07/2006 Lotus EngV0093",
 			"RAM+0x1324 - White CroftT4E090 27/02/2007 Lotus EngV0097",
-			"RAM+0x4000 - White Croft221  2nd Dec  10 Lotus Eng      ",
+			"RAM+0x4000 - White K4/T4",
 			"RAM+0x0000 - Caterham CD0MB000    Oct  3 2011 15:26:36000VC",
 			"RAM+0x27D8 - Caterham C1D3M000____Dec 10 2013 15:47:31V0000",
-			"RAM+0x2920 - Lotus T6 T6AIN V000Q 02/01/2014 LotusEng      "
+			"RAM+0x2920 - Lotus T6 T6AIN V000Q 02/01/2014 LotusEng"
 		])
 		self.cb.current(0)
 		self.cb.pack(fill=tk.X, expand=True)

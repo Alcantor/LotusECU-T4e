@@ -10,26 +10,26 @@ class ECUException(Exception):
 
 class LiveTuningAccess:
 	zones = [
-		# T4e (MPC563) has 512KB flash
+		# T4e (MPC563) has 512KB flash, 32KB RAM, 2KB DECRAM
 		("T4e: S0 (Bootloader)"  , 0x00000000, 0x010000, "bootldr.bin"),
 		("T4e: S1 (Calibration)" , 0x00010000, 0x010000, "calrom.bin"),
 		("T4e: S2-S7 (Program)"  , 0x00020000, 0x060000, "prog.bin"),
 		("T4e: RAM1 (Learned)"   , 0x002F8000, 0x000800, "decram.bin"),
 		("T4e: RAM2 (Main RAM)"  , 0x003F8000, 0x008000, "calram.bin"),
 		("T4e: S0-S7 (Full ROM)" , 0x00000000, 0x080000, "dump.bin"),
-		# K4 (29F200) has 256KB flash
+		# K4 (29F200) has 256KB flash, 128KB RAM
 		("K4: S0-S3 (Bootloader)", 0x00000000, 0x010000, "bootldr.bin"),
 		("K4: S4-S5 (Program)"   , 0x00010000, 0x020000, "prog.bin"),
 		("K4: S6 (Calibration)"  , 0x00030000, 0x010000, "calrom.bin"),
-		("K4: RAM (Main RAM)"    , 0x00080000, 0x010000, "calram.bin"),
+		("K4: RAM (Main RAM)"    , 0x00080000, 0x020000, "calram.bin"),
 		("K4: S0-S6 (Full ROM)"  , 0x00000000, 0x040000, "dump.bin"),
-		# T4 (29F400) has 512KB flash
+		# T4 (29F400) has 512KB flash, 128KB RAM
 		("T4: S0-S3 (Bootloader)", 0x00000000, 0x010000, "bootldr.bin"),
 		("T4: S4-S9 (Program)"   , 0x00010000, 0x060000, "prog.bin"),
 		("T4: S10 (Calibration)" , 0x00070000, 0x010000, "calrom.bin"),
-		("T4: RAM (Main RAM)"    , 0x00080000, 0x010000, "calram.bin"),
+		("T4: RAM (Main RAM)"    , 0x00080000, 0x020000, "calram.bin"),
 		("T4: S0-S10 (Full ROM)" , 0x00000000, 0x080000, "dump.bin"),
-		# T6 (MPC5534) has 2MB flash
+		# T6 (MPC5534) has 2MB flash, 64KB RAM
 		("T6: L0-L1 (Bootloader)", 0x00000000, 0x010000, "bootldr.bin"),
 		("T6: L2 (Learned)"      , 0x00010000, 0x00C000, "decram.bin"),
 		("T6: L3 (Coding)"       , 0x0001C000, 0x004000, "coding.bin"),

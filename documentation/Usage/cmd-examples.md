@@ -9,8 +9,8 @@
  lib/flasher.py        | Program to talk to the flasher Software (Read/Write RAM+Flash+EEPROM)
  flasher/*.bin         | CAN-Bus Flasher for the MPC563
  lib/calibration.py    | Tool for CRC
- lib/crp05.py          | Convert a S-Record file into a CRP file (pre 2008, including T4).
- lib/crp05_uploader.py | Tool to upload a CRP file to a locked white ECU (Write Flash).
+ lib/crp01.py          | Convert a S-Record file into a CRP file (pre 2008).
+ lib/crp01_uploader.py | Tool to upload a CRP file to a locked white ECU (Write Flash).
  lib/crp08.py          | Convert a BIN file into a CRP file (post 2008).
  lib/crp08_uploader.py | Tool to upload a CRP file to a locked black ECU (Write Flash).
  bdm-pi.py             | MPC5xx BDM Bit-Banging Tool for the Raspberry Pi (Debugger Base)
@@ -121,9 +121,9 @@ This is COMPLICATE: Two different cables are needed. A VAG-COM and a CANable ada
 
 	1. for i in {0..63}; do echo 003FF000; done | xxd -r -p > lib/poison.bin
 	2. srec_cat flasher/canstrap-white.bin -binary -offset 0x3FF000 lib/poison.bin -binary -offset 0x3FFF00 -o canstrap.srec -motorola -address-length 3 -header CANstrap
-	3. python3 -m lib.crp05 pack_t4e canstrap.srec flasher/canstrap.crp
+	3. python3 -m lib.crp01 T4e pack canstrap.srec flasher/canstrap.crp
 	4. python3 -m lib.flasher -o b &
-	5. python3 -m lib.crp05_uploader -f flasher/canstrap.crp
+	5. python3 -m lib.crp01_uploader -f flasher/canstrap.crp
 	6. [TURN CAR ON]
 	7. python3 -m lib.flasher -o dl -b 0 1 2
 	8. python3 -m lib.flasher -o c -b 0 1 2

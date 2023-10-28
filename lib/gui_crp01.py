@@ -1,18 +1,18 @@
 import os
 import tkinter as tk
 from tkinter import filedialog
-from lib.crp05 import CRP05
+from lib.crp01 import CRP01
 from lib.gui_fileprogress import FileProgress_widget
 from lib.gui_common import *
-from lib.crp05_uploader import CRP05_uploader
+from lib.crp01_uploader import CRP01_uploader
 
-crp05_file = [("Lotus CRP 05 file", "*.CRP *.crp")]
+crp01_file = [("Lotus CRP 01 file", "*.CRP *.crp")]
 srec_file = [("Motorola S-Record file", "*.SREC *.srec")]
 
-class CRP05_editor_win(tk.Toplevel):
+class CRP01_editor_win(tk.Toplevel):
 	def __init__(self, parent=None):
 		tk.Toplevel.__init__(self, parent)
-		self.title('CRP05 Editor')
+		self.title('CRP01 Editor')
 		self.resizable(0, 0)
 		self.grab_set()
 
@@ -41,9 +41,9 @@ class CRP05_editor_win(tk.Toplevel):
 		menubar.add_cascade(label="Edit", menu=menu)
 		menu = tk.Menu(menubar, tearoff=0)
 		self.variant = tk.IntVar()
-		for i in range(0, len(CRP05.variants)):
+		for i in range(0, len(CRP01.variants)):
 			menu.add_radiobutton(
-				label=CRP05.variants[i][0],
+				label=CRP01.variants[i][0],
 				value=i,
 				variable=self.variant,
 				command=self.new
@@ -56,7 +56,7 @@ class CRP05_editor_win(tk.Toplevel):
 		self.txt.pack()
 
 		# Backend
-		self.crp = CRP05()
+		self.crp = CRP01()
 		self.updateText()
 
 	def updateText(self, evt=None):
@@ -67,7 +67,7 @@ class CRP05_editor_win(tk.Toplevel):
 
 	@try_msgbox_decorator
 	def new(self):
-		self.crp = CRP05(self.variant.get())
+		self.crp = CRP01(self.variant.get())
 		self.updateText()
 
 	@try_msgbox_decorator
@@ -76,10 +76,10 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			title = please_select_file,
-			filetypes = crp05_file
+			filetypes = crp01_file
 		)
 		if(answer):
-			self.crp = CRP05(self.variant.get())
+			self.crp = CRP01(self.variant.get())
 			self.crp.read_file(answer)
 			self.updateText()
 
@@ -89,7 +89,7 @@ class CRP05_editor_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			title = please_select_file,
-			filetypes = crp05_file
+			filetypes = crp01_file
 		)
 		if(answer):
 			self.crp.write_file(answer)
@@ -101,13 +101,13 @@ class CRP05_editor_win(tk.Toplevel):
 		self.updateText()
 
 	def remove_cal(self):
-		v = CRP05.variants[self.variant.get()]
+		v = CRP01.variants[self.variant.get()]
 		self.crp.data.subpackets.delete(v[3], v[4])
 		self.crp.data.update_header()
 		self.updateText()
 
 	def remove_prog(self):
-		v = CRP05.variants[self.variant.get()]
+		v = CRP01.variants[self.variant.get()]
 		self.crp.data.subpackets.delete(v[5], v[6])
 		self.crp.data.update_header()
 		self.updateText()
@@ -148,7 +148,7 @@ class CRP05_editor_win(tk.Toplevel):
 			filetypes = bin_file
 		)
 		if(answer):
-			v = CRP05.variants[self.variant.get()]
+			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.export_bin(answer, v[3], v[4])
 
 	@try_msgbox_decorator
@@ -161,7 +161,7 @@ class CRP05_editor_win(tk.Toplevel):
 			filetypes = bin_file
 		)
 		if(answer):
-			v = CRP05.variants[self.variant.get()]
+			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.import_bin(answer, v[3])
 			self.crp.data.update_header()
 			self.updateText()
@@ -176,7 +176,7 @@ class CRP05_editor_win(tk.Toplevel):
 			filetypes = bin_file
 		)
 		if(answer):
-			v = CRP05.variants[self.variant.get()]
+			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.export_bin(answer, v[5], v[6])
 
 	@try_msgbox_decorator
@@ -189,15 +189,15 @@ class CRP05_editor_win(tk.Toplevel):
 			filetypes = bin_file
 		)
 		if(answer):
-			v = CRP05.variants[self.variant.get()]
+			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.import_bin(answer, v[5])
 			self.crp.data.update_header()
 			self.updateText()
 
-class CRP05_uploader_win(tk.Toplevel):
+class CRP01_uploader_win(tk.Toplevel):
 	def __init__(self, config, parent=None):
 		tk.Toplevel.__init__(self, parent)
-		self.title('CRP05 Uploader')
+		self.title('CRP01 Uploader')
 		self.resizable(0, 0)
 		self.grab_set()
 		self.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -206,7 +206,7 @@ class CRP05_uploader_win(tk.Toplevel):
 		self.com_device = SelectCOM_widget(config, self)
 		self.com_device.pack(fill=tk.X)
 
-		up_frame = tk.LabelFrame(self, text="CRP05 Flashing")
+		up_frame = tk.LabelFrame(self, text="CRP01 Flashing")
 		up_frame.pack(fill=tk.X)
 
 		self.p = FileProgress_widget(up_frame)
@@ -220,7 +220,7 @@ class CRP05_uploader_win(tk.Toplevel):
 		self.btn_flash.pack(side=tk.LEFT)
 
 		# Backend
-		self.crp = CRP05(None)
+		self.crp = CRP01(None)
 
 	def lock_buttons_decorator(func):
 		def wrapper(self):
@@ -237,7 +237,7 @@ class CRP05_uploader_win(tk.Toplevel):
 			parent = self,
 			initialdir = os.getcwd(),
 			title = please_select_file,
-			filetypes = crp05_file
+			filetypes = crp01_file
 		)
 		if(answer):
 			self.p.log("Load "+answer)
@@ -256,7 +256,7 @@ class CRP05_uploader_win(tk.Toplevel):
 	@lock_buttons_decorator
 	@try_msgbox_decorator
 	def flash_crp(self):
-		up = CRP05_uploader(self.p)
+		up = CRP01_uploader(self.p)
 		up.open_com(self.com_device.get_port())
 		self.run_task = True
 		try:
