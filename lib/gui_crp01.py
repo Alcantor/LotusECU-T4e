@@ -139,7 +139,7 @@ class CRP01_editor_win(tk.Toplevel):
 			self.updateText()
 
 	@try_msgbox_decorator
-	def export_cal(self, name):
+	def export_cal(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
 			initialdir = os.getcwd(),
@@ -152,7 +152,7 @@ class CRP01_editor_win(tk.Toplevel):
 			self.crp.data.subpackets.export_bin(answer, v[3], v[4])
 
 	@try_msgbox_decorator
-	def import_cal(self, name, offset):
+	def import_cal(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
@@ -167,7 +167,7 @@ class CRP01_editor_win(tk.Toplevel):
 			self.updateText()
 
 	@try_msgbox_decorator
-	def export_prog(self, name):
+	def export_prog(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
 			initialdir = os.getcwd(),
@@ -180,7 +180,7 @@ class CRP01_editor_win(tk.Toplevel):
 			self.crp.data.subpackets.export_bin(answer, v[5], v[6])
 
 	@try_msgbox_decorator
-	def import_prog(self, name, offset):
+	def import_prog(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = os.getcwd(),
