@@ -1,10 +1,10 @@
 .section .data
 
 CAL_sensor_oil_temp_scaling:
-.byte	255, 255, 220, 192, 172, 158, 148, 139
-.byte	132, 126, 120, 113, 107, 101, 95, 90
-.byte	85, 80, 76, 72, 68, 64, 60, 55
-.byte	49, 43, 36, 29, 22, 16, 12, 5, 0
+.byte	255, 255, 255, 255, 255, 255, 255, 255
+.byte	255, 255, 255, 255, 255, 254, 246, 238
+.byte	231, 224, 217, 210, 203, 196, 188, 181
+.byte	173, 165, 156, 147, 136, 123, 106,  81, 0
 CAL_sensor_oil_pressure_gain:
 .short	12500
 CAL_sensor_oil_pressure_offset:
@@ -114,6 +114,11 @@ OBD_mode_0x01_pid_0x5C:
 	ba	hook_OBD_mode_0x01_jump
 
 obdoil:
+	# Push link register on stack
+	stwu	%r1, -8(%r1)
+	mflr	%r0
+	stw	%r0, 12(%r1)
+
 	# Oil temperature scaling
 	li	%r3, 3
 	lis	%r4, sensor_adc_oil_temp@ha
@@ -125,8 +130,8 @@ obdoil:
 	stb	%r3, oil_temp@l(%r4)
 
 	# Oil pressure scaling
-	lis	%r3, sensor_adc_oil_pressure@ha
-	lhz	%r3, sensor_adc_oil_pressure@l(%r3)
+	lis	%r3, sensor_adc_oil_pressure_analog@ha
+	lhz	%r3, sensor_adc_oil_pressure_analog@l(%r3)
 	lis	%r4, CAL_sensor_oil_pressure_gain@ha
 	lhz	%r4, CAL_sensor_oil_pressure_gain@l(%r4)
 	lis	%r5, CAL_sensor_oil_pressure_offset@ha
@@ -137,5 +142,10 @@ obdoil:
 	add	%r6, %r6, %r5
 	lis	%r7, oil_pressure@ha
 	sth	%r6, oil_pressure@l(%r7)
+
+	# Pop link register from stack
+	lwz	%r0, 12(%r1)
+	mtlr	%r0
+	addi	%r1, %r1, 8
 	blr
 

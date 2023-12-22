@@ -302,15 +302,6 @@ def build_obdoil():
 	s = SYMMap("black91.sym")
 	m = LDMap("obdoil/map.txt")
 
-	# If we replace the digital oil sensor with an analogic one,
-	# the oil pressure warning on the cluster will light up constantly!
-	# We need to patch that too.
-	p.check_and_replace(
-		s.get_sym_addr("oilpressure_cmp"),
-		PPC32.ppc_cmpli(3, 0x200), # Threshold at 2.5 V
-		PPC32.ppc_cmpli(3, 0x0B8)  # Threshold at 1.0 bar.
-	)
-
 	# Hook: Main Loop
 	p.check_and_replace(
 		s.get_sym_addr("hook_loop_loc"),
