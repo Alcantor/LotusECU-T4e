@@ -2,8 +2,6 @@
 
 An attempt to add oil pressure and oil temperature for the OBD interface.
 
-*** Only tested on bench. ***
-
 ## Hardware
 
  1. Add an oil pressure sensor on the PIN LE4.
@@ -15,7 +13,6 @@ An attempt to add oil pressure and oil temperature for the OBD interface.
 sensor.
 
 ***Note***: The oil temperature input is calibrated for a NTC 53k (at 25°C) and Beta 3940.
-The temperature encoding is the same as the water temp and thus limited to 120 °C.
 
 ## Queries
 

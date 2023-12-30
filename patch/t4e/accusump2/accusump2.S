@@ -76,8 +76,7 @@ accusump_normal:
 	slwi	%r3, %r3, 5 # Multiply by 32
 
 	lis	%r4, oil_pressure@ha
-	lhz	%r4, oil_pressure@l(%r4)
-	extsh	%r4, %r4
+	lha	%r4, oil_pressure@l(%r4)
 
 	cmpw	%r4, %r3
 	bge	accusump_close_reset_timer

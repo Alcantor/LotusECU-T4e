@@ -1,10 +1,10 @@
 .section .data
 
 CAL_sensor_oil_temp_scaling:
-.byte	255, 255, 255, 255, 255, 255, 255, 255
-.byte	255, 255, 255, 255, 255, 254, 246, 238
-.byte	231, 224, 217, 210, 203, 196, 188, 181
-.byte	173, 165, 156, 147, 136, 123, 106,  81, 0
+.byte	255, 255, 255, 249, 231, 217, 206, 197
+.byte	189, 182, 175, 169, 164, 159, 154, 149
+.byte	144, 140, 135, 131, 127, 122, 118, 113
+.byte	108, 103,  98,  92,  85,  77,  67,  51, 3
 CAL_sensor_oil_pressure_gain:
 .short	12500
 CAL_sensor_oil_pressure_offset:
@@ -12,8 +12,8 @@ CAL_sensor_oil_pressure_offset:
 
 .section .bss
 
-.lcomm	oil_temp,	1 # From -40 to 120°C
-.lcomm	oil_pressure,	2 # From 0 to 65535 Millibar
+.lcomm	oil_temp,	1 # u8_temp_1-40c
+.lcomm	oil_pressure,	2 # i16_pressure_mbar
 
 .section .text
 .globl _start, hook_loop, hook_OBD_mode_0x01
@@ -81,8 +81,7 @@ OBD_mode_0x01_pid_0x23:
 	stb	%r3, 0(%r5)
 
 	lis	%r3, oil_pressure@ha
-	lhz	%r3, oil_pressure@l(%r3)
-	extsh	%r3, %r3
+	lha	%r3, oil_pressure@l(%r3)
 
 	# Convert and do not allow negative values!
 	li	%r0, 100
@@ -102,12 +101,6 @@ OBD_mode_0x01_pid_0x5C:
 
 	lis	%r3, oil_temp@ha
 	lbz	%r3, oil_temp@l(%r3)
-
-	# Convert from x*5/8-40 to x-40
-	# Maximal oil temp will be 120°C!
-	mulli	%r3, %r3, 160
-	srawi	%r3, %r3, 8
-	addze	%r3, %r3
 
 	stb	%r3, 1(%r5)
 
