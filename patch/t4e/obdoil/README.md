@@ -1,6 +1,6 @@
 ## Introduction
 
-An attempt to add oil pressure and oil temperature for the OBD interface.
+This patch allows adding oil pressure and oil temperature for the OBD interface.
 
 ## Hardware
 

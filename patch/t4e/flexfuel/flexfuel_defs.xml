@@ -27,6 +27,20 @@
 			</table>
 			<description>Sensivity of the fuel ethanol content sensor.</description>
 		</table>
+		<table type="2D" name="ethanol: sensor engine speed limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBE">
+			<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>engine speed limit</data>
+			</table>
+			<description>When the engine is above this speed limit, stop reading the flexfuel sensor.</description>
+		</table>
+		<table type="2D" name="ethanol: sensor engine load limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBF">
+			<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>engine load limit</data>
+			</table>
+			<description>When the engine is above this load limit, stop reading the flexfuel sensor.</description>
+		</table>
 		<table type="2D" name="ethanol: ign advance adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3CC0">
 			<scaling category="Degree" units="&#176;" expression="(x/4)-32" to_byte="(x+32)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
 			<table type="X Axis" name="engine air" storagetype="uint8" endian="big" sizex="16" storageaddress="0x075C">

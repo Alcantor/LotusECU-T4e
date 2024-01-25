@@ -55,6 +55,7 @@ engine_speed_2 = 0x3fd7f8;
 injtip_tip_in = 0x3fd81c;
 injtip_tip_out = 0x3fd820;
 load_1 = 0x3fd8e4;
+load_2 = 0x3fd90b;
 obd_req = 0x3fdb90;
 obd_resp = 0x3fdb10;
 temp_coolant = 0x3fd666;

@@ -19,12 +19,14 @@ class LiveTuningAccess:
 		("T4e: S0-S7 (Full ROM)" , 0x00000000, 0x080000, "dump.bin"),
 		# K4 (29F200) has 256KB flash, 128KB RAM
 		("K4: S0-S3 (Bootloader)", 0x00000000, 0x010000, "bootldr.bin"),
+		("K4: S2 (Learned)"      , 0x00006000, 0x002000, "decram.bin"),
 		("K4: S4-S5 (Program)"   , 0x00010000, 0x020000, "prog.bin"),
 		("K4: S6 (Calibration)"  , 0x00030000, 0x010000, "calrom.bin"),
 		("K4: RAM (Main RAM)"    , 0x00080000, 0x020000, "calram.bin"),
 		("K4: S0-S6 (Full ROM)"  , 0x00000000, 0x040000, "dump.bin"),
 		# T4 (29F400) has 512KB flash, 128KB RAM
 		("T4: S0-S3 (Bootloader)", 0x00000000, 0x010000, "bootldr.bin"),
+		("T4: S2 (Learned)"      , 0x00006000, 0x002000, "decram.bin"),
 		("T4: S4-S9 (Program)"   , 0x00010000, 0x060000, "prog.bin"),
 		("T4: S10 (Calibration)" , 0x00070000, 0x010000, "calrom.bin"),
 		("T4: RAM (Main RAM)"    , 0x00080000, 0x020000, "calram.bin"),

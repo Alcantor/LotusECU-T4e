@@ -5,11 +5,13 @@
 CAL_extra:
 .ascii	"XTRACAL1"
 CAL_ethanol_sensor_temp_reactivity:
-.byte 0x04
+.byte 0x02
 CAL_ethanol_sensor_content_reactivity:
-.byte 0x08
-CAL_padding:
-.byte 0xFF, 0xFF
+.byte 0x04
+CAL_ethanol_sensor_engine_speed_limit:
+.byte 0x70 # 4000rpm
+CAL_ethanol_sensor_engine_load_limit:
+.byte 0x96 # 600mg/stroke
 CAL_ethanol_ign_advance_adj1:
 .space 16
 CAL_ethanol_ign_advance_high_cam_base:
@@ -259,6 +261,24 @@ flexfuel:
 	rlwinm	%r5, %r3, 0,17,31 # Reset Flag
 	#lis	%r4, 0x306C40@ha
 	sth	%r5, 0x306C40@l(%r4)
+
+	# Engine speed threshold
+	lis	%r5, CAL_base_extra@ha
+	addi	%r5, %r5, CAL_base_extra@l
+	lbz	%r3, (CAL_ethanol_sensor_engine_speed_limit-CAL_extra)(%r5)
+	lis	%r4, engine_speed_3@ha
+	lbz	%r4, engine_speed_3@l(%r4)
+	cmplw	%r4, %r3
+	bge	flex_end
+
+	# Engine load threshold
+	#lis	%r5, CAL_base_extra@ha
+	#addi	%r5, %r5, CAL_base_extra@l
+	lbz	%r3, (CAL_ethanol_sensor_engine_load_limit-CAL_extra)(%r5)
+	lis	%r4, load_2@ha
+	lbz	%r4, load_2@l(%r4)
+	cmplw	%r4, %r3
+	bge	flex_end
 
 	# Read MDA31 (Ethanol temperature or content)
 	lis	%r3, 0x3060F8@ha

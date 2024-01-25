@@ -1,6 +1,8 @@
 ## Introduction
 
-An attempt to add a flexfuel sensor.
+This patch allows the addition of flex-fuel capability to the ECU.
+
+Various tables have been added for different injection and ignition values.
 
 ## Hardware
 
