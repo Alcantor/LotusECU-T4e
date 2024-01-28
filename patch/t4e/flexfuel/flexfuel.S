@@ -262,7 +262,7 @@ flexfuel:
 	#lis	%r4, 0x306C40@ha
 	sth	%r5, 0x306C40@l(%r4)
 
-	# Engine speed threshold
+	# Engine speed limit
 	lis	%r5, CAL_base_extra@ha
 	addi	%r5, %r5, CAL_base_extra@l
 	lbz	%r3, (CAL_ethanol_sensor_engine_speed_limit-CAL_extra)(%r5)
@@ -271,7 +271,7 @@ flexfuel:
 	cmplw	%r4, %r3
 	bge	flex_end
 
-	# Engine load threshold
+	# Engine load limit
 	#lis	%r5, CAL_base_extra@ha
 	#addi	%r5, %r5, CAL_base_extra@l
 	lbz	%r3, (CAL_ethanol_sensor_engine_load_limit-CAL_extra)(%r5)
