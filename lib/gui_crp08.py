@@ -9,11 +9,12 @@ from lib.crp08_uploader import CRP08_uploader
 crp08_file = [("Lotus CRP 08 file", "*.CRP *.crp")]
 
 class CRP08_editor_win(tk.Toplevel):
-	def __init__(self, parent=None):
+	def __init__(self, prefs, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP08 Editor')
 		self.resizable(0, 0)
 		self.grab_set()
+		self.prefs = prefs
 
 		# Menu
 		menubar = tk.Menu(self)
@@ -82,11 +83,12 @@ class CRP08_editor_win(tk.Toplevel):
 	def open(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['crp08'],
 			title = please_select_file,
 			filetypes = crp08_file
 		)
 		if(answer):
+			self.prefs['PATH']['crp08'] = os.path.dirname(answer)
 			self.crp.read_file(answer, self.variant.get())
 			self.updateList()
 
@@ -94,11 +96,12 @@ class CRP08_editor_win(tk.Toplevel):
 	def save(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['crp08'],
 			title = please_select_file,
 			filetypes = crp08_file
 		)
 		if(answer):
+			self.prefs['PATH']['crp08'] = os.path.dirname(answer)
 			self.crp.write_file(answer)
 
 	@try_msgbox_decorator
@@ -112,24 +115,26 @@ class CRP08_editor_win(tk.Toplevel):
 		i = self.lb.curselection()[0]
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = self.crp.chunks[0].toc_values[0][i],
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			self.crp.chunks[i+1].data.export_bin(answer)
 
 	@try_msgbox_decorator
 	def import_cal(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "calrom.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			self.crp.add_cal(answer, self.variant.get())
 			self.updateList()
 
@@ -137,25 +142,27 @@ class CRP08_editor_win(tk.Toplevel):
 	def import_prog(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "prog.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			self.crp.add_prog(answer, self.variant.get())
 			self.updateList()
 
 class CRP08_uploader_win(tk.Toplevel):
-	def __init__(self, config, parent=None):
+	def __init__(self, prefs, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP08 Uploader')
 		self.resizable(0, 0)
 		self.grab_set()
 		self.protocol("WM_DELETE_WINDOW", self.on_closing)
 		self.run_task = False
+		self.prefs = prefs
 
-		self.can_device = SelectCAN_widget(config, self, False)
+		self.can_device = SelectCAN_widget(prefs, self, False)
 		self.can_device.pack(fill=tk.X)
 
 		up_frame = tk.LabelFrame(self, text="CRP08 Flashing")
@@ -188,11 +195,12 @@ class CRP08_uploader_win(tk.Toplevel):
 	def load_crp(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['crp08'],
 			title = please_select_file,
 			filetypes = crp08_file
 		)
 		if(answer):
+			self.prefs['PATH']['crp08'] = os.path.dirname(answer)
 			self.p.log("Load "+answer)
 			self.crp.read_file(answer, None)
 			for name in self.crp.chunks[0].toc_values[0]:

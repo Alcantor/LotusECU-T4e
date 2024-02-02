@@ -6,15 +6,16 @@ from lib.gui_common import *
 from lib.gui_fileprogress import FileProgress_widget
 
 class Flasher_win(tk.Toplevel):
-	def __init__(self, config, parent=None):
+	def __init__(self, prefs, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('Flasher')
 		self.resizable(0, 0)
 		self.grab_set()
 		self.protocol("WM_DELETE_WINDOW", self.on_closing)
 		self.run_task = False
+		self.prefs = prefs
 
-		self.can_device = SelectCAN_widget(config, self)
+		self.can_device = SelectCAN_widget(prefs, self)
 		self.can_device.pack(fill=tk.X)
 
 		fl_frame = tk.LabelFrame(self, text="CAN Flasher (Not Safe)")
@@ -114,12 +115,14 @@ class Flasher_win(tk.Toplevel):
 		block = Flasher.blocks[self.combo_blocks.current()]
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = block[4],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
-		if(answer): fl.download(block[2], block[3], answer)
+		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
+			fl.download(block[2], block[3], answer)
 
 	@lock_buttons_decorator
 	@try_msgbox_decorator
@@ -148,12 +151,14 @@ class Flasher_win(tk.Toplevel):
 		if(answer != 'yes'): return
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = block[4],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
-		if(answer): fl.program(block[1], block[2], answer)
+		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
+			fl.program(block[1], block[2], answer)
 
 	@lock_buttons_decorator
 	@try_msgbox_decorator
@@ -162,12 +167,13 @@ class Flasher_win(tk.Toplevel):
 		block = Flasher.blocks[self.combo_blocks.current()]
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = block[4],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			#fl.verify(block[2], answer)
 			crc = fl.prepare_crc()
 			crc.do_file(answer)

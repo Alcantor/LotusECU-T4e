@@ -10,11 +10,12 @@ crp01_file = [("Lotus CRP 01 file", "*.CRP *.crp")]
 srec_file = [("Motorola S-Record file", "*.SREC *.srec")]
 
 class CRP01_editor_win(tk.Toplevel):
-	def __init__(self, parent=None):
+	def __init__(self, prefs, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP01 Editor')
 		self.resizable(0, 0)
 		self.grab_set()
+		self.prefs = prefs
 
 		# Menu
 		menubar = tk.Menu(self)
@@ -74,11 +75,12 @@ class CRP01_editor_win(tk.Toplevel):
 	def open(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['crp01'],
 			title = please_select_file,
 			filetypes = crp01_file
 		)
 		if(answer):
+			self.prefs['PATH']['crp01'] = os.path.dirname(answer)
 			self.crp = CRP01(self.variant.get())
 			self.crp.read_file(answer)
 			self.updateText()
@@ -87,11 +89,12 @@ class CRP01_editor_win(tk.Toplevel):
 	def save(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['crp01'],
 			title = please_select_file,
 			filetypes = crp01_file
 		)
 		if(answer):
+			self.prefs['PATH']['crp01'] = os.path.dirname(answer)
 			self.crp.write_file(answer)
 
 	@try_msgbox_decorator
@@ -116,24 +119,26 @@ class CRP01_editor_win(tk.Toplevel):
 	def export_srec(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['srec'],
 			initialfile = self.crp.desc+".SREC",
 			title = please_select_file,
 			filetypes = srec_file
 		)
 		if(answer):
+			self.prefs['PATH']['srec'] = os.path.dirname(answer)
 			self.crp.data.subpackets.export_srec(answer, self.crp.desc)
 
 	@try_msgbox_decorator
 	def import_srec(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['srec'],
 			initialfile = "T4.SREC",
 			title = please_select_file,
 			filetypes = srec_file
 		)
 		if(answer):
+			self.prefs['PATH']['srec'] = os.path.dirname(answer)
 			self.crp.desc = self.crp.data.subpackets.import_srec(answer)[:11]
 			self.crp.data.update_header()
 			self.updateText()
@@ -142,12 +147,13 @@ class CRP01_editor_win(tk.Toplevel):
 	def export_cal(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "calrom.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.export_bin(answer, v[3], v[4])
 
@@ -155,12 +161,13 @@ class CRP01_editor_win(tk.Toplevel):
 	def import_cal(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "calrom.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.import_bin(answer, v[3])
 			self.crp.data.update_header()
@@ -170,12 +177,13 @@ class CRP01_editor_win(tk.Toplevel):
 	def export_prog(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "prog.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.export_bin(answer, v[5], v[6])
 
@@ -183,27 +191,29 @@ class CRP01_editor_win(tk.Toplevel):
 	def import_prog(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "prog.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			v = CRP01.variants[self.variant.get()]
 			self.crp.data.subpackets.import_bin(answer, v[5])
 			self.crp.data.update_header()
 			self.updateText()
 
 class CRP01_uploader_win(tk.Toplevel):
-	def __init__(self, config, parent=None):
+	def __init__(self, prefs, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('CRP01 Uploader')
 		self.resizable(0, 0)
 		self.grab_set()
 		self.protocol("WM_DELETE_WINDOW", self.on_closing)
 		self.run_task = False
+		self.prefs = prefs
 
-		self.com_device = SelectCOM_widget(config, self)
+		self.com_device = SelectCOM_widget(prefs, self)
 		self.com_device.pack(fill=tk.X)
 
 		up_frame = tk.LabelFrame(self, text="CRP01 Flashing")
@@ -235,11 +245,12 @@ class CRP01_uploader_win(tk.Toplevel):
 	def load_crp(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['crp01'],
 			title = please_select_file,
 			filetypes = crp01_file
 		)
 		if(answer):
+			initialdir = self.prefs['PATH']['crp01'],
 			self.p.log("Load "+answer)
 			self.crp.read_file(answer)
 			self.p.log(" -> "+self.crp.desc)

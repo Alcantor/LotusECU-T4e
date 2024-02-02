@@ -75,6 +75,7 @@ class LiveTuningAccess_win(tk.Toplevel):
 		self.grab_set()
 		self.protocol("WM_DELETE_WINDOW", self.on_closing)
 		self.run_task = False
+		self.config = config
 
 		self.can_device = SelectCAN_widget(config, self)
 		self.can_device.pack(fill=tk.X)
@@ -138,12 +139,14 @@ class LiveTuningAccess_win(tk.Toplevel):
 		zone = LiveTuningAccess.zones[self.combo_zones.current()]
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.config['PATH']['bin'],
 			initialfile = zone[3],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
-		if(answer): lta.download(zone[1], zone[2], answer)
+		if(answer):
+			self.config['PATH']['bin'] = os.path.dirname(answer)
+			lta.download(zone[1], zone[2], answer)
 
 	@lock_buttons_decorator
 	@try_msgbox_decorator
@@ -152,12 +155,14 @@ class LiveTuningAccess_win(tk.Toplevel):
 		zone = LiveTuningAccess.zones[self.combo_zones.current()]
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.config['PATH']['bin'],
 			initialfile = zone[3],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
-		if(answer): lta.verify(zone[1], answer)
+		if(answer):
+			self.config['PATH']['bin'] = os.path.dirname(answer)
+			lta.verify(zone[1], answer)
 
 	@lock_buttons_decorator
 	@try_msgbox_decorator
@@ -210,12 +215,13 @@ Because the changes are in the RAM, everything will be lost after the ECU has sh
 		if(cal.base == None): return
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.config['PATH']['bin'],
 			initialfile = LiveTuningAccess.zones[1][3],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
 		if(answer):
+			self.config['PATH']['bin'] = os.path.dirname(answer)
 			self.run_task = True
 			lta.watch(cal.base, answer, cal.size, cal.copy, cal.verify, self.waitmore)
 

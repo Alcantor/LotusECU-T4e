@@ -5,11 +5,12 @@ from lib.calibration import Calibration
 from lib.gui_common import *
 
 class CAL_editor_win(tk.Toplevel):
-	def __init__(self, parent=None):
+	def __init__(self, prefs, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title("Calibration CRC")
 		self.resizable(0, 0)
 		self.grab_set()
+		self.prefs = prefs
 
 		# Menu
 		menubar = tk.Menu(self)
@@ -75,12 +76,13 @@ class CAL_editor_win(tk.Toplevel):
 	def open(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "calrom.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			self.cal.read_file(answer)
 			try:
 				i = self.cal.detect()
@@ -95,12 +97,13 @@ class CAL_editor_win(tk.Toplevel):
 	def save(self):
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "calrom.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			self.cal.write_file(answer)
 
 	@try_msgbox_decorator
@@ -112,12 +115,13 @@ class CAL_editor_win(tk.Toplevel):
 	def search(self):
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = os.getcwd(),
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = "prog.bin",
 			title = please_select_file,
 			filetypes = bin_file
 		)
 		if(answer):
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			offset = self.cal.search_crc_cmpli(answer)
 			if(offset == None): msg = "CRC cmplwi not found!"
 			else: msg = "CRC cmplwi offset: "+hex(offset)
