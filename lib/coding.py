@@ -3,6 +3,8 @@ from lib.crc import CRC16Reflect
 
 # Mode 0x22 PID 0x0263 return 0x1C004 in little endian
 # Mode 0x22 PID 0x0264 return 0x1C000 in little endian
+#
+# Send CAN 0x502 with 8 bytes variant in big endian
 
 # Some constants
 BO_BE = 'big'
@@ -11,9 +13,9 @@ FALSE_TRUE = ["False", "True"]
 
 # Coding (coding.bin) Format:
 #
-#    16 Bytes   - Variant
-#     5 Bytes   - 5x 0xFF
-#    11 Bytes   - VIN
+#     8 Bytes   - Variant
+#    17 Bytes   - VIN
+#     7 Bytes   - 7x 0xFF
 #    32 Bytes   - Model
 #     2 Bytes   - 16 Bits CRC
 #
@@ -69,8 +71,8 @@ class Coding():
 
 	def read_file(self, file):
 		with open(file, 'rb') as f:
-			#f.seek(0x1C000)
-			self.data = memoryview(bytearray(f.read()))
+			f.seek(0x1C000)
+			self.data = memoryview(bytearray(f.read(0x42)))
 
 	def get_variant(self):
 		return int.from_bytes(self.data[0:8], BO_BE)

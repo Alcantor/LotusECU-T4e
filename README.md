@@ -6,127 +6,190 @@
 
 ## Introduction
 
-This is my attempt to tune my Lotus Exige S2 (T4e ECU White Dash).
+These tools have evolved significantly. Initially, they were merely scripts for
+dumping the memory content of my car (Lotus Exige S2). Now, they have the
+capability to flash nearly all recents Lotus ECUs.
 
-I've started with the work of [Obeisance] and [Cybernet].
+The work of [Obeisance] and [Cybernet] has greatly assisted me in understanding
+how the ECU functions. It saddens me that their work has not found widespread
+application, perhaps due to its complexity for those less inclined towards
+computing. I strive to make my approach more user-friendly without sacrificing
+too much time.
 
 [Obeisance]: https://www.lotustalk.com/threads/daft-disassembly.352193/
 [Cybernet]: https://www.lotustalk.com/threads/t4e-ecu-editor-preview.372258/
 
-I didn't have a Arduino with a CAN-Shield but I have an USB-to-CAN Adapter.
-So I made my own Python-Script (Linux and Windows) to make the dump. It should
-also work with a RaspberryPi and a CAN Hat (SocketCAN Driver).
+### Adapters
 
-After that I've realized that the Calibration ROM located at 0x10000 looks like
-identical to the T4 ECU at address 0x70000.
+Initially, I had a USB-to-CAN Adapter but lacked a J2534 adapter. If I were to
+start over, I might consider the J2534 adapter, but for now, I will stick with
+my cables.
 
-But how to upload the modification back? Hum, after somes hours of disassembling,
-I've figured out how to write to the RAM but not to the Flash.
+For those wishing to flash a car with a J2534 adapter,
+the [EFI Pseudo Programmer] could prove useful.
 
-Well If I can write to the RAM, I'am allowed to upload my own program. That's
-what I've done. So I've write a small CAN-Bus Flasher to write to the Flash
-through the OBD Port.
+[EFI Pseudo Programmer]: https://efitechnology.eu/efi/?page_id=822
 
-My final goal was to control my accusump with the T4e ECU, that was not possible
-without patching the main program. See folder [accusump].
+### The flasher
 
-To be able to patch the main program more safely I've included the flasher into
-the bootloader. See folder [stage15].
+My car came unlocked from the factory, so I quickly learned how to write to the
+RAM long before I could flash my ECU using the Factory Method described below.
 
-After that I went a little further by looking at the ECU Black Dash and the T4.
-I finally found how to normally flash the ECU, with the needed encryption.
+So at the beginning, I misused the live tuning access to inject another program.
+This program, known as the flasher, enabled me to flash the entire flash with
+plain binary data through the OBD Port and CAN-Bus.
 
-The T4e [XML] definition came recently to cover more features (injector size,
-traction control, drive-by-wire, ...).
+Now this flasher is a bit outdated and flashing a car with a CRP file is probably
+the way to go, but it's still have some advantages over the factory method:
 
-In my big plan, I want to replace my white cluster by a black one. I've buyed
-one in miles and I needed to display kilometers. See folder [cluster-black].
+ - Works faster with CAN-Bus on older K-Line cars.
+ - Capable of flashing the bootloader to convert T4e ECUs.
+ - Useful to read older locked cars.
+ - Access to the EEPROM.
 
-[XML]: romraider-defs/
-[accusump]: patch/t4e/accusump/
-[stage15]: patch/t4e/stage15/
+### Conversion to black dash
+
+Since 2008, the CAN-Bus has been used for the OBD interface, providing better
+and faster data logging.
+
+Therefore, I decided to convert my car by replacing the white cluster with
+a black one. I purchased one in miles and needed to display kilometers.
+Refer to the folder [cluster-black].
+
 [cluster-black]: documentation/Hardware/Cluster-Black/
+
+### Patching
+
+I've implemented various patches to fulfill my needs.
+
+The flasher has been integrated into the bootloader for added convenience.
+Refer to the folder [stage15].
+
+My accusump is now controlled by the T4e ECU. Refer to the folder [accusump].
+
+Oil temperature, pressure, and wideband lambda readings are available on the OBD
+interface. Refer to the folders [obdoil] and [wideband].
+
+Last but not least, the flexfuel patch. This enhances the car's performance
+by enabling the use of ethanol, providing real horse power!
+Refer to the folder [flexfuel].
+
+[stage15]: patch/t4e/stage15/
+[accusump]: patch/t4e/accusump/
+[obdoil]: patch/t4e/obdoil/
+[wideband]: patch/t4e/wideband/
+[flexfuel]: patch/t4e/flexfuel/
+
+These patches are intended as code snippets.
+For ready-to-use solutions, please contact me.
+
+### Definitions
+
+For those looking to tune their car with a maps editor, a definition file is
+necessary.
+
+I've spent hundreds of hours creating definition files.
+The file for the 2008 T4e ECU is available in the folder [romraider-defs].
+
+For other cars, please reach out to me.
+
+[romraider-defs]: romraider-defs/
+
+### Documentation
+
+I've compiled a vast amount of documentation, containing everything necessary to
+accomplish this task. Processor manuals may not be of interest, unless you
+plan to undertake some reverse engineering work. However, the [T4e pinouts], 
+the [T6 pinouts] and [Lotus OBD] codes could prove to be quite useful.
+
+[T4e pinouts]: documentation/Hardware/T4e/Board/pinout.ods
+[T6 pinouts]: documentation/Hardware/T6/Board/pinout.ods
+[Lotus OBD]: documentation/OBD/Lotus%20OBD%20Codes/
 
 ## Licensing
 
-Under [CC-NC-SA]. You may not use this material for commercial purposes without my approval.
+Under [CC-NC-SA].
+You may not use this material for commercial purposes without my approval.
 
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
-Commercial rights lisenced to [Phil's Targed Tuning], [FRS performance engineering]
-and [VF Tuner].
+Commercial rights lisenced to [Phil's Targed Tuning],
+[FRS performance engineering] and [VF Tuner].
 
 [Phil's Targed Tuning]: https://targedtuning.ch
 [FRS performance engineering]: https://www.fujiirs.com
 [VF Tuner]: https://vftuner.com/
 
-## Factory Method 
-
-### Pre 2008
-
-The T4 and the T4e ECU on the Lotus with white dashboard (Instrument Cluster)
-has a bootloader split into 2 parts: Stage 1 and 2.
-
-The stage 1 can update the stage 2 and is enabled only if the CRC of the stage 2
-is wrong.
-
-The stage 2 accepts an encrypted .CRP file and can update itself, the
-calibration or the software. Only writing with K-Line, no reading...
-
-Destination addresses are NOT verified, so it's possible to write a program to
-the RAM and take the control by poisoning the stack. So reading is indirectly
-possible.
-
-### Post 2008
-
-The T4e/T6 of the black dashboard cars has another bootloader which does the
-reprogramming with CAN-Bus (500 kbit/s).
-
-This bootloader accepts an encrypted .CRP file and can update the calibration,
-the software or the EEPROM. Only writing with CAN-Bus, no reading...
-
-Destination addresses are verified. So there is no possibilities to write the
-RAM. (T6: Destination addresses are replaced by a number).
+## Factory Method
 
 ### CRP Files
 
-ECU Updates from Lotus are .CRP files. Somes are available on the [VSIC].
-Most of them are included in the Lotus TechCentre or Lotus Scan 3.
+ECU Updates from Lotus are .CRP files, with some available on the [VSIC]. Most
+of them are shipped with the Lotus TechCentre or Lotus Scan 3.
 
-The structure of the .CRP files has completely change in 2008.
+It's important to note that the structure of the .CRP files underwent a complete
+change in 2008.
 
 [VSIC]: https://vsic.lotuscars.com/
 
-## Live tuning access [2005-2008]
+### Pre 2008
 
-For most of the white dashboard, there is an access provided by the main program
-trough CAN-BUS (1 Mbit/s). It's intended for "live tuning" and not for
-reprogramming the ECU, but with somes hacks it could be use for this purpose.
+The T4 and the T4e ECUs on Lotus vehicles equipped with white dashboards
+(Instrument Cluster) have a bootloader split into 2 parts: Stage 1 and Stage 2.
 
-This access has been definitively locked on the black dashboard. But it's
-possible to re-enable it, with a BDM access or a modified .CRP file.
+Stage 1 can update Stage 2 and is enabled only if the CRC of Stage 2 is incorrect.
+
+Stage 2 accepts an encrypted .CRP file and can update itself, the calibration,
+or the software. It only allows writing via K-Line, with no reading capability.
+
+Destination addresses are not verified, making it possible to write a program to
+the RAM and take control by poisoning the stack. Therefore, reading is
+indirectly possible.
+
+### Post 2008
+
+The T4e/T6 ECUs found in black dashboard cars feature a different bootloader
+compared to those with white dashboards.
+
+This bootloader employs CAN-Bus (500 kbit/s) for reprogramming, accepts an
+encrypted .CRP file and can update the calibration, software, or EEPROM.
+It only allows writing via CAN-Bus, with no reading capability.
+
+Destination addresses are verified, eliminating the possibility of writing to
+the RAM. In the case of T6, destination addresses are replaced by a number.
+
+## Locked or Unlocked ECU ?
+
+I'm using this term to describe whether the ECU has enabled live tuning access.
+
+If the ECU is unlocked, it allows reading and writing of any values in the main
+CPU memory space through this live tuning access feature.
+
+Since the maps are copied into the RAM at startup, it becomes possible to edit
+the maps while the engine is running.
+
+Most of the white dashboard cars are unlocked, but this access has been
+definitively locked on the black dashboard version.
+
+It's possible to re-enable it with a JTAG/BDM access or a modified .CRP file.
 
 ## Prerequisite
 
-The [Python 3] interpreter with the [python-can] module and a compatible [CAN-BUS adapter].
+The [Python 3] interpreter with the [pyserial] module, the [python-can] module
+and a compatible [CAN-BUS adapter].
 
-The [Macchina P1] should be able to do everything. Have you tried it?
-If yes, tell me if it works.
-
-For the T4 and locked T4e white dashboard, a K-Line adapter is also needed.
+For the K4, T4 and locked T4e white dashboard, a K-Line adapter is also needed.
 To enter the bootlooder with the VAG-COM adapter, the L-line must be grounded.
 
 The [Korlan USB2CAN] is a very good cable and I recommend it. It's just a little
 bit more complicated to install it (it requires additional module and a DLL).
 
-The [CANable] (with slcan firmware) is very simple to use, but it has a bottleneck
-with the serial interface, and does not work well with the "ltacc.py" script.
-In contrario the "flasher.py" works flawless (but slowly) with this adapter
-because it doesn't make bulk read/write. So if you still want to use this adapter,
-use the download function of the "flasher.py" and not from the "ltacc.py".
+The [CANable] (with slcan firmware) is straightforward to use, but I've
+encountered some packet loss issues. This is likely due to a firmware bug that
+occurs when a large amount of data is being transferred.
 
-The [CANable] (with CandleLight firmware) is great but unsupported under Windows yet.
-This could change in a near future (see develop of python-can).
+The [CANable] (with CandleLight firmware) is better, but it necessitates the use
+of another version of python-can (gs_usb).
 
 The [IXXAT] USB-to-CAN Adapter is easy to use and reliable but expensive.
 
@@ -138,9 +201,9 @@ Old version of the ECU firmware loads the CAN-Bus at 100% with data for the clus
 so HW-Filtering would be a big improvement!
 
 [Python 3]: https://www.python.org/download/releases/3.0/
-[python-can]: https://python-can.readthedocs.io/en/master/installation.html
-[CAN-BUS adapter]: https://python-can.readthedocs.io/en/master/interfaces.html
-[Macchina P1]: https://www.macchina.cc/catalog/p1-boards/p1-under-dash
+[pyserial]: https://pyserial.readthedocs.io/en/latest/pyserial.html
+[python-can]: https://python-can.readthedocs.io/en/stable/
+[CAN-BUS adapter]: https://python-can.readthedocs.io/en/stable/interfaces.html
 [Korlan USB2CAN]: https://www.8devices.com/products/usb2can_korlan
 [CANable]: https://canable.io/
 [IXXAT]: https://www.ixxat.com/products/products-industrial/can-interfaces/usb-can-interfaces/usb-to-can-v2-professional
@@ -149,10 +212,6 @@ so HW-Filtering would be a big improvement!
 The cable, I use:
 
 ![Cable 3 way 2](documentation/Hardware/Cable-3way-2.jpg)
-
-Another version:
-
-![Cable 3 way](documentation/Hardware/Cable-3way.jpg)
 
 ***Note***: You do not need a such complicated cable if you have an unlocked ECU
 or a 2008+ car. You would only need the CAN-Bus part.
@@ -171,27 +230,19 @@ You have to open the "calrom.bin" file of your dump.
 
 ![Tune Demo](documentation/Usage/RomRaider.png)
 
-## Live tuning.
-
-It's possible to make modifications on running engine for test, because the
-maps are copied into the RAM.
-
-The poor man's live-tuning provide a limited way of doing it with RomRaider and
-an unlocked ECU.
-
 ## Safe Usage
 
-You really need to understand that the memory of the ECU is splitted into 3
-parts: The bootloader, the calibration and the program.
+It's crucial to understand that the memory of the ECU is divided into
+three parts: The bootloader, the calibration, and the program.
 
-If the bootloader is erased, you will have no other choice than open the ECU to
-flash it again.
+If the bootloader is erased, you will have no other choice but to open the ECU
+to flash it again.
 
-The "live tuning" access is provided by the main program. So if use this access
-to flash the ECU, think twice before erasing the program.
+The live tuning access is facilitated by the main program. Therefore, if you use
+this access to flash the ECU, think twice before erasing the program.
 
-The ECU seems fine to boot without a valid calibration, so erasing this part is
-quite safe. Of course the car won't run in this case.
+The ECU appears to boot fine without a valid calibration, so erasing this part
+is relatively safe. However, the car won't run in this case.
 
 ## The infamous P0340 Camshaft Position Sensor BUG
 
@@ -199,11 +250,31 @@ I've encountered numerous times that a freshly programmed ECU throws this error.
 The engine starts, runs for 1 or 2 seconds and die, then an OBD scanner reports
 the P0340 error.
 
-In the T4e the car model is stored into the EEPROM at 0x7C0, and if you flash
-another tune, the ECU will see it and set a flag. I recommend to fill with zeros
-the EEPROM from 0x7C0 to 0x7E0 as an unprogrammed ECU would be.
+In the T4e, the car model is stored in the EEPROM at 0x7C0. If you flash another
+tune, the ECU will detect it and set a flag. To address this, I recommend filling
+the EEPROM from 0x7C0 to 0x7E0 with zeros, as an unprogrammed ECU would be.
 
-In the T6 the car model is stored into the coding area from 0x01C020 to 0x01C040.
+In the T6, the car model is stored in the coding area from 0x01C020 to 0x01C040
+
+## The Lotus ECU in other cars
+
+### The Caterham Seven
+
+The bootloader uses another encryption key and the unlock magic word differs.
+However, the rest is very similar.
+
+### The Yaris GRMN
+
+The bootloader uses another encryption key and communicates using the other
+CAN-Bus (PIN RH3 and RH4) at 500 kbit/s.
+
+The live tuning feature is configured on the same interface but at 1 Mbit/s.
+
+The unlock magic word still involves 4 bytes, but they are spread throughout the
+calibration and not contiguous at the end.
+
+The CRC algorithm is altered to produces non-standard values and is stored in
+the middle of the calibration.
 
 ## Need more help?
 
@@ -281,4 +352,8 @@ In the below example, the idling speed is adjusted with the engine running!
 All changes are temporary (only in RAM) and go lost when you turn off the ECU.
 
 ![Live Tuning Idle](documentation/Usage/videos/live-tuning-idle.webp)
+
+## Contact
+
+My email is my nickname at hotmail dot com.
 
