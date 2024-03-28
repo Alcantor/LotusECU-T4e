@@ -42,7 +42,7 @@ plain binary data through the OBD Port and CAN-Bus.
 Now this flasher is a bit outdated and flashing a car with a CRP file is probably
 the way to go, but it's still have some advantages over the factory method:
 
- - Work faster with CAN-Bus, even on older car.
+ - Works faster with CAN-Bus on older K-Line cars.
  - Capable of flashing the bootloader to convert T4e ECUs.
  - Useful to read older locked cars.
  - Access to the EEPROM.
