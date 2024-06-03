@@ -492,7 +492,7 @@ def build_flexfuel():
 	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 0x18, so much fill?
 	p.write_segments()
 
-	afr_ratio = 14.7/9
+	afr_ratio = (14.7/9) * (216/255)
 
 	# Copy Ignition adj
 	addr_src = s.get_sym_addr("CAL_ign_advance_adj1")-s.get_sym_addr("CAL_base")

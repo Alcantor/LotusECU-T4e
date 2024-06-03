@@ -3,7 +3,7 @@
 
 # Calibration size must be a multiple of 4
 CAL_extra:
-.ascii	"XTRACAL1"
+.ascii	"XTRACAL2"
 CAL_ethanol_sensor_temp_reactivity:
 .byte 0x02
 CAL_ethanol_sensor_content_reactivity:
@@ -28,6 +28,14 @@ CAL_ethanol_inj_time_adj_cranking:
 .space 16
 CAL_ethanol_ign_advance_low_cam_base:
 .space 1024
+CAL_ethanol_scale_1_low:
+.byte 0 # 0 %
+CAL_ethanol_scale_1_high:
+.byte 216 # 85 %
+CAL_ethanol_scale_2_low:
+.byte 12 # 5 %
+CAL_ethanol_scale_2_high:
+.byte 102 # 40 %
 CAL_extra_end:
 
 .section .bss
@@ -64,58 +72,74 @@ hook_timer_5ms:
 	ba	hook_timer_5ms_continue
 
 hook_ign_advance_high_cam_base:
-	lis	%r10, CAL_base_extra@ha
-	addi	%r10, %r10, CAL_base_extra@l
-	addi	%r10, %r10, (CAL_ethanol_ign_advance_high_cam_base-CAL_extra)
+	lis	%r12, CAL_base_extra@ha
+	addi	%r12, %r12, CAL_base_extra@l
+	addi	%r10, %r12, (CAL_ethanol_ign_advance_high_cam_base-CAL_extra)
+	lbz	%r11, (CAL_ethanol_scale_2_low-CAL_extra)(%r12)
+	lbz	%r12, (CAL_ethanol_scale_2_high-CAL_extra)(%r12)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_ign_advance_high_cam_base_continue
 
 hook_ign_advance_low_cam_base:
-	lis	%r10, CAL_base_extra@ha
-	addi	%r10, %r10, CAL_base_extra@l
-	addi	%r10, %r10, (CAL_ethanol_ign_advance_low_cam_base-CAL_extra)
+	lis	%r12, CAL_base_extra@ha
+	addi	%r12, %r12, CAL_base_extra@l
+	addi	%r10, %r12, (CAL_ethanol_ign_advance_low_cam_base-CAL_extra)
+	lbz	%r11, (CAL_ethanol_scale_2_low-CAL_extra)(%r12)
+	lbz	%r12, (CAL_ethanol_scale_2_high-CAL_extra)(%r12)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_ign_advance_low_cam_base_continue
 
 hook_ign_advance_adj1:
-	lis	%r7, CAL_base_extra@ha
-	addi	%r7, %r7, CAL_base_extra@l
-	addi	%r7, %r7, (CAL_ethanol_ign_advance_adj1-CAL_extra)
+	lis	%r9, CAL_base_extra@ha
+	addi	%r9, %r9, CAL_base_extra@l
+	addi	%r7, %r9, (CAL_ethanol_ign_advance_adj1-CAL_extra)
+	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
+	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
 	bl	lookup_2D_uint8_interpolated_withblend
 	ba	hook_ign_advance_adj1_continue
 
 hook_inj_time_adj_cranking:
-	lis	%r7, CAL_base_extra@ha
-	addi	%r7, %r7, CAL_base_extra@l
-	addi	%r7, %r7, (CAL_ethanol_inj_time_adj_cranking-CAL_extra)
+	lis	%r9, CAL_base_extra@ha
+	addi	%r9, %r9, CAL_base_extra@l
+	addi	%r7, %r9, (CAL_ethanol_inj_time_adj_cranking-CAL_extra)
+	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
+	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
 	bl	lookup_2D_uint8_interpolated_withblend
 	ba	hook_inj_time_adj_cranking_continue
 
 hook_inj_efficiency:
-	lis	%r10, CAL_base_extra@ha
-	addi	%r10, %r10, CAL_base_extra@l
-	addi	%r10, %r10, (CAL_ethanol_inj_efficiency-CAL_extra)
+	lis	%r12, CAL_base_extra@ha
+	addi	%r12, %r12, CAL_base_extra@l
+	addi	%r10, %r12, (CAL_ethanol_inj_efficiency-CAL_extra)
+	lbz	%r11, (CAL_ethanol_scale_1_low-CAL_extra)(%r12)
+	lbz	%r12, (CAL_ethanol_scale_1_high-CAL_extra)(%r12)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_inj_efficiency_continue
 
 hook_inj_time_adj3:
-	lis	%r10, CAL_base_extra@ha
-	addi	%r10, %r10, CAL_base_extra@l
-	addi	%r10, %r10, (CAL_ethanol_inj_time_adj3-CAL_extra)
+	lis	%r12, CAL_base_extra@ha
+	addi	%r12, %r12, CAL_base_extra@l
+	addi	%r10, %r12, (CAL_ethanol_inj_time_adj3-CAL_extra)
+	lbz	%r11, (CAL_ethanol_scale_1_low-CAL_extra)(%r12)
+	lbz	%r12, (CAL_ethanol_scale_1_high-CAL_extra)(%r12)
 	bl	lookup_3D_uint8_interpolated_withblend
 	ba	hook_inj_time_adj3_continue
 
 hook_injtip_in_adj1:
-	lis	%r7, CAL_base_extra@ha
-	addi	%r7, %r7, CAL_base_extra@l
-	addi	%r7, %r7, (CAL_ethanol_injtip_in_adj1-CAL_extra)
+	lis	%r9, CAL_base_extra@ha
+	addi	%r9, %r9, CAL_base_extra@l
+	addi	%r7, %r9, (CAL_ethanol_injtip_in_adj1-CAL_extra)
+	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
+	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
 	bl	lookup_2D_uint8_interpolated_withblend
 	ba	hook_injtip_in_adj1_continue
 
 hook_injtip_out_adj1:
-	lis	%r7, CAL_base_extra@ha
-	addi	%r7, %r7, CAL_base_extra@l
-	addi	%r7, %r7, (CAL_ethanol_injtip_out_adj1-CAL_extra)
+	lis	%r9, CAL_base_extra@ha
+	addi	%r9, %r9, CAL_base_extra@l
+	addi	%r7, %r9, (CAL_ethanol_injtip_out_adj1-CAL_extra)
+	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
+	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
 	bl	lookup_2D_uint8_interpolated_withblend
 	ba	hook_injtip_out_adj1_continue
 
@@ -417,19 +441,32 @@ timer_4:
 	blr
 
 # Params:
-#	r3 : value for 100% ethanol
-#	r4 : value for 100% gasoline
+#	r3 : value for ethanol
+#	r4 : value for gasoline
+#	r5 : ethanol scale low (E0 = 0, E5 = 12 or E10 = 25)
+#	r6 : ethanol scale high (E40 = 102, E85 = 216 or E100 = 255)
 #
-#	result = (%r3 * ethanol_content + %r4 * (255 - ethanol_content)) / 255
+#	scale_high -= scale_low
+#	ethanol_content -= scale_low
+#	result = (%r3 * ethanol_content + %r4 * (scale_high - ethanol_content)) / scale_high
 fuelblend:
-	li	%r5, 255
-	lis	%r6, ethanol_content@ha
-	lbz	%r6, ethanol_content@l(%r6)
-	sub	%r7, %r5, %r6
-	mullw	%r3, %r3, %r6
-	mullw	%r4, %r4, %r7
+	lis	%r7, ethanol_content@ha
+	lbz	%r7, ethanol_content@l(%r7)
+	cmplw	%r7, %r5
+	ble	only_gas
+	cmplw	%r7, %r6
+	bge	only_eth
+	sub	%r6, %r6, %r5
+	sub	%r7, %r7, %r5
+	sub	%r8, %r6, %r7
+	mullw	%r3, %r3, %r7
+	mullw	%r4, %r4, %r8
 	add	%r3, %r3, %r4
-	divw	%r3, %r3, %r5
+	divw	%r3, %r3, %r6
+only_eth:
+	blr
+only_gas:
+	mr	%r3, %r4
 	blr
 
 # Params:
@@ -439,37 +476,43 @@ fuelblend:
 #	r6 : x_axis
 #
 #	r7: lut ethanol
+#	r8: ethanol scale low
+#	r9: ethanol scale high
 lookup_2D_uint8_interpolated_withblend:
-	# Push link register on stack
-	stwu	%r1, -28(%r1)
+	# Push link register on stack (4 bytes alignment, normally 16)
+	stwu	%r1, -24(%r1)
 	mflr	%r0
-	stw	%r0, 32(%r1)
+	stw	%r0, 28(%r1)
 
 	# Save arguments on stack
-	stw	%r3 ,  8(%r1)
-	stw	%r4 , 12(%r1)
-	stw	%r7 , 16(%r1)
-	stw	%r6 , 20(%r1)
+	stb	%r3 ,  8(%r1)
+	stb	%r4 ,  9(%r1)
+	stw	%r7 , 10(%r1)
+	stw	%r6 , 14(%r1)
+	stb	%r8 , 19(%r1)
+	stb	%r9 , 20(%r1)
 
 	# 1st call and save result on stack
 	bla	lookup_2D_uint8_interpolated
-	stw	%r3,  24(%r1)
+	stb	%r3,  18(%r1)
 
 	# 2nd call with ethanol table
-	lwz	%r3,  8(%r1)
-	lwz	%r4, 12(%r1)
-	lwz	%r5, 16(%r1)
-	lwz	%r6, 20(%r1)
+	lbz	%r3,  8(%r1)
+	lbz	%r4,  9(%r1)
+	lwz	%r5, 10(%r1)
+	lwz	%r6, 14(%r1)
 	bla	lookup_2D_uint8_interpolated
 
 	# Both result are in %r3 and %r4
-	lwz	%r4, 24(%r1)
+	lbz	%r4, 18(%r1)
+	lbz	%r5, 19(%r1)
+	lbz	%r6, 20(%r1)
 	bl	fuelblend
 
 	# Pop link register from stack
-	lwz	%r0, 32(%r1)
+	lwz	%r0, 28(%r1)
 	mtlr	%r0
-	addi	%r1, %r1, 28
+	addi	%r1, %r1, 24
 	blr
 
 # Params:
@@ -482,42 +525,47 @@ lookup_2D_uint8_interpolated_withblend:
 #	r9 : y_axis
 #
 #	r10: lut ethanol
+#	r11: ethanol scale low
+#	r12: ethanol scale high
 lookup_3D_uint8_interpolated_withblend:
-	# Push link register on stack
-	stwu	%r1, -40(%r1)
+	# Push link register on stack (4 bytes alignment, normally 16)
+	stwu	%r1, -28(%r1)
 	mflr	%r0
-	stw	%r0, 44(%r1)
+	stw	%r0, 32(%r1)
 
 	# Save arguments on stack
-	stw	%r3 ,  8(%r1)
-	stw	%r4 , 12(%r1)
-	stw	%r5 , 16(%r1)
-	stw	%r6 , 20(%r1)
-	stw	%r10, 24(%r1)
-	stw	%r8 , 28(%r1)
-	stw	%r9 , 32(%r1)
+	stb	%r3 ,  8(%r1)
+	stb	%r4 ,  9(%r1)
+	stb	%r5 , 10(%r1)
+	stb	%r6 , 11(%r1)
+	stw	%r10, 12(%r1)
+	stw	%r8 , 16(%r1)
+	stw	%r9 , 20(%r1)
+	stb	%r11, 25(%r1)
+	stb	%r12, 26(%r1)
 
 	# 1st call and save result on stack
 	bla	lookup_3D_uint8_interpolated
-	stw	%r3,  36(%r1)
+	stb	%r3,  24(%r1)
 
 	# 2nd call with ethanol table
-	lwz	%r3,  8(%r1)
-	lwz	%r4, 12(%r1)
-	lwz	%r5, 16(%r1)
-	lwz	%r6, 20(%r1)
-	lwz	%r7, 24(%r1)
-	lwz	%r8, 28(%r1)
-	lwz	%r9, 32(%r1)
+	lbz	%r3,  8(%r1)
+	lbz	%r4,  9(%r1)
+	lbz	%r5, 10(%r1)
+	lbz	%r6, 11(%r1)
+	lwz	%r7, 12(%r1)
+	lwz	%r8, 16(%r1)
+	lwz	%r9, 20(%r1)
 	bla	lookup_3D_uint8_interpolated
 
 	# Both result are in %r3 and %r4
-	lwz	%r4, 36(%r1)
+	lbz	%r4, 24(%r1)
+	lbz	%r5, 25(%r1)
+	lbz	%r6, 26(%r1)
 	bl	fuelblend
 
 	# Pop link register from stack
-	lwz	%r0, 44(%r1)
+	lwz	%r0, 32(%r1)
 	mtlr	%r0
-	addi	%r1, %r1, 40
+	addi	%r1, %r1, 28
 	blr
-

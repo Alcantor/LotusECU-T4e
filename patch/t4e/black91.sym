@@ -35,6 +35,7 @@ hook_OBD_mode_0x01_jump = 0x05e8c8;
 hook_OBD_mode_0x22_loc = 0x06486c;
 hook_OBD_mode_0x22_continue = 0x064870;
 hook_OBD_mode_0x22_jump = 0x068d1c;
+knock_peak = 0x3f8292;
 L9822E_outputs = 0x3f96b7;
 CAL_base = 0x3f98d0;
 CAL_ign_advance_adj1 = 0x3fa03c;
