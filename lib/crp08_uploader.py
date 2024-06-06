@@ -2,6 +2,7 @@ import sys, can, argparse
 from lib.crc import CRC8Normal
 from lib.crp08 import CRP08, CRP08_exception
 from lib.fileprogress import Progress
+from lib.jpcan import JPCan
 
 # Some constants
 BO_BE = 'big'
@@ -42,16 +43,21 @@ class CRP08_uploader:
 	def open_can(self, chunk_can):
 		if(self.bus != None): self.close_can()
 		self.p.log("Open CAN "+self.interface+" "+self.channel+" @ "+str(chunk_can.can_bitrate)+" kbit/s")
-		self.bus = can.Bus(
-			interface = self.interface,
-			channel = self.channel,
-			can_filters = [{
-				"extended": False,
-				"can_id": chunk_can.can_local_id2,
-				"can_mask": 0x7FF
-			}],
-			bitrate = chunk_can.can_bitrate*1000
-		)
+
+		if self.interface == "jpcan":
+			self.bus = JPCan(self.channel)
+		else:
+			self.bus = can.Bus(
+				interface = self.interface,
+				channel = self.channel,
+				can_filters = [{
+					"extended": False,
+					"can_id": chunk_can.can_local_id2,
+					"can_mask": 0x7FF
+				}],
+				bitrate = chunk_can.can_bitrate*1000
+			)
+
 		# Should be 0x51 for EMS and 0x52 for TCU
 		self.arbitration_id = chunk_can.can_remote_id2
 		# Workaround for socketcan interface.
@@ -75,11 +81,18 @@ class CRP08_uploader:
 		while(size > 0):
 			chunk_size = min(8, size)
 			chunk = data[offset:offset+chunk_size]
-			msg = can.Message(
-				is_extended_id = False,
-				arbitration_id = self.arbitration_id,
-				data = chunk
-			)
+			if self.interface == "jpcan":
+				msg = self.bus.Message(
+					is_extended_id = False,
+					arbitration_id = self.arbitration_id,
+					data = chunk
+				)
+			else:
+				msg = can.Message(
+					is_extended_id = False,
+					arbitration_id = self.arbitration_id,
+					data = chunk
+				)
 			self.bus.send(msg)
 			offset += chunk_size
 			size -= chunk_size
