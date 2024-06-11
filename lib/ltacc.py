@@ -31,14 +31,14 @@ class LiveTuningAccess:
 		("T4: S10 (Calibration)" , 0x00070000, 0x010000, "calrom.bin"),
 		("T4: RAM (Main RAM)"    , 0x00080000, 0x020000, "calram.bin"),
 		("T4: S0-S10 (Full ROM)" , 0x00000000, 0x080000, "dump.bin"),
-		# T6 (MPC5534) has 2MB flash, 64KB RAM
+		# T6 (MPC5534) has 1MB flash, 64KB RAM
 		("T6: L0-L1 (Bootloader)", 0x00000000, 0x010000, "bootldr.bin"),
 		("T6: L2 (Learned)"      , 0x00010000, 0x00C000, "decram.bin"),
 		("T6: L3 (Coding)"       , 0x0001C000, 0x004000, "coding.bin"),
 		("T6: L4 (Calibration)"  , 0x00020000, 0x010000, "calrom.bin"),
 		("T6: M0-H3 (Program)"   , 0x00040000, 0x0C0000, "prog.bin"),
 		("T6: RAM (Main RAM)"    , 0x40000000, 0x010000, "calram.bin"),
-		("T6: L0-H11 (Full ROM)" , 0x00000000, 0x200000, "dump.bin")
+		("T6: L0-H3 (Full ROM)"  , 0x00000000, 0x100000, "dump.bin")
 	]
 
 	def __init__(self, fp):
