@@ -24,7 +24,7 @@ class SelectCAN_widget(tk.LabelFrame):
 		tk.LabelFrame.__init__(self, parent, text="CAN Device (CANable Adapter)")
 		self.prefs = prefs
 
-		self.combo_interface = ttk.Combobox(self, width=14, state="readonly", values=["slcan", "socketcan", "usb2can", "ixxat"])
+		self.combo_interface = ttk.Combobox(self, width=14, state="readonly", values=["slcan", "socketcan", "usb2can", "ixxat", "jpcan"])
 		self.combo_interface.set(self.prefs['CANBUS']['interface'])
 		self.combo_interface.pack(side=tk.LEFT)
 

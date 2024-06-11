@@ -27,15 +27,17 @@ class Calibration():
 		["T6 V6 3"    , 0x4874, 0x20, 0x4872, 0x4872, 0x486E],
 		["T6 V6 1"    , 0x61DA, 0x20, 0x61D8, 0x61D8, 0x61D4],
 		["T6 L4"      , 0x69A8, 0x20, 0x69A6, 0x69A6, 0x69A2],
-		["T6 V6 2"    , 0x69AC, 0x20, 0x69AA, 0x69AA, 0x69A6]
+		["T6 V6 2"    , 0x69AC, 0x20, 0x69AA, 0x69AA, 0x69A6],
+		["T6e V6 JP"  , 0x61DA, 0x20, 0x61D8, 0x61D8, 0x5b24] # JP ECU with STFC here on P138E0009
 		# Keep size in ascending order for better detection.
 		# All variants since 08 should be covered. Pre-08 is the jungle!
 	]
 
 	LOCK_MAGIC1 = b'\x00\x00\x00\x00'
 	LOCK_MAGIC2 = b'    ' # Sometimes 4 spaces are used to lock an ECU.
-	UNLOCK_MAGIC = bytes("WTF?", CHARSET)
+	# UNLOCK_MAGIC = bytes("WTF?", CHARSET)
 	# UNLOCK_MAGIC = bytes("C1D3", CHARSET) # Caterham C1D3M000
+	UNLOCK_MAGIC = bytes("STFC", CHARSET) # some T6
 
 	def __init__(self):
 		self.data = memoryview(bytearray(0xFFFF))
