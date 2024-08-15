@@ -208,6 +208,7 @@ CRP08 TOC Chunk:
 #   0x3 (0x000838) - Payload 32 Bytes
 #   0x4 (0x040000) - Payload max. size 0xC0000 (prog)
 #   0x5 (0x020000) - Payload max. size 0x10000 (calrom)
+#   0x6 (0x030000) - Payload max. size 0x10000 (not always available)
 #   0x7 (0x01C000) - Payload 32 Bytes
 #   0x8 (0x01C000) - Payload 32 Bytes
 #   0x9 (0x01C020) - Payload 32 Bytes
@@ -413,6 +414,7 @@ class CRP08(BinData):
 		["T4E",CRP08_xtea.T4E_KEY,"T4E",0x10000,0x20000,False,"LOTUS_T4E"],
 		["T6",CRP08_xtea.T6_KEY,"ECU T6",0x5,0x4,False,"LOTUS_T6"],
 		["T6 Caterham",CRP08_xtea.T6_CATERHAM_KEY,"CATERHAM T6",0x5,0x4,False,"CATERHAM_ECU_DURATEC"],
+		["CT1 Caterham",CRP08_xtea.T6_CATERHAM_KEY,"CATERHAM CT1",0x5,0x4,False,"CATERHAM_ECU_SIGMA"],
 		["TCU",CRP08_xtea.T6_KEY,"TCU MMT/AT REVC",0x5,0x4,True,"LOTUS_TCU"],
 		["T6 Yaris",CRP08_xtea.T6_YARIS_KEY,"ECU T6B",0x5,0x4,False,"LOTUS_YARIS"]
 	]

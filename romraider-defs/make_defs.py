@@ -273,7 +273,7 @@ def do(symbols, units, xaxis, calrom, decram):
 		elif(data[3] in units):
 			data[3] = units[data[3]]
 
-			if  (s == "CAL_misc_shift_lights_before_rev_limit"):
+			if  (s.startswith("CAL_misc_shift_lights_before_rev_limit")):
 				xml_add_2D_fixed(rom, data, "Gear Number", units['uint8_t'])
 			elif("_X_" in data[1]):
 				dim += 1
@@ -283,7 +283,7 @@ def do(symbols, units, xaxis, calrom, decram):
 				d_yaxis = data
 			else:
 				if(dim == 1):
-					if(s in xaxis): xml_add_2D_static(rom, data, xaxis[s])
+					if(s in xaxis): xml_add_2D_static(rom, data, xaxis[s][0:data[4]])
 					elif(data[4] > 1):
 						if(s in NOAXIS_SCALES):
 							xname, shift, xunit = NOAXIS_SCALES.get(s)

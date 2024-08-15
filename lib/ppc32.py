@@ -6,30 +6,37 @@ class PPC32:
 		li &= 0xFFFFFF
 		return (opcd<<26|li<<2|aa<<1|lk).to_bytes(4,BO_BE)
 
-	def __build2(opcd, rSD, rA, imm):
+	def __build2(opcd, bo, bi, bd, aa, lk):
+		bd &= 0x3FFF
+		return (opcd<<26|bo<<21|bi<<16|bd<<2|aa<<1|lk).to_bytes(4,BO_BE)
+
+	def __build3(opcd, rSD, rA, imm):
 		imm &= 0xFFFF
 		return (opcd<<26|rSD<<21|rA<<16|imm).to_bytes(4,BO_BE)
 
-	def __build3(opcd, rSD, rA, rB, xo):
+	def __build4(opcd, rSD, rA, rB, xo):
 		return (opcd<<26|rSD<<21|rA<<16|rB<<11|xo<<1).to_bytes(4,BO_BE)
 
-	def __build4(opcd, rSD, rA, SH, MB, ME):
+	def __build5(opcd, rSD, rA, SH, MB, ME):
 		return (opcd<<26|rSD<<21|rA<<16|SH<<11|MB<<6|ME<<1).to_bytes(4,BO_BE)
 
 	def ppc_cmpli(rA, uimm):
-		return PPC32.__build2(10, 0, rA, uimm)
+		return PPC32.__build3(10, 0, rA, uimm)
 
 	def ppc_addi(rD, rA, simm):
-		return PPC32.__build2(14, rD, rA, simm)
+		return PPC32.__build3(14, rD, rA, simm)
 
 	def ppc_li(rD, simm):
 		return PPC32.ppc_addi(rD, 0, simm)
 
 	def ppc_addis(rD, rA, simm):
-		return PPC32.__build2(15, rD, rA, simm)
+		return PPC32.__build3(15, rD, rA, simm)
 
 	def ppc_lis(rD, simm):
 		return PPC32.ppc_addis(rD, 0, simm)
+
+	def ppc_ble(addr):
+		return PPC32.__build2(16, 4, 1, addr >> 2, 0, 0)
 
 	def ppc_b(addr):
 		return PPC32.__build1(18, addr >> 2, 0, 0)
@@ -44,31 +51,31 @@ class PPC32:
 		return PPC32.__build1(18, addr >> 2, 1, 1)
 
 	def ppc_blr():
-		return PPC32.__build3(19, 20, 0, 0, 16)
+		return PPC32.__build4(19, 20, 0, 0, 16)
 
 	def ppc_rfi():
-		return PPC32.__build3(19, 0, 0, 0, 50)
+		return PPC32.__build4(19, 0, 0, 0, 50)
 
 	def ppc_rlwinm(rA, rS, SH, MB, ME):
-		return PPC32.__build4(21, rS, rA, SH, MB, ME)
+		return PPC32.__build5(21, rS, rA, SH, MB, ME)
 
 	def ppc_and(rD, rA, rB):
-		return PPC32.__build3(31, rD, rA, rB, 28)
+		return PPC32.__build4(31, rD, rA, rB, 28)
 
 	def ppc_ori(rA, rS, uimm):
-		return PPC32.__build2(24, rS, rA, uimm)
+		return PPC32.__build3(24, rS, rA, uimm)
 
 	def ppc_mfspr(rD, spr):
-		return PPC32.__build3(31, rD, spr & 0x1F, spr >> 5, 339)
+		return PPC32.__build4(31, rD, spr & 0x1F, spr >> 5, 339)
 
 	def ppc_mtspr(rS, spr):
-		return PPC32.__build3(31, rS, spr & 0x1F, spr >> 5, 467)
+		return PPC32.__build4(31, rS, spr & 0x1F, spr >> 5, 467)
 
 	def ppc_lwz(rD, rA, delta):
-		return PPC32.__build2(32, rD, rA, delta)
+		return PPC32.__build3(32, rD, rA, delta)
 
 	def ppc_stw(rS, rA, delta):
-		return PPC32.__build2(36, rS, rA, delta)
+		return PPC32.__build3(36, rS, rA, delta)
 
 def print_hex(array):
 	return ' '.join('{:02x}'.format(x) for x in array)

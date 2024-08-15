@@ -4,7 +4,14 @@ from lib.crc import CRC16Reflect
 # Mode 0x22 PID 0x0263 return 0x1C004 in little endian
 # Mode 0x22 PID 0x0264 return 0x1C000 in little endian
 #
-# Send CAN 0x502 with 8 bytes variant in big endian
+# Send CAN frame with 8 bytes variant in big endian to:
+#
+#    0x500 - Instruments Cluster
+#    0x501 - ?
+#    0x502 - ECU
+#    0x503 - ?
+#    0x504 - ?
+#    0x505 - ?
 
 # Some constants
 BO_BE = 'big'
