@@ -11,7 +11,7 @@
 			<memmodel>MPC563</memmodel>
 			<flashmethod>CRP</flashmethod>
 			<internalidaddress>0x3CB4</internalidaddress>
-			<internalidstring>XTRACAL1</internalidstring>
+			<internalidstring>XTRACAL2</internalidstring>
 		</romid>
 		<table type="2D" name="ethanol: sensor temp reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBC">
 			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />

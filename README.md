@@ -1,4 +1,4 @@
-# Lotus K4/T4/T4e/T6 Flasher
+# Lotus K4/T4/T4e/T6/CT1 Flasher
 
 ## Disclaimer
 
@@ -173,6 +173,9 @@ definitively locked on the black dashboard version.
 
 It's possible to re-enable it with a JTAG/BDM access or a modified .CRP file.
 
+Some recent T6 software versions limit access to the RAM only and display the
+calibration version on the instrument cluster.
+
 ## Prerequisite
 
 The [Python 3] interpreter with the [pyserial] module, the [python-can] module
@@ -290,11 +293,11 @@ For the Korlan adapter, run "python -m pip install pywin32", install the
 [Korlan Driver]: http://www.8devices.com/media/products/usb2can_korlan/downloads/usb2can_winusb.msi
 [CANAL DLL]: http://www.8devices.com/media/products/usb2can_korlan/downloads/usb2can_canal_v2.0.0.zip
 
-### Flash a white T4/T4e ECU (2005-2008)
+### Flash a white T4/T4e ECU (2001-2008)
 
 It's the factory method described above.
 
-![Flashing 05](documentation/Usage/videos/flashing05.webp)
+![Flashing 01](documentation/Usage/videos/flashing01.webp)
 
 ### Dump a locked white T4e ECU (2006-2008)
 

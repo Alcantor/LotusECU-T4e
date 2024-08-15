@@ -36,6 +36,7 @@ class Calibration():
 	LOCK_MAGIC2 = b'    ' # Sometimes 4 spaces are used to lock an ECU.
 	UNLOCK_MAGIC = bytes("WTF?", CHARSET)
 	# UNLOCK_MAGIC = bytes("C1D3", CHARSET) # Caterham C1D3M000
+	# UNLOCK_MAGIC = bytes("D1S1", CHARSET) # Caterham D1S17000
 
 	def __init__(self):
 		self.data = memoryview(bytearray(0xFFFF))

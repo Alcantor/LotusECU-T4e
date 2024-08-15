@@ -115,10 +115,10 @@ class CRP08_uploader:
 			cmd, data = self.recv(timeout, ui_cb)
 			# Hello
 			if(cmd == 0x0A):
-				self.p.log("ECU: Hello")
 				crp_chunk_i = 1
+				self.p.log("ECU: Hello")
 				self.p.progress_start(len(crp.chunks[crp_chunk_i].data))
-				self.open_can(crp.chunks[crp_chunk_i])
+				#self.open_can(crp.chunks[crp_chunk_i])
 				self.send_start()
 			# Frame request
 			if(cmd == 0x01):
@@ -137,6 +137,11 @@ class CRP08_uploader:
 				if(crp_chunk_i < len(crp.chunks)):
 					self.p.log("ECU: Next chunk!")
 					self.p.progress_start(len(crp.chunks[crp_chunk_i].data))
+					# The can bus is being re-opened here to
+					# load the configuration of the next chunk.
+					# However, some adapters might take too
+					# long to re-open, causing trouble.
+					# TODO: Check timing.
 					self.open_can(crp.chunks[crp_chunk_i])
 					self.send_start()
 				else:

@@ -172,8 +172,12 @@ peak_over_threshold = peak - threshold"
 
 Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
 "CAL_evap_?a","003f9974","u8_time_5ms",""
+"CAL_evap_enable_inj_time_threshold","003f9975","u8_time_8us","When the INJECTION TIME and idle flow are above their respective thresholds\, enable the evaporative canister purge."
+"CAL_evap_disable_inj_time_threshold","003f9976","u8_time_8us","When the injection is below this time threshold\, disable the evaporative canister purge."
 "CAL_evap_?b","003f9979","u8_time_5ms",""
 "CAL_evap_vacuum_reactivity","003f997a","u8_factor_1/256",""
+"CAL_evap_enable_idle_flow_threshold","003f997b","u8_flow_100mg/s","When the injection time and IDLE FLOW are above their respective thresholds\, enable the evaporative canister purge."
+"CAL_evap_disable_idle_flow_threshold","003f997c","u8_flow_100mg/s","When the idle is below this flow threshold\, disable the evaporative canister purge."
 "CAL_fan_high_on_ac_on","003f997d","u8_temp_5/8-40c","WITH A/C ON: When the engine coolant is above this temperature threshold\, turn on the high speed fan."
 "CAL_fan_high_off_ac_on","003f997e","u8_temp_5/8-40c","WITH A/C ON: When the engine coolant is below this temperature threshold\, turn off the high speed fan."
 "CAL_ign_advance_idle_adj_ac_on","003f997f","u8_angle_1/4deg","Ignition advance adjustment when A/C is on.
@@ -674,17 +678,17 @@ Formula: tip_in(t) = time_base * (dt_tps2 - (ADJ2 * t)) * adj1 * adj3 * adj_gear
 
 Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * ADJ3 * adj_gear"
 "CAL_injtip_out_adj1_X_engine_speed","003fa224","u8_rspeed_125/4+500rpm[16]",""
-"CAL_injtip_out_adj1","003fa234","u8_factor_1/128[16]","Remove fuel (injection time) based on negative change in the tps.
+"CAL_injtip_out_adj1","003fa234","u8_factor_1/128[16]","Add extra fuel (injection time) based on negative change in the tps.
 
 Formula: tip_out(t) = time_base * (dt_tps2 - (adj2 * t)) * ADJ1 * adj3"
 "CAL_injtip_out_adj2_X_engine_speed","003fa244","u8_rspeed_125/4+500rpm[16]",""
-"CAL_injtip_out_adj2","003fa254","u8_dt_factor_1/100/5ms[16]","Remove fuel (injection time) based on negative change in the tps.
+"CAL_injtip_out_adj2","003fa254","u8_dt_factor_1/100/5ms[16]","Add extra fuel (injection time) based on negative change in the tps.
 
 This adjustment will reduce the effect over time (t).
 
 Formula: tip_out(t) = time_base * (dt_tps2 - (ADJ2 * t)) * adj1 * adj3"
 "CAL_injtip_out_adj3_X_coolant","003fa264","u8_temp_5/8-40c[16]",""
-"CAL_injtip_out_adj3","003fa274","u8_factor_1/64[16]","Remove fuel (injection time) based on negative change in the tps.
+"CAL_injtip_out_adj3","003fa274","u8_factor_1/64[16]","Add extra fuel (injection time) based on negative change in the tps.
 
 This adjustment will reduce the effect over time (t).
 
@@ -694,7 +698,7 @@ Formula: tip_out(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * ADJ3"
 "CAL_idle_tps","003fa2b4","u8_factor_1/1023[64]","Once the needed air flow to keep the engine idling is knowned\, the ECU must drive the throttle body to the according position. The differential air pressure over the throttle body is estimated."
 "CAL_ign_advance_high_cam_base_X_engine_speed","003fa2f4","u8_rspeed_125/4+500rpm[8]",""
 "CAL_ign_advance_high_cam_base_Y_engine_load","003fa2fc","u8_load_4mg/stroke[8]",""
-"CAL_ign_advance_high_cam_base","003fa304","u8_angle_1/4-10deg[64]","Ignition advance (degree before top dead center) when the VVL is engaged.
+"CAL_ign_advance_high_cam_base","003fa304","u8_angle_1/4-10deg[64]","Ignition advance (degree before top dead center) when the VVL is engaged and engine speed is below vvl_enable_rpm (by default 6200 RPM).
 
 Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = HIGH_CAM_BASE * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
@@ -751,6 +755,8 @@ Formula: advance = BASE - adj"
 "CAL_load_possible_max","003faa44","u8_load_4mg/stroke[16]","The engine load is also available as a ratio to the possible max load (OBD Mode 0x01 PID 0x04).
 
 Formula: load(%) = load(mg/stroke) / LOAD_MAX * (1013mbar / atmo_pressure)"
+"CAL_tpssmooth_increment_X_tps_target","003faa54","u8_factor_1/255[8]",""
+"CAL_tpssmooth_increment","003faa5c","u8_factor_1/1023[8]","Throttle responsiveness when pressing the gas pedal."
 "CAL_load_use_alphaN_tps_threshold_X_engine_speed","003faa64","u8_rspeed_125/4+500rpm[16]",""
 "CAL_load_use_alphaN_tps_threshold","003faa74","u8_factor_1/255[16]","When the tps is above this position threshold\, use the alphaN load calculation."
 "CAL_inj_time_adj3_X_engine_load","003faa84","u8_load_4mg/stroke[16]",""
@@ -778,7 +784,7 @@ Note: When using variable control knob: ADJ1 = (knob_position / 2^ADJ1)"
 Example: 8 means that 1 of 8 strokes will have no fuel."
 "CAL_ign_advance_high_cam_knock_safe_X_engine_speed","003fac0c","u8_rspeed_125/4+500rpm[8]",""
 "CAL_ign_advance_high_cam_knock_safe_Y_engine_load","003fac14","u8_load_4mg/stroke[8]",""
-"CAL_ign_advance_high_cam_knock_safe","003fac1c","u8_angle_1/4-10deg[64]","Knock safe ignition advance used by knock_retard2 when the VVL is engaged."
+"CAL_ign_advance_high_cam_knock_safe","003fac1c","u8_angle_1/4-10deg[64]","Knock safe ignition advance used by knock_retard2."
 "CAL_idle_tps_engine_stop_X_atmo_pressure","003fac5c","u8_pressure_4mbar[4]",""
 "CAL_idle_tps_engine_stop_Y_coolant","003fac60","u8_temp_5/8-40c[16]",""
 "CAL_idle_tps_engine_stop","003fac70","u8_factor_1/1023[64]","Throttle body position for cranking."
@@ -830,10 +836,10 @@ Formula (cranking): adv = advance_cranking"
 "CAL_ign_time_base","003fae8c","u8_time_64us[64]","Spark firing length."
 "CAL_ign_advance_low_cam_knock_safe_X_engine_speed","003faecc","u8_rspeed_125/4+500rpm[32]",""
 "CAL_ign_advance_low_cam_knock_safe_Y_engine_load","003faeec","u8_load_4mg/stroke[32]",""
-"CAL_ign_advance_low_cam_knock_safe","003faf0c","u8_angle_1/4-10deg[1024]","Knock safe ignition advance used by knock_retard2 when the VVL is disengaged."
+"CAL_ign_advance_low_cam_knock_safe","003faf0c","u8_angle_1/4-10deg[1024]","Knock safe ignition advance used by knock_retard2."
 "CAL_ign_advance_low_cam_base_X_engine_speed","003fb30c","u8_rspeed_125/4+500rpm[32]",""
 "CAL_ign_advance_low_cam_base_Y_engine_load","003fb32c","u8_load_4mg/stroke[32]",""
-"CAL_ign_advance_low_cam_base","003fb34c","u8_angle_1/4-10deg[1024]","Ignition advance (degree before top dead center) when the VVL is disengaged.
+"CAL_ign_advance_low_cam_base","003fb34c","u8_angle_1/4-10deg[1024]","Ignition advance (degree before top dead center) when the VVL is disengaged or when engine speed is above vvl_enable_rpm (by default 6200 RPM).
 
 Formula (low cam) : adv = LOW_CAM_BASE * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
@@ -848,6 +854,8 @@ Formula (cranking): adv = advance_cranking"
 Formula: flow = flow_base + learned_adj1 - adj2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + ADJ7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
 
 Note: adj8 is a dynamic adjustment."
+"CAL_tpssmooth_decrement_X_tps_target","003fb7ec","u8_factor_1/255[8]",""
+"CAL_tpssmooth_decrement","003fb7f4","u8_factor_1/1023[8]","Throttle responsiveness when releasing the gas pedal."
 "CAL_revlimit_speed_base_X_coolant","003fb7fc","u8_temp_5/8-40c[8]",""
 "CAL_revlimit_speed_base_Y_timer","003fb804","u8_time_100ms[8]",""
 "CAL_revlimit_speed_base","003fb80c","u8_rspeed_10+6000rpm[64]",""
@@ -950,9 +958,15 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
 "CAL_revlimit_speed_adj_limp_reduced","003fc514","u16_rspeed_rpm",""
 "CAL_obd2_P0563_threshold","003fc518","u16_voltage_18/1023v",""
 "CAL_obd2_P0562_threshold","003fc51a","u16_voltage_18/1023v",""
+"CAL_obd2_P0133_threshold1_rich2lean","003fc536","u16_time_5ms","P0133 Threshold 1: Throws an error code when both the lean-to-rich and RICH-TO-LEAN transitions exceed their respective time thresholds."
+"CAL_obd2_P0133_threshold1_lean2rich","003fc538","u16_time_5ms","P0133 Threshold 1: Throws an error code when both the LEAN-TO-RICH and rich-to-lean transitions exceed their respective time thresholds."
 "CAL_obd2_monitors","003fc566","uint8_t[2]",""
+"CAL_obd2_P0133_threshold2_lean2rich","003fc56c","u8_time_5ms","P0133 Threshold 2: With a ratio threshold of 200% and a TIME threshold of 135ms\, this means that if the lean-to-rich transition is twice as slow as the rich-to-lean transition and takes more than 135ms\, it will trigger an error code."
+"CAL_obd2_P0133_threshold3_rich2lean","003fc56d","u8_time_5ms","P0133 Threshold 3: With a ratio threshold of 50% and a TIME threshold of 70ms\, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms\, it will trigger an error code."
 "CAL_obd2_P0135_P0141_threshold","003fc576","u16_current_mA",""
 "CAL_sensor_O2_heater_threshold","003fc578","u16_current_mA","The electrical resistance of the O2 sensor heater increases with temperature. The ECU will stop the heater when the current drop below this current threshold."
+"CAL_obd2_P0133_threshold2_ratio","003fc584","u8_factor_1/100","P0133 Threshold 2: With a RATIO threshold of 200% and a time threshold of 135ms\, this means that if the lean-to-rich transition is twice as slow as the rich-to-lean transition and takes more than 135ms\, it will trigger an error code."
+"CAL_obd2_P0133_threshold3_ratio","003fc585","u8_factor_1/100","P0133 Threshold 3: With a RATIO threshold of 50% and a time threshold of 70ms\, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms\, it will trigger an error code."
 "CAL_obd2_P0116_threshold","003fc59f","u8_temp_5/8-40c",""
 "CAL_obd2_P0453_threshold","003fc5f0","u16_voltage_5/1023v",""
 "CAL_obd2_P0452_threshold","003fc5f2","u16_voltage_5/1023v",""

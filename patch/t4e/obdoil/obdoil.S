@@ -30,8 +30,7 @@ hook_OBD_mode_0x01:
 	# Store current request byte in %r3
 	lis	%r3, obd_req@ha
 	addi	%r3, %r3, obd_req@l
-	add	%r3, %r3, %r30
-	lbz	%r3, 0(%r3)
+	lbzx	%r3, %r3, %r30
 
 	# Store pointer to response array in %r4
 	# Store current pointer to response byte in %r5

@@ -54,6 +54,7 @@
 "u16_time_25ns","uint16","ns","x*25","x/25","0","25","100","Nanosecond"
 "u8_time_us","uint8","us","x","x","0","1","10","Microsecond"
 "u16_time_4us","uint16","rpm","15000000/x","15000000/x","0","1","10","RPM"
+"u8_time_8us","uint8","us","x*8","x/8","0","8","100","Microsecond"
 "u8_time_10us","uint8","us","x*10","x/10","0","10","100","Microsecond"
 "u8_time_-10us","uint8","us","x*-10","x/-10","0","10","100","Microsecond"
 "u8_time_20us","uint8","us","x*20","x/20","0","20","200","Microsecond"

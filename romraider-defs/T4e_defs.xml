@@ -606,6 +606,20 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			</table>
 			<description />
 		</table>
+		<table type="2D" name="evap: enable inj time threshold" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00A5">
+			<scaling category="Microsecond" units="us" expression="x*8" to_byte="x/8" format="0" fineincrement="8" coarseincrement="100" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>enable inj time threshold</data>
+			</table>
+			<description>When the INJECTION TIME and idle flow are above their respective thresholds, enable the evaporative canister purge.</description>
+		</table>
+		<table type="2D" name="evap: disable inj time threshold" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00A6">
+			<scaling category="Microsecond" units="us" expression="x*8" to_byte="x/8" format="0" fineincrement="8" coarseincrement="100" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>disable inj time threshold</data>
+			</table>
+			<description>When the injection is below this time threshold, disable the evaporative canister purge.</description>
+		</table>
 		<table type="2D" name="evap: ?b" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00A9">
 			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
 			<table type="Static X Axis" name="" sizex="1">
@@ -619,6 +633,20 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 				<data>vacuum reactivity</data>
 			</table>
 			<description />
+		</table>
+		<table type="2D" name="evap: enable idle flow threshold" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00AB">
+			<scaling category="Gram/Second" units="g/s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="10" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>enable idle flow threshold</data>
+			</table>
+			<description>When the injection time and IDLE FLOW are above their respective thresholds, enable the evaporative canister purge.</description>
+		</table>
+		<table type="2D" name="evap: disable idle flow threshold" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00AC">
+			<scaling category="Gram/Second" units="g/s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="10" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>disable idle flow threshold</data>
+			</table>
+			<description>When the idle is below this flow threshold, disable the evaporative canister purge.</description>
 		</table>
 		<table type="2D" name="fan: high on ac on" category="fan" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00AD">
 			<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
@@ -2260,7 +2288,7 @@ Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * ADJ3 * adj_gear
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="16" storageaddress="0x0954">
 				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
 			</table>
-			<description>Remove fuel (injection time) based on negative change in the tps.
+			<description>Add extra fuel (injection time) based on negative change in the tps.
 
 Formula: tip_out(t) = time_base * (dt_tps2 - (adj2 * t)) * ADJ1 * adj3</description>
 		</table>
@@ -2269,7 +2297,7 @@ Formula: tip_out(t) = time_base * (dt_tps2 - (adj2 * t)) * ADJ1 * adj3</descript
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="16" storageaddress="0x0974">
 				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
 			</table>
-			<description>Remove fuel (injection time) based on negative change in the tps.
+			<description>Add extra fuel (injection time) based on negative change in the tps.
 
 This adjustment will reduce the effect over time (t).
 
@@ -2280,7 +2308,7 @@ Formula: tip_out(t) = time_base * (dt_tps2 - (ADJ2 * t)) * adj1 * adj3</descript
 			<table type="X Axis" name="coolant" storagetype="uint8" endian="big" sizex="16" storageaddress="0x0994">
 				<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
 			</table>
-			<description>Remove fuel (injection time) based on negative change in the tps.
+			<description>Add extra fuel (injection time) based on negative change in the tps.
 
 This adjustment will reduce the effect over time (t).
 
@@ -2304,7 +2332,7 @@ Formula: tip_out(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * ADJ3</descript
 			<table type="Y Axis" name="engine load" storagetype="uint8" endian="big" sizey="8" storageaddress="0x0A2C">
 				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
 			</table>
-			<description>Ignition advance (degree before top dead center) when the VVL is engaged.
+			<description>Ignition advance (degree before top dead center) when the VVL is engaged and engine speed is below vvl_enable_rpm (by default 6200 RPM).
 
 Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = HIGH_CAM_BASE * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
@@ -2415,6 +2443,13 @@ Formula: advance = BASE - adj</description>
 
 Formula: load(%) = load(mg/stroke) / LOAD_MAX * (1013mbar / atmo_pressure)</description>
 		</table>
+		<table type="2D" name="tpssmooth: increment" category="tpssmooth" storagetype="uint8" endian="big" sizex="8" userlevel="1" storageaddress="0x118C">
+			<scaling category="Percent" units="%" expression="x*100/1023" to_byte="x*1023/100" format="0.00" fineincrement="0.1" coarseincrement="1" />
+			<table type="X Axis" name="tps target" storagetype="uint8" endian="big" sizex="8" storageaddress="0x1184">
+				<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			</table>
+			<description>Throttle responsiveness when pressing the gas pedal.</description>
+		</table>
 		<table type="2D" name="load: use alphaN tps threshold" category="load" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x11A4">
 			<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="16" storageaddress="0x1194">
@@ -2472,7 +2507,7 @@ Example: 8 means that 1 of 8 strokes will have no fuel.</description>
 			<table type="Y Axis" name="engine load" storagetype="uint8" endian="big" sizey="8" storageaddress="0x1344">
 				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
 			</table>
-			<description>Knock safe ignition advance used by knock_retard2 when the VVL is engaged.</description>
+			<description>Knock safe ignition advance used by knock_retard2.</description>
 		</table>
 		<table type="3D" name="idle: tps engine stop" category="idle" storagetype="uint8" endian="big" sizex="4" sizey="16" userlevel="1" storageaddress="0x13A0">
 			<scaling category="Percent" units="%" expression="x*100/1023" to_byte="x*1023/100" format="0.00" fineincrement="0.1" coarseincrement="1" />
@@ -2601,7 +2636,7 @@ Formula (cranking): adv = advance_cranking</description>
 			<table type="Y Axis" name="engine load" storagetype="uint8" endian="big" sizey="32" storageaddress="0x161C">
 				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
 			</table>
-			<description>Knock safe ignition advance used by knock_retard2 when the VVL is disengaged.</description>
+			<description>Knock safe ignition advance used by knock_retard2.</description>
 		</table>
 		<table type="3D" name="ign: advance low cam base" category="ign" storagetype="uint8" endian="big" sizex="32" sizey="32" userlevel="1" storageaddress="0x1A7C">
 			<scaling category="Degree" units="&#176;" expression="(x/4)-10" to_byte="(x+10)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
@@ -2611,7 +2646,7 @@ Formula (cranking): adv = advance_cranking</description>
 			<table type="Y Axis" name="engine load" storagetype="uint8" endian="big" sizey="32" storageaddress="0x1A5C">
 				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
 			</table>
-			<description>Ignition advance (degree before top dead center) when the VVL is disengaged.
+			<description>Ignition advance (degree before top dead center) when the VVL is disengaged or when engine speed is above vvl_enable_rpm (by default 6200 RPM).
 
 Formula (low cam) : adv = LOW_CAM_BASE * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
@@ -2636,6 +2671,13 @@ Formula (cranking): adv = advance_cranking</description>
 Formula: flow = flow_base + learned_adj1 - adj2 + adj3 + (adj4 * adj4_adj) + adj5 + adj6 + ADJ7 + adj8 + adj_ac + adj_fan_low + adj_fan_high - evap_flow
 
 Note: adj8 is a dynamic adjustment.</description>
+		</table>
+		<table type="2D" name="tpssmooth: decrement" category="tpssmooth" storagetype="uint8" endian="big" sizex="8" userlevel="1" storageaddress="0x1F24">
+			<scaling category="Percent" units="%" expression="x*100/1023" to_byte="x*1023/100" format="0.00" fineincrement="0.1" coarseincrement="1" />
+			<table type="X Axis" name="tps target" storagetype="uint8" endian="big" sizex="8" storageaddress="0x1F1C">
+				<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			</table>
+			<description>Throttle responsiveness when releasing the gas pedal.</description>
 		</table>
 		<table type="3D" name="revlimit: speed base" category="revlimit" storagetype="uint8" endian="big" sizex="8" sizey="8" userlevel="1" storageaddress="0x1F3C">
 			<scaling category="RPM" units="rpm" expression="(x*10)+6000" to_byte="(x-6000)/10" format="0" fineincrement="10" coarseincrement="100" />
@@ -2940,12 +2982,40 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			</table>
 			<description />
 		</table>
+		<table type="2D" name="obd2: P0133 threshold1 rich2lean" category="obd2" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x2C66">
+			<scaling category="Second" units="s" expression="x*5/1000" to_byte="x*1000/5" format="0.00" fineincrement="0.1" coarseincrement="1" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>P0133 threshold1 rich2lean</data>
+			</table>
+			<description>P0133 Threshold 1: Throws an error code when both the lean-to-rich and RICH-TO-LEAN transitions exceed their respective time thresholds.</description>
+		</table>
+		<table type="2D" name="obd2: P0133 threshold1 lean2rich" category="obd2" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x2C68">
+			<scaling category="Second" units="s" expression="x*5/1000" to_byte="x*1000/5" format="0.00" fineincrement="0.1" coarseincrement="1" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>P0133 threshold1 lean2rich</data>
+			</table>
+			<description>P0133 Threshold 1: Throws an error code when both the LEAN-TO-RICH and rich-to-lean transitions exceed their respective time thresholds.</description>
+		</table>
 		<table type="Switch" name="obd2: monitors" category="obd2" sizey="2" userlevel="1" storageaddress="0x2C96">
 			<state name="Components, Fuel System, Misfire, O2 Sensor Heater, O2 Sensor, Evaporative System, Catalyst" data="07 65" />
 			<state name="Components, Fuel System, Misfire, O2 Sensor Heater, O2 Sensor, Catalyst" data="07 61" />
 			<state name="Components, Fuel System, Misfire, O2 Sensor, Catalyst" data="07 21" />
 			<state name="Components, Fuel System, Misfire" data="07 00" />
 			<description />
+		</table>
+		<table type="2D" name="obd2: P0133 threshold2 lean2rich" category="obd2" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x2C9C">
+			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>P0133 threshold2 lean2rich</data>
+			</table>
+			<description>P0133 Threshold 2: With a ratio threshold of 200% and a TIME threshold of 135ms, this means that if the lean-to-rich transition is twice as slow as the rich-to-lean transition and takes more than 135ms, it will trigger an error code.</description>
+		</table>
+		<table type="2D" name="obd2: P0133 threshold3 rich2lean" category="obd2" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x2C9D">
+			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>P0133 threshold3 rich2lean</data>
+			</table>
+			<description>P0133 Threshold 3: With a ratio threshold of 50% and a TIME threshold of 70ms, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms, it will trigger an error code.</description>
 		</table>
 		<table type="2D" name="obd2: P0135 P0141 threshold" category="obd2" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x2CA6">
 			<scaling category="Ampere" units="A" expression="x/1000" to_byte="x*1000" format="0.00" fineincrement="0.01" coarseincrement="0.2" />
@@ -2960,6 +3030,20 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 				<data>O2 heater threshold</data>
 			</table>
 			<description>The electrical resistance of the O2 sensor heater increases with temperature. The ECU will stop the heater when the current drop below this current threshold.</description>
+		</table>
+		<table type="2D" name="obd2: P0133 threshold2 ratio" category="obd2" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x2CB4">
+			<scaling category="Percent" units="%" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>P0133 threshold2 ratio</data>
+			</table>
+			<description>P0133 Threshold 2: With a RATIO threshold of 200% and a time threshold of 135ms, this means that if the lean-to-rich transition is twice as slow as the rich-to-lean transition and takes more than 135ms, it will trigger an error code.</description>
+		</table>
+		<table type="2D" name="obd2: P0133 threshold3 ratio" category="obd2" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x2CB5">
+			<scaling category="Percent" units="%" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>P0133 threshold3 ratio</data>
+			</table>
+			<description>P0133 Threshold 3: With a RATIO threshold of 50% and a time threshold of 70ms, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms, it will trigger an error code.</description>
 		</table>
 		<table type="2D" name="obd2: P0116 threshold" category="obd2" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x2CCF">
 			<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
