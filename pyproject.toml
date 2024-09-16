@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "lib"
+version = "0.0.1"
+readme="README.md"
+description = "Lotus t4/t6 ECU calibration tools"
+authors = ["tvv <alcantor@hotmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pillow = "^10.1.0"
+tk = "^0.1.0"
+pyserial = "^3.5"
+python-can = "^4.4.2"
