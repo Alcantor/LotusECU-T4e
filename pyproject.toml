@@ -1,0 +1,13 @@
+[tool.poetry]
+name = "lotusecu-tools"
+version = "0.0.1"
+description = "Lotus ECU Tools"
+authors = ["alcantor <alcantor@hotmail.com>"]
+license = "CC-NC-SA"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+tk = "^0.1.0"
+pyserial = "^3.5"
+python-can = "^4.4.2"
+pywin32 = {version = "^306", platform = "win32"}
