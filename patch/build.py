@@ -622,7 +622,7 @@ def build_wideband():
 	# Simulate a Narrow-Band lambda
 	p.check_and_replace(
 		s.get_sym_addr("hook_narrow_sim_loc"),
-		b"\x54\x00\x04\x3e",
+		PPC32.ppc_rlwinm(0, 0, 0, 16, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_narrow_sim"))
 	)
 

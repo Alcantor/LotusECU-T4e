@@ -10,7 +10,8 @@
 	A7 - CAN High
 	B7 - CAN Low
 
-To connect it into my 2007 (non-airbag) car, I have used an adapter sold normally for the AIM Dash. I didn't get power on PIN B8, and so I've bridged A5 and B8.
+To connect it into my 2007 (non-airbag) car, I have used an adapter sold normally
+for the AIM Dash. I didn't get power on PIN B8, and so I've bridged A5 and B8.
 
 ## Power consumption
 
@@ -109,6 +110,9 @@ openbdm
 # Prepare EEPROM
 wb 0x12 0x9
 
+# Clear EEPROM access error if any
+wb 0x115 0xFF
+
 # Example erase EEPROM word 0x820 (0x40 is sector erase and 0x41 is mass erase)
 ww 0x820 0xFFFF
 wb 0x116 0x40
@@ -119,4 +123,13 @@ ww 0x820 0x2400
 wb 0x116 0x20
 wb 0x115 0x80
 ```
+
+## Note about the 2011+ Cluster
+
+This time, the software is the same for both display units. It's a configuration
+bit in the EEPROM. It is possible to retrofit a 2011 cluster into a 2008 car,
+but the cluster must also be configured accordingly.
+
+Byte 0x8c7 Unit    : 0 => MPH, 1 => KMH
+Byte 0x8ca CAN-Bus : 0 => 2008, 1 => 2011
 
