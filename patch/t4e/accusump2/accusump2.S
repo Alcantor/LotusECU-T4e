@@ -65,6 +65,14 @@ accusump:
 	b	accusump_open
 
 accusump_normal:
+	/* Close the accusump if ignition is off */
+	lis     %r3, shutdown_flags@ha
+	lhz     %r3, shutdown_flags@l(%r3)
+	rlwinm  %r3, %r3, 0,31,31
+	cmpwi   %r3, 0
+	beq     accusump_close_reset_timer
+
+       /* Compare oil pressure */
 	li	%r3, 4
 	lis	%r4, engine_speed_3@ha
 	lbz	%r4, engine_speed_3@l(%r4)
@@ -74,10 +82,8 @@ accusump_normal:
 	addi	%r6, %r6, CAL_accusump_X_engine_speed@l
 	bla	lookup_2D_uint8_interpolated
 	slwi	%r3, %r3, 5 # Multiply by 32
-
 	lis	%r4, oil_pressure@ha
 	lha	%r4, oil_pressure@l(%r4)
-
 	cmpw	%r4, %r3
 	bge	accusump_close_reset_timer
 

@@ -49,6 +49,7 @@ CAL_inj_time_adj3 = 0x3faaa4;
 CAL_inj_time_adj_cranking = 0x3fada4;
 CAL_ign_advance_low_cam_base = 0x3fb34c;
 maf_accumulated_1 = 0x3fd5e0;
+shutdown_flags = 0x3fd678;
 sensor_adc_ecu_voltage = 0x3fd67a;
 inj_time_final_1 = 0x3fd738;
 afr_target = 0x3fd746;

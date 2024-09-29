@@ -130,6 +130,6 @@ This time, the software is the same for both display units. It's a configuration
 bit in the EEPROM. It is possible to retrofit a 2011 cluster into a 2008 car,
 but the cluster must also be configured accordingly.
 
-Byte 0x8c7 Unit    : 0 => MPH, 1 => KMH
-Byte 0x8ca CAN-Bus : 0 => 2008, 1 => 2011
+	Byte 0x8c7 Unit    : 0 => MPH, 1 => KMH
+	Byte 0x8ca CAN-Bus : 0 => 2008, 1 => 2011
 
