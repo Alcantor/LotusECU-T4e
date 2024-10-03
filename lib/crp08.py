@@ -235,6 +235,17 @@ class CRP08_data_ecu(BinData):
 		# Binary data
 		self.ecu_data = None
 
+	def __eq__(self, other):
+		if not isinstance(other, CRP08_data_ecu): return False
+		return {
+			self.ecu_id == other.ecu_id and
+			self.ecu_addr == other.ecu_addr and
+			self.ecu_data == other.ecu_data and
+			self.ecu_maxversion == other.ecu_maxversion and
+			self.ecu_minversion == other.ecu_minversion and
+			self.xtea == other.xtea_salt and
+			self.xtea_salt == other.xtea_salt
+		}
 	def parse(self, data):
 		# Decrypt
 		plain = memoryview(bytearray(len(data)))
@@ -534,7 +545,7 @@ if __name__ == "__main__":
 		crp.read_file(sys.argv[3], i)
 		for i in range(1, len(crp.chunks)):
 			bin_file = crp.chunks[0].toc_values[0][i-1]
-			print("-- Extract "+bin_file+" from "+sys.argv[3]+" --")
+			print(f"-- [CHUNK {i}] Extract {bin_file} from {sys.argv[3]} --")
 			crp.chunks[i].data.export_bin(bin_file)
 			print(crp.chunks[i])
 	else:

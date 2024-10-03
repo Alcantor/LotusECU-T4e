@@ -11,3 +11,4 @@ tk = "^0.1.0"
 pyserial = "^3.5"
 python-can = "^4.4.2"
 pywin32 = {version = "^306", platform = "win32"}
+pytest = "^8.3.3"
