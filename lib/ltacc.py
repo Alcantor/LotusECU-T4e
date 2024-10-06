@@ -3,6 +3,7 @@ from lib.fileprogress import FileProgress
 from lib.flasher import Flasher
 
 # Some constants
+BO_LE = 'little'
 BO_BE = 'big'
 
 class ECUException(Exception):
@@ -47,7 +48,7 @@ class LiveTuningAccess:
 
 	def open_can(self, interface, channel, bitrate):
 		if(self.bus != None): self.close_can()
-		self.fp.log("Open CAN "+interface+" "+channel+" @ "+str(bitrate//1000)+" kbit/s")
+		self.fp.log(f"Open CAN {interface} {channel} @ {bitrate//1000:d} kbit/s")
 		self.bus = can.Bus(
 			interface = interface,
 			channel = channel,
@@ -159,6 +160,35 @@ class LiveTuningAccess:
 		if(verify and data != self.read_memory(address, len(data))):
 			raise ECUException("ECU Write failed!")
 
+	# This retrieve a list of pointers to access common data. For example
+	# the pointer to RPM is always at index 31. P138E0009, A129E0002 and
+	# B117M0039F have respectively 753, 494 and 313 items.
+	def read_ptrmap(self):
+		msg = can.Message(
+			is_extended_id = False, arbitration_id = 0x53,
+			data = bytes(4)
+		)
+		self.bus.send(msg)
+		msg = self.bus.recv(timeout=1.0)
+		if(msg == None): raise ECUException("ECU Read Map failed!")
+		if(msg.dlc != 4): raise ECUException("Unexpected answer!")
+		address = int.from_bytes(msg.data, BO_BE)
+		self.fp.log(f"Download pointers map @ 0x{address:08X}")
+		self.fp.progress_start(753)
+		ptrmap = []
+		while(True):
+			entry = self.read_memory(address, 6)
+			if(entry == b'\x00\x00\x00\x00\x00\x00'): break
+			ptrmap.append((
+				int.from_bytes(entry[0:4], BO_BE), # Data pointer
+				int.from_bytes(entry[4:6], BO_LE)  # Data size
+			))
+			address += 6
+			self.fp.progress(1)
+		self.fp.progress_end()
+		self.fp.log(f"Done: {len(ptrmap):d} items")
+		return ptrmap
+
 	def download(self, address, size, filename):
 		self.fp.download(address, size, filename, self.read_memory, 128, False)
 
@@ -268,7 +298,7 @@ if __name__ == "__main__":
 	if(args['listzone']):
 		print("Zones ECU")
 		for i in range(0, len(LiveTuningAccess.zones)):
-			print("%i: %s" % (i, LiveTuningAccess.zones[i][0]))
+			print(f"{i:02d}: "+LiveTuningAccess.zones[i][0])
 		sys.exit(0)
 
 	lta = LiveTuningAccess(FileProgress())

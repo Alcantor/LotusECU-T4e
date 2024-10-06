@@ -6,66 +6,9 @@ from lib.flasher import Flasher
 from lib.gui_common import *
 from lib.gui_fileprogress import FileProgress_widget
 
-class askCAL(simpledialog.Dialog):
-	def body(self, master):
-		tk.Label(master, text="""WARNING: Choose the correct version!
-
-Verify it with an hexadecimal editor! You should find a copy
-of "calrom.bin" at the given offset into "calram.bin".
-
-Choosing the wrong RAM offset can cause bad side effects with a running engine!
-""").pack()
-		self.cb = ttk.Combobox(master, state="readonly", values = [
-			"RAM+0x174C - White CroftT4E070 01/11/2005 Lotus EngV0078",
-			"RAM+0x18D0 - Black CroftT4E090 14/07/2006 Lotus EngV0091",
-			"RAM+0x1330 - White CroftT4E090 14/07/2006 Lotus EngV0091",
-			"RAM+0x1330 - White CroftT4E090 14/07/2006 Lotus EngV0093",
-			"RAM+0x1324 - White CroftT4E090 27/02/2007 Lotus EngV0097",
-			"RAM+0x4000 - White K4/T4",
-			"RAM+0x0000 - Caterham CD0MB000    Oct  3 2011 15:26:36000VC",
-			"RAM+0x27D8 - Caterham C1D3M000____Dec 10 2013 15:47:31V0000",
-			"RAM+0x2920 - Lotus T6 T6AIN V000Q 02/01/2014 LotusEng",
-			"RAM+0x8658 - T6YAR V000V 23/11/2017 LotusEng"
-		])
-		self.cb.current(0)
-		self.cb.pack(fill=tk.X, expand=True)
-		self.docopy = tk.IntVar(value=1)
-		tk.Checkbutton(master, text="Initial upload", variable=self.docopy).pack()
-		self.doverify = tk.IntVar(value=1)
-		tk.Checkbutton(master, text="Verify uploads", variable=self.doverify).pack()
-		self.base = None
-		self.size = None
-		self.copy = None
-		return master
-
-	def validate(self):
-		self.base = [
-			0x003F974C,
-			0x003F98D0,
-			0x003F9330,
-			0x003F9330,
-			0x003F9324,
-			0x00084000,
-			0x40000000,
-			0x400027D8,
-			0x40002920,
-			0x40008658
-		][self.cb.current()]
-		self.size = [
-			0x3CA0,
-			0x3CB4,
-			0x3CA0,
-			0x3C8E,
-			0x3C94,
-			0x6000,
-			0x69A8,
-			0x69A8,
-			0x69A8,
-			0x69A8
-		][self.cb.current()]
-		self.copy = (self.docopy.get() == 1)
-		self.verify = (self.doverify.get() == 1)
-		return 1
+# Some constants
+BO_BE = 'big'
+CHARSET = 'ISO-8859-15'
 
 class LiveTuningAccess_win(tk.Toplevel):
 	def __init__(self, config, parent=None):
@@ -200,9 +143,10 @@ class LiveTuningAccess_win(tk.Toplevel):
 	@try_msgbox_decorator
 	@lta_decorator
 	def watch(self, lta):
+		title = "The poor man's live tuning"
 		tk.messagebox.showinfo(
 			parent = self,
-			title = "The poor man's live tuning",
+			title = title,
 			message = """This will constantly watch a calibration file on your computer and if changes are detected, it will upload them into your ECU within the next second.
 
 Once everyhing is set up, open the file with RomRaider, make the needed modifications and save the file. As soon as the file is saved, the modifications will be upload to the ECU into the RAM.
@@ -210,9 +154,29 @@ Once everyhing is set up, open the file with RomRaider, make the needed modifica
 Because the changes are in the RAM, everything will be lost after the ECU has shut down. This is for testing with running engine.
 """
 		)
-		cal = askCAL(self, title="The poor man's live tuning");
-		self.grab_set()
-		if(cal.base == None): return
+		ptrmap = lta.read_ptrmap()
+		cal_base = ptrmap[253][0]
+		cal_size = int.from_bytes(lta.read_memory(*ptrmap[254]), BO_BE)
+		cal_name = str(lta.read_memory(cal_base, 32), CHARSET)
+		self.fp.log(f"RAM Calibration 0x{cal_size:04X} bytes @ 0x{cal_base:08X}")
+		answer = tk.messagebox.askquestion(
+			parent = self,
+			title = title,
+			message = "Calibration description correct?\n\n"+cal_name
+		)
+		if(answer != 'yes'): return
+		answer = tk.messagebox.askquestion(
+			parent = self,
+			title = title,
+			message = "Should your local file be uploaded first?"
+		)
+		copy = (answer == 'yes')
+		answer = tk.messagebox.askquestion(
+			parent = self,
+			title = title,
+			message = "Should writing be verified?"
+		)
+		verify = (answer == 'yes')
 		answer = filedialog.askopenfilename(
 			parent = self,
 			initialdir = self.config['PATH']['bin'],
@@ -223,5 +187,5 @@ Because the changes are in the RAM, everything will be lost after the ECU has sh
 		if(answer):
 			self.config['PATH']['bin'] = os.path.dirname(answer)
 			self.run_task = True
-			lta.watch(cal.base, answer, cal.size, cal.copy, cal.verify, self.waitmore)
+			lta.watch(cal_base, answer, cal_size, copy, verify, self.waitmore)
 

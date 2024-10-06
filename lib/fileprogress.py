@@ -23,10 +23,10 @@ class FileProgressException(Exception):
 class FileProgress(Progress):
 	def __aligned(self, size, chunk_size, chunk_align):
 		if(size % chunk_size != 0 and chunk_align):
-			raise FileProgressException("File size is not a multiple of "+str(chunk_size))
+			raise FileProgressException(f"File size is not a multiple of {chunk_size:d}")
 
 	def download(self, address, size, filename, read_fnct, chunk_size, chunk_align):
-		self.log("Download "+str(size)+" bytes @ "+hex(address)+" into "+filename)
+		self.log(f"Download {size:d} bytes @ 0x{address:08X} into {filename}")
 		self.__aligned(size, chunk_size, chunk_align)
 		with open(filename,'wb') as f:
 			self.progress_start(size)
@@ -44,7 +44,7 @@ class FileProgress(Progress):
 
 	def verify(self, address, filename, read_fnct, chunk_size, chunk_align, offset=0, size=None):
 		if(not size): size = os.path.getsize(filename) - offset
-		self.log("Verify "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
+		self.log(f"Verify {size:d} bytes @ 0x{address:08X} from {filename} +0x{offset:X}")
 		self.__aligned(size, chunk_size, chunk_align)
 		with open(filename,'rb') as f:
 			f.seek(offset)
@@ -57,14 +57,14 @@ class FileProgress(Progress):
 					chunk = read_fnct(address, chunk_size)
 				f_chunk = f.read(chunk_size)
 				if(f_chunk != chunk):
-					raise FileProgressException("Verify failed! @ "+hex(address))
+					raise FileProgressException(f"Verify failed! @ 0x{address:08X}")
 				self.progress(chunk_size)
 				address += chunk_size
 				size -= chunk_size
 			self.progress_end()
 
 	def verify_blank(self, address, size, read_fnct, chunk_size, chunk_align):
-		self.log("Verify Blank "+str(size)+" bytes @ "+hex(address))
+		self.log(f"Verify Blank {size:d} bytes @ 0x{address:08X}")
 		self.__aligned(size, chunk_size, chunk_align)
 		self.progress_start(size)
 		while(size > 0):
@@ -75,7 +75,7 @@ class FileProgress(Progress):
 				chunk = read_fnct(address, chunk_size)
 			for byte in chunk:
 				if(byte != 0xFF):
-					raise FileProgressException("Verify Blank failed! @ "+hex(address))
+					raise FileProgressException(f"Verify Blank failed! @ 0x{address:08X}")
 			self.progress(chunk_size)
 			address += chunk_size
 			size -= chunk_size
@@ -83,7 +83,7 @@ class FileProgress(Progress):
 
 	def upload(self, address, filename, write_fnct, chunk_size, chunk_align, offset=0, size=None):
 		if(not size): size = os.path.getsize(filename) - offset
-		self.log("Upload "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
+		self.log(f"Upload {size:d} bytes @ 0x{address:08X} from {filename} +0x{offset:X}")
 		self.__aligned(size, chunk_size, chunk_align)
 		with open(filename,'rb') as f:
 			f.seek(offset)
@@ -99,7 +99,7 @@ class FileProgress(Progress):
 
 	def watch(self, address, filename, write_fnct, offset=0, size=None, ui_cb=lambda:None):
 		if(not size): size = os.path.getsize(filename) - offset
-		self.log("Watch "+str(size)+" bytes @ "+hex(address)+" from "+filename+" +"+hex(offset))
+		self.log(f"Watch {size:d} bytes @ 0x{address:08X} from {filename} +0x{offset:X}")
 		cache_ts = os.path.getmtime(filename)
 		with open(filename, 'rb') as f:
 			f.seek(offset)
@@ -124,7 +124,7 @@ class FileProgress(Progress):
 					j = i
 					while(cache_data[j] != data[j] and (j-i) < 255): j += 1
 					if(j > i):
-						self.log("Update "+str(j-i)+" bytes @ "+hex(i))
+						self.log(f"Update {j-i:d} bytes @ 0x{i:08X}")
 						write_fnct(address+i, data[i:j])
 						i = j
 					else:
