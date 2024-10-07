@@ -34,6 +34,15 @@ class CRP08_xtea():
 		self.key = key
 		self.iv = [0, 0]
 
+	def __eq__(self, other):
+		if not isinstance(other, CRP08_xtea):
+			return False
+		return (self.delta == other.delta and
+				self.rounds == other.rounds and
+				self.mask == other.mask and
+				self.key == other.key and
+				self.iv == other.iv)
+
 	def encrypt(self, v0, v1):
 		xsum = 0;
 		for i in range(0, self.rounds):
