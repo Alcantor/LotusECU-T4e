@@ -243,7 +243,7 @@ class CRP08_data_ecu(BinData):
 			self.ecu_data == other.ecu_data and
 			self.ecu_maxversion == other.ecu_maxversion and
 			self.ecu_minversion == other.ecu_minversion and
-			self.xtea == other.xtea_salt and
+			self.xtea == other.xtea and
 			self.xtea_salt == other.xtea_salt
 		}
 	def parse(self, data):
