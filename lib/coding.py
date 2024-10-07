@@ -138,5 +138,5 @@ if __name__ == "__main__":
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+prog+" file COD_FILE")
-		print("\t"+prog+" value VALUE")
+		print(f"\t{prog} file COD_FILE")
+		print(f"\t{prog} value VALUE")
