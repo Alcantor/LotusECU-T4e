@@ -233,7 +233,7 @@ if __name__ == "__main__":
 		cal.detect()
 		offset = cal.search_crc_cmpli(sys.argv[3])
 		if(offset == None): print("CRC cmplwi not found!")
-		else: print("CRC cmplwi offset: "+hex(offset))
+		else: print(f"CRC cmplwi offset: 0x{offset:06X}")
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "check"):
 		cal = Calibration()
 		cal.read_file(sys.argv[2])
@@ -255,9 +255,9 @@ if __name__ == "__main__":
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+prog+" sign ORIGINAL_CALROM MODIFIED_CALROM OUTFILE SIGNATURE")
-		print("\t"+prog+" search_prog ORIGINAL_CALROM ORIGINAL_PROG")
-		print("\t"+prog+" check ORIGINAL_CALROM")
-		print("\t"+prog+" unlock CALROM OUTFILE")
+		print(f"\t{prog} sign ORIGINAL_CALROM MODIFIED_CALROM OUTFILE SIGNATURE")
+		print(f"\t{prog} search_prog ORIGINAL_CALROM ORIGINAL_PROG")
+		print(f"\t{prog} check ORIGINAL_CALROM")
+		print(f"\t{prog} unlock CALROM OUTFILE")
 		#print("\t"+prog+" check_eeprom EEPROM")
 

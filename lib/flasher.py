@@ -22,7 +22,7 @@ class Flasher:
 
 	def open_can(self, interface, channel, bitrate):
 		if(self.bus != None): self.close_can()
-		self.fp.log("Open CAN "+interface+" "+channel+" @ "+str(bitrate//1000)+" kbit/s")
+		self.fp.log(f"Open CAN {interface} {channel} @ {bitrate//1000:d} kbit/s")
 		self.bus = can.Bus(
 			interface = interface,
 			channel = channel,

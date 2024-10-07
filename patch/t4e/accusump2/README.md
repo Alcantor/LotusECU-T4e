@@ -9,3 +9,4 @@ Improved version of the Accusump control for black dash version.
 ## Teaser
 
 ![alt text](../../../documentation/Usage/accusump/table2.png "Accusump in RomRaider")
+

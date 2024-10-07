@@ -13,7 +13,7 @@ class CRP01_uploader:
 
 	def open_com(self, port):
 		if(self.ser != None): self.close_com()
-		self.p.log("Open COM "+str(port)+" @ 29.7 kbit/s")
+		self.p.log(f"Open COM {port} @ 29.7 kbit/s")
 		self.ser = serial.Serial(port=port, baudrate=29761, timeout=0.1)
 
 	def close_com(self):
@@ -81,13 +81,13 @@ class CRP01_uploader:
 		cmd, payload = self.recv()
 		if(cmd == 0x72 and len(payload) == 1):
 			if(payload[0] == 0): return
-			raise CRP01_exception("ECU: Error "+str(payload[0]))
-		raise CRP01_exception("ECU: Unexcepted command "+str(cmd))
+			raise CRP01_exception(f"ECU: Error {payload[0]:d}")
+		raise CRP01_exception(f"ECU: Unexcepted command {cmd:02X}")
 
 	# Wait the ECU to be turned on and automatically flash it!
 	def bootstrap(self, crp, timeout=60, ui_cb=lambda:None):
 		self.p.log("--> Drive the L-Line down yourself! (Modify the VAG-Cable) <--\n")
-		self.p.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
+		self.p.log(f"Power On ECU, please! (within {timeout:d} seconds)")
 		while(True):
 			ui_cb()
 			try:

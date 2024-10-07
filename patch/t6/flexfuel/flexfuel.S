@@ -344,3 +344,4 @@ timer_3:
 	stw	%r3, 0xC3FA00CC@l(%r4)
 timer_4:
 	blr
+

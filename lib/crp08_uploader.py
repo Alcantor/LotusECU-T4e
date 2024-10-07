@@ -41,7 +41,7 @@ class CRP08_uploader:
 
 	def open_can(self, chunk_can):
 		if(self.bus != None): self.close_can()
-		self.p.log("Open CAN "+self.interface+" "+self.channel+" @ "+str(chunk_can.can_bitrate)+" kbit/s")
+		self.p.log(f"Open CAN {self.interface} {self.channel} @ {chunk_can.can_bitrate:d} kbit/s")
 		self.bus = can.Bus(
 			interface = self.interface,
 			channel = self.channel,
@@ -110,7 +110,7 @@ class CRP08_uploader:
 			raise CRP08_exception("CRP file is empty!")
 		crp_chunk_i = 1
 		self.open_can(crp.chunks[crp_chunk_i])
-		self.p.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
+		self.p.log(f"Power On ECU, please! (within {timeout:d} seconds)")
 		while(True):
 			cmd, data = self.recv(timeout, ui_cb)
 			# Hello
@@ -149,7 +149,7 @@ class CRP08_uploader:
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
 				error = data[4]
-				raise CRP08_exception("ECU: Error "+hex(error)+" "+self.errors.get(error, "Unknow"))
+				raise CRP08_exception(f"ECU: Error {error:02X} " + self.errors.get(error, "Unknown"))
 		self.close_can()
 
 if __name__ == "__main__":

@@ -15,3 +15,4 @@ temperature PID instead.
 
  - Fuel temperature    : OBD mode 0x01 pid 0x46
  - Ethanol content (%) : OBD mode 0x01 pid 0x52
+

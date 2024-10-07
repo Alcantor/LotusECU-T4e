@@ -251,9 +251,9 @@ class CRP01_uploader_win(tk.Toplevel):
 		)
 		if(answer):
 			initialdir = self.prefs['PATH']['crp01'],
-			self.p.log("Load "+answer)
+			self.p.log(f"Load {answer}")
 			self.crp.read_file(answer)
-			self.p.log(" -> "+self.crp.desc)
+			self.p.log(f" -> {self.crp.desc}")
 			self.btn_flash['state'] = tk.NORMAL
 
 	def on_closing(self):

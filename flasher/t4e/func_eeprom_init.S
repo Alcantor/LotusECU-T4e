@@ -33,3 +33,4 @@ _start:
 	stb	%r0, 0x5017(%r30) # 0x305017 DDRQST
 	
 	blr
+

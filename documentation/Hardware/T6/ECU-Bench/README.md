@@ -13,3 +13,4 @@
 ## Power consumption
 
 About 100 mA
+

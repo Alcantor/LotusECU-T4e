@@ -20,3 +20,4 @@ to work as if the Pre-O2 would be a narrow one.
 ## Queries
 
  - Lambda: OBD mode 0x01 pid 0x24
+

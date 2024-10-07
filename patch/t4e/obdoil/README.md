@@ -18,3 +18,4 @@ sensor.
 
  - Oil Pressure: OBD mode 0x01 pid 0x23 (Fuel Pressure)
  - Oil Temperature: OBD mode 0x01 pid 0x5C
+

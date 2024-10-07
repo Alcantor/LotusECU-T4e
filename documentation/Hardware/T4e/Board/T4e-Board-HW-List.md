@@ -38,3 +38,4 @@ Offset   | Size    | Description
 0x020000 | 0x60000 | Program
 0x2F8000 | 0x00800 | 2 KByte DecRAM - ECU Correction Values (Copy of SPI EEPROM)
 0x3F8000 | 0x08000 | 32 KByte CalRAM - Main RAM
+

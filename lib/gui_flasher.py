@@ -196,3 +196,4 @@ class Flasher_win(tk.Toplevel):
 		)
 		if(answer != 'yes'): return
 		fl.branch(0x100)
+

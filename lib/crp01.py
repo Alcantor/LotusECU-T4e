@@ -295,7 +295,7 @@ class CRP01_subpackets(BinData):
 				# Add sub-packet
 				self.subpackets.append((addr, data2))
 			else:
-				raise Exception("Unknow sub-packet "+hex(data_bin[i]))
+				raise Exception(f"Unknown sub-packet ({i:d}): 0x{data[i]:02X}")
 
 	def get_size(self):
 		size = 0
@@ -519,19 +519,19 @@ if __name__ == "__main__":
 	if(len(sys.argv) >= 2):
 		crp = CRP01({"K4": 0, "T4": 1, "T4e": 2}[sys.argv[1]])
 	if  (len(sys.argv) >= 5 and sys.argv[2] == "pack"):
-		print("-- Convert "+sys.argv[3]+" into "+sys.argv[4]+" --")
+		print(f"-- Convert {sys.argv[3]} into {sys.argv[4]} --")
 		crp.desc = crp.data.subpackets.import_srec(sys.argv[3])[:11]
 		crp.data.update_header()
 		crp.write_file(sys.argv[4])
 		print(crp)
 	elif(len(sys.argv) >= 5 and sys.argv[2] == "unpack"):
-		print("-- Convert "+sys.argv[3]+" into "+sys.argv[4]+" --")
+		print(f"-- Convert {sys.argv[3]} into {sys.argv[4]} --")
 		crp.read_file(sys.argv[3])
 		crp.data.subpackets.export_srec(sys.argv[4], crp.desc)
 		print(crp)
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+prog+" [K4|T4|T4e] pack SREC_FILE CRP_FILE")
-		print("\t"+prog+" [K4|T4|T4e] unpack CRP_FILE SREC_FILE")
+		print(f"\t{prog} [K4|T4|T4e] pack SREC_FILE CRP_FILE")
+		print(f"\t{prog} [K4|T4|T4e] unpack CRP_FILE SREC_FILE")
 

@@ -124,7 +124,7 @@ class CAL_editor_win(tk.Toplevel):
 			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			offset = self.cal.search_crc_cmpli(answer)
 			if(offset == None): msg = "CRC cmplwi not found!"
-			else: msg = "CRC cmplwi offset: "+hex(offset)
+			else: msg = f"CRC cmplwi offset: 0x{offset:06X}"
 			messagebox.showinfo(
 				master = self,
 				title = "T4e CRC cmplw offset!",
@@ -194,3 +194,4 @@ class CAL_editor_win(tk.Toplevel):
 	def ext64(self):
 		self.cal.resize_file(0x10000)
 		self.update()
+
