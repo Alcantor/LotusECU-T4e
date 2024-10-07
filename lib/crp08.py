@@ -524,20 +524,20 @@ if __name__ == "__main__":
 		i = {"T4e": 0, "T6": 1, "CAT": 2, "TCU": 3}[sys.argv[1]]
 		crp = CRP08()
 	if  (len(sys.argv) >= 5 and sys.argv[2] == "calrom"):
-		print("-- Add "+sys.argv[3]+" into "+sys.argv[4]+" --")
+		print(f"-- Add {sys.argv[3]} into {sys.argv[4]} --")
 		crp.add_cal(sys.argv[3], i)
 		print(crp.chunks[1])
 		crp.write_file(sys.argv[4])
 	elif(len(sys.argv) >= 5 and sys.argv[2] == "prog"):
-		print("-- Add "+sys.argv[3]+" into "+sys.argv[4]+" --")
+		print(f"-- Add {sys.argv[3]} into {sys.argv[4]} --")
 		crp.add_prog(sys.argv[3], i)
 		print(crp.chunks[1])
 		crp.write_file(sys.argv[4])
 	elif(len(sys.argv) >= 6 and sys.argv[2] == "both"):
-		print("-- Add "+sys.argv[3]+" into "+sys.argv[5]+" --")
+		print(f"-- Add {sys.argv[3]} into {sys.argv[5]} --")
 		crp.add_cal(sys.argv[3], i)
 		print(crp.chunks[1])
-		print("-- Add "+sys.argv[4]+" into "+sys.argv[5]+" --")
+		print(f"-- Add {sys.argv[4]} into {sys.argv[5]} --")
 		crp.add_prog(sys.argv[4], i)
 		print(crp.chunks[2])
 		crp.write_file(sys.argv[5])
@@ -551,8 +551,8 @@ if __name__ == "__main__":
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print("\t"+prog+" [T4e|T6|CAT|TCU] calrom BIN_FILE CRP_FILE")
-		print("\t"+prog+" [T4e|T6|CAT|TCU] prog BIN_FILE CRP_FILE")
-		print("\t"+prog+" [T4e|T6|CAT|TCU] both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
-		print("\t"+prog+" [T4e|T6|CAT|TCU] unpack CRP_FILE")
+		print(f"\t{prog} [T4e|T6|CAT|TCU] calrom BIN_FILE CRP_FILE")
+		print(f"\t{prog} [T4e|T6|CAT|TCU] prog BIN_FILE CRP_FILE")
+		print(f"\t{prog} [T4e|T6|CAT|TCU] both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
+		print(f"\t{prog} [T4e|T6|CAT|TCU] unpack CRP_FILE")
 
