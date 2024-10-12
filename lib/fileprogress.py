@@ -42,7 +42,7 @@ class FileProgress(Progress):
 				size -= chunk_size
 			self.progress_end()
 
-	def verify(self, address, filename, read_fnct, chunk_size, chunk_align, offset=0, size=None):
+	def verify(self, address, filename, read_fnct, chunk_size, chunk_align=False, offset=0, size=None):
 		if(not size): size = os.path.getsize(filename) - offset
 		self.log(f"Verify {size:d} bytes @ 0x{address:08X} from {filename} +0x{offset:X}")
 		self.__aligned(size, chunk_size, chunk_align)
@@ -81,7 +81,7 @@ class FileProgress(Progress):
 			size -= chunk_size
 		self.progress_end()
 
-	def upload(self, address, filename, write_fnct, chunk_size, chunk_align, offset=0, size=None):
+	def upload(self, address, filename, write_fnct, chunk_size, chunk_align=False, offset=0, size=None, chunk_pause=0.0):
 		if(not size): size = os.path.getsize(filename) - offset
 		self.log(f"Upload {size:d} bytes @ 0x{address:08X} from {filename} +0x{offset:X}")
 		self.__aligned(size, chunk_size, chunk_align)
@@ -95,6 +95,7 @@ class FileProgress(Progress):
 				self.progress(chunk_size)
 				address += chunk_size
 				size -= chunk_size
+				time.sleep(chunk_pause)
 			self.progress_end()
 
 	def watch(self, address, filename, write_fnct, offset=0, size=None, ui_cb=lambda:None):
