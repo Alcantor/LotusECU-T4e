@@ -190,19 +190,27 @@ class LiveTuningAccess:
 		return ptrmap
 
 	def download(self, address, size, filename):
-		self.fp.download(address, size, filename, self.read_memory, 128, False)
+		self.fp.download(address, size, filename, self.read_memory, 128)
 
 	def verify(self, address, filename):
-		self.fp.verify(address, filename, self.read_memory, 128, False)
+		self.fp.verify(address, filename, self.read_memory, 128)
 
 	def upload(self, address, filename):
-		self.fp.upload(address, filename, self.write_memory, 128, False)
+		self.fp.upload(address, filename, self.write_memory, 128, chunk_pause=0.01)
 
 	def watch(self, address, filename, size, copy, verify, ui_cb=lambda:None):
 		write_fnct = lambda a,d: self.write_memory(a,d,verify)
 		if(copy):
 			self.fp.upload(address, filename, write_fnct, 128, False, 0, size)
 		self.fp.watch(address, filename, write_fnct, 0, size, ui_cb)
+
+	def download_verify(self, address, size, filename):
+		self.download(address, size, filename)
+		self.verify(address, filename)
+
+	def upload_verify(self, address, filename):
+		self.upload(address, filename)
+		self.verify(address, filename)
 
 	def test(self, freeram_address):
 		# Word
