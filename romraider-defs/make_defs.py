@@ -50,6 +50,7 @@ def xml_add_signature(rom, s):
 	ET.SubElement(romid, "flashmethod").text = d[8]
 	ET.SubElement(romid, "internalidaddress").text = d[9]
 	ET.SubElement(romid, "internalidstring").text = d[10]
+	ET.SubElement(romid, "noRamOffset").text = "1"
 
 def xml_add_scaling(table, unit):
 	ET.SubElement(table, "scaling",
@@ -300,7 +301,7 @@ def do(symbols, units, xaxis, calrom, decram):
 
 def find_symbols_files():
 	result = []
-	regex = re.compile("symbols_(.*)\.csv")
+	regex = re.compile("symbols_(.*)\\.csv")
 	for filename in os.listdir("."):
 		if(not os.path.isfile(filename)): continue
 		m = regex.match(filename)

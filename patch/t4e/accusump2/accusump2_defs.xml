@@ -12,6 +12,7 @@
 			<flashmethod>CRP</flashmethod>
 			<internalidaddress>0x3CB4</internalidaddress>
 			<internalidstring>XTRACAL0</internalidstring>
+			<noRamOffset>1</noRamOffset>
 		</romid>
 		<table type="2D" name="sensor: oil pressure gain" category="sensor" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBC">
 			<scaling category="Millibar/5v" units="mbar/5volt" expression="x" to_byte="x" format="0" fineincrement="10" coarseincrement="50" />

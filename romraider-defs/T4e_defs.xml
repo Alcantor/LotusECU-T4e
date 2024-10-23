@@ -7,11 +7,12 @@
 			<model>Elise/Exige</model>
 			<submodel>2008-2011</submodel>
 			<transmission>MT</transmission>
-			<filesize>64kb</filesize>
+			<filesize>15540b</filesize>
 			<memmodel>MPC563</memmodel>
 			<flashmethod>CRP</flashmethod>
 			<internalidaddress>0x3C8E</internalidaddress>
 			<internalidstring>Lotus </internalidstring>
+			<noRamOffset>1</noRamOffset>
 		</romid>
 		<table type="2D" name="ecu: engine speed byte coefficient" category="ecu" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x0024">
 			<scaling category="Number" units="#" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="100" />
@@ -556,7 +557,7 @@ peak = (signal * 10) / (signal_avg + 1)
 peak_over_threshold = peak - threshold</description>
 		</table>
 		<table type="2D" name="knock: speed margin" category="knock" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x009C">
-			<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
+			<scaling category="RPM" units="rpm" expression="x*125/4" to_byte="x*4/125" format="0" fineincrement="32" coarseincrement="100" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>speed margin</data>
 			</table>
@@ -4560,6 +4561,7 @@ inj_time = d</description>
 			<flashmethod>CRP</flashmethod>
 			<internalidaddress>0x0</internalidaddress>
 			<internalidstring>CroftT4E090</internalidstring>
+			<noRamOffset>1</noRamOffset>
 		</romid>
 		<table type="2D" name="ecu: engine speed byte coefficient" category="ecu" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x0020">
 			<scaling category="Number" units="#" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="100" />

@@ -265,7 +265,7 @@ class LDMap:
 		self.syms = {}
 		self.segs = {}
 		r_sym = re.compile("^ *(0x[0-9a-f]*) *([0-9a-zA-Z_]*)$")
-		r_seg = re.compile("^(\.[a-z]*) *(0x[0-9a-f]*) *(0x[0-9a-f]*)$")
+		r_seg = re.compile("^(\\.[a-z]*) *(0x[0-9a-f]*) *(0x[0-9a-f]*)$")
 		with open(file,'r') as f:
 			for line in f.readlines():
 				m = r_sym.match(line)

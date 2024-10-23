@@ -39,7 +39,7 @@
 "LEA_obd2_freeze2_sensor_adc_post_O2","002f833a","u16_voltage_5/1023v",""
 "LEA_obd2_freeze2_car_speed","002f8340","u8_speed_kph",""
 "LEA_tc_lauchcontrol_revlimit","002f835e","u16_rspeed_rpm",""
-"CAL_base","003f98d0","char[32]","T4E2008#World#Lotus#Elise/Exige#2008-2011#MT#64kb#MPC563#CRP#0x3C8E#Lotus "
+"CAL_base","003f98d0","char[32]","T4E2008#World#Lotus#Elise/Exige#2008-2011#MT#15540b#MPC563#CRP#0x3C8E#Lotus "
 "CAL_ecu_engine_speed_byte_coefficient","003f98f4","uint16_t","DO NOT EDIT THIS VALUE. Internal engine speed byte used within the ECU to index many lookup tables.
 
 Formula: engine_speed = COEFFICIENT / flywheel_tooth_count_period - offset."
@@ -162,7 +162,7 @@ Formula:
 signal_avg = (100% - REACTIVITY) * signal_avg + REACTIVITY * signal
 peak = (signal * 10) / (signal_avg + 1)
 peak_over_threshold = peak - threshold"
-"CAL_knock_speed_margin","003f996c","u8_rspeed_125/4+500rpm","Engine speed margin for retard1_engine_speed_min and retard1_engine_speed_max thresholds."
+"CAL_knock_speed_margin","003f996c","u8_rspeed_125/4rpm","Engine speed margin for retard1_engine_speed_min and retard1_engine_speed_max thresholds."
 "CAL_knock_load_margin","003f996d","u8_load_4mg/stroke","Engine load margin for retard_threshold and retard2_corr_threshold thresholds."
 "CAL_knock_retard1_dt_tps2_time","003f996e","u8_time_5ms","If the retard1 is disabled by a change in tps\, it will be re-enable after this amount of time."
 "CAL_knock_retard1_max_?","003f996f","undefined1",""
