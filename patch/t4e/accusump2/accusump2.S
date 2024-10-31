@@ -3,9 +3,9 @@
 CAL_signature:
 .ascii	"XTRACAL0"
 CAL_sensor_oil_pressure_gain:
-.short	12500
+.short	12928
 CAL_sensor_oil_pressure_offset:
-.short	-1250
+.short	-1293
 CAL_accusump_X_engine_speed:
 #	500, 1000, 4000, 8000   rpm
 .byte	  0,   16,  112,  240 # u8_rspeed_125/4+500rpm
@@ -45,7 +45,7 @@ accusump:
 	lis	%r4, CAL_sensor_oil_pressure_gain@ha
 	lhz	%r4, CAL_sensor_oil_pressure_gain@l(%r4)
 	lis	%r5, CAL_sensor_oil_pressure_offset@ha
-	lhz	%r5, CAL_sensor_oil_pressure_offset@l(%r5)
+	lha	%r5, CAL_sensor_oil_pressure_offset@l(%r5)
 	mullw	%r6, %r3, %r4
 	srawi	%r6, %r6, 10
 	addze	%r6, %r6
@@ -160,7 +160,7 @@ OBD_mode_0x22_pid_0x115C:
 	/* Oil Pressure like GM pid 0x22115C (0x221154 Oil-Temp) */
 	addi	%r31, %r31, 2 # Answer 2 bytes
 	lis	%r3, oil_pressure@ha
-	lhz	%r3, oil_pressure@l(%r3)
+	lha	%r3, oil_pressure@l(%r3)
 	sth	%r3, 0(%r5)
 	ba	hook_OBD_mode_0x22_jump
 
