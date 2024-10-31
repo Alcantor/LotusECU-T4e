@@ -60,4 +60,3 @@ For common 10 bar oil pressure sensor (0bar=0.5V and 10bar=4.5V).
 ## Teaser
 
 ![alt text](../../../documentation/Usage/accusump/table.png "Accusump in RomRaider")
-

@@ -51,6 +51,7 @@ CAL_ign_advance_low_cam_base = 0x3fb34c;
 maf_accumulated_1 = 0x3fd5e0;
 shutdown_flags = 0x3fd678;
 sensor_adc_ecu_voltage = 0x3fd67a;
+map = 0x3fd6a0;
 inj_time_final_1 = 0x3fd738;
 afr_target = 0x3fd746;
 engine_speed_2 = 0x3fd7f8;

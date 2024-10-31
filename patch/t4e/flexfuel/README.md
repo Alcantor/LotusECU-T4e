@@ -9,7 +9,7 @@ not be able to really enjoy it.
 Lotus is very protective and power is progressively reduced when coolant water is
 above 90°C and/or when intake air temperature (after intercooler) is above 30°C.
 
-With 110°C coolant and 70°C intake temperatue, the ECU retards the timing up to
+With 110°C coolant and 70°C intake temperature, the ECU retards the timing up to
 11 degrees.
 
 Air/Water Intercooling would probably have helped a lot, but it's expensive and
@@ -34,7 +34,7 @@ Various tables have been added for different injection and ignition values.
  2. Use SAE-Quick-Connect 5/16" (8 mm) on the Lotus.
  3. Use SAE-Quick-Connect 3/8" (9.5 mm) on the sensor.
 
-The PIN LG1 is the only input which can sample a PWM signal. It's a 5V input,
+***Note***: The PIN LG1 is the only input which can sample a PWM signal. It's a 5V input,
 but the sensor has a open-drain output, so even if it's powered by 12V, it's ok.
 
 ## Queries
@@ -78,3 +78,8 @@ I'm also concerned about water contamination in my engine oil due to the
 hygroscopic nature of ethanol. At my next oil change, I will verify this by
 doing a crackle test.
 
+## Pictures
+
+![alt text](../../../documentation/Usage/flexfuel/harness.jpg "Wire Harness")
+![alt text](../../../documentation/Usage/flexfuel/oncar.jpg "Mounted on the car")
+![alt text](../../../documentation/Usage/flexfuel/type.jpg "Flexfuel Sensor")

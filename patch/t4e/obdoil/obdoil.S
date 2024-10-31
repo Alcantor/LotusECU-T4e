@@ -39,26 +39,28 @@ hook_OBD_mode_0x01:
 	add	%r5, %r4, %r31
 
 	# Branching
-	cmplwi	%r3, 0x20
-	beq	OBD_mode_0x01_pid_0x20
+	cmplwi	%r3, 0x00
+	beq	OBD_mode_0x01_pid_0x00
 	cmplwi	%r3, 0x40
 	beq	OBD_mode_0x01_pid_0x40
+	cmplwi	%r3, 0x0A
+	beq	OBD_mode_0x01_pid_0x0A
+	cmplwi	%r3, 0x0B
+	beq	OBD_mode_0x01_pid_0x0B
 	cmplwi	%r3, 0x5C
 	beq	OBD_mode_0x01_pid_0x5C
-	cmplwi	%r3, 0x23
-	beq	OBD_mode_0x01_pid_0x23
-	
+
 	# Mask %r30 (Erase by patch in original code)
 	rlwinm	%r0, %r30, 0,24,31
 	ba	hook_OBD_mode_0x01_continue
 
-OBD_mode_0x01_pid_0x20:
-	# Available PID 0x21-0x40
+OBD_mode_0x01_pid_0x00:
+	# Available PID 0x01-0x20
 	addi	%r31, %r31, 5 # Answer 5 bytes
 	stb	%r3, 0(%r5)
 
-	lis	%r3, 0xA0062001@ha
-	addi	%r3, %r3, 0xA0062001@l
+	lis	%r3, 0xFE7FB813@ha
+	addi	%r3, %r3, 0xFE7FB813@l
 	stw	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
@@ -73,24 +75,59 @@ OBD_mode_0x01_pid_0x40:
 	stw	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
-	
-OBD_mode_0x01_pid_0x23:
-	# Fuel Pressure, but we use it for oil.
-	addi	%r31, %r31, 3 # Answer 3 bytes
+
+OBD_mode_0x01_pid_0x0A:
+	# Fuel pressure, but we use it for oil.
+	addi	%r31, %r31, 2 # Answer 2 bytes
 	stb	%r3, 0(%r5)
 
 	lis	%r3, oil_pressure@ha
 	lha	%r3, oil_pressure@l(%r3)
 
-	# Convert and do not allow negative values!
-	li	%r0, 100
-	divw	%r3, %r3, %r0
+	# Avoid negative numbers by clamping to 0
 	cmpwi	%r3, 0
-	bge	pres_gt0
+	bgt	presA_gt0
 	li	%r3, 0
-pres_gt0:
-	sth	%r3, 1(%r5)
+	b	presA_done
+presA_gt0:
+	# Clamp to 8-bits by limiting max to 7650 mbar (255 3kPa)
+	cmpwi	%r3, 7650
+	blt	presA_lt7650
+	li	%r3, 255
+	b	presA_done
+presA_lt7650:
+	# Convert from mbar to 3kPa by dividing by 30
+	li	%r0, 30
+	divw	%r3, %r3, %r0
+presA_done:
+	stb	%r3, 1(%r5)
+	ba	hook_OBD_mode_0x01_jump
 
+OBD_mode_0x01_pid_0x0B:
+	# Intake manifold absolute pressure
+	addi	%r31, %r31, 2 # Answer 2 bytes
+	stb	%r3, 0(%r5)
+
+	lis	%r3, map@ha
+	lha	%r3, map@l(%r3)
+
+	# Avoid negative numbers by clamping to 0
+	cmpwi	%r3, 0
+	bgt	presB_gt0
+	li	%r3, 0
+	b	presB_done
+presB_gt0:
+	# Clamp to 8-bits by limiting max to 2550 mbar (255 kPa)
+	cmpwi	%r3, 2550
+	blt	presB_lt2550
+	li	%r3, 255
+	b	presB_done
+presB_lt2550:
+	# Convert from mbar to kPa by dividing by 10
+	li	%r0, 10
+	divw	%r3, %r3, %r0
+presB_done:
+	stb	%r3, 1(%r5)
 	ba	hook_OBD_mode_0x01_jump
 
 OBD_mode_0x01_pid_0x5C:
@@ -127,7 +164,7 @@ obdoil:
 	lis	%r4, CAL_sensor_oil_pressure_gain@ha
 	lhz	%r4, CAL_sensor_oil_pressure_gain@l(%r4)
 	lis	%r5, CAL_sensor_oil_pressure_offset@ha
-	lhz	%r5, CAL_sensor_oil_pressure_offset@l(%r5)
+	lha	%r5, CAL_sensor_oil_pressure_offset@l(%r5)
 	mullw	%r6, %r3, %r4
 	srawi	%r6, %r6, 10
 	addze	%r6, %r6
