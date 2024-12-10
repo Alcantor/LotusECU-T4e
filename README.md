@@ -247,7 +247,7 @@ this access to flash the ECU, think twice before erasing the program.
 The ECU appears to boot fine without a valid calibration, so erasing this part
 is relatively safe. However, the car won't run in this case.
 
-## The infamous P0340 Camshaft Position Sensor BUG
+## Security checks (DTC P0340 or P0341)
 
 I've encountered numerous times that a freshly programmed ECU throws this error.
 The engine starts, runs for 1 or 2 seconds and die, then an OBD scanner reports
@@ -258,6 +258,19 @@ tune, the ECU will detect it and set a flag. To address this, I recommend fillin
 the EEPROM from 0x7C0 to 0x7E0 with zeros, as an unprogrammed ECU would be.
 
 In the T6, the car model is stored in the coding area from 0x01C020 to 0x01C040
+
+## Updating the safety CPU (DTC P2107)
+
+For the safety of the drive-by-wire throttle a second processor is involved.
+
+The T4e bootloader will update this processor if the following conditions are met:
+
+ - String "HC08CODE" at 0x021FE0
+ - Value 0xAAAAAAAA at 0x021FE8
+ - Pointer to 9kb firmware at 0x021FEC
+
+Once the update is successfully completed, the 0xAAAAAAAA will be changed to
+0x22222222. The process is very similar for the T6 ECU, but at address 0x040080.
 
 ## The Lotus ECU in other cars
 

@@ -235,7 +235,8 @@ TC_MODE = [
 NOAXIS_SCALES = {
 	"CAL_closedloop_enable_runtime" : ("stop coolant", 4, 'u8_temp_5/8-40c'),
 	"CAL_injtip_catalyst_adj": ("dfso_count", 1, 'uint8_t'),
-	"CAL_sensor_fuel_scaling": ("signal", 1, 'u8_voltage_5/1023v')
+	"CAL_sensor_fuel_scaling": ("signal", 1, 'u8_voltage_5/1023v'),
+	"CAL_obd2_P0128_wait_air_mass": ("stop coolant", 4, 'u8_temp_5/8-40c')
 }
 
 def do(symbols, units, xaxis, calrom, decram):
