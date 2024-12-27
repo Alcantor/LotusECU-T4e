@@ -143,6 +143,85 @@ hook_injtip_out_adj1:
 	bl	lookup_2D_uint8_interpolated_withblend
 	ba	hook_injtip_out_adj1_continue
 
+.if OBD_KLINE
+
+hook_OBD_mode_0x01:
+	# %r3 is the obd pid
+
+	# Branching
+	cmplwi	%r3, 0x40
+	beq	OBD_mode_0x01_pid_0x40
+	cmplwi	%r3, 0x46
+	beq	OBD_mode_0x01_pid_0x46
+	cmplwi	%r3, 0x52
+	beq	OBD_mode_0x01_pid_0x52
+
+	# Copy %r3 (Erase by patch in original code)
+	or	%r31, %r3, %r3
+	ba	hook_OBD_mode_0x01_continue
+
+OBD_mode_0x01_pid_0x40:
+	lis     %r4, obd_resp@ha
+	addi    %r4, %r4, obd_resp@l
+
+	# Header
+	li	%r5, 0x48
+	stb	%r5, 0(%r4)
+	li	%r5, 0x6B
+	stb	%r5, 1(%r4)
+	li	%r5, 0x10
+	stb	%r5, 2(%r4)
+	li	%r5, 0x41
+	stb	%r5, 3(%r4)
+	stb	%r3, 4(%r4)
+
+	# Available PID 0x41-0x60
+	lis	%r5, 0x6EC04000@ha
+	addi	%r5, %r5, 0x6EC04000@l
+	stw	%r5, 5(%r4) # PID response
+
+	li	%r5, 0xB2 # Checksum
+	stb	%r5, 9(%r4)
+
+	li	%r5, 0x09
+	lis	%r3, obd_resp_length@ha
+	stb	%r5, obd_resp_length@l(%r3)
+
+	li	%r5, 0x00
+	lis	%r3, obd_resp_index@ha
+	stb	%r5, obd_resp_index@l(%r3)
+
+	# Set the first byte into SCI1 Data Register
+	li	%r5, 0x48
+	lis	%r3, 0x030500E@ha
+	sth	%r5, 0x030500E@l(%r3)
+
+	ba	hook_OBD_mode_0x01_jump
+
+OBD_mode_0x01_pid_0x46:
+	# Fuel temperature (reported as ambiant air)
+	lis	%r4, ethanol_temp@ha
+	lbz	%r4, ethanol_temp@l(%r4)
+
+	# Convert from x*5/8-40 to x-40
+	# Maximal oil temp will be 120°C!
+	mulli	%r4, %r4, 160
+	srawi	%r4, %r4, 8
+	addze	%r4, %r4
+
+	bl	OBD_mode_0x01_send_uint8
+	ba	hook_OBD_mode_0x01_jump
+
+OBD_mode_0x01_pid_0x52:
+	# Ethanol fuel %
+	lis	%r4, ethanol_content@ha
+	lbz	%r4, ethanol_content@l(%r4)
+
+	bl	OBD_mode_0x01_send_uint8
+	ba	hook_OBD_mode_0x01_jump
+
+.else
+
 hook_OBD_mode_0x01:
 	# %r30 is index in obd_req
 	# %r31 is index in obd_resp
@@ -210,6 +289,8 @@ OBD_mode_0x01_pid_0x52:
 	stb	%r3, 1(%r5)
 
 	ba	hook_OBD_mode_0x01_jump
+
+.endif
 
 copy_calibration:
 	# Copy extra calibration

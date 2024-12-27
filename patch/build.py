@@ -352,7 +352,10 @@ def build_obdoil():
 	# Hook: Main Loop
 	p.check_and_replace(
 		s.get_sym_addr("hook_loop_loc"),
-		PPC32.ppc_b(-0x12B),
+		PPC32.ppc_b(
+			s.get_sym_addr("hook_loop_continue") -
+			s.get_sym_addr("hook_loop_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
 
@@ -406,7 +409,7 @@ def build_accusump2():
 
 	# Main Loop - Replace the call to the airbox_flap function
 	p.check_and_replace(
-		s.get_sym_addr("airbox_flap"),
+		s.get_sym_addr("airbox_flap_call"),
 		PPC32.ppc_bl(0x01a9dc),
 		PPC32.ppc_bla(m.get_sym_addr("accusump"))
 	)
@@ -440,7 +443,7 @@ def build_flexfuel():
 	print("Flexfuel support...")
 	c = Patcher_T4eCalibration("../dump/t4e-black/A129E0002/calrom.bin")
 	p = Patcher_T4eProg("../dump/t4e-black/A129E0002/prog.bin")
-	os.system("make -C t4e/flexfuel CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s}".format(
+	os.system("make -C t4e/flexfuel OBD_KLINE=0 CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s}".format(
 		c.get_free_cal(),
 		p.get_free_rom(),
 		p.get_free_ram(),
@@ -459,7 +462,10 @@ def build_flexfuel():
 	# Hook: Main Loop
 	p.check_and_replace(
 		s.get_sym_addr("hook_loop_loc"),
-		PPC32.ppc_b(-0x12B),
+		PPC32.ppc_b(
+			s.get_sym_addr("hook_loop_continue") -
+			s.get_sym_addr("hook_loop_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
 
@@ -473,6 +479,7 @@ def build_flexfuel():
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
 		s.get_sym_addr("hook_OBD_mode_0x01_loc"),
+		#PPC32.ppc_or(31, 3, 3),
 		PPC32.ppc_rlwinm(0, 30, 0, 24, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)
@@ -480,58 +487,86 @@ def build_flexfuel():
 	# Hook: High cam ignition
 	p.check_and_replace(
 		s.get_sym_addr("hook_ign_advance_high_cam_base_loc"),
-		PPC32.ppc_bl(-0x1061C),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_3D_uint8_interpolated") -
+			s.get_sym_addr("hook_ign_advance_high_cam_base_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_high_cam_base"))
 	)
 
 	# Hook: Low cam ignition
 	p.check_and_replace(
 		s.get_sym_addr("hook_ign_advance_low_cam_base_loc"),
-		PPC32.ppc_bl(-0x106E0),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_3D_uint8_interpolated") -
+			s.get_sym_addr("hook_ign_advance_low_cam_base_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_low_cam_base"))
 	)
 
 	# Hook: Ignition adj1
 	p.check_and_replace(
 		s.get_sym_addr("hook_ign_advance_adj1_loc"),
-		PPC32.ppc_bl(-0x10C50),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_2D_uint8_interpolated") -
+			s.get_sym_addr("hook_ign_advance_adj1_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_adj1"))
 	)
 
 	# Hook: Injection cranking
 	p.check_and_replace(
 		s.get_sym_addr("hook_inj_time_adj_cranking_loc"),
-		PPC32.ppc_bl(-0x12F50),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_2D_uint8_interpolated") -
+			s.get_sym_addr("hook_inj_time_adj_cranking_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_inj_time_adj_cranking"))
 	)
 
 	# Hook: Injection efficiency
 	p.check_and_replace(
 		s.get_sym_addr("hook_inj_efficiency_loc"),
-		PPC32.ppc_bl(-0x12E5C),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_3D_uint8_interpolated") -
+			s.get_sym_addr("hook_inj_efficiency_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_inj_efficiency"))
 	)
 
 	# Hook: Injection warmup
 	p.check_and_replace(
 		s.get_sym_addr("hook_inj_time_adj3_loc"),
-		PPC32.ppc_bl(-0x1301C),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_3D_uint8_interpolated") -
+			s.get_sym_addr("hook_inj_time_adj3_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_inj_time_adj3"))
 	)
 
 	# Hook: Tip-In
 	p.check_and_replace(
 		s.get_sym_addr("hook_injtip_in_adj1_loc"),
-		PPC32.ppc_bl(-0x16274),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_2D_uint8_interpolated") -
+			s.get_sym_addr("hook_injtip_in_adj1_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_injtip_in_adj1"))
 	)
 
 	# Hook: Tip-Out
 	p.check_and_replace(
 		s.get_sym_addr("hook_injtip_out_adj1_loc"),
-		PPC32.ppc_bl(-0x1631C),
+		PPC32.ppc_bl(
+			s.get_sym_addr("lookup_2D_uint8_interpolated") -
+			s.get_sym_addr("hook_injtip_out_adj1_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_injtip_out_adj1"))
 	)
+
+	# Resize if needed
+	p.resize(0x60000)
+	c.resize(0x10000)
 
 	# Merge and save.
 	p.add_text("t4e/flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
@@ -667,7 +702,10 @@ def build_t6_flexfuel():
 	# Hook: Main Loop
 	p.check_and_replace(
 		s.get_sym_addr("hook_loop_loc"),
-		PPC32.ppc_b(-0x29C),
+		PPC32.ppc_b(
+			s.get_sym_addr("hook_loop_continue") -
+			s.get_sym_addr("hook_loop_loc")
+		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
 

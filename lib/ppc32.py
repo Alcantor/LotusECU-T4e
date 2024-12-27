@@ -2,6 +2,10 @@
 BO_BE = 'big'
 
 class PPC32:
+	def __verify_addr(addr):
+		if(addr % 4 != 0):
+			raise Exception("Jump address is not 4-byte aligned!")
+
 	def __build1(opcd, li, aa, lk):
 		li &= 0xFFFFFF
 		return (opcd<<26|li<<2|aa<<1|lk).to_bytes(4,BO_BE)
@@ -36,18 +40,23 @@ class PPC32:
 		return PPC32.ppc_addis(rD, 0, simm)
 
 	def ppc_ble(addr):
+		PPC32.__verify_addr(addr)
 		return PPC32.__build2(16, 4, 1, addr >> 2, 0, 0)
 
 	def ppc_b(addr):
+		PPC32.__verify_addr(addr)
 		return PPC32.__build1(18, addr >> 2, 0, 0)
 
 	def ppc_bl(addr):
+		PPC32.__verify_addr(addr)
 		return PPC32.__build1(18, addr >> 2, 0, 1)
 
 	def ppc_ba(addr):
+		PPC32.__verify_addr(addr)
 		return PPC32.__build1(18, addr >> 2, 1, 0)
 
 	def ppc_bla(addr):
+		PPC32.__verify_addr(addr)
 		return PPC32.__build1(18, addr >> 2, 1, 1)
 
 	def ppc_blr():
@@ -59,11 +68,14 @@ class PPC32:
 	def ppc_rlwinm(rA, rS, SH, MB, ME):
 		return PPC32.__build5(21, rS, rA, SH, MB, ME)
 
-	def ppc_and(rD, rA, rB):
-		return PPC32.__build4(31, rD, rA, rB, 28)
-
 	def ppc_ori(rA, rS, uimm):
 		return PPC32.__build3(24, rS, rA, uimm)
+
+	def ppc_and(rA, rS, rB):
+		return PPC32.__build4(31, rS, rA, rB, 28)
+
+	def ppc_or(rA, rS, rB):
+		return PPC32.__build4(31, rS, rA, rB, 444)
 
 	def ppc_mfspr(rD, spr):
 		return PPC32.__build4(31, rD, spr & 0x1F, spr >> 5, 339)

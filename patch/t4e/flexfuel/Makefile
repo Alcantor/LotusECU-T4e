@@ -5,7 +5,7 @@ OC=powerpc-linux-gnu-objcopy
 all: flexfuel.text.bin flexfuel.data.bin
 
 %.o: %.S
-	$(AS) -a32 -be -o $@ $^
+	$(AS) --defsym OBD_KLINE=$(OBD_KLINE) -a32 -be -o $@ $^
 
 %.elf: %.o
 	$(LD) -Map map.txt -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) --just-symbols=$(SYM) -o $@ $^
