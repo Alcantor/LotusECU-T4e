@@ -315,7 +315,10 @@ CRP08 ECU Data:
 #
 # Chunk CAN format:
 #
-#   4 Bytes LE - Sould always be 0x0001010A for EMS and 0x0002010C for TCU
+#   1 Byte     - EFI Local ID
+#   1 Byte     - Always 1 (Protocol type ?)
+#   1 Byte     - EFI Remote ID
+#   1 Byte     - Always 0 (Frame delay (us) ?)
 #   4 Bytes LE - CAN Bitrate
 #   4 Bytes LE - CAN Remote ID 1
 #   4 Bytes LE - CAN Local ID 1
@@ -325,12 +328,10 @@ CRP08 ECU Data:
 #   x Bytes    - XTEA Encrypted data (see Data ECU format)
 #
 class CRP08_chunk_can(BinData):
-	SIGNATURE_EMS = 0x0001010A # EMS
-	SIGNATURE_TCU = 0x0002010C # TCU
-
 	def __init__(self, key):
 		# Configuration header (64 Bytes)
-		self.signature = self.SIGNATURE_EMS
+		self.efi_local_id = 10
+		self.efi_remote_id = 1
 		self.can_bitrate = 500
 		self.can_remote_id1 = 0x50
 		self.can_local_id1 = 0x7A0
@@ -343,7 +344,8 @@ class CRP08_chunk_can(BinData):
 		else: self.data = CRP08_data_ecu(key)
 
 	def setTCUaddr(self):
-		self.signature = self.SIGNATURE_TCU
+		self.efi_local_id = 12
+		self.efi_remote_id = 2
 		self.can_remote_id1 = 0x60
 		self.can_local_id1 = 0x7B0
 		self.can_remote_id2 = 0x52
@@ -351,7 +353,12 @@ class CRP08_chunk_can(BinData):
 
 	def parse(self, data):
 		# Configuration header (64 Bytes)
-		self.signature = int.from_bytes(data[0:4], BO_LE)
+		self.efi_local_id = data[0]
+		if(data[1] != 1):
+			raise CRP08_exception("Unexpected protocol type!")
+		self.efi_remote_id = data[2]
+		if(data[3] != 0):
+			raise CRP08_exception("Unexpected frame delay!")
 		self.can_bitrate = int.from_bytes(data[4:8], BO_LE)
 		self.can_remote_id1 = int.from_bytes(data[8:12], BO_LE)
 		self.can_local_id1 = int.from_bytes(data[12:16], BO_LE)
@@ -370,7 +377,10 @@ class CRP08_chunk_can(BinData):
 
 	def compose(self, data):
 		# Configuration header (64 Bytes)
-		data[0:4] = self.signature.to_bytes(4, BO_LE)
+		data[0] = self.efi_local_id
+		data[1] = 1
+		data[2] = self.efi_remote_id
+		data[3] = 0
 		data[4:8] = self.can_bitrate.to_bytes(4, BO_LE)
 		data[8:12] = self.can_remote_id1.to_bytes(4, BO_LE)
 		data[12:16] = self.can_local_id1.to_bytes(4, BO_LE)
@@ -385,13 +395,14 @@ class CRP08_chunk_can(BinData):
 		fmt = """
 CRP08 CAN Chunk:
 
-	Signature : 0x{:8X}
-	Bitrate   : {:d} kbits/s
-	Remote ID : 0x{:3X} / 0x{:3X}
-	Local ID  : 0x{:3X} / 0x{:3X}
+	EFI Local ID  : {:3d}
+	EFI Remote ID : {:3d}
+	Bitrate       : {:d} kbits/s
+	CAN Remote ID : 0x{:3X} / 0x{:3X}
+	CAN Local ID  : 0x{:3X} / 0x{:3X}
 """
 		return fmt.format(
-			self.signature,
+			self.efi_local_id, self.efi_remote_id,
 			self.can_bitrate,
 			self.can_remote_id1, self.can_remote_id2,
 			self.can_local_id1, self.can_local_id2

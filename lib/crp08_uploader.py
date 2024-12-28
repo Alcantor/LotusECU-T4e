@@ -37,7 +37,6 @@ class CRP08_uploader:
 		self.p = p
 		self.bus = None
 		self.crc = CRC8Normal(0x31, initvalue=0x00)
-		self.frame_size = 512
 
 	def open_can(self, chunk_can):
 		if(self.bus != None): self.close_can()
@@ -84,14 +83,16 @@ class CRP08_uploader:
 			offset += chunk_size
 			size -= chunk_size
 
-	def send_frame(self, data, frame_id):
-		offset = frame_id * self.frame_size
-		frame = data[offset:offset+self.frame_size]
+	def send_frame(self, data, frame_id, frame_size):
+		# The official flasher simply increment the offset...
+		offset = frame_id * frame_size
+		frame = data[offset:offset+frame_size]
 		header = frame_id.to_bytes(2, BO_BE) + len(frame).to_bytes(2, BO_BE)
 		self.send(6, header + frame)
 
-	def send_start(self):
-		self.send(7, b"\x01\x00\x00\x00\x00\x00")
+	def send_start(self, efi_id):
+		# Should be 1 for EMS and 2 for TCU
+		self.send(7, efi_id.to_bytes(1, BO_BE) + bytes(5))
 
 	def recv(self, timeout, ui_cb):
 		for _ in range(0, int(timeout/0.5)):
@@ -103,7 +104,7 @@ class CRP08_uploader:
 		self.crc.update(msg.data[0:-1])
 		if(self.crc.get() != msg.data[-1]):
 			raise CRP08_exception("Wrong CRC!")
-		return (msg.data[0], msg.data[1:-1])
+		return (msg.data[0], msg.data[1], msg.data[2:-1])
 
 	def bootstrap(self, crp, timeout=60, ui_cb=lambda:None):
 		if(len(crp.chunks)<2):
@@ -112,26 +113,30 @@ class CRP08_uploader:
 		self.open_can(crp.chunks[crp_chunk_i])
 		self.p.log(f"Power On ECU, please! (within {timeout:d} seconds)")
 		while(True):
-			cmd, data = self.recv(timeout, ui_cb)
+			cmd, efi_id, data = self.recv(timeout, ui_cb)
+			# Ignore messages coming from other ECUs
+			if(efi_id != crp.chunks[crp_chunk_i].efi_remote_id):
+				continue
 			# Hello
-			if(cmd == 0x0A):
+			if  (cmd == 0x0A):
 				crp_chunk_i = 1
 				self.p.log("ECU: Hello")
 				self.p.progress_start(len(crp.chunks[crp_chunk_i].data))
-				#self.open_can(crp.chunks[crp_chunk_i])
-				self.send_start()
+				self.send_start(efi_id)
 			# Frame request
-			if(cmd == 0x01):
-				frame_id = int.from_bytes(data[4:6], BO_BE)
+			elif(cmd == 0x01):
+				frame_size = int.from_bytes(data[1:3], BO_BE) - 6
+				frame_id = int.from_bytes(data[3:5], BO_BE)
 				#self.p.log("ECU: Request Frame "+str(frame_id))
-				if(frame_id > 0): self.p.progress(self.frame_size)
-				self.send_frame(crp.chunks[crp_chunk_i].data, frame_id)
+				if(frame_id == 1):
+					self.p.log("ECU: Programming...")
+				self.p.progress(frame_size)
+				self.send_frame(crp.chunks[crp_chunk_i].data, frame_id, frame_size)
 			# Erase Info
-			if(cmd == 0x03):
+			elif(cmd == 0x03):
 				self.p.log("ECU: Erasing...")
-				self.p.progress(self.frame_size)
 			# Programming Info
-			if(cmd == 0x02):
+			elif(cmd == 0x02):
 				self.p.progress_end()
 				crp_chunk_i += 1
 				if(crp_chunk_i < len(crp.chunks)):
@@ -142,13 +147,13 @@ class CRP08_uploader:
 					# However, some adapters might take too
 					# long to re-open, causing trouble.
 					#self.open_can(crp.chunks[crp_chunk_i])
-					self.send_start()
+					self.send_start(efi_id)
 				else:
 					self.p.log("ECU: Programming completed!")
 					break
 			# Error
 			if(cmd == 0x04 or cmd == 0x05):
-				error = data[4]
+				error = data[3]
 				raise CRP08_exception(f"ECU: Error {error:02X} " + self.errors.get(error, "Unknown"))
 		self.close_can()
 
