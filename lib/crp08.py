@@ -515,6 +515,38 @@ class CRP08(BinData):
 		self.compose(data)
 		with open(file, 'wb') as f: f.write(data)
 
+	def write_t6_fullbin(self, file, fullbin_size=0x100_000):
+		bl_offset = 0x0
+		cal_offset = 0x10_000
+		prog_offset = 0x40_000
+
+		bl_data = bytearray()
+		cal_data = None
+		prog_data = None
+
+		for i in range(1, len(self.chunks)):
+			bin_file = self.chunks[0].toc_values[0][i-1]
+			print("Extracting", bin_file)
+			if "_TAB" in bin_file:
+				cal_data = self.chunks[i].data.ecu_data.tobytes()
+			if "BIN" in bin_file:
+				prog_data = self.chunks[i].data.ecu_data.tobytes()
+		assert cal_data is not None
+		assert prog_data is not None
+
+		bl_len = len(bl_data)
+		cal_len = len(cal_data)
+		prog_len = len(prog_data)
+
+		fullbin = bytearray(fullbin_size)
+		fullbin[bl_offset:bl_offset+bl_len] = bl_data
+		fullbin[cal_offset: cal_offset + cal_len] = cal_data
+		fullbin[prog_offset:prog_offset + prog_len] = prog_data
+
+		with open(file, "wb") as f:
+			print(f"Writing {file} ({len(fullbin)} bytes)")
+			f.write(fullbin)
+
 	def __str__(self):
 		return "".join([str(c) for c in self.chunks])
 
@@ -548,6 +580,13 @@ if __name__ == "__main__":
 			print(f"-- [CHUNK {i:d}] Extract {bin_file} from {sys.argv[3]} --")
 			crp.chunks[i].data.export_bin(bin_file)
 			print(crp.chunks[i])
+	elif(len(sys.argv) >= 4 and sys.argv[2] == "build_fullbin"):
+		if i != 1:
+			raise CRP08_exception("Only T6 ECU is supported")
+		crp.read_file(sys.argv[3], i)
+		crp.write_t6_fullbin("full.bin")
+
+
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
@@ -555,4 +594,5 @@ if __name__ == "__main__":
 		print(f"\t{prog} [T4e|T6|CAT|TCU] prog BIN_FILE CRP_FILE")
 		print(f"\t{prog} [T4e|T6|CAT|TCU] both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
 		print(f"\t{prog} [T4e|T6|CAT|TCU] unpack CRP_FILE")
+		print(f"\t{prog} [T6] build_fullbin CRP_FILE")
 
