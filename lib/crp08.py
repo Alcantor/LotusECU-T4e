@@ -515,16 +515,17 @@ class CRP08(BinData):
 		self.compose(data)
 		with open(file, 'wb') as f: f.write(data)
 
-	def write_t6_fullbin(self, file, fullbin_size=0x100_000):
+	def write_t6_fullbin(self, file, fullbin_size=0x10_0000):
 		bl_offset = 0x0
-		cal_offset = 0x10_000
-		prog_offset = 0x40_000
+		cal_offset = 0x2_0000
+		prog_offset = 0x4_0000
 
 		bl_data = bytearray()
 		cal_data = None
 		prog_data = None
 
 		for i in range(1, len(self.chunks)):
+
 			bin_file = self.chunks[0].toc_values[0][i-1]
 			print("Extracting", bin_file)
 			if "_TAB" in bin_file:
