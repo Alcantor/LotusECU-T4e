@@ -18,4 +18,3 @@ all: wideband.text.bin wideband.data.bin
 
 clean:
 	rm -f map.txt wideband.elf wideband.text.bin wideband.data.bin
-

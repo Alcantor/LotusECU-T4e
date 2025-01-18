@@ -70,7 +70,7 @@ Initialization: (12,09)
 PPAGE Register Address: 0x30
 
 	   800     FFF 2 <- EEPROM
-	  1800    3FFF 2 <- RAM
+	  1000    3FFF 2 <- RAM
 	  4000    7FFF 2 <- Flash Page 0x3E (Copy)
 	  C000    FFFF 2 <- Flash Page 0x3F (Copy)
 
@@ -96,7 +96,7 @@ PPAGE Register Address: 0x30
 ```
 srec_cat full.s19 -fill 0xFF 0x0 0x3FC000 -o full.bin -binary
 srec_cat full.s19 -fill 0xFF 0x0 0x3FC000 -offset -0x800 -crop 0x0 0x800 -o eeprom.bin -binary
-for i in {3178496..4161536..65536}; do srec_cat full.s19 -fill 0xFF 0x0 0x3FC000 -offset -$i -crop 0x0 0x4000 -o f$i.bin -binary; done
+for i in {48..63}; do srec_cat full.s19 -fill 0xFF 0x0 0x3FC000 -offset $((-(($i<<16)+0x8000))) -crop 0x0 0x4000 -o p$i.bin -binary; done
 srec_cat full.s19 -crop 0x308000 0x3FC000 -o flash.s19
 ```
 
@@ -123,6 +123,20 @@ ww 0x820 0x2400
 wb 0x116 0x20
 wb 0x115 0x80
 ```
+
+## Make the gauge fuel more responsive
+
+The average fuel level is calculated by a function that runs every 100 ms,
+taking 50 values and computing their average. This process takes 5 seconds
+(50 × 100 ms). The fuel scale ranges from 0 to 255.
+
+Once the average is calculated, if the difference between the calculated average
+and the displayed value exceeds 10, the displayed value is increased or
+decreased by 6 (approximately equal to a pixel column on the display). If the
+difference is 10 or less, the displayed value is adjusted by 1.
+
+For A121N6001F Version 0.08, the average size is located at page 0x30, addresses
+0x06A2 and 0x06A6. Replacing 0x32 with 0x0A makes the process five times faster.
 
 ## Note about the 2011+ Cluster
 

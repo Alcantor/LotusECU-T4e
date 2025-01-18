@@ -18,4 +18,3 @@ all: obdoil.text.bin obdoil.data.bin
 
 clean:
 	rm -f map.txt obdoil.elf obdoil.text.bin obdoil.data.bin
-

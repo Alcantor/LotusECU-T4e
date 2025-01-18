@@ -8,7 +8,7 @@ all: accusump.text.bin accusump.data.bin
 	$(AS) -a32 -be -o $@ $^
 
 %.elf: %.o
-	$(LD) -Map map.txt -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) -o $@ $^
+	$(LD) -Map map.txt -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) --just-symbols=$(SYM) -o $@ $^
 
 %.text.bin: %.elf
 	$(OC) -O binary --only-section .text $^ $@
@@ -18,4 +18,3 @@ all: accusump.text.bin accusump.data.bin
 
 clean:
 	rm -f map.txt accusump.elf accusump.text.bin accusump.data.bin
-

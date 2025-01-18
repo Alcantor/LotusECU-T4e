@@ -8,21 +8,24 @@ from lib.ppc32 import PPC32
 BO_BE = 'big'
 
 class Patcher():
-	def __init__(self, file, offset):
-		with open(file,'rb') as f:
-			self.data = memoryview(bytearray(f.read()))
+	def __init__(self, file, offset, size):
+		self.data = memoryview(bytearray(size))
 		self.offset=offset
+		with open(file,'rb') as f: d = f.read()
+		if(len(d) > size): raise Exception("File too big!")
+		self.data[0:len(d)] = d
+		for i in range(len(d), size): self.data[i] = 0xFF
 
 	def check(self, addr, data):
 		addr -= self.offset
 		if(self.data[addr:addr+len(data)] != data):
 			raise Exception("Unexpected data!")
 
-	def replace(self, addr, data, size, blank=0xFF):
+	def replace(self, addr, data, size):
 		if(size < len(data)): raise Exception("Too much data!")
 		addr -= self.offset
 		self.data[addr:addr+len(data)] = data
-		for i in range(addr+len(data), addr+size): self.data[i] = blank
+		for i in range(addr+len(data), addr+size): self.data[i] = 0xFF
 
 	def check_and_replace(self, addr, old_data, new_data):
 		self.check(addr, old_data)
@@ -33,39 +36,38 @@ class Patcher():
 			if(self.data[i:i+len(old_data)] == old_data):
 				self.replace(i, new_data, len(old_data))
 
-	def check_blank(self, addr, size, blank=0xFF):
+	def check_blank(self, addr, size):
 		addr -= self.offset
 		for i in range(addr, addr+size):
-			if(self.data[i] != blank): raise Exception("Not blank!")
+			if(self.data[i] != 0xFF): raise Exception("Not blank!")
 
-	def merge_file(self, addr, file, size=None, check_blank=False):
+	def merge_file(self, addr, file, size=None, check_blank=True):
 		with open(file,'rb') as f: data = f.read()
 		if(size == None): size = len(data)
 		if(check_blank): self.check_blank(addr, size)
 		self.replace(addr, data, size)
 		return size
 
-	def get_free_space(self, blank=0xFF):
+	def get_freespace_pos(self):
 		i = len(self.data)
-		while(i > 0 and self.data[i-1] == blank): i -= 1
-		return i+self.offset
+		while(i > 0 and self.data[i-1] == 0xFF): i -= 1
+		return i
 
-	def save(self, file):
-		with open(file,'wb') as f: f.write(self.data)
+	def get_freespace_addr(self):
+		return self.get_freespace_pos()+self.offset
 
-	def resize(self, newsize):
-		if(newsize <= len(self.data)):
-			self.data = memoryview(self.data[0:newsize])
-		else:
-			newbuffer = bytearray(newsize)
-			newbuffer[0:len(self.data)] = self.data;
-			for i in range(len(self.data), newsize):
-				newbuffer[i] = 0xFF
-			self.data = memoryview(newbuffer)
+	def save(self, file, removeFreeSpace=True):
+		with open(file,'wb') as f:
+			if(removeFreeSpace):
+				# 4 Bytes alignement
+				addr = (self.get_freespace_pos() + 3) & ~3
+				f.write(self.data[0:addr])
+			else:
+				f.write(self.data)
 
 class Patcher_Prog(Patcher):
-	def __init__(self, prog_file, offset, hint, instText, instBss):
-		super().__init__(prog_file, offset)
+	def __init__(self, prog_file, offset, size, hint, instText, instBss):
+		super().__init__(prog_file, offset, size)
 		self.hint = hint
 		self.instText = instText
 		self.instBss = instBss
@@ -174,12 +176,12 @@ class Patcher_Prog(Patcher):
 		return self.segment_last_ram[1]+self.segment_last_ram[2]
 
 	def add_text(self, file, rom_addr):
-		size = self.merge_file(rom_addr, file, check_blank=True)
+		size = self.merge_file(rom_addr, file)
 		self.segments.append((rom_addr, rom_addr, size))
 		self.search_last_segments()
 
 	def add_data(self, file, rom_addr, ram_addr):
-		size = self.merge_file(rom_addr, file, check_blank=True)
+		size = self.merge_file(rom_addr, file)
 		self.segments.append((rom_addr, ram_addr, size))
 		self.search_last_segments()
 
@@ -200,24 +202,24 @@ class Patcher_Prog(Patcher):
 
 class Patcher_T4eBoot(Patcher):
 	def __init__(self, boot_file):
-		super().__init__(boot_file, 0x00000)
+		super().__init__(boot_file, 0x00000, 0x10000)
 
 class Patcher_T4eCalibration(Patcher):
 	def __init__(self, cal_file, free_cal=None):
-		super().__init__(cal_file, 0x10000)
-		if(free_cal == None): self.free_cal = self.get_free_space()
+		super().__init__(cal_file, 0x10000, 0x10000)
+		if(free_cal == None): self.free_cal = self.get_freespace_addr()
 		else: self.free_cal = free_cal
 
 	def get_free_cal(self):
 		return self.free_cal
 
 	def add_cal(self, file, rom_addr):
-		self.merge_file(rom_addr, file, check_blank=True)
+		self.merge_file(rom_addr, file)
 
 class Patcher_T4eProg(Patcher_Prog):
 	def __init__(self, prog_file):
 		super().__init__(prog_file,
-			0x20000,
+			0x20000, 0x60000,
 			b"\x00\x02\x00\x00\x00\x02\x00\x00",
 			lambda i: PPC32.ppc_addi(31, 3, i & 0xFFFF),
 			lambda i: PPC32.ppc_addi(30, 3, i & 0xFFFF)
@@ -225,24 +227,24 @@ class Patcher_T4eProg(Patcher_Prog):
 
 class Patcher_T6Boot(Patcher):
 	def __init__(self, boot_file):
-		super().__init__(boot_file, 0x00000)
+		super().__init__(boot_file, 0x00000, 0x10000)
 
 class Patcher_T6Calibration(Patcher):
 	def __init__(self, cal_file, free_cal=None):
-		super().__init__(cal_file, 0x20000)
-		if(free_cal == None): self.free_cal = self.get_free_space()
+		super().__init__(cal_file, 0x20000, 0x20000)
+		if(free_cal == None): self.free_cal = self.get_freespace_addr()
 		else: self.free_cal = free_cal
 
 	def get_free_cal(self):
 		return self.free_cal
 
 	def add_cal(self, file, rom_addr):
-		self.merge_file(rom_addr, file, check_blank=True)
+		self.merge_file(rom_addr, file)
 
 class Patcher_T6Prog(Patcher_Prog):
 	def __init__(self, prog_file):
 		super().__init__(prog_file,
-			0x40000,
+			0x40000, 0xC0000,
 			b"\x00\x04\x00\x00\x00\x04\x00\x00",
 			lambda i: PPC32.ppc_addi(31, 31, i & 0xFFFF),
 			lambda i: PPC32.ppc_addi(31, 31, i & 0xFFFF)
@@ -292,8 +294,8 @@ def build_stage15():
 		PPC32.ppc_ba(0x4000), # This value is also hardcoded in canstrap-white.bin
 		PPC32.ppc_ba(0x3000)
 	)
-	p.merge_file(0x3000, "../flasher/t4e/canstrap-white.bin", check_blank=True)
-	p.save("t4e/stage15/white/bootldr.bin")
+	p.merge_file(0x3000, "../flasher/t4e/canstrap-white.bin")
+	p.save("t4e/stage15/white/bootldr.bin", False)
 
 	print("Build black Stage 1.5...")
 	p = Patcher_T4eBoot("../dump/t4e-black/A129E0002/bootldr.bin")
@@ -301,40 +303,8 @@ def build_stage15():
 		PPC32.ppc_ori(4, 4, 0x1FDC), # This value is also hardcoded in canstrap-black.bin
 		PPC32.ppc_ori(4, 4, 0x9000)
 	)
-	p.merge_file(0x9000, "../flasher/t4e/canstrap-black.bin", check_blank=True)
-	p.save("t4e/stage15/black/bootldr.bin")
-
-def build_accusump():
-	print("Build accusump control...")
-	c = Patcher_T4eCalibration("../dump/t4e-white/A128E6009F/calrom.bin")
-	p = Patcher_T4eProg("../dump/t4e-white/A128E6009F/prog.bin")
-	s = SYMMap("t4e/white78.sym")
-	acis=s.get_sym_addr("airbox_flap")
-	os.system("make -C t4e/accusump CAL=0x{:X} ROM=0x{:X} RAM=0x{:X}".format(
-		c.get_free_cal(),
-		acis, # p.get_free_rom(),
-		p.get_free_ram(),
-	))
-	m = LDMap("t4e/accusump/map.txt")
-
-	# If we replace the digital oil sensor with an analogic one,
-	# the oil pressure warning on the cluster will light up constantly!
-	# We need to patch that too.
-	p.check_and_replace(
-		s.get_sym_addr("oilpressure_cmp"),
-		PPC32.ppc_cmpli(0, 0x200), # Threshold at 2.5 V
-		PPC32.ppc_cmpli(0, 0x0B8)  # Threshold at 1.0 bar.
-	)
-
-	# Replace the ACIS function by the accusump control.
-	p.merge_file(acis, "t4e/accusump/accusump.text.bin", size=0x100)
-
-	# Default accusump calibration
-	c.add_cal("t4e/accusump/accusump.data.bin", m.get_seg_addr(".data"))
-
-	# Save
-	p.save("t4e/accusump/prog.bin")
-	c.save("t4e/accusump/calrom.bin")
+	p.merge_file(0x9000, "../flasher/t4e/canstrap-black.bin")
+	p.save("t4e/stage15/black/bootldr.bin", False)
 
 def build_obdoil():
 	print("OBD oil support...")
@@ -377,19 +347,19 @@ def build_obdoil():
 	# Test
 	#p.print_segments()
 
-def build_accusump2():
-	print("Accusump2 support...")
+def build_accusump():
+	print("Accusump support...")
 	#c = Patcher_T4eCalibration("../dump/t4e-black/A128E0031/calrom.bin")
 	c = Patcher_T4eCalibration("../dump/t4e-black/A129E0002/calrom.bin")
 	p = Patcher_T4eProg("../dump/t4e-black/A129E0002/prog.bin")
-	os.system("make -C t4e/accusump2 CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s}".format(
+	os.system("make -C t4e/accusump CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s}".format(
 		c.get_free_cal(),
 		p.get_free_rom(),
 		p.get_free_ram(),
 		"../black91.sym"
 	))
 	s = SYMMap("t4e/black91.sym")
-	m = LDMap("t4e/accusump2/map.txt")
+	m = LDMap("t4e/accusump/map.txt")
 
 	# If we replace the digital oil sensor with an analogic one,
 	# the oil pressure warning on the cluster will light up constantly!
@@ -410,7 +380,10 @@ def build_accusump2():
 	# Main Loop - Replace the call to the airbox_flap function
 	p.check_and_replace(
 		s.get_sym_addr("airbox_flap_call"),
-		PPC32.ppc_bl(0x01a9dc),
+		PPC32.ppc_bl(
+			s.get_sym_addr("airbox_flap") -
+			s.get_sym_addr("airbox_flap_call")
+		),
 		PPC32.ppc_bla(m.get_sym_addr("accusump"))
 	)
 
@@ -429,12 +402,12 @@ def build_accusump2():
 	)
 
 	# Merge and save.
-	p.add_text("t4e/accusump2/accusump2.text.bin", m.get_seg_addr(".text"))
-	c.add_cal("t4e/accusump2/accusump2.data.bin", m.get_seg_addr(".data"))
+	p.add_text("t4e/accusump/accusump.text.bin", m.get_seg_addr(".text"))
+	c.add_cal("t4e/accusump/accusump.data.bin", m.get_seg_addr(".data"))
 	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss")) # TODO: Why 8, so much fill?
 	p.write_segments()
-	p.save("t4e/accusump2/prog.bin")
-	c.save("t4e/accusump2/calrom.bin")
+	p.save("t4e/accusump/prog.bin")
+	c.save("t4e/accusump/calrom.bin")
 
 	# Test
 	#p.print_segments()
@@ -563,10 +536,6 @@ def build_flexfuel():
 		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_injtip_out_adj1"))
 	)
-
-	# Resize if needed
-	p.resize(0x60000)
-	c.resize(0x10000)
 
 	# Merge and save.
 	p.add_text("t4e/flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
@@ -740,10 +709,6 @@ def build_t6_flexfuel():
 		PPC32.ppc_lis(3, addr_ha) + PPC32.ppc_addi(0, 3, addr_l)
 	)
 
-	# Resize if needed
-	p.resize(0xC0000)
-	c.resize(0x10000)
-
 	# Merge and save.
 	p.add_text("t6/flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
 	c.add_cal("t6/flexfuel/flexfuel.data.bin", m.get_seg_addr(".data"))
@@ -757,10 +722,8 @@ def build_t6_flexfuel():
 
 if __name__ == "__main__":
 	build_stage15()
-	build_accusump()
 	build_obdoil()
-	build_accusump2()
+	build_accusump()
 	build_flexfuel()
 	build_wideband()
 	build_t6_flexfuel()
-

@@ -16,7 +16,6 @@ installed at 0x9000 and takes the hand right after the reset vector.
 
  Files                 | Description
  ----------------------|------------
- build.py              | Build the file "bootldr.bin"
  white/bootldr.bin     | Bootloader from A128E6009F with the CANstrap in it.
  black/bootldr.bin     | Bootloader from A129E0002 with the CANstrap in it.
 

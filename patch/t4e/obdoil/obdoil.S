@@ -5,6 +5,8 @@ CAL_sensor_oil_temp_scaling:
 .byte	189, 182, 175, 169, 164, 159, 154, 149
 .byte	144, 140, 135, 131, 127, 122, 118, 113
 .byte	108, 103,  98,  92,  85,  77,  67,  51, 3
+CAL_padding:
+.byte 0xFF
 CAL_sensor_oil_pressure_gain:
 .short	12500
 CAL_sensor_oil_pressure_offset:
@@ -150,8 +152,8 @@ obdoil:
 
 	# Oil temperature scaling
 	li	%r3, 3
-	lis	%r4, sensor_adc_oil_temp@ha
-	lhz	%r4, sensor_adc_oil_temp@l(%r4)
+	lis	%r4, sensor_adc_free2@ha
+	lhz	%r4, sensor_adc_free2@l(%r4)
 	lis	%r5, CAL_sensor_oil_temp_scaling@ha
 	addi	%r5, %r5, CAL_sensor_oil_temp_scaling@l
 	bl	lookup_2D_uint8_interpolated_noaxis
@@ -159,8 +161,8 @@ obdoil:
 	stb	%r3, oil_temp@l(%r4)
 
 	# Oil pressure scaling
-	lis	%r3, sensor_adc_oil_pressure_analog@ha
-	lhz	%r3, sensor_adc_oil_pressure_analog@l(%r3)
+	lis	%r3, sensor_adc_free3@ha
+	lhz	%r3, sensor_adc_free3@l(%r3)
 	lis	%r4, CAL_sensor_oil_pressure_gain@ha
 	lhz	%r4, CAL_sensor_oil_pressure_gain@l(%r4)
 	lis	%r5, CAL_sensor_oil_pressure_offset@ha

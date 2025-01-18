@@ -18,4 +18,3 @@ all: flexfuel.text.bin flexfuel.data.bin
 
 clean:
 	rm -f map.txt flexfuel.elf flexfuel.text.bin flexfuel.data.bin
-
