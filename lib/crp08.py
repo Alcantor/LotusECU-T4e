@@ -162,19 +162,7 @@ CRP08 TOC Chunk:
 
 # Data as interpreted after decryption by a T4e/T6 ECU.
 #
-# Data ECU format:
-#
-#  12 Bytes    - Encryption header
-#  64 Bytes    - ECU header
-#   x Bytes    - Data to be flashed
-#   x Bytes    - XTEA padding
-#
-# Encryption header format:
-#
-#   8 Bytes    - XTEA Salt or Initialization Vector (Random values)
-#   4 Bytes BE - XTEA Size of data before padding
-#
-# ECU header format:
+# ECU data format:
 #
 #  32 Bytes    - Identification string, like "T4E" padded with spaces
 #   4 Bytes BE - Destination address
@@ -182,6 +170,7 @@ CRP08 TOC Chunk:
 #   4 Bytes BE - Max version of the bootloader to accept the file
 #   4 Bytes BE - Min version of the bootloader to accept the file
 #  16 Bytes    - Filled with 0x00
+#   x Bytes    - Data to be flashed
 #
 # Valid addresses for a T4E are:
 #
@@ -217,14 +206,8 @@ CRP08 TOC Chunk:
 #
 # Addresses in the T6 are reference number and not *real* addresses.
 #
-class CRP08_data_ecu(BinData):
-	def __init__(self, key):
-		self.xtea = CRP08_xtea(key)
-
-		# Encryption header (12 Bytes)
-		self.xtea_salt = secrets.token_bytes(8)
-		#self.xtea_plainsize = 76
-
+class CRP08_ecu_data(BinData):
+	def __init__(self):
 		# ECU header (64 Bytes)
 		self.ecu_id = "T4E"
 		self.ecu_addr = 0x10000
@@ -236,50 +219,33 @@ class CRP08_data_ecu(BinData):
 		self.ecu_data = None
 
 	def parse(self, data):
-		# Decrypt
-		plain = memoryview(bytearray(len(data)))
-		self.xtea.decrypt_cbc(data, plain)
-
-		# Encryption header (12 Bytes)
-		self.xtea_salt = plain[0:8]
-		xtea_plainsize = int.from_bytes(plain[8:12], BO_BE)
-
 		# ECU header (64 Bytes)
-		self.ecu_id = str(plain[12:44], CHARSET).rstrip();
-		self.ecu_addr = int.from_bytes(plain[44:48], BO_BE)
-		ecu_binsize = int.from_bytes(plain[48:52], BO_BE)
-		self.ecu_maxversion = int.from_bytes(plain[52:56], BO_BE)
-		self.ecu_minversion = int.from_bytes(plain[56:60], BO_BE)
+		self.ecu_id = str(data[0:32], CHARSET).rstrip()
+		self.ecu_addr = int.from_bytes(data[32:36], BO_BE)
+		ecu_binsize = int.from_bytes(data[36:40], BO_BE)
+		self.ecu_maxversion = int.from_bytes(data[40:44], BO_BE)
+		self.ecu_minversion = int.from_bytes(data[44:48], BO_BE)
 
 		# Check sizes
-		if(xtea_plainsize != ecu_binsize+64):
+		if(len(data) != ecu_binsize+64):
 			raise CRP08_exception("Size mismatch!")
 
 		# Binary data
-		self.ecu_data = plain[76:76+ecu_binsize]
+		self.ecu_data = data[64:64+ecu_binsize]
 
 	def get_size(self):
-		return CRP08_xtea.calc_size(76+len(self.ecu_data))
+		return 64+len(self.ecu_data)
 
 	def compose(self, data):
-		plain = memoryview(bytearray(CRP08_xtea.calc_size(76+len(self.ecu_data))))
-
-		# Encryption header (12 Bytes)
-		plain[0:8] = self.xtea_salt
-		plain[8:12] = (64+len(self.ecu_data)).to_bytes(4, BO_BE)
-
 		# ECU header (64 Bytes)
-		plain[12:44] = bytes(self.ecu_id.ljust(32), CHARSET);
-		plain[44:48] = self.ecu_addr.to_bytes(4, BO_BE)
-		plain[48:52] = len(self.ecu_data).to_bytes(4, BO_BE)
-		plain[52:56] = self.ecu_maxversion.to_bytes(4, BO_BE)
-		plain[56:60] = self.ecu_minversion.to_bytes(4, BO_BE)
+		data[0:32] = bytes(self.ecu_id.ljust(32), CHARSET)
+		data[32:36] = self.ecu_addr.to_bytes(4, BO_BE)
+		data[36:40] = len(self.ecu_data).to_bytes(4, BO_BE)
+		data[40:44] = self.ecu_maxversion.to_bytes(4, BO_BE)
+		data[44:48] = self.ecu_minversion.to_bytes(4, BO_BE)
 
 		# Binary data
-		plain[76:76+len(self.ecu_data)] = self.ecu_data
-
-		# Encrypt
-		self.xtea.encrypt_cbc(plain, data)
+		data[64:64+len(self.ecu_data)] = self.ecu_data
 
 	# Export into a BIN file.
 	def export_bin(self, file):
@@ -293,7 +259,69 @@ class CRP08_data_ecu(BinData):
 
 	def __str__(self):
 		fmt = """
-CRP08 ECU Data:
+CRP08 ECU Data (Plain):
+
+	Id.      : {:s}
+	Address  : 0x{:5X}
+	Size     : 0x{:5X}
+	Max Ver. : {:d}
+	Min Ver. : {:d}
+"""
+		return fmt.format(
+			self.ecu_id,
+			self.ecu_addr,
+			len(self.ecu_data),
+			self.ecu_maxversion,
+			self.ecu_minversion,
+		)
+
+# ECU XTEA format:
+#
+#   8 Bytes    - XTEA Salt or Initialization Vector (Random values)
+#   4 Bytes BE - XTEA Size of data before padding
+#   x Bytes    - Pain data (see ECU data format)
+#   x Bytes    - XTEA padding
+#
+class CRP08_ecu_xtea(CRP08_ecu_data):
+	def __init__(self, key):
+		super().__init__()
+		self.xtea = CRP08_xtea(key)
+
+		# Encryption header (12 Bytes)
+		self.xtea_salt = secrets.token_bytes(8)
+
+	def parse(self, data):
+		# Decrypt
+		plain = memoryview(bytearray(len(data)))
+		self.xtea.decrypt_cbc(data, plain)
+
+		# Encryption header (12 Bytes)
+		self.xtea_salt = plain[0:8]
+		xtea_plainsize = int.from_bytes(plain[8:12], BO_BE)
+
+		# Plain data
+		super().parse(plain[12:12+xtea_plainsize])
+
+	def get_size(self):
+		return CRP08_xtea.calc_size(12+super().get_size())
+
+	def compose(self, data):
+		xtea_plainsize = super().get_size()
+		plain = memoryview(bytearray(CRP08_xtea.calc_size(12+xtea_plainsize)))
+
+		# Encryption header (12 Bytes)
+		plain[0:8] = self.xtea_salt
+		plain[8:12] = xtea_plainsize.to_bytes(4, BO_BE)
+
+		# Plain data
+		super().compose(plain[12:12+xtea_plainsize])
+
+		# Encrypt
+		self.xtea.encrypt_cbc(plain, data)
+
+	def __str__(self):
+		fmt = """
+CRP08 ECU Data (Encrypted):
 
 	XTEA Salt: {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}
 	Id.      : {:s}
@@ -325,10 +353,10 @@ CRP08 ECU Data:
 #   4 Bytes LE - CAN Remote ID 2
 #   4 Bytes LE - CAN Local ID 2
 #  40 Bytes    - Filled with 0x00
-#   x Bytes    - XTEA Encrypted data (see Data ECU format)
+#   x Bytes    - XTEA Encrypted data (see ECU XTEA format)
 #
 class CRP08_chunk_can(BinData):
-	def __init__(self, key):
+	def __init__(self, dissect, key):
 		# Configuration header (64 Bytes)
 		self.efi_local_id = 10
 		self.efi_remote_id = 1
@@ -338,10 +366,17 @@ class CRP08_chunk_can(BinData):
 		self.can_remote_id2 = 0x51
 		self.can_local_id2 = 0x7A1
 
-		# Encrypted data
-		self.is_encrypted = (key == None)
-		if(self.is_encrypted): self.data = None
-		else: self.data = CRP08_data_ecu(key)
+		if(dissect):
+			if(key == None):
+				# If the crypto flag is not set on the ECU, it's
+				# possible to upload plain data.
+				self.data = CRP08_ecu_data()
+			else:
+				# Encrypted data
+				self.data = CRP08_ecu_xtea(key)
+		else:
+			# The data are not dissected.
+			self.data = None
 
 	def setTCUaddr(self):
 		self.efi_local_id = 12
@@ -368,12 +403,12 @@ class CRP08_chunk_can(BinData):
 		# TODO: T6 CRP have a value in data[60:64]... A CRC for the data?
 
 		# Encrypted data
-		if(self.is_encrypted): self.data = data[64:]
-		else: self.data.parse(data[64:])
+		if(isinstance(self.data, BinData)): self.data.parse(data[64:])
+		else: self.data = data[64:]
 
 	def get_size(self):
-		if(self.is_encrypted): return 64 + len(self.enc_data)
-		else: return 64 + self.data.get_size()
+		if(isinstance(self.data, BinData)): return 64 + self.data.get_size()
+		else: return 64 + len(self.data)
 
 	def compose(self, data):
 		# Configuration header (64 Bytes)
@@ -388,8 +423,8 @@ class CRP08_chunk_can(BinData):
 		data[20:24] = self.can_local_id2.to_bytes(4, BO_LE)
 
 		# Encrypted data
-		if(self.is_encrypted): data[64:] = self.data
-		else: self.data.compose(data[64:])
+		if(isinstance(self.data, BinData)): self.data.compose(data[64:])
+		else: data[64:] = self.data
 
 	def __str__(self):
 		fmt = """
@@ -406,7 +441,7 @@ CRP08 CAN Chunk:
 			self.can_bitrate,
 			self.can_remote_id1, self.can_remote_id2,
 			self.can_local_id1, self.can_local_id2
-		) + ("" if(self.is_encrypted) else str(self.data))
+		) + (str(self.data) if(isinstance(self.data, BinData)) else "")
 
 # CRP 08 format:
 #
@@ -422,7 +457,7 @@ CRP08 CAN Chunk:
 #
 class CRP08(BinData):
 	variants = [
-		["T4E",CRP08_xtea.T4E_KEY,"T4E",0x10000,0x20000,False,"LOTUS_T4E"],
+		["T4e",CRP08_xtea.T4E_KEY,"T4E",0x10000,0x20000,False,"LOTUS_T4E"],
 		["T6",CRP08_xtea.T6_KEY,"ECU T6",0x5,0x4,False,"LOTUS_T6"],
 		["T6 Caterham",CRP08_xtea.T6_CATERHAM_KEY,"CATERHAM T6",0x5,0x4,False,"CATERHAM_ECU_DURATEC"],
 		["CT1 Caterham",CRP08_xtea.T6_CATERHAM_KEY,"CATERHAM CT1",0x5,0x4,False,"CATERHAM_ECU_SIGMA"],
@@ -434,7 +469,7 @@ class CRP08(BinData):
 		# An empty CRP file
 		self.chunks = [CRP08_chunk_toc()]
 
-	def parse(self, data, key):
+	def parse(self, data, dissect, key):
 		# Check the sum
 		cksum = sum(data[:-2]) & 0xFFFF
 		if(cksum != int.from_bytes(data[-2:], BO_LE)):
@@ -447,7 +482,7 @@ class CRP08(BinData):
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
 			if(i == 0): chunk = CRP08_chunk_toc()
-			else: chunk = CRP08_chunk_can(key)
+			else: chunk = CRP08_chunk_can(dissect, key)
 			chunk.parse(data[offset:offset+size])
 			self.chunks[i] = chunk
 
@@ -486,7 +521,7 @@ class CRP08(BinData):
 	# Create a chunk for the Calibration
 	def add_cal(self, file, i=0):
 		v = CRP08.variants[i]
-		chk = CRP08_chunk_can(v[1])
+		chk = CRP08_chunk_can(True, v[1])
 		chk.data.ecu_id = v[2]
 		chk.data.ecu_addr = v[3]
 		if(v[5]): chk.setTCUaddr()
@@ -496,7 +531,7 @@ class CRP08(BinData):
 	# Create a chunk for the Program
 	def add_prog(self, file, i=0):
 		v = CRP08.variants[i]
-		chk = CRP08_chunk_can(v[1])
+		chk = CRP08_chunk_can(True, v[1])
 		chk.data.ecu_id = v[2]
 		chk.data.ecu_addr = v[4]
 		if(v[5]): chk.setTCUaddr()
@@ -505,9 +540,14 @@ class CRP08(BinData):
 
 	# Unpack multiple chunks from a CRP file.
 	def read_file(self, file, i=0):
-		key = None if (i == None) else CRP08.variants[i][1]
+		if (i == None):
+			dissect = False
+			key = None
+		else:
+			dissect = True
+			key = CRP08.variants[i][1]
 		with open(file, 'rb') as f:
-			self.parse(memoryview(f.read()), key)
+			self.parse(memoryview(f.read()), dissect, key)
 
 	# Pack multiple chunks into a CRP file.
 	def write_file(self, file):
@@ -515,13 +555,40 @@ class CRP08(BinData):
 		self.compose(data)
 		with open(file, 'wb') as f: f.write(data)
 
+	# Create an image for analysis
+	def write_fullbin(self, file, i, lowmem_files):
+		t6map = {0x5: 0x020000, 4: 0x040000}
+		fullsize, addr2real = [
+			# TODO: Should this be merged into CRP08.variants ?
+			[0x080000, lambda addr: addr],
+			[0x100000, lambda addr: t6map[addr]],
+			[0x100000, lambda addr: t6map[addr]],
+			[0x100000, lambda addr: t6map[addr]],
+			[0x100000, lambda addr: t6map[addr]],
+			[0x100000, lambda addr: t6map[addr]]
+		][i]
+		fullbin = bytearray(fullsize)
+		offset = 0
+		for p in lowmem_files:
+			with open(p, "rb") as f: data = f.read()
+			fullbin[offset:offset+len(data)] = data
+			offset += len(data)
+		for c in self.chunks[1:]:
+			offset = addr2real(c.data.ecu_addr)
+			data = c.data.ecu_data
+			fullbin[offset:offset+len(data)] = data
+		with open(file, "wb") as f: f.write(fullbin)
+
 	def __str__(self):
 		return "".join([str(c) for c in self.chunks])
 
 if __name__ == "__main__":
 	print("BIN to CRP file tool for Lotus T4e/T6 ECU\n")
 	if(len(sys.argv) >= 2):
-		i = {"T4e": 0, "T6": 1, "CAT": 2, "TCU": 3}[sys.argv[1]]
+		for i, v in enumerate(CRP08.variants):
+			if(v[0] == sys.argv[1]): break
+		else:
+			raise KeyError();
 		crp = CRP08()
 	if  (len(sys.argv) >= 5 and sys.argv[2] == "calrom"):
 		print(f"-- Add {sys.argv[3]} into {sys.argv[4]} --")
@@ -548,11 +615,15 @@ if __name__ == "__main__":
 			print(f"-- [CHUNK {i:d}] Extract {bin_file} from {sys.argv[3]} --")
 			crp.chunks[i].data.export_bin(bin_file)
 			print(crp.chunks[i])
+	elif(len(sys.argv) >= 4 and sys.argv[2] == "fullbin"):
+		crp.read_file(sys.argv[3], i)
+		print("Export to full.bin")
+		crp.write_fullbin("full.bin", i, sys.argv[4:])
 	else:
 		prog = os.path.basename(sys.argv[0])
 		print("usage:")
-		print(f"\t{prog} [T4e|T6|CAT|TCU] calrom BIN_FILE CRP_FILE")
-		print(f"\t{prog} [T4e|T6|CAT|TCU] prog BIN_FILE CRP_FILE")
-		print(f"\t{prog} [T4e|T6|CAT|TCU] both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
-		print(f"\t{prog} [T4e|T6|CAT|TCU] unpack CRP_FILE")
-
+		print(f"\t{prog} [T4e|T6|...] calrom BIN_FILE CRP_FILE")
+		print(f"\t{prog} [T4e|T6|...] prog BIN_FILE CRP_FILE")
+		print(f"\t{prog} [T4e|T6|...] both CALROM_BIN_FILE PROG_BIN_FILE CRP_FILE")
+		print(f"\t{prog} [T4e|T6|...] unpack CRP_FILE")
+		print(f"\t{prog} [T4e|T6|...] fullbin CRP_FILE [BOOT_BIN_FILE] [...]")
