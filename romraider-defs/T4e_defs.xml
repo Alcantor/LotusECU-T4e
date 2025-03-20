@@ -489,6 +489,20 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			</table>
 			<description>When the car is below this speed threshold, disable the deceleration fuel shut off.</description>
 		</table>
+		<table type="2D" name="sensor: O2 heater warmup period" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x008F">
+			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>O2 heater warmup period</data>
+			</table>
+			<description>The duty cylce is hard coded to 80% but the period can be changed.</description>
+		</table>
+		<table type="2D" name="sensor: O2 heater warmup time" category="sensor" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x0090">
+			<scaling category="Second" units="s" expression="x*5/1000" to_byte="x*1000/5" format="0.00" fineincrement="0.1" coarseincrement="1" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>O2 heater warmup time</data>
+			</table>
+			<description>Once the engine is running and during this WARMUP time, the O2 heater will be progressively heated up (80% heater duty cycle).</description>
+		</table>
 		<table type="2D" name="knock: retard1 limit" category="knock" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x0092">
 			<scaling category="Degrees" units="&#176;" expression="x/4" to_byte="x*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
 			<table type="Static X Axis" name="" sizex="1">
@@ -608,7 +622,7 @@ peak_over_threshold = peak - threshold</description>
 Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</description>
 		</table>
 		<table type="2D" name="evap: ?a" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00A4">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?a</data>
 			</table>
@@ -629,7 +643,7 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			<description>When the injection is below this time threshold, disable the evaporative canister purge.</description>
 		</table>
 		<table type="2D" name="evap: ?b" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00A9">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?b</data>
 			</table>
@@ -707,14 +721,14 @@ Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * adj3 * ADJ_GEAR
 			<description>Sometimes an average is used on the sampled engine speed period values. This value sets how many samples are used to build the average. Between 1 and 7 (1 no average, 7 very smooth).</description>
 		</table>
 		<table type="2D" name="evap: ?c" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00B9">
-			<scaling category="Second" units="s" expression="x/25" to_byte="x*25" format="0.0" fineincrement="0.04" coarseincrement="1" />
+			<scaling category="Second" units="s" expression="x*0.8" to_byte="x/0.8" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?c</data>
 			</table>
 			<description />
 		</table>
 		<table type="2D" name="evap: ?d" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00BA">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?d</data>
 			</table>
@@ -739,7 +753,7 @@ d = base + ltft_idle + (1 + stft + 2 * ltft) * c
 inj_time = d</description>
 		</table>
 		<table type="2D" name="evap: ?e" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00BC">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?e</data>
 			</table>
@@ -1099,7 +1113,7 @@ Formula: pps2 = gain * (signal - OFFSET)</description>
 			<table type="Static X Axis" name="" sizex="1">
 				<data>flow adj5 threshold</data>
 			</table>
-			<description>When the car is above this speed threshold, the flow_adj5 will be used.
+			<description>When the car is below this speed threshold, the flow_adj5 will be used.
 
 Note: The ignition adj1_alternative will also be used instead of adj1.</description>
 		</table>
@@ -1348,21 +1362,21 @@ Formula: reactivate = (time_base * adj) * (ADJ_FADEOUT ^ t)</description>
 			<description>Minimum atmospheric pressure to enable the ltft correction.</description>
 		</table>
 		<table type="2D" name="evap: ?f" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x01AA">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?f</data>
 			</table>
 			<description />
 		</table>
 		<table type="2D" name="evap: ?g" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x01AB">
-			<scaling category="Second" units="s" expression="x*2/25" to_byte="x*25/2" format="0.0" fineincrement="0.08" coarseincrement="1" />
+			<scaling category="Second" units="s" expression="x*1.6" to_byte="x/1.6" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?g</data>
 			</table>
 			<description />
 		</table>
 		<table type="2D" name="evap: ?h" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x01AC">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?h</data>
 			</table>
@@ -2019,7 +2033,7 @@ Formula: reactivate = (time_base * ADJ) * (adj_fadeout ^ t)</description>
 			</table>
 			<description>Ignition advance idle adjustment.
 
-Note: The ignition adj1_alternative will be used instead of adj1, when the car is above the idle_flow_adj5_threshold speed.
+Note: The ignition adj1_alternative will be used instead of adj1, when the car is below the idle_flow_adj5_threshold speed.
 
 Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = high_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
@@ -2056,25 +2070,25 @@ Note: adj8 is a dynamic adjustment.</description>
 		</table>
 		<table type="2D" name="closedloop: min runtime" category="closedloop" storagetype="uint8" endian="big" sizex="17" userlevel="1" storageaddress="0x041C">
 			<scaling category="Second" units="s" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
-			<table type="Static X Axis" name="signal" sizex="17">
+			<table type="Static X Axis" name="stop coolant" sizex="17">
 				<data>0</data>
+				<data>16</data>
 				<data>32</data>
+				<data>48</data>
 				<data>64</data>
+				<data>80</data>
 				<data>96</data>
+				<data>112</data>
 				<data>128</data>
+				<data>144</data>
 				<data>160</data>
+				<data>176</data>
 				<data>192</data>
+				<data>208</data>
 				<data>224</data>
+				<data>240</data>
 				<data>256</data>
-				<data>288</data>
-				<data>320</data>
-				<data>352</data>
-				<data>384</data>
-				<data>416</data>
-				<data>448</data>
-				<data>480</data>
-				<data>512</data>
-				<scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.2" />
+				<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
 			</table>
 			<description>The engine has to be running at least this amount of time, before the closed loop operation can be activated.</description>
 		</table>
@@ -3060,6 +3074,22 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			</table>
 			<description>P0133 Threshold 3: With a RATIO threshold of 50% and a time threshold of 70ms, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms, it will trigger an error code.</description>
 		</table>
+		<table type="2D" name="misc: pps 1 range" category="misc" storagetype="uint16" endian="big" sizex="2" userlevel="1" storageaddress="0x2CB6">
+			<scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.2" />
+			<table type="Static X Axis" name="" sizex="2">
+				<data>low</data>
+				<data>high</data>
+			</table>
+			<description>Expected voltage range of the pedal position sensor 1.</description>
+		</table>
+		<table type="2D" name="misc: pps 2 range" category="misc" storagetype="uint16" endian="big" sizex="2" userlevel="1" storageaddress="0x2CBA">
+			<scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.2" />
+			<table type="Static X Axis" name="" sizex="2">
+				<data>low</data>
+				<data>high</data>
+			</table>
+			<description>Expected voltage range of the pedal position sensor 2.</description>
+		</table>
 		<table type="2D" name="obd2: P0116 threshold" category="obd2" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x2CCF">
 			<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
 			<table type="Static X Axis" name="" sizex="1">
@@ -3122,6 +3152,22 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 				<data>P0128 threshold</data>
 			</table>
 			<description />
+		</table>
+		<table type="2D" name="misc: tps 1 range" category="misc" storagetype="uint16" endian="big" sizex="2" userlevel="1" storageaddress="0x2D8C">
+			<scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.2" />
+			<table type="Static X Axis" name="" sizex="2">
+				<data>low</data>
+				<data>high</data>
+			</table>
+			<description>Expected voltage range of the throttle position sensor 1.</description>
+		</table>
+		<table type="2D" name="misc: tps 2 range" category="misc" storagetype="uint16" endian="big" sizex="2" userlevel="1" storageaddress="0x2D90">
+			<scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.2" />
+			<table type="Static X Axis" name="" sizex="2">
+				<data>low</data>
+				<data>high</data>
+			</table>
+			<description>Expected voltage range of the throttle position sensor 2.</description>
 		</table>
 		<table type="Switch" name="misc: use tpms" category="misc" sizey="1" userlevel="1" storageaddress="0x2D99">
 			<state name="No TPMS" data="00" />

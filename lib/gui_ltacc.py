@@ -66,7 +66,7 @@ class LiveTuningAccess_win(tk.Toplevel):
 			lta = LiveTuningAccess(self.fp)
 			lta.open_can(
 				self.can_device.get_interface(),
-				self.can_device.get_channel(), 
+				self.can_device.get_channel(),
 				self.can_device.get_bitrate(),
 			)
 			try:

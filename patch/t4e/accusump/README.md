@@ -39,11 +39,10 @@ A relay is needed.***
 
 ## Queries
 
- - Oil Pressure: OBD mode 0x22 pid 0x115C
+ - Oil Pressure: OBD mode 0x22 pid 0x0402
 
 ## Pictures
 
 ![alt text](../../../documentation/Usage/accusump/table.png "RomRaider")
 
 ![alt text](../../../documentation/Usage/accusump/relay.jpg "Relay")
-

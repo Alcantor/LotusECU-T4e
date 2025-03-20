@@ -1,7 +1,7 @@
 <roms>
 	<rom>
 		<romid>
-			<xmlid>XTRACAL2</xmlid>
+			<xmlid>XTRACAL3</xmlid>
 			<market>World</market>
 			<make>Lotus</make>
 			<model>Elise/Exige Patched</model>
@@ -11,45 +11,61 @@
 			<memmodel>MPC563</memmodel>
 			<flashmethod>CRP</flashmethod>
 			<internalidaddress>0x3CB4</internalidaddress>
-			<internalidstring>XTRACAL2</internalidstring>
+			<internalidstring>XTRACAL3</internalidstring>
 			<noRamOffset>1</noRamOffset>
 		</romid>
-		<table type="2D" name="ethanol: sensor temp reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBC">
+
+		<table type="2D" name="accusump: open threshold" category="accusump" storagetype="uint8" endian="big" sizex="4" userlevel="1" storageaddress="0x3CC0">
+			<scaling category="Bar" units="bar" expression="x*32/1000" to_byte="x*1000/32" format="0.0" fineincrement="0.1" coarseincrement="1" />
+			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="4" storageaddress="0x3CBC">
+				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
+			</table>
+			<description>When the oil drop below this pressure threshold, open the accusump.</description>
+		</table>
+		<table type="2D" name="accusump: maximum open time" category="accusump" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CC4">
+			<scaling category="Second" units="s" expression="x" to_byte="x" format="0" fineincrement="1" coarseincrement="5" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>Maximum open time</data>
+			</table>
+			<description>Close the accusump after this delay to protected to coil from overheating.</description>
+		</table>
+
+		<table type="2D" name="ethanol: sensor temp reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CC8">
 			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>reactivity</data>
 			</table>
 			<description>Sensivity of the fuel temperature sensor.</description>
 		</table>
-		<table type="2D" name="ethanol: sensor content reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBD">
+		<table type="2D" name="ethanol: sensor content reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CC9">
 			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>reactivity</data>
 			</table>
 			<description>Sensivity of the fuel ethanol content sensor.</description>
 		</table>
-		<table type="2D" name="ethanol: sensor engine speed limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBE">
+		<table type="2D" name="ethanol: sensor engine speed limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CCA">
 			<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>engine speed limit</data>
 			</table>
 			<description>When the engine is above this speed limit, stop reading the flexfuel sensor.</description>
 		</table>
-		<table type="2D" name="ethanol: sensor engine load limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CBF">
+		<table type="2D" name="ethanol: sensor engine load limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x3CCB">
 			<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>engine load limit</data>
 			</table>
 			<description>When the engine is above this load limit, stop reading the flexfuel sensor.</description>
 		</table>
-		<table type="2D" name="ethanol: ign advance adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3CC0">
+		<table type="2D" name="ethanol: ign advance adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3CCC">
 			<scaling category="Degree" units="&#176;" expression="(x/4)-32" to_byte="(x+32)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
 			<table type="X Axis" name="engine air" storagetype="uint8" endian="big" sizex="16" storageaddress="0x075C">
 				<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
 			</table>
 			<description>See "ign: advance adj1" map. For 85% ethanol or defined by scale 1. Do NOT edit Axis.</description>
 		</table>
-		<table type="3D" name="ethanol: ign advance high cam base" category="ethanol" storagetype="uint8" endian="big" sizex="8" sizey="8" userlevel="1" storageaddress="0x3CD0">
+		<table type="3D" name="ethanol: ign advance high cam base" category="ethanol" storagetype="uint8" endian="big" sizex="8" sizey="8" userlevel="1" storageaddress="0x3CDC">
 			<scaling category="Degree" units="&#176;" expression="(x/4)-10" to_byte="(x+10)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="8" storageaddress="0x0A24">
 				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
@@ -59,21 +75,21 @@
 			</table>
 			<description>See "ign: advance high cam base" map. For 40% ethanol or defined by scale 2. Do NOT edit Axis.</description>
 		</table>
-		<table type="2D" name="ethanol: injtip in adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3D10">
+		<table type="2D" name="ethanol: injtip in adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3D1C">
 			<scaling category="Percent" units="%" expression="x*100/128" to_byte="x*128/100" format="0" fineincrement="1" coarseincrement="5" />
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="16" storageaddress="0x08F4">
 				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
 			</table>
 			<description>See "injtip: in adj1" map. For 85% ethanol or defined by scale 1. Do NOT edit Axis.</description>
 		</table>
-		<table type="2D" name="ethanol: injtip out adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3D20">
+		<table type="2D" name="ethanol: injtip out adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x3D2C">
 			<scaling category="Percent" units="%" expression="x*100/128" to_byte="x*128/100" format="0" fineincrement="1" coarseincrement="5" />
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="16" storageaddress="0x0954">
 				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
 			</table>
 			<description>See "injtip: out adj1" map. For 85% ethanol or defined by scale 1. Do NOT edit Axis.</description>
 		</table>
-		<table type="3D" name="ethanol: inj efficiency" category="ethanol" storagetype="uint8" endian="big" sizex="32" sizey="32" userlevel="1" storageaddress="0x3D30">
+		<table type="3D" name="ethanol: inj efficiency" category="ethanol" storagetype="uint8" endian="big" sizex="32" sizey="32" userlevel="1" storageaddress="0x3D3C">
 			<scaling category="Percent" units="%" expression="x*100/200" to_byte="x*200/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="32" storageaddress="0x0BB4">
 				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
@@ -83,7 +99,7 @@
 			</table>
 			<description>See: "inj: efficiency" map. For 85% ethanol or defined by scale 1. Do NOT edit Axis.</description>
 		</table>
-		<table type="3D" name="ethanol: inj time adj3" category="ethanol" storagetype="uint8" endian="big" sizex="16" sizey="16" userlevel="1" storageaddress="0x4130">
+		<table type="3D" name="ethanol: inj time adj3" category="ethanol" storagetype="uint8" endian="big" sizex="16" sizey="16" userlevel="1" storageaddress="0x413C">
 			<scaling category="Percent" units="%" expression="x*100/64" to_byte="x*64/100" format="0" fineincrement="1" coarseincrement="5" />
 			<table type="X Axis" name="engine load" storagetype="uint8" endian="big" sizex="16" storageaddress="0x11B4">
 				<scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
@@ -93,14 +109,14 @@
 			</table>
 			<description>See: "inj: time adj3" map. For 85% ethanol or defined by scale 1. Do NOT edit Axis.</description>
 		</table>
-		<table type="2D" name="ethanol: inj time adj cranking" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x4230">
+		<table type="2D" name="ethanol: inj time adj cranking" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="0x423C">
 			<scaling category="Millisecond" units="ms" expression="x*256/1000" to_byte="x*1000/256" format="0.0" fineincrement="0.2" coarseincrement="1" />
 			<table type="X Axis" name="coolant" storagetype="uint8" endian="big" sizex="16" storageaddress="0x14C4">
 				<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
 			</table>
 			<description>See: "inj: time adj cranking" map. For 85% ethanol or defined by scale 1. Do NOT edit Axis.</description>
 		</table>
-		<table type="3D" name="ethanol: ign advance low cam base" category="ethanol" storagetype="uint8" endian="big" sizex="32" sizey="32" userlevel="1" storageaddress="0x4240">
+		<table type="3D" name="ethanol: ign advance low cam base" category="ethanol" storagetype="uint8" endian="big" sizex="32" sizey="32" userlevel="1" storageaddress="0x424C">
 			<scaling category="Degree" units="&#176;" expression="(x/4)-10" to_byte="(x+10)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
 			<table type="X Axis" name="engine speed" storagetype="uint8" endian="big" sizex="32" storageaddress="0x1A3C">
 				<scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
@@ -110,7 +126,7 @@
 			</table>
 			<description>See: "ign: advance low cam base" map. For 40% ethanol or defined by scale 2. Do NOT edit Axis.</description>
 		</table>
-		<table type="2D" name="ethanol: scale 1" category="ethanol" storagetype="uint8" endian="big" sizex="2" userlevel="1" storageaddress="0x4640">
+		<table type="2D" name="ethanol: scale 1" category="ethanol" storagetype="uint8" endian="big" sizex="2" userlevel="1" storageaddress="0x464C">
 			<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="2">
 				<data>Low</data>
@@ -118,13 +134,86 @@
 			</table>
 			<description>This defines the ethanol content for which a table is applicable. If you change this value, you need to rework the all tables using the scale 1.</description>
 		</table>
-		<table type="2D" name="ethanol: scale 2" category="ethanol" storagetype="uint8" endian="big" sizex="2" userlevel="1" storageaddress="0x4642">
+		<table type="2D" name="ethanol: scale 2" category="ethanol" storagetype="uint8" endian="big" sizex="2" userlevel="1" storageaddress="0x464E">
 			<scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="2">
 				<data>Low</data>
 				<data>High</data>
 			</table>
 			<description>This defines the ethanol content for which a table is applicable. If you change this value, you need to rework the all tables using the scale 2.</description>
+		</table>
+
+		<table type="2D" name="sensor: oil temperature scaling" category="sensor" storagetype="uint8" endian="big" sizex="33" userlevel="1" storageaddress="0x4650">
+			<scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
+			<table type="Static X Axis" name="signal" sizex="33">
+				<data>0</data>
+				<data>32</data>
+				<data>64</data>
+				<data>96</data>
+				<data>128</data>
+				<data>160</data>
+				<data>192</data>
+				<data>224</data>
+				<data>256</data>
+				<data>288</data>
+				<data>320</data>
+				<data>352</data>
+				<data>384</data>
+				<data>416</data>
+				<data>448</data>
+				<data>480</data>
+				<data>512</data>
+				<data>544</data>
+				<data>576</data>
+				<data>608</data>
+				<data>640</data>
+				<data>672</data>
+				<data>704</data>
+				<data>736</data>
+				<data>768</data>
+				<data>800</data>
+				<data>832</data>
+				<data>864</data>
+				<data>896</data>
+				<data>928</data>
+				<data>960</data>
+				<data>992</data>
+				<data>1024</data>
+				<scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.2" />
+			</table>
+			<description>Scaling of the oil temperature sensor.</description>
+		</table>
+		<table type="2D" name="sensor: oil temperature reactivity" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x4671">
+			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>oil temperature reactivity</data>
+			</table>
+			<description>At every cycle, the sampled oil temperature value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</description>
+		</table>
+		<table type="2D" name="sensor: oil pressure gain" category="sensor" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x4672">
+			<scaling category="Millibar/5v" units="mbar/5volt" expression="x" to_byte="x" format="0" fineincrement="10" coarseincrement="50" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>oil pressure gain</data>
+			</table>
+			<description>Oil pressure sensor gain.</description>
+		</table>
+		<table type="2D" name="sensor: oil pressure offset" category="sensor" storagetype="int16" endian="big" sizex="1" userlevel="1" storageaddress="0x4674">
+			<scaling category="Millibar" units="mbar" expression="x" to_byte="x" format="0" fineincrement="10" coarseincrement="50" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>oil pressure offset</data>
+			</table>
+			<description>Oil pressure sensor offset.</description>
+		</table>
+		<table type="2D" name="sensor: oil pressure reactivity" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x4676">
+			<scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>oil pressure reactivity</data>
+			</table>
+			<description>At every cycle, the sampled oil pressure value is mixed with the previous value.
+
+Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</description>
 		</table>
 	</rom>
 </roms>

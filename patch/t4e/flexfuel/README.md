@@ -39,11 +39,8 @@ but the sensor has a open-drain output, so even if it's powered by 12V, it's ok.
 
 ## Queries
 
-There is no standard for the fuel temperature, so I'am using the ambiant air
-temperature PID instead.
-
- - Fuel temperature    : OBD mode 0x01 pid 0x46
  - Ethanol content (%) : OBD mode 0x01 pid 0x52
+ - Fuel temperature    : OBD mode 0x22 pid 0x0401
 
 ## Octane of Ethanol Fuel Blend
 

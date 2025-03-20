@@ -17,3 +17,7 @@
 "CAL_tpssmooth_decrement_adj1_a?","N","1st","2nd","3rd","4th","5th","6th"
 "CAL_tpssmooth_decrement_adj1_b?","N","1st","2nd","3rd","4th","5th","6th"
 "CAL_tpssmooth_increment_adj1_b?","1st","2nd","3rd","4th","5th","6th"
+"CAL_misc_pps_1_range","low","high"
+"CAL_misc_pps_2_range","low","high"
+"CAL_misc_tps_1_range","low","high"
+"CAL_misc_tps_2_range","low","high"

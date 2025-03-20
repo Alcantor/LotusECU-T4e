@@ -264,6 +264,8 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
 "CAL_ecu_ign_threshold","003f995b","u8_voltage_72/1023v","By turning the key on the IGN position\, power is asserted to a dedicated input of the ECU and is considered active if above this threshold."
 "CAL_dfso_enable_car_speed","003f995c","u8_speed_kph","When the car is above this speed threshold\, enable the deceleration fuel shut off."
 "CAL_dfso_disable_car_speed","003f995d","u8_speed_kph","When the car is below this speed threshold\, disable the deceleration fuel shut off."
+"CAL_sensor_O2_heater_warmup_period","003f995f","u8_time_5ms","The duty cylce is hard coded to 80% but the period can be changed."
+"CAL_sensor_O2_heater_warmup_time","003f9960","u16_time_5ms","Once the engine is running and during this WARMUP time\, the O2 heater will be progressively heated up (80% heater duty cycle)."
 "CAL_knock_retard1_limit","003f9962","u8_angle_1/4deg","Maximium allowed value for retard1."
 "CAL_knock_retard2_corr_inc_coef","003f9965","uint8_t","The ECU will make corrections to the retard2 value\, if the engine load is above the retard2_corr_threshold.
 
@@ -299,10 +301,10 @@ peak_over_threshold = peak - threshold"
 "CAL_closedloop_stft_avg_reactivity","003f9973","u8_factor_1/256","Every 5ms\, the stft value is mixed with the previous value to build an average. The stft average is then used in the ltft.
 
 Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
-"CAL_evap_?a","003f9974","u8_time_5ms",""
+"CAL_evap_?a","003f9974","u8_time_100ms",""
 "CAL_evap_enable_inj_time_threshold","003f9975","u8_time_8us","When the INJECTION TIME and idle flow are above their respective thresholds\, enable the evaporative canister purge."
 "CAL_evap_disable_inj_time_threshold","003f9976","u8_time_8us","When the injection is below this time threshold\, disable the evaporative canister purge."
-"CAL_evap_?b","003f9979","u8_time_5ms",""
+"CAL_evap_?b","003f9979","u8_time_100ms",""
 "CAL_evap_vacuum_reactivity","003f997a","u8_factor_1/256",""
 "CAL_evap_enable_idle_flow_threshold","003f997b","u8_flow_100mg/s","When the injection time and IDLE FLOW are above their respective thresholds\, enable the evaporative canister purge."
 "CAL_evap_disable_idle_flow_threshold","003f997c","u8_flow_100mg/s","When the idle is below this flow threshold\, disable the evaporative canister purge."
@@ -320,8 +322,8 @@ Formula (cranking): adv = advance_cranking"
 
 Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * adj3 * ADJ_GEAR"
 "CAL_sensor_engine_speed_period_avg_size","003f9982","uint8_t","Sometimes an average is used on the sampled engine speed period values. This value sets how many samples are used to build the average. Between 1 and 7 (1 no average\, 7 very smooth)."
-"CAL_evap_?c","003f9989","u8_time_40ms",""
-"CAL_evap_?d","003f998a","u8_time_5ms",""
+"CAL_evap_?c","003f9989","u8_time_800ms",""
+"CAL_evap_?d","003f998a","u8_time_100ms",""
 "CAL_inj_afr_adj_per_advance_adj","003f998b","u8_afr_1/100","Fuel enrichment based on ignition advance (No enleanment allowed).
 
 Formula:
@@ -334,7 +336,7 @@ c = b * adj1 * adj2 * adj3 + tip_in + tip_out + reactive
 d = base + ltft_idle + (1 + stft + 2 * ltft) * c
 
 inj_time = d"
-"CAL_evap_?e","003f998c","u8_time_5ms",""
+"CAL_evap_?e","003f998c","u8_time_100ms",""
 "CAL_closedloop_ltft_idle_step","003f998d","u8_time_us","Decrement/Increment for the ltft correction when idling.
 
 Formula (idle): idle_adj = idle_adj -/+ IDLE_STEP"
@@ -406,7 +408,7 @@ Formula: pps2 = gain * (signal - OFFSET)"
 "CAL_idle_flow_adj8_corr_time_between_step","003f9a3e","u8_time_5ms","Minimum time between ECU correction of the flow_adj8 value."
 "CAL_idle_flow_adj8_corr_max","003f9a3f","u8_flow_100mg/s","Maximum flow_adj8 value. The ECU will not make correction above this value."
 "CAL_idle_flow_adj8_corr_min","003f9a40","u8_flow_-100mg/s","Minimum flow_adj8 value. The ECU will not make correction below this value."
-"CAL_idle_flow_adj5_threshold","003f9a41","u8_speed_kph","When the car is above this speed threshold\, the flow_adj5 will be used.
+"CAL_idle_flow_adj5_threshold","003f9a41","u8_speed_kph","When the car is below this speed threshold\, the flow_adj5 will be used.
 
 Note: The ignition adj1_alternative will also be used instead of adj1."
 "CAL_idle_flow_pps_threshold","003f9a42","u8_factor_1/1023","When the pps is above this position threshold\, disble the correction of the adj1_learned\, adj8 and more..."
@@ -461,9 +463,9 @@ Formula: reactivate = (time_base * adj) * (ADJ_FADEOUT ^ t)"
 "CAL_load_use_alphaN_speed_limit","003f9a6e","u16_rspeed_rpm","When the engine is above this speed limit\, ignore the alphaN table (only maf)."
 "CAL_load_use_alphaN_dt_tps1_negative_threshold","003f9a70","u16_factor_1/1023","When the negative tps change (dt_tps1) is above this threshold\, use the alphaN load calculation."
 "CAL_closedloop_ltft_min_atmo","003f9a78","i16_pressure_mbar","Minimum atmospheric pressure to enable the ltft correction."
-"CAL_evap_?f","003f9a7a","u8_time_5ms",""
-"CAL_evap_?g","003f9a7b","u8_time_80ms",""
-"CAL_evap_?h","003f9a7c","u8_time_5ms",""
+"CAL_evap_?f","003f9a7a","u8_time_100ms",""
+"CAL_evap_?g","003f9a7b","u8_time_1600ms",""
+"CAL_evap_?h","003f9a7c","u8_time_100ms",""
 "CAL_evap_duty_cycle_max","003f9a7e","u8_factor_1/255","Maximum allowed duty cycle for purge."
 "CAL_evap_duty_cycle_min","003f9a7f","u8_factor_1/255","Minimum allowed duty cycle for purge."
 "CAL_vvt_period","003f9a80","u16_time_25ns","Period of the pwm signal for the vvt."
@@ -673,7 +675,7 @@ Formula: reactivate = (time_base * ADJ) * (adj_fadeout ^ t)"
 "CAL_ign_advance_idle_adj1_alternative_X_idle_error","003f9c1a","u8_rspeed_4-512rpm[16]",""
 "CAL_ign_advance_idle_adj1_alternative","003f9c2a","u8_angle_1/4-32deg[16]","Ignition advance idle adjustment.
 
-Note: The ignition adj1_alternative will be used instead of adj1\, when the car is above the idle_flow_adj5_threshold speed.
+Note: The ignition adj1_alternative will be used instead of adj1\, when the car is below the idle_flow_adj5_threshold speed.
 
 Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = high_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
@@ -1096,6 +1098,8 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
 "CAL_sensor_O2_heater_threshold","003fc578","u16_current_mA","The electrical resistance of the O2 sensor heater increases with temperature. The ECU will stop the heater when the current drop below this current threshold."
 "CAL_obd2_P0133_threshold2_ratio","003fc584","u8_factor_1/100","P0133 Threshold 2: With a RATIO threshold of 200% and a time threshold of 135ms\, this means that if the lean-to-rich transition is twice as slow as the rich-to-lean transition and takes more than 135ms\, it will trigger an error code."
 "CAL_obd2_P0133_threshold3_ratio","003fc585","u8_factor_1/100","P0133 Threshold 3: With a RATIO threshold of 50% and a time threshold of 70ms\, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms\, it will trigger an error code."
+"CAL_misc_pps_1_range","003fc586","u16_voltage_5/1023v[2]","Expected voltage range of the pedal position sensor 1."
+"CAL_misc_pps_2_range","003fc58a","u16_voltage_5/1023v[2]","Expected voltage range of the pedal position sensor 2."
 "CAL_obd2_P0116_threshold","003fc59f","u8_temp_5/8-40c",""
 "CAL_obd2_P0453_threshold","003fc5f0","u16_voltage_5/1023v",""
 "CAL_obd2_P0452_threshold","003fc5f2","u16_voltage_5/1023v",""
@@ -1105,6 +1109,8 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
 "CAL_obd2_P0238_threshold","003fc620","u16_voltage_5/1023v",""
 "CAL_obd2_P0237_threshold","003fc622","u16_voltage_5/1023v",""
 "CAL_obd2_P0128_threshold","003fc62e","u8_temp_5/8-40c",""
+"CAL_misc_tps_1_range","003fc65c","u16_voltage_5/1023v[2]","Expected voltage range of the throttle position sensor 1."
+"CAL_misc_tps_2_range","003fc660","u16_voltage_5/1023v[2]","Expected voltage range of the throttle position sensor 2."
 "CAL_misc_use_tpms","003fc669","uint8_t","Tyre pressure management system: 0 = no module\, 1 = module present."
 "CAL_obd2_P0106","003fc8d1","u8_obd2level","Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance Problem"
 "CAL_obd2_P0107","003fc8d2","u8_obd2level","Manifold Absolute Pressure/Barometric Pressure Circuit Low Input"

@@ -18,9 +18,9 @@ Beta 3940.
 
 ## Queries
 
- - Oil Pressure: OBD mode 0x01 pid 0x0A (Fuel Pressure)
- - Intake Manifold Pressure: OBD mode 0x01 pid 0x0B
- - Oil Temperature: OBD mode 0x01 pid 0x5C
+ - Intake Manifold Pressure : OBD mode 0x01 pid 0x0B
+ - Oil Temperature          : OBD mode 0x01 pid 0x5C
+ - Oil Pressure             : OBD mode 0x22 pid 0x0402
 
 ## Pictures
 
