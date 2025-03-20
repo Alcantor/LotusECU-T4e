@@ -489,6 +489,20 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			</table>
 			<description>When the car is below this speed threshold, disable the deceleration fuel shut off.</description>
 		</table>
+		<table type="2D" name="sensor: O2 heater warmup period" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x008F">
+			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>O2 heater warmup period</data>
+			</table>
+			<description>The duty cylce is hard coded to 80% but the period can be changed.</description>
+		</table>
+		<table type="2D" name="sensor: O2 heater warmup time" category="sensor" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="0x0090">
+			<scaling category="Second" units="s" expression="x*5/1000" to_byte="x*1000/5" format="0.00" fineincrement="0.1" coarseincrement="1" />
+			<table type="Static X Axis" name="" sizex="1">
+				<data>O2 heater warmup time</data>
+			</table>
+			<description>Once the engine is running and during this WARMUP time, the O2 heater will be progressively heated up (80% heater duty cycle).</description>
+		</table>
 		<table type="2D" name="knock: retard1 limit" category="knock" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x0092">
 			<scaling category="Degrees" units="&#176;" expression="x/4" to_byte="x*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
 			<table type="Static X Axis" name="" sizex="1">
@@ -608,7 +622,7 @@ peak_over_threshold = peak - threshold</description>
 Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</description>
 		</table>
 		<table type="2D" name="evap: ?a" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00A4">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?a</data>
 			</table>
@@ -629,7 +643,7 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
 			<description>When the injection is below this time threshold, disable the evaporative canister purge.</description>
 		</table>
 		<table type="2D" name="evap: ?b" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00A9">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?b</data>
 			</table>
@@ -707,14 +721,14 @@ Formula: tip_in(t) = time_base * (dt_tps2 - (adj2 * t)) * adj1 * adj3 * ADJ_GEAR
 			<description>Sometimes an average is used on the sampled engine speed period values. This value sets how many samples are used to build the average. Between 1 and 7 (1 no average, 7 very smooth).</description>
 		</table>
 		<table type="2D" name="evap: ?c" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00B9">
-			<scaling category="Second" units="s" expression="x/25" to_byte="x*25" format="0.0" fineincrement="0.04" coarseincrement="1" />
+			<scaling category="Second" units="s" expression="x*0.8" to_byte="x/0.8" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?c</data>
 			</table>
 			<description />
 		</table>
 		<table type="2D" name="evap: ?d" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00BA">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?d</data>
 			</table>
@@ -739,7 +753,7 @@ d = base + ltft_idle + (1 + stft + 2 * ltft) * c
 inj_time = d</description>
 		</table>
 		<table type="2D" name="evap: ?e" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x00BC">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?e</data>
 			</table>
@@ -1348,21 +1362,21 @@ Formula: reactivate = (time_base * adj) * (ADJ_FADEOUT ^ t)</description>
 			<description>Minimum atmospheric pressure to enable the ltft correction.</description>
 		</table>
 		<table type="2D" name="evap: ?f" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x01AA">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?f</data>
 			</table>
 			<description />
 		</table>
 		<table type="2D" name="evap: ?g" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x01AB">
-			<scaling category="Second" units="s" expression="x*2/25" to_byte="x*25/2" format="0.0" fineincrement="0.08" coarseincrement="1" />
+			<scaling category="Second" units="s" expression="x*1.6" to_byte="x/1.6" format="0.0" fineincrement="1" coarseincrement="5" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?g</data>
 			</table>
 			<description />
 		</table>
 		<table type="2D" name="evap: ?h" category="evap" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="0x01AC">
-			<scaling category="Millisecond" units="ms" expression="x*5" to_byte="x/5" format="0" fineincrement="5" coarseincrement="10" />
+			<scaling category="Second" units="s" expression="x/10" to_byte="x*10" format="0.0" fineincrement="0.1" coarseincrement="1" />
 			<table type="Static X Axis" name="" sizex="1">
 				<data>?h</data>
 			</table>

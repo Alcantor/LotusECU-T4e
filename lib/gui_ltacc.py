@@ -361,29 +361,30 @@ Because the changes are in the RAM, everything will be lost after the ECU has sh
 			'read_data': lambda: int.from_bytes(lta.read_memory(sym.get_sym_addr("LEA_knock_retard2")+6, 2), BO_BE)/655.36
 		})
 		# For flexfuel patch
-		#CAL_base_extra = 0x3FEA60
+		#CAL_base_extra = 0x3FEA20
+		#FLEX_base = CAL_base_extra + 0x0C
 		#tunable += (dict(tunable[0]), dict(tunable[1]), dict(tunable[2]))
 		#tunable[3]['name'] += " Ethanol"
-		#tunable[3]['read_data'] = lambda: [[int(v)/2 for v in lta.read_memory(CAL_base_extra+0x07C+(i*32), 32)] for i in range(0,32)]
-		#tunable[3]['write_cell'] = lambda x,y,value:lta.write_memory(CAL_base_extra+0x07C+(y*32)+x,int(value*2).to_bytes(1, BO_BE))
+		#tunable[3]['read_data'] = lambda: [[int(v)/2 for v in lta.read_memory(FLEX_base+0x07C+(i*32), 32)] for i in range(0,32)]
+		#tunable[3]['write_cell'] = lambda x,y,value:lta.write_memory(FLEX_base+0x07C+(y*32)+x,int(value*2).to_bytes(1, BO_BE))
 		#tunable[4]['name'] += " Ethanol"
-		#tunable[4]['read_data'] = lambda: [[int(v)/4-10 for v in lta.read_memory(CAL_base_extra+0x58C+(i*32), 32)] for i in range(0,32)]
-		#tunable[4]['write_cell'] = lambda x,y,value:lta.write_memory(CAL_base_extra+0x58C+(y*32)+x,int((value+10)*4).to_bytes(1, BO_BE))
+		#tunable[4]['read_data'] = lambda: [[int(v)/4-10 for v in lta.read_memory(FLEX_base+0x58C+(i*32), 32)] for i in range(0,32)]
+		#tunable[4]['write_cell'] = lambda x,y,value:lta.write_memory(FLEX_base+0x58C+(y*32)+x,int((value+10)*4).to_bytes(1, BO_BE))
 		#tunable[5]['name'] += " Ethanol"
-		#tunable[5]['read_data'] = lambda: [[int(v)/4-10 for v in lta.read_memory(CAL_base_extra+0x01C+(i*8), 8)] for i in range(0,8)]
-		#tunable[5]['write_cell'] = lambda x,y,value:lta.write_memory(CAL_base_extra+0x01C+(y*8)+x,int((value+10)*4).to_bytes(1, BO_BE))
+		#tunable[5]['read_data'] = lambda: [[int(v)/4-10 for v in lta.read_memory(FLEX_base+0x01C+(i*8), 8)] for i in range(0,8)]
+		#tunable[5]['write_cell'] = lambda x,y,value:lta.write_memory(FLEX_base+0x01C+(y*8)+x,int((value+10)*4).to_bytes(1, BO_BE))
 		#gauges += ({
 		#	'name': "Ethanol",
 		#	'fmt': "{:.1f} %",
 		#	'low': 0,
 		#	'high': 85,
-		#	'read_data': lambda: int.from_bytes(lta.read_memory(0x3FEA40, 1), BO_BE)/2.55
+		#	'read_data': lambda: int.from_bytes(lta.read_memory(0x3FF410, 1), BO_BE)/2.55
 		#},)
 		tw = TunerWin(
 			self.config, tunable, gauges,
 			lambda: lta.write_memory(sym.get_sym_addr("LEA_knock_retard2"), b'\x00\x00\x00\x00\x00\x00\x00\x00'),
 			lambda f: lta.upload_verify(sym.get_sym_addr("CAL_base"), f), # or lta.upload_verify(CAL_base_extra, f+".xtracal"),
-			lambda f: lta.download_verify(sym.get_sym_addr("CAL_base"), 0x3CB4, f), # or lta.download_verify(CAL_base_extra, 0x9BC, f+".xtracal"),
+			lambda f: lta.download_verify(sym.get_sym_addr("CAL_base"), 0x3CB4, f), # or lta.download_verify(CAL_base_extra, 0x9C4, f+".xtracal"),
 			self
 		)
 		while(tw.is_running):

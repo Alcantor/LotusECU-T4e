@@ -299,6 +299,7 @@ def do(symbols, units, xaxis, calrom, decram):
 				dim = 1
 		else:
 			print("WARNING - Ignoring: "+s)
+			dim = 1
 
 def find_symbols_files():
 	result = []

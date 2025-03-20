@@ -1,312 +1,14 @@
-.section .data
-.globl CAL_ethanol_ign_advance_adj1, CAL_ethanol_ign_advance_high_cam_base, CAL_ethanol_injtip_in_adj1, CAL_ethanol_injtip_out_adj1, CAL_ethanol_inj_efficiency, CAL_ethanol_inj_time_adj3, CAL_ethanol_inj_time_adj_cranking, CAL_ethanol_ign_advance_low_cam_base
-
-# Calibration size must be a multiple of 4
-CAL_extra:
-.ascii	"XTRACAL2"
-CAL_ethanol_sensor_temp_reactivity:
-.byte 0x02
-CAL_ethanol_sensor_content_reactivity:
-.byte 0x04
-CAL_ethanol_sensor_engine_speed_limit:
-.byte 0x70 # 4000rpm
-CAL_ethanol_sensor_engine_load_limit:
-.byte 0x96 # 600mg/stroke
-CAL_ethanol_ign_advance_adj1:
-.space 16
-CAL_ethanol_ign_advance_high_cam_base:
-.space 64
-CAL_ethanol_injtip_in_adj1:
-.space 16
-CAL_ethanol_injtip_out_adj1:
-.space 16
-CAL_ethanol_inj_efficiency:
-.space 1024
-CAL_ethanol_inj_time_adj3:
-.space 256
-CAL_ethanol_inj_time_adj_cranking:
-.space 16
-CAL_ethanol_ign_advance_low_cam_base:
-.space 1024
-CAL_ethanol_scale_1_low:
-.byte 0 # 0 %
-CAL_ethanol_scale_1_high:
-.byte 216 # 85 %
-CAL_ethanol_scale_2_low:
-.byte 12 # 5 %
-CAL_ethanol_scale_2_high:
-.byte 102 # 40 %
-CAL_extra_end:
-
 .section .bss
-.global ethanol_temp, ethanol_content, CAL_base_extra
+.global ethanol_temp, ethanol_content
 
-.lcomm	ethanol_timer,		1
-.lcomm	ethanol_temp_avg,	4
-.lcomm	ethanol_temp,		1 # 0 = -40°C, 255 = 120°C
-.lcomm	ethanol_content_avg,	4
-.lcomm	ethanol_content,	1 # 0 = 0%, 255 = 100%
-.lcomm	CAL_base_extra,	(CAL_extra_end-CAL_extra) # Copy in RAM of extra CALibration.
+.lcomm	ethanol_timer,       1, 1
+.lcomm	ethanol_temp,        1, 1 # 0 = -40°C, 255 = 120°C
+.lcomm	ethanol_content,     1, 1 # 0 = 0%, 255 = 100%
+.lcomm	ethanol_temp_avg,    4, 4
+.lcomm	ethanol_content_avg, 4, 4
 
 .section .text
-.globl _start, hook_init, hook_loop, hook_timer_5ms, hook_OBD_mode_0x01, hook_ign_advance_high_cam_base, hook_ign_advance_low_cam_base, hook_ign_advance_adj1, hook_inj_time_adj_cranking, hook_inj_efficiency, hook_inj_time_adj3, hook_injtip_in_adj1, hook_injtip_out_adj1
-
-_start:
-hook_init:
-	bl	copy_calibration
-	bl	flexfuel_init
-
-	# Load 128 (Erase by patch in original code)
-	li	%r0, 128
-	ba	hook_init_continue
-
-hook_loop:
-	bl	flexfuel
-	ba	hook_loop_continue
-
-hook_timer_5ms:
-	bl	flexfuel_5ms
-
-	# Load 10 (Erase by patch in original code)
-	li	%r5, 10
-	ba	hook_timer_5ms_continue
-
-hook_ign_advance_high_cam_base:
-	lis	%r12, CAL_base_extra@ha
-	addi	%r12, %r12, CAL_base_extra@l
-	addi	%r10, %r12, (CAL_ethanol_ign_advance_high_cam_base-CAL_extra)
-	lbz	%r11, (CAL_ethanol_scale_2_low-CAL_extra)(%r12)
-	lbz	%r12, (CAL_ethanol_scale_2_high-CAL_extra)(%r12)
-	bl	lookup_3D_uint8_interpolated_withblend
-	ba	hook_ign_advance_high_cam_base_continue
-
-hook_ign_advance_low_cam_base:
-	lis	%r12, CAL_base_extra@ha
-	addi	%r12, %r12, CAL_base_extra@l
-	addi	%r10, %r12, (CAL_ethanol_ign_advance_low_cam_base-CAL_extra)
-	lbz	%r11, (CAL_ethanol_scale_2_low-CAL_extra)(%r12)
-	lbz	%r12, (CAL_ethanol_scale_2_high-CAL_extra)(%r12)
-	bl	lookup_3D_uint8_interpolated_withblend
-	ba	hook_ign_advance_low_cam_base_continue
-
-hook_ign_advance_adj1:
-	lis	%r9, CAL_base_extra@ha
-	addi	%r9, %r9, CAL_base_extra@l
-	addi	%r7, %r9, (CAL_ethanol_ign_advance_adj1-CAL_extra)
-	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
-	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
-	bl	lookup_2D_uint8_interpolated_withblend
-	ba	hook_ign_advance_adj1_continue
-
-hook_inj_time_adj_cranking:
-	lis	%r9, CAL_base_extra@ha
-	addi	%r9, %r9, CAL_base_extra@l
-	addi	%r7, %r9, (CAL_ethanol_inj_time_adj_cranking-CAL_extra)
-	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
-	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
-	bl	lookup_2D_uint8_interpolated_withblend
-	ba	hook_inj_time_adj_cranking_continue
-
-hook_inj_efficiency:
-	lis	%r12, CAL_base_extra@ha
-	addi	%r12, %r12, CAL_base_extra@l
-	addi	%r10, %r12, (CAL_ethanol_inj_efficiency-CAL_extra)
-	lbz	%r11, (CAL_ethanol_scale_1_low-CAL_extra)(%r12)
-	lbz	%r12, (CAL_ethanol_scale_1_high-CAL_extra)(%r12)
-	bl	lookup_3D_uint8_interpolated_withblend
-	ba	hook_inj_efficiency_continue
-
-hook_inj_time_adj3:
-	lis	%r12, CAL_base_extra@ha
-	addi	%r12, %r12, CAL_base_extra@l
-	addi	%r10, %r12, (CAL_ethanol_inj_time_adj3-CAL_extra)
-	lbz	%r11, (CAL_ethanol_scale_1_low-CAL_extra)(%r12)
-	lbz	%r12, (CAL_ethanol_scale_1_high-CAL_extra)(%r12)
-	bl	lookup_3D_uint8_interpolated_withblend
-	ba	hook_inj_time_adj3_continue
-
-hook_injtip_in_adj1:
-	lis	%r9, CAL_base_extra@ha
-	addi	%r9, %r9, CAL_base_extra@l
-	addi	%r7, %r9, (CAL_ethanol_injtip_in_adj1-CAL_extra)
-	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
-	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
-	bl	lookup_2D_uint8_interpolated_withblend
-	ba	hook_injtip_in_adj1_continue
-
-hook_injtip_out_adj1:
-	lis	%r9, CAL_base_extra@ha
-	addi	%r9, %r9, CAL_base_extra@l
-	addi	%r7, %r9, (CAL_ethanol_injtip_out_adj1-CAL_extra)
-	lbz	%r8, (CAL_ethanol_scale_1_low-CAL_extra)(%r9)
-	lbz	%r9, (CAL_ethanol_scale_1_high-CAL_extra)(%r9)
-	bl	lookup_2D_uint8_interpolated_withblend
-	ba	hook_injtip_out_adj1_continue
-
-.if OBD_KLINE
-
-hook_OBD_mode_0x01:
-	# %r3 is the obd pid
-
-	# Branching
-	cmplwi	%r3, 0x40
-	beq	OBD_mode_0x01_pid_0x40
-	cmplwi	%r3, 0x46
-	beq	OBD_mode_0x01_pid_0x46
-	cmplwi	%r3, 0x52
-	beq	OBD_mode_0x01_pid_0x52
-
-	# Copy %r3 (Erase by patch in original code)
-	or	%r31, %r3, %r3
-	ba	hook_OBD_mode_0x01_continue
-
-OBD_mode_0x01_pid_0x40:
-	lis     %r4, obd_resp@ha
-	addi    %r4, %r4, obd_resp@l
-
-	# Header
-	li	%r5, 0x48
-	stb	%r5, 0(%r4)
-	li	%r5, 0x6B
-	stb	%r5, 1(%r4)
-	li	%r5, 0x10
-	stb	%r5, 2(%r4)
-	li	%r5, 0x41
-	stb	%r5, 3(%r4)
-	stb	%r3, 4(%r4)
-
-	# Available PID 0x41-0x60
-	lis	%r5, 0x6EC04000@ha
-	addi	%r5, %r5, 0x6EC04000@l
-	stw	%r5, 5(%r4) # PID response
-
-	li	%r5, 0xB2 # Checksum
-	stb	%r5, 9(%r4)
-
-	li	%r5, 0x09
-	lis	%r3, obd_resp_length@ha
-	stb	%r5, obd_resp_length@l(%r3)
-
-	li	%r5, 0x00
-	lis	%r3, obd_resp_index@ha
-	stb	%r5, obd_resp_index@l(%r3)
-
-	# Set the first byte into SCI1 Data Register
-	li	%r5, 0x48
-	lis	%r3, 0x030500E@ha
-	sth	%r5, 0x030500E@l(%r3)
-
-	ba	hook_OBD_mode_0x01_jump
-
-OBD_mode_0x01_pid_0x46:
-	# Fuel temperature (reported as ambiant air)
-	lis	%r4, ethanol_temp@ha
-	lbz	%r4, ethanol_temp@l(%r4)
-
-	# Convert from x*5/8-40 to x-40
-	# Maximal oil temp will be 120°C!
-	mulli	%r4, %r4, 160
-	srawi	%r4, %r4, 8
-	addze	%r4, %r4
-
-	bl	OBD_mode_0x01_send_uint8
-	ba	hook_OBD_mode_0x01_jump
-
-OBD_mode_0x01_pid_0x52:
-	# Ethanol fuel %
-	lis	%r4, ethanol_content@ha
-	lbz	%r4, ethanol_content@l(%r4)
-
-	bl	OBD_mode_0x01_send_uint8
-	ba	hook_OBD_mode_0x01_jump
-
-.else
-
-hook_OBD_mode_0x01:
-	# %r30 is index in obd_req
-	# %r31 is index in obd_resp
-
-	# Store current request byte in %r3
-	lis	%r3, obd_req@ha
-	addi	%r3, %r3, obd_req@l
-	lbzx	%r3, %r3, %r30
-
-	# Store pointer to response array in %r4
-	# Store current pointer to response byte in %r5
-	lis	%r4, obd_resp@ha
-	addi	%r4, %r4, obd_resp@l
-	add	%r5, %r4, %r31
-
-	# Branching
-	cmplwi	%r3, 0x40
-	beq	OBD_mode_0x01_pid_0x40
-	cmplwi	%r3, 0x46
-	beq	OBD_mode_0x01_pid_0x46
-	cmplwi	%r3, 0x52
-	beq	OBD_mode_0x01_pid_0x52
-
-	# Mask %r30 (Erase by patch in original code)
-	rlwinm	%r0, %r30, 0,24,31
-	ba	hook_OBD_mode_0x01_continue
-
-OBD_mode_0x01_pid_0x40:
-	# Available PID 0x41-0x60
-	addi	%r31, %r31, 5 # Answer 5 bytes
-	stb	%r3, 0(%r5)
-
-	lis	%r3, 0x6EC04000@ha
-	addi	%r3, %r3, 0x6EC04000@l
-	stw	%r3, 1(%r5)
-
-	ba	hook_OBD_mode_0x01_jump
-
-OBD_mode_0x01_pid_0x46:
-	# Fuel temperature (reported as ambiant air)
-	addi	%r31, %r31, 2 # Answer 2 bytes
-	stb	%r3, 0(%r5)
-
-	lis	%r3, ethanol_temp@ha
-	lbz	%r3, ethanol_temp@l(%r3)
-
-	# Convert from x*5/8-40 to x-40
-	# Maximal oil temp will be 120°C!
-	mulli	%r3, %r3, 160
-	srawi	%r3, %r3, 8
-	addze	%r3, %r3
-
-	stb	%r3, 1(%r5)
-
-	ba	hook_OBD_mode_0x01_jump
-
-OBD_mode_0x01_pid_0x52:
-	# Ethanol fuel %
-	addi	%r31, %r31, 2 # Answer 2 bytes
-	stb	%r3, 0(%r5)
-
-	lis	%r3, ethanol_content@ha
-	lbz	%r3, ethanol_content@l(%r3)
-
-	stb	%r3, 1(%r5)
-
-	ba	hook_OBD_mode_0x01_jump
-
-.endif
-
-copy_calibration:
-	# Copy extra calibration
-	lis	%r3, CAL_base_extra@ha
-	addi	%r3, %r3, CAL_base_extra@l
-	subi	%r3, %r3, 4
-	lis	%r4, CAL_extra@ha
-	addi	%r4, %r4, CAL_extra@l
-	subi	%r4, %r4, 4
-	li	%r5, (CAL_extra_end-CAL_extra) / 4
-	mtctr	%r5
-copy_loop:
-	lwzu	%r5, 4(%r4)
-	stwu	%r5, 4(%r3)
-	bdnz	copy_loop
-	blr
+.global flexfuel_init, flexfuel, flexfuel_5ms, lookup_2D_uint8_interpolated_withblend, lookup_3D_uint8_interpolated_withblend
 
 flexfuel_init:
 	# Configure MMCSMSCR (free running counter)
@@ -341,7 +43,7 @@ flexfuel_init:
 	li	%r3, 96
 	lis	%r4, ethanol_temp@ha
 	stb	%r3, ethanol_temp@l(%r4)
-	mulli	%r3, %r3, 256
+	slwi	%r3, %r3, 8
 	lis	%r4, ethanol_temp_avg@ha
 	stw	%r3, ethanol_temp_avg@l(%r4)
 
@@ -349,7 +51,7 @@ flexfuel_init:
 	li	%r3, 25
 	lis	%r4, ethanol_content@ha
 	stb	%r3, ethanol_content@l(%r4)
-	mulli	%r3, %r3, 256
+	slwi	%r3, %r3, 8
 	lis	%r4, ethanol_content_avg@ha
 	stw	%r3, ethanol_content_avg@l(%r4)
 
@@ -366,19 +68,23 @@ flexfuel:
 	#lis	%r4, 0x306C40@ha
 	sth	%r5, 0x306C40@l(%r4)
 
+	# Load CAL_base_extra into r12 for multiple uses
+	lis	%r12, CAL_base_extra@ha
+	addi	%r12, %r12, CAL_base_extra@l
+
 	# Engine speed limit
-	lis	%r5, CAL_base_extra@ha
-	addi	%r5, %r5, CAL_base_extra@l
-	lbz	%r3, (CAL_ethanol_sensor_engine_speed_limit-CAL_extra)(%r5)
+	#lis	%r12, CAL_base_extra@ha
+	#addi	%r12, %r12, CAL_base_extra@l
+	lbz	%r3, OFF_CAL_ethanol_sensor_engine_speed_limit(%r12)
 	lis	%r4, engine_speed_3@ha
 	lbz	%r4, engine_speed_3@l(%r4)
 	cmplw	%r4, %r3
 	bge	flex_end
 
 	# Engine load limit
-	#lis	%r5, CAL_base_extra@ha
-	#addi	%r5, %r5, CAL_base_extra@l
-	lbz	%r3, (CAL_ethanol_sensor_engine_load_limit-CAL_extra)(%r5)
+	#lis	%r12, CAL_base_extra@ha
+	#addi	%r12, %r12, CAL_base_extra@l
+	lbz	%r3, OFF_CAL_ethanol_sensor_engine_load_limit(%r12)
 	lis	%r4, load_2@ha
 	lbz	%r4, load_2@l(%r4)
 	cmplw	%r4, %r3
@@ -402,10 +108,10 @@ flexfuel:
 
 	# Temperature (Duty cycle: 1ms = -40°C and 5ms = 125°C)
 	# temp(in °C)   = (((%r3 / 78125 * 1000) - 1ms) * 41.25) - 40
-	# temp(5/8-40c) = ((((%r3 / 78125 * 1000) - 1ms) * 41.25) - 40 + 40) * 8 / 5 = (%r3 / 1.18) - 66 = (%r3 * 528 / 625) - 66
-	mulli	%r3, %r3, 528
-	li	%r4, 625
-	divw	%r3, %r3, %r4
+	# temp(1  -40c) = ((((%r3 / 78125 * 1000) - 1ms) * 41.25) - 40 + 40 = (%r3 * 0.528) - 41.25
+	# temp(5/8-40c) = ((((%r3 / 78125 * 1000) - 1ms) * 41.25) - 40 + 40) * 8 / 5 = (%r3 * 0.8448) - 66
+	mulli	%r3, %r3, 27682 # 27682 = ((1 << 15) * 0.8448)
+	srwi	%r3, %r3, 15
 	subi	%r3, %r3, 66
 	cmpwi	%r3, 0
 	bge	flex_1
@@ -419,22 +125,21 @@ flex_2:
 	#
 	# avg = (avg * (256 - reactivity))/256 + (value * reactivity)
 	#
-	li	%r4, 256
-	lis	%r5, CAL_base_extra@ha
-	addi	%r5, %r5, CAL_base_extra@l
-	lbz	%r5, (CAL_ethanol_sensor_temp_reactivity-CAL_extra)(%r5)
-	sub	%r6, %r4, %r5
+	#lis	%r12, CAL_base_extra@ha
+	#addi	%r12, %r12, CAL_base_extra@l
+	lbz	%r4, OFF_CAL_ethanol_sensor_temp_reactivity(%r12)
+	subfic	%r5, %r4, 256
 	lis	%r7, ethanol_temp_avg@ha
-	lwz	%r7, ethanol_temp_avg@l(%r7)
-	mullw	%r7, %r7, %r6
-	divw	%r7, %r7, %r4
-	mullw	%r3, %r3, %r5
-	add	%r3, %r3, %r7
-	lis	%r7, ethanol_temp_avg@ha
+	lwz	%r6, ethanol_temp_avg@l(%r7)
+	mullw	%r6, %r6, %r5
+	srwi	%r6, %r6, 8
+	mullw	%r3, %r3, %r4
+	add	%r3, %r3, %r6
+	#lis	%r7, ethanol_temp_avg@ha
 	stw	%r3, ethanol_temp_avg@l(%r7)
-	divw	%r3, %r3, %r4
-	lis	%r7, ethanol_temp@ha
-	stb	%r3, ethanol_temp@l(%r7)
+	srwi	%r3, %r3, 8
+	lis	%r4, ethanol_temp@ha
+	stb	%r3, ethanol_temp@l(%r4)
 	b	flex_end
 
 flex_content:
@@ -442,7 +147,14 @@ flex_content:
 
 	# Ethanol Content (Freq: 50Hz = 0% and 150Hz = 100%)
 	# percent(in % ) = (78125 / %r3) - 50
-	# percent(1/255) = ((78125 / %r3) - 50) / 100 * 255 = (199219 / %r3) - 127
+	# percent(1/255) = ((78125 / %r3) - 50) / 100 * 255 = (199218.75 / %r3) - 127.5
+	#
+	# Working with the period instead of the frequency to avoid the division
+	# does not work as follows (Try with 100Hz or 10ms => 50%):
+	#
+	# Ethanol Content (Period: 20ms = 0% and 6.66ms = 100%)
+	# WRONG: percent(in % ) = 100 - ((%r3 / 78125 * 1000) - 6.66) / (20 - 6.66) * 100
+	# WRONG: percent(1/255) = 255 - ((%r3 * 0.2448) - 127.5)
 	lis	%r4, 199219@ha
 	addi	%r4, %r4, 199219@l
 	divw	%r3, %r4, %r3
@@ -459,22 +171,21 @@ flex_4:
 	#
 	# avg = (avg * (256 - reactivity))/256 + (value * reactivity)
 	#
-	li	%r4, 256
-	lis	%r5, CAL_base_extra@ha
-	addi	%r5, %r5, CAL_base_extra@l
-	lbz	%r5, (CAL_ethanol_sensor_content_reactivity-CAL_extra)(%r5)
-	sub	%r6, %r4, %r5
+	#lis	%r12, CAL_base_extra@ha
+	#addi	%r12, %r12, CAL_base_extra@l
+	lbz	%r4, OFF_CAL_ethanol_sensor_content_reactivity(%r12)
+	subfic	%r5, %r4, 256
 	lis	%r7, ethanol_content_avg@ha
-	lwz	%r7, ethanol_content_avg@l(%r7)
-	mullw	%r7, %r7, %r6
-	divw	%r7, %r7, %r4
-	mullw	%r3, %r3, %r5
-	add	%r3, %r3, %r7
-	lis	%r7, ethanol_content_avg@ha
+	lwz	%r6, ethanol_content_avg@l(%r7)
+	mullw	%r6, %r6, %r5
+	srwi	%r6, %r6, 8
+	mullw	%r3, %r3, %r4
+	add	%r3, %r3, %r6
+	#lis	%r7, ethanol_content_avg@ha
 	stw	%r3, ethanol_content_avg@l(%r7)
-	divw	%r3, %r3, %r4
-	lis	%r7, ethanol_content@ha
-	stb	%r3, ethanol_content@l(%r7)
+	srwi	%r3, %r3, 8
+	lis	%r4, ethanol_content@ha
+	stb	%r3, ethanol_content@l(%r4)
 flex_end:
 	blr
 
@@ -649,4 +360,3 @@ lookup_3D_uint8_interpolated_withblend:
 	mtlr	%r0
 	addi	%r1, %r1, 28
 	blr
-
