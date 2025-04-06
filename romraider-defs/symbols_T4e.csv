@@ -408,7 +408,7 @@ Formula: pps2 = gain * (signal - OFFSET)"
 "CAL_idle_flow_adj8_corr_time_between_step","003f9a3e","u8_time_5ms","Minimum time between ECU correction of the flow_adj8 value."
 "CAL_idle_flow_adj8_corr_max","003f9a3f","u8_flow_100mg/s","Maximum flow_adj8 value. The ECU will not make correction above this value."
 "CAL_idle_flow_adj8_corr_min","003f9a40","u8_flow_-100mg/s","Minimum flow_adj8 value. The ECU will not make correction below this value."
-"CAL_idle_flow_adj5_threshold","003f9a41","u8_speed_kph","When the car is above this speed threshold\, the flow_adj5 will be used.
+"CAL_idle_flow_adj5_threshold","003f9a41","u8_speed_kph","When the car is below this speed threshold\, the flow_adj5 will be used.
 
 Note: The ignition adj1_alternative will also be used instead of adj1."
 "CAL_idle_flow_pps_threshold","003f9a42","u8_factor_1/1023","When the pps is above this position threshold\, disble the correction of the adj1_learned\, adj8 and more..."
@@ -675,7 +675,7 @@ Formula: reactivate = (time_base * ADJ) * (adj_fadeout ^ t)"
 "CAL_ign_advance_idle_adj1_alternative_X_idle_error","003f9c1a","u8_rspeed_4-512rpm[16]",""
 "CAL_ign_advance_idle_adj1_alternative","003f9c2a","u8_angle_1/4-32deg[16]","Ignition advance idle adjustment.
 
-Note: The ignition adj1_alternative will be used instead of adj1\, when the car is above the idle_flow_adj5_threshold speed.
+Note: The ignition adj1_alternative will be used instead of adj1\, when the car is below the idle_flow_adj5_threshold speed.
 
 Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = high_cam_base * adj2 * tc_adj + ADJ1 + (adj3 * adj3_adj) + adj4
@@ -1098,6 +1098,8 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
 "CAL_sensor_O2_heater_threshold","003fc578","u16_current_mA","The electrical resistance of the O2 sensor heater increases with temperature. The ECU will stop the heater when the current drop below this current threshold."
 "CAL_obd2_P0133_threshold2_ratio","003fc584","u8_factor_1/100","P0133 Threshold 2: With a RATIO threshold of 200% and a time threshold of 135ms\, this means that if the lean-to-rich transition is twice as slow as the rich-to-lean transition and takes more than 135ms\, it will trigger an error code."
 "CAL_obd2_P0133_threshold3_ratio","003fc585","u8_factor_1/100","P0133 Threshold 3: With a RATIO threshold of 50% and a time threshold of 70ms\, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms\, it will trigger an error code."
+"CAL_misc_pps_1_range","003fc586","u16_voltage_5/1023v[2]","Expected voltage range of the pedal position sensor 1."
+"CAL_misc_pps_2_range","003fc58a","u16_voltage_5/1023v[2]","Expected voltage range of the pedal position sensor 2."
 "CAL_obd2_P0116_threshold","003fc59f","u8_temp_5/8-40c",""
 "CAL_obd2_P0453_threshold","003fc5f0","u16_voltage_5/1023v",""
 "CAL_obd2_P0452_threshold","003fc5f2","u16_voltage_5/1023v",""
@@ -1107,6 +1109,8 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample"
 "CAL_obd2_P0238_threshold","003fc620","u16_voltage_5/1023v",""
 "CAL_obd2_P0237_threshold","003fc622","u16_voltage_5/1023v",""
 "CAL_obd2_P0128_threshold","003fc62e","u8_temp_5/8-40c",""
+"CAL_misc_tps_1_range","003fc65c","u16_voltage_5/1023v[2]","Expected voltage range of the throttle position sensor 1."
+"CAL_misc_tps_2_range","003fc660","u16_voltage_5/1023v[2]","Expected voltage range of the throttle position sensor 2."
 "CAL_misc_use_tpms","003fc669","uint8_t","Tyre pressure management system: 0 = no module\, 1 = module present."
 "CAL_obd2_P0106","003fc8d1","u8_obd2level","Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance Problem"
 "CAL_obd2_P0107","003fc8d2","u8_obd2level","Manifold Absolute Pressure/Barometric Pressure Circuit Low Input"
