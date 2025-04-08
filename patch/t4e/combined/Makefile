@@ -1,6 +1,7 @@
 AS=powerpc-linux-gnu-as
 LD=powerpc-linux-gnu-ld
 OC=powerpc-linux-gnu-objcopy
+OD=powerpc-linux-gnu-objdump
 
 NAME=patch
 SRCS=hook.S cal.S
@@ -28,13 +29,13 @@ ifeq ($(WIDEBAND), y)
 endif
 OBJS=$(SRCS:.S=.o)
 
-all: $(NAME).text.bin $(NAME).data.bin
+all: $(NAME).text.bin $(NAME).data.bin $(NAME).txt
 
 %.o: %.S
 	$(AS) ${ASFLAGS} -o $@ $<
 
 %.elf: $(OBJS)
-	$(LD) -e 0 -Map map.txt -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) --just-symbols=$(SYM) -o $@ $^
+	$(LD) -e 0 -Map map.txt -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) -T $(SYM) -o $@ $^
 
 %.text.bin: %.elf
 	$(OC) -O binary --only-section .text $< $@
@@ -42,6 +43,9 @@ all: $(NAME).text.bin $(NAME).data.bin
 %.data.bin: %.elf
 	$(OC) -O binary --only-section .data $< $@
 
+%.txt: %.elf
+	$(OD) -x $< > $@
+
 clean:
-	rm -f map.txt $(NAME).text.bin $(NAME).data.bin
+	rm -f $(NAME).text.bin $(NAME).data.bin $(NAME).txt
 

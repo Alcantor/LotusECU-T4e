@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import os, sys, re
+import os, sys
 sys.path.insert(0, '..')
 from lib.ppc32 import PPC32
 
@@ -250,39 +250,33 @@ class Patcher_T6Prog(Patcher_Prog):
 			lambda i: PPC32.ppc_addi(31, 31, i & 0xFFFF)
 		)
 
-class SYMMap:
+class HDRMap:
 	def __init__(self, file):
-		self.syms = {}
-		r = re.compile("^(.*) = (0x[0-9a-f]*);")
-		with open(file,'r') as f:
-			for line in f.readlines():
-				m = r.match(line)
-				if(m): self.syms[m.group(1)] = int(m.group(2), 16)
-
-	def get_sym_addr(self, symbol):
-		return self.syms[symbol]
-
-class LDMap:
-	def __init__(self, file):
-		self.syms = {}
 		self.segs = {}
-		r_sym = re.compile("^ *(0x[0-9a-f]*) *([0-9a-zA-Z_]*)$")
-		r_seg = re.compile("^(\\.[a-z]*) *(0x[0-9a-f]*) *(0x[0-9a-f]*)$")
+		self.syms = {}
 		with open(file,'r') as f:
+			chapter = 0
 			for line in f.readlines():
-				m = r_sym.match(line)
-				if(m): self.syms[m.group(2)] = int(m.group(1), 16)
-				m = r_seg.match(line)
-				if(m): self.segs[m.group(1)] = (int(m.group(2), 16), int(m.group(3), 16))
-
-	def get_sym_addr(self, symbol):
-		return self.syms[symbol]
-
+				if(line.startswith("Sections:")):
+					chapter = 1
+					continue
+				if(line.startswith("SYMBOL TABLE:")):
+					chapter = 2
+					continue
+				if(len(line) <= 1):
+					chapter = 0
+					continue
+				parts = line.split()
+				if chapter == 1 and len(parts) == 7:
+					self.segs[parts[1]] = (int(parts[4], 16), int(parts[2], 16))
+				elif chapter == 2 and len(parts) >= 4:
+					self.syms[parts[-1]] = int(parts[0], 16)
 	def get_seg_addr(self, segment):
 		return self.segs[segment][0]
-
 	def get_seg_size(self, segment):
 		return self.segs[segment][1]
+	def get_sym_addr(self, symbol):
+		return self.syms[symbol]
 
 # Bootloader from ALS3M0240J seems ugly. Look at 0x400 for example.
 # Bootloader A128E6009F, ALS3M0240F, ALS3M0244F and B120E0029F are identical
@@ -325,36 +319,35 @@ def build_combined():
 		"../black91.sym",
 		accusump, flexfuel, obdoil, wideband
 	))
-	s = SYMMap("t4e/black91.sym")
-	m = LDMap("t4e/combined/map.txt")
+	m = HDRMap("t4e/combined/patch.txt")
 
 	# Hook: Init
 	p.check_and_replace(
-		s.get_sym_addr("hook_init_loc"),
+		m.get_sym_addr("hook_init_loc"),
 		PPC32.ppc_li(0, 0x80),
 		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
 	)
 
 	# Hook: Main Loop
 	p.check_and_replace(
-		s.get_sym_addr("hook_loop_loc"),
+		m.get_sym_addr("hook_loop_loc"),
 		PPC32.ppc_b(
-			s.get_sym_addr("hook_loop_continue") -
-			s.get_sym_addr("hook_loop_loc")
+			m.get_sym_addr("hook_loop_continue") -
+			m.get_sym_addr("hook_loop_loc")
 		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
 
 	# Hook: Timer 5ms
 	p.check_and_replace(
-		s.get_sym_addr("hook_timer_5ms_loc"),
+		m.get_sym_addr("hook_timer_5ms_loc"),
 		PPC32.ppc_li(5, 10),
 		PPC32.ppc_ba(m.get_sym_addr("hook_timer_5ms"))
 	)
 
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
-		s.get_sym_addr("hook_OBD_mode_0x01_loc"),
+		m.get_sym_addr("hook_OBD_mode_0x01_loc"),
 		#PPC32.ppc_or(31, 3, 3),
 		PPC32.ppc_rlwinm(0, 30, 0, 24, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
@@ -362,7 +355,7 @@ def build_combined():
 
 	# Hook: OBD Mode 0x22
 	p.check_and_replace(
-		s.get_sym_addr("hook_OBD_mode_0x22_loc"),
+		m.get_sym_addr("hook_OBD_mode_0x22_loc"),
 		#PPC32.ppc_or(31, 3, 3),
 		PPC32.ppc_rlwinm(29, 8, 0, 16, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x22"))
@@ -371,10 +364,10 @@ def build_combined():
 	if(accusump == 'y'):
 		# Main Loop - Replace the call to the airbox_flap function
 		p.check_and_replace(
-			s.get_sym_addr("airbox_flap_call"),
+			m.get_sym_addr("airbox_flap_call"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("airbox_flap") -
-				s.get_sym_addr("airbox_flap_call")
+				m.get_sym_addr("airbox_flap") -
+				m.get_sym_addr("airbox_flap_call")
 			),
 			PPC32.ppc_bla(m.get_sym_addr("accusump"))
 		)
@@ -384,7 +377,7 @@ def build_combined():
 		# the oil pressure warning on the cluster will light up constantly!
 		# We need to patch that too.
 		p.check_and_replace(
-			s.get_sym_addr("oilpressure_cmp"),
+			m.get_sym_addr("oilpressure_cmp"),
 			PPC32.ppc_cmpli(3, 0x200), # Threshold at 2.5 V
 			PPC32.ppc_cmpli(3, 0x0B8)  # Threshold at 1.0 bar.
 		)
@@ -392,80 +385,80 @@ def build_combined():
 	if(flexfuel == 'y'):
 		# Hook: High cam ignition
 		p.check_and_replace(
-			s.get_sym_addr("hook_ign_advance_high_cam_base_loc"),
+			m.get_sym_addr("hook_ign_advance_high_cam_base_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_3D_uint8_interpolated") -
-				s.get_sym_addr("hook_ign_advance_high_cam_base_loc")
+				m.get_sym_addr("lookup_3D_uint8_interpolated") -
+				m.get_sym_addr("hook_ign_advance_high_cam_base_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_high_cam_base"))
 		)
 
 		# Hook: Low cam ignition
 		p.check_and_replace(
-			s.get_sym_addr("hook_ign_advance_low_cam_base_loc"),
+			m.get_sym_addr("hook_ign_advance_low_cam_base_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_3D_uint8_interpolated") -
-				s.get_sym_addr("hook_ign_advance_low_cam_base_loc")
+				m.get_sym_addr("lookup_3D_uint8_interpolated") -
+				m.get_sym_addr("hook_ign_advance_low_cam_base_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_low_cam_base"))
 		)
 
 		# Hook: Ignition adj1
 		p.check_and_replace(
-			s.get_sym_addr("hook_ign_advance_adj1_loc"),
+			m.get_sym_addr("hook_ign_advance_adj1_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_2D_uint8_interpolated") -
-				s.get_sym_addr("hook_ign_advance_adj1_loc")
+				m.get_sym_addr("lookup_2D_uint8_interpolated") -
+				m.get_sym_addr("hook_ign_advance_adj1_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_adj1"))
 		)
 
 		# Hook: Injection cranking
 		p.check_and_replace(
-			s.get_sym_addr("hook_inj_time_adj_cranking_loc"),
+			m.get_sym_addr("hook_inj_time_adj_cranking_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_2D_uint8_interpolated") -
-				s.get_sym_addr("hook_inj_time_adj_cranking_loc")
+				m.get_sym_addr("lookup_2D_uint8_interpolated") -
+				m.get_sym_addr("hook_inj_time_adj_cranking_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_inj_time_adj_cranking"))
 		)
 
 		# Hook: Injection efficiency
 		p.check_and_replace(
-			s.get_sym_addr("hook_inj_efficiency_loc"),
+			m.get_sym_addr("hook_inj_efficiency_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_3D_uint8_interpolated") -
-				s.get_sym_addr("hook_inj_efficiency_loc")
+				m.get_sym_addr("lookup_3D_uint8_interpolated") -
+				m.get_sym_addr("hook_inj_efficiency_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_inj_efficiency"))
 		)
 
 		# Hook: Injection warmup
 		p.check_and_replace(
-			s.get_sym_addr("hook_inj_time_adj3_loc"),
+			m.get_sym_addr("hook_inj_time_adj3_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_3D_uint8_interpolated") -
-				s.get_sym_addr("hook_inj_time_adj3_loc")
+				m.get_sym_addr("lookup_3D_uint8_interpolated") -
+				m.get_sym_addr("hook_inj_time_adj3_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_inj_time_adj3"))
 		)
 
 		# Hook: Tip-In
 		p.check_and_replace(
-			s.get_sym_addr("hook_injtip_in_adj1_loc"),
+			m.get_sym_addr("hook_injtip_in_adj1_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_2D_uint8_interpolated") -
-				s.get_sym_addr("hook_injtip_in_adj1_loc")
+				m.get_sym_addr("lookup_2D_uint8_interpolated") -
+				m.get_sym_addr("hook_injtip_in_adj1_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_injtip_in_adj1"))
 		)
 
 		# Hook: Tip-Out
 		p.check_and_replace(
-			s.get_sym_addr("hook_injtip_out_adj1_loc"),
+			m.get_sym_addr("hook_injtip_out_adj1_loc"),
 			PPC32.ppc_bl(
-				s.get_sym_addr("lookup_2D_uint8_interpolated") -
-				s.get_sym_addr("hook_injtip_out_adj1_loc")
+				m.get_sym_addr("lookup_2D_uint8_interpolated") -
+				m.get_sym_addr("hook_injtip_out_adj1_loc")
 			),
 			PPC32.ppc_ba(m.get_sym_addr("hook_injtip_out_adj1"))
 		)
@@ -473,14 +466,14 @@ def build_combined():
 	if(wideband == 'y'):
 		# Patch to use wb_ht_th variable for pre o2 heater.
 		# Power comes only when engine is running.
-		addr = s.get_sym_addr("CAL_base")
+		addr = m.get_sym_addr("CAL_base")
 		addr_ha1 = (addr >> 16) + ((addr >> 15) & 1)
 		addr_l1 = addr & 0xFFFF
 		addr = m.get_sym_addr("wb_ht_th")
 		addr_ha2 = (addr >> 16) + ((addr >> 15) & 1)
 		addr_l2 = addr & 0xFFFF
 		p.check_and_replace(
-			s.get_sym_addr("load_pre_O2_heater_threshold"),
+			m.get_sym_addr("load_pre_O2_heater_threshold"),
 			PPC32.ppc_lis(3, addr_ha1) + PPC32.ppc_addi(3, 3, addr_l1) +
 			PPC32.ppc_lhz(0, 3, 0x2ca8),
 			PPC32.ppc_lis(3, addr_ha2) + PPC32.ppc_addi(3, 3 ,addr_l2) +
@@ -489,7 +482,7 @@ def build_combined():
 
 		# Remove the write to sensor_adc_pre_O2
 		p.check_and_replace(
-			s.get_sym_addr("adc_sample_pre_O2"),
+			m.get_sym_addr("adc_sample_pre_O2"),
 			PPC32.ppc_lis(3, 0x30),
 			PPC32.ppc_b(0x18)
 		)
@@ -497,7 +490,7 @@ def build_combined():
 	if(softvtc == 'y'):
 		# Disable reading of VTC knob, so we can send it over can.
 		p.check_and_replace(
-			s.get_sym_addr("adc_sample_tc_knob"),
+			m.get_sym_addr("adc_sample_tc_knob"),
 			PPC32.ppc_lis(3, 0x30),
 			PPC32.ppc_b(0x18)
 		)
@@ -512,46 +505,46 @@ def build_combined():
 
 	if(flexfuel == 'y'):
 		# Copy Ignition adj
-		addr_src = s.get_sym_addr("CAL_ign_advance_adj1")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_ign_advance_adj1")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_adj1") - c.offset
 		for i in range(0, 16): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy ignition (high cam) table for ethanol.
-		addr_src = s.get_sym_addr("CAL_ign_advance_high_cam_base")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_ign_advance_high_cam_base")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_high_cam_base") - c.offset
 		for i in range(0, 64): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy Tip-In table for ethanol, add more fuel.
-		addr_src = s.get_sym_addr("CAL_injtip_in_adj1")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_injtip_in_adj1")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_injtip_in_adj1") - c.offset
 		for i in range(0, 16):
 			c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 		# Copy Tip-Out table for ethanol, add more fuel.
-		addr_src = s.get_sym_addr("CAL_injtip_out_adj1")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_injtip_out_adj1")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_injtip_out_adj1") - c.offset
 		for i in range(0, 16):
 			c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 		# Copy fuel efficieny table for ethanol, add more fuel.
-		addr_src = s.get_sym_addr("CAL_inj_efficiency")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_inj_efficiency")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_inj_efficiency") - c.offset
 		for i in range(0, 1024):
 			c.data[addr_dst+i] = int(c.data[addr_src+i]/afr_ratio)
 
 		# Copy fuel warmup table for ethanol.
-		addr_src = s.get_sym_addr("CAL_inj_time_adj3")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_inj_time_adj3")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj3") - c.offset
 		for i in range(0, 256): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy fuel cranking table for ethanol, add more fuel.
-		addr_src = s.get_sym_addr("CAL_inj_time_adj_cranking")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_inj_time_adj_cranking")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj_cranking") - c.offset
 		for i in range(0, 16):
 			c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 		# Copy ignition (low cam) table for ethanol.
-		addr_src = s.get_sym_addr("CAL_ign_advance_low_cam_base")-s.get_sym_addr("CAL_base")
+		addr_src = m.get_sym_addr("CAL_ign_advance_low_cam_base")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_low_cam_base") - c.offset
 		for i in range(0, 1024): c.data[addr_dst+i] = c.data[addr_src+i]
 
@@ -571,8 +564,7 @@ def build_t6_flexfuel():
 		p.get_free_ram(),
 		"../T6-V000S.sym"
 	))
-	s = SYMMap("t6/T6-V000S.sym")
-	m = LDMap("t6/flexfuel/map.txt")
+	m = HDRMap("t6/flexfuel/flexfuel.txt")
 
 	# Change SIU_PCR184 for primary function (Input RG4)
 	p.check_and_replace(
@@ -583,17 +575,17 @@ def build_t6_flexfuel():
 
 	# Hook: Init
 	p.check_and_replace(
-		s.get_sym_addr("hook_init_loc"),
+		m.get_sym_addr("hook_init_loc"),
 		PPC32.ppc_li(0, 0x80),
 		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
 	)
 
 	# Hook: Main Loop
 	p.check_and_replace(
-		s.get_sym_addr("hook_loop_loc"),
+		m.get_sym_addr("hook_loop_loc"),
 		PPC32.ppc_b(
-			s.get_sym_addr("hook_loop_continue") -
-			s.get_sym_addr("hook_loop_loc")
+			m.get_sym_addr("hook_loop_continue") -
+			m.get_sym_addr("hook_loop_loc")
 		),
 		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
 	)
@@ -607,14 +599,14 @@ def build_t6_flexfuel():
 
 	# Hook: Timer 5ms
 	p.check_and_replace(
-		s.get_sym_addr("hook_timer_5ms_loc"),
+		m.get_sym_addr("hook_timer_5ms_loc"),
 		PPC32.ppc_li(0, 10),
 		PPC32.ppc_ba(m.get_sym_addr("hook_timer_5ms"))
 	)
 
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
-		s.get_sym_addr("hook_OBD_mode_0x01_loc"),
+		m.get_sym_addr("hook_OBD_mode_0x01_loc"),
 		PPC32.ppc_rlwinm(0, 3, 0, 24, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)

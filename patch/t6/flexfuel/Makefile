@@ -1,14 +1,15 @@
 AS=powerpc-linux-gnu-as
 LD=powerpc-linux-gnu-ld
 OC=powerpc-linux-gnu-objcopy
+OD=powerpc-linux-gnu-objdump
 
-all: flexfuel.text.bin flexfuel.data.bin
+all: flexfuel.text.bin flexfuel.data.bin flexfuel.txt
 
 %.o: %.S
 	$(AS) -a32 -be -o $@ $<
 
 %.elf: %.o
-	$(LD) -Map map.txt -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) --just-symbols=$(SYM) -o $@ $^
+	$(LD) -e 0 -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) -T $(SYM) -o $@ $^
 
 %.text.bin: %.elf
 	$(OC) -O binary --only-section .text $< $@
@@ -16,6 +17,9 @@ all: flexfuel.text.bin flexfuel.data.bin
 %.data.bin: %.elf
 	$(OC) -O binary --only-section .data $< $@
 
+%.txt: %.elf
+	$(OD) -x $< > $@
+
 clean:
-	rm -f map.txt flexfuel.elf flexfuel.text.bin flexfuel.data.bin
+	rm -f flexfuel.text.bin flexfuel.data.bin flexfuel.txt
 
