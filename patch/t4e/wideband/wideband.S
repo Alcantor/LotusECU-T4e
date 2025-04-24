@@ -11,7 +11,7 @@
 # Expected calibration sequence values and threshold
 .set WB_CAL_A, 341 # 1023 * 1 / 3 = 341.00
 .set WB_CAL_B, 682 # 1023 * 2 / 3 = 682.00
-.set WB_CAL_T,  82 # 0.40 V * 1023 / 5 = 81.84
+.set WB_CAL_T, 102 # 0.50 V * 1023 / 5 = 102.30
 
 # Allow up to 3 A for the wideband heater.
 .set WB_MAX_I, 3000
@@ -134,65 +134,51 @@ wideband_5ms:
 timer_1:
 	# Take 512 samples from 1.22s to 3.78s
 	cmplwi	%r3, (500-(1<<(WB_CALWIN-1)))
-	blt	timer_2
+	blt	timer_4
 	cmplwi	%r3, (500+(1<<(WB_CALWIN-1)))
 	bge	timer_2
 	# Sample
 	lis	%r4, ADC_WB@ha
 	lhz	%r4, ADC_WB@l(%r4)
+	# If it's below than 1.16 V assume NB
+	cmplwi	%r4, (WB_CAL_A-WB_CAL_T)
+	blt	timer_5
+	# If it's higher than 2.16 V assume NB
+	cmplwi	%r4, (WB_CAL_A+WB_CAL_T)
+	bgt	timer_5
+	# Accumulate
 	lis	%r5, wb_sampleA@ha
 	lwz	%r6, wb_sampleA@l(%r5)
 	add	%r6, %r6, %r4
 	#lis	%r5, wb_sampleA@ha
 	stw	%r6, wb_sampleA@l(%r5)
-	b	timer_6
+	b	timer_4
 timer_2:
-	# Make the average and check
-	cmplwi	%r3, (500+(1<<(WB_CALWIN-1)))
-	bne	timer_3
-	lis	%r4, wb_sampleA@ha
-	lwz	%r4, wb_sampleA@l(%r4)
-	srwi	%r4, %r4, WB_CALWIN
-	# If it's below than 1.26 V assume NB
-	cmplwi	%r4, (WB_CAL_A-WB_CAL_T)
-	blt	timer_7
-	# If it's higher than 2.06 V assume NB
-	cmplwi	%r4, (WB_CAL_A+WB_CAL_T)
-	bgt	timer_7
-	b	timer_6
-timer_3:
 	# Take 512 samples from 6.22s to 8.78s
 	cmplwi	%r3, (1500-(1<<(WB_CALWIN-1)))
 	blt	timer_4
 	cmplwi	%r3, (1500+(1<<(WB_CALWIN-1)))
-	bge	timer_4
+	bge	timer_3
 	# Sample
 	lis	%r4, ADC_WB@ha
 	lhz	%r4, ADC_WB@l(%r4)
+	# If it's below than 2.83 V assume NB
+	cmplwi	%r4, (WB_CAL_B-WB_CAL_T)
+	blt	timer_5
+	# If it's higher than 3.83 V assume NB
+	cmplwi	%r4, (WB_CAL_B+WB_CAL_T)
+	bgt	timer_5
+	# Accumulate
 	lis	%r5, wb_sampleB@ha
 	lwz	%r6, wb_sampleB@l(%r5)
 	add	%r6, %r6, %r4
 	#lis	%r5, wb_sampleB@ha
 	stw	%r6, wb_sampleB@l(%r5)
-	b	timer_6
-timer_4:
-	# Make the average and check
-	cmplwi	%r3, (1500+(1<<(WB_CALWIN-1)))
-	bne	timer_5
-	lis	%r4, wb_sampleB@ha
-	lwz	%r4, wb_sampleB@l(%r4)
-	srwi	%r4, %r4, WB_CALWIN
-	# If it's below than 2.93 V assume NB
-	cmplwi	%r4, (WB_CAL_B-WB_CAL_T)
-	blt	timer_7
-	# If it's higher than 3.73 V assume NB
-	cmplwi	%r4, (WB_CAL_B+WB_CAL_T)
-	bgt	timer_7
-	b	timer_6
-timer_5:
+	b	timer_4
+timer_3:
 	# Result at 10s
 	cmplwi	%r3, 2000
-	bne	timer_6
+	bne	timer_4
 	# Load the samples into r4 and r5
 	lis	%r4, wb_sampleA@ha
 	lwz	%r4, wb_sampleA@l(%r4)
@@ -216,13 +202,13 @@ timer_5:
 	li	%r4, WB_MAX_I
 	lis	%r5, wb_ht_th@ha
 	sth	%r4, wb_ht_th@l(%r5)
-timer_6:
+timer_4:
 	# Increment
 	addi	%r3, %r3, 1
 	lis	%r4, wb_state@ha
 	sth	%r3, wb_state@l(%r4)
 	blr
-timer_7:
+timer_5:
 	# Change state
 	li	%r3, 2002
 	lis	%r4, wb_state@ha

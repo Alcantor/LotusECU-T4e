@@ -10,8 +10,8 @@ to work as if the Pre-O2 would be a narrow one.
 
 The Spartan controller outputs 1.66 V during the first 5 seconds and then 3.33 V
 for the next 5 seconds for calibration purposes. This patch uses this feature to
-determine whether the wideband or normal narrowband is connected. Correction is
-then applied if the approximate voltages (± 0.4 V) are detected.
+determine whether the wideband or narrowband sensor is connected. Correction is
+then applied if the approximate voltages (± 0.5 V) are detected.
 
 ## Limitation
 
