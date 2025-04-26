@@ -35,7 +35,7 @@ all: $(NAME).text.bin $(NAME).data.bin $(NAME).txt
 	$(AS) ${ASFLAGS} -o $@ $<
 
 %.elf: $(OBJS)
-	$(LD) -e 0 -Map map.txt -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) -T $(SYM) -o $@ $^
+	$(LD) -e 0 -Tdata $(CAL) -Ttext $(ROM) -Tbss $(RAM) -T $(SYM) -o $@ $^
 
 %.text.bin: %.elf
 	$(OC) -O binary --only-section .text $< $@
