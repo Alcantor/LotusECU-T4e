@@ -78,7 +78,7 @@ class Coding():
 
 	def read_file(self, file):
 		with open(file, 'rb') as f:
-			f.seek(0x1C000)
+			#f.seek(0x1C000)
 			self.data = memoryview(bytearray(f.read(0x42)))
 
 	def get_variant(self):
