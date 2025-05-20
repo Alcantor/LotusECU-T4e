@@ -2,11 +2,11 @@
 <roms>
  <rom>
   <romid>
-   <xmlid>T4E2008</xmlid>
+   <xmlid>T4E90</xmlid>
    <market>World</market>
    <make>Lotus</make>
    <model>Elise/Exige</model>
-   <submodel>2008-2011</submodel>
+   <submodel>2006-2011</submodel>
    <transmission>MT</transmission>
    <filesize>15540b</filesize>
    <memmodel>MPC563</memmodel>
@@ -1088,6 +1088,24 @@ Formula: pps1 = gain * (signal - OFFSET)</description>
 
 Formula: pps2 = gain * (signal - OFFSET)</description>
   </table>
+  <table category="load" endian="big" name="load: possible max mode22" sizex="1" storageaddress="0x016A" storagetype="uint16" type="2D" userlevel="1">
+   <scaling category="Milligram/Stroke" coarseincrement="20" expression="x" fineincrement="1" format="0" to_byte="x" units="mg/stroke"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>possible max mode22</data>
+   </table>
+   <description>The engine load is also available as a ratio to the possible max load (OBD Mode 0x22 PID 0x022A).
+
+Formula: load(%) = load(mg/stroke) / LOAD_MAX</description>
+  </table>
+  <table category="load" endian="big" name="load: possible max absolute" sizex="1" storageaddress="0x016C" storagetype="uint16" type="2D" userlevel="1">
+   <scaling category="Milligram/Stroke" coarseincrement="20" expression="x" fineincrement="1" format="0" to_byte="x" units="mg/stroke"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>possible max absolute</data>
+   </table>
+   <description>The engine load is also available as a ratio to the possible max load (OBD Mode 0x01 PID 0x43).
+
+Formula: load(%) = load(mg/stroke) / LOAD_POSSIBLE_MAX_ABSOLUTE</description>
+  </table>
   <table category="idle" endian="big" name="idle: flow adj8 corr time between step" sizex="1" storageaddress="0x016E" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Millisecond" coarseincrement="10" expression="x*5" fineincrement="5" format="0" to_byte="x/5" units="ms"/>
    <table name="" sizex="1" type="Static X Axis">
@@ -1281,14 +1299,14 @@ Note: tps_max does not limit the tps engine stop value.</description>
    <table name="" sizex="1" type="Static X Axis">
     <data>disable pps</data>
    </table>
-   <description>When the pps is below this position threshold, disable the deceleration fuel shut off.</description>
+   <description>When the pps is above this position threshold, disable the deceleration fuel shut off.</description>
   </table>
   <table category="dfso" endian="big" name="dfso: enable pps" sizex="1" storageaddress="0x0193" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Percent" coarseincrement="1" expression="x*100/1023" fineincrement="0.1" format="0.00" to_byte="x*1023/100" units="%"/>
    <table name="" sizex="1" type="Static X Axis">
     <data>enable pps</data>
    </table>
-   <description>When the pps is above this position threshold, enable the deceleration fuel shut off.</description>
+   <description>When the pps is below this position threshold, enable the deceleration fuel shut off.</description>
   </table>
   <table category="dfso" endian="big" name="dfso: enable engine speed" sizex="1" storageaddress="0x0194" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="RPM" coarseincrement="100" expression="x" fineincrement="10" format="0" to_byte="x" units="rpm"/>
@@ -2464,7 +2482,7 @@ Formula: advance = BASE - adj</description>
    </table>
    <description>The engine load is also available as a ratio to the possible max load (OBD Mode 0x01 PID 0x04).
 
-Formula: load(%) = load(mg/stroke) / LOAD_MAX * (1013mbar / atmo_pressure)</description>
+Formula: load(%) = load(mg/stroke) / LOAD_POSSIBLE_MAX * (1013mbar / atmo_pressure)</description>
   </table>
   <table category="tpssmooth" endian="big" name="tpssmooth: increment" sizex="8" storageaddress="0x118C" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Percent" coarseincrement="1" expression="x*100/1023" fineincrement="0.1" format="0.00" to_byte="x*1023/100" units="%"/>

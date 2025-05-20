@@ -40,8 +40,6 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 public class ExportRomRaiderDefs extends GhidraScript {
-	private final File outxml = new File("T4e_defs.xml");
-
 	/******************************/
 	/* Custom X-Axis              */
 	/******************************/
@@ -262,6 +260,11 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		{"No traction control", "00"},
 		{"Normal traction control", "01"},
 		{"Variable traction control","02"}
+	};
+
+	private static final String[][] LOAD_MODE = {
+		{"Compute load from MAF", "00"},
+		{"Compute load from MAP", "01"}
 	};
 
 	/******************************/
@@ -658,6 +661,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				addXmlSwitch(doc, parent, s, USE_TPMS);
 			else if ("CAL_tc_mode".equals(s.name))
 				addXmlSwitch(doc, parent, s, TC_MODE);
+			else if ("CAL_load_use_speed_density".equals(s.name))
+				addXmlSwitch(doc, parent, s, LOAD_MODE);
 			else if (s.dataformat == null)
 				println("WARNING - Ignoring: "+s.name);
 			else if (s.name.startsWith("CAL_misc_shift_lights_before_rev_limit"))
@@ -732,6 +737,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
+
+		File outxml = new File(all.calBase.xmlid+"_defs.xml");
 
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(outxml);

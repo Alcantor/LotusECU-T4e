@@ -38,5 +38,5 @@ LEFT JOIN TextId AS UnitTextId ON
 LEFT JOIN TextTranslation AS UnitTextTranslation ON
 	UnitTextId.PK_TextID=UnitTextTranslation.FK_Text_Id
 WHERE
-	Request.Address LIKE '22 %'
-ORDER BY Request.Address
+	Request.Address LIKE '22 %' AND LiveItemInstance.OverrideTX IS NULL
+ORDER BY Request.Address, LiveItemInstance.DataPos, LiveItemInstance.DataMask

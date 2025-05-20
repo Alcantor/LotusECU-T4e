@@ -9,8 +9,9 @@ T6 definition please contact me.
 
 ## Usage
 
-The "T4e_defs.xml" was made for a 2008 T4e ECU. It should also work for 2006-2007
-ECUs but some errors may appear.
+The "T4E90_defs.xml" file was created for a 2008 T4e ECU. It should also work
+with 2006–2007 ECUs, but for best results, update your software to the latest
+version.
 
 Read the description of the tables:
 
