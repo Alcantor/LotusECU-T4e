@@ -469,13 +469,14 @@ def build_combined():
 		addr = m.get_sym_addr("CAL_base")
 		addr_ha1 = (addr >> 16) + ((addr >> 15) & 1)
 		addr_l1 = addr & 0xFFFF
+		off1 = m.get_sym_addr("CAL_sensor_O2_heater_threshold") - addr
 		addr = m.get_sym_addr("wb_ht_th")
 		addr_ha2 = (addr >> 16) + ((addr >> 15) & 1)
 		addr_l2 = addr & 0xFFFF
 		p.check_and_replace(
 			m.get_sym_addr("load_pre_O2_heater_threshold"),
 			PPC32.ppc_lis(3, addr_ha1) + PPC32.ppc_addi(3, 3, addr_l1) +
-			PPC32.ppc_lhz(0, 3, 0x2ca8),
+			PPC32.ppc_lhz(0, 3, off1),
 			PPC32.ppc_lis(3, addr_ha2) + PPC32.ppc_addi(3, 3 ,addr_l2) +
 			PPC32.ppc_lhz(0, 3, 0)
 		)
@@ -554,24 +555,25 @@ def build_combined():
 	# Test
 	#p.print_segments()
 
-def build_t6_flexfuel():
-	print("Flexfuel T6 support...")
-	c = Patcher_T6Calibration("../dump/t6/P138E0009/calrom.bin")
-	p = Patcher_T6Prog("../dump/t6/P138E0009/prog.bin")
-	os.system("make -C t6/flexfuel CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s}".format(
+def build_t6_combined():
+	print("Combined T6 patch...")
+	#c = Patcher_T6Calibration("../dump/t6/P138E0009/calrom.bin")
+	#p = Patcher_T6Prog("../dump/t6/P138E0009/prog.bin")
+	c = Patcher_T6Calibration("../../LotusCRP/extracted/P138E0009/P138E0009_TAB.cpt")
+	p = Patcher_T6Prog("../../LotusCRP/extracted/P138E0009/T6BRK0S01_BIN.cpt")
+	flexfuel = input("Include flexfuel support (y/n) ? ")
+	wideband = input("Include wideband support (y/n) ? ")
+	os.system(
+		"make -C t6/combined clean all "
+		"CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s} "
+		"FLEXFUEL={:s} WIDEBAND={:s}".format(
 		c.get_free_cal(),
 		p.get_free_rom(),
 		p.get_free_ram(),
-		"../T6-V000S.sym"
+		"../T6-V000S.sym",
+		flexfuel, wideband
 	))
-	m = HDRMap("t6/flexfuel/flexfuel.txt")
-
-	# Change SIU_PCR184 for primary function (Input RG4)
-	p.check_and_replace(
-		0x4285C,
-		PPC32.ppc_li(0, 0x0100),
-		PPC32.ppc_li(0, 0x0500)
-	)
+	m = HDRMap("t6/combined/patch.txt")
 
 	# Hook: Init
 	p.check_and_replace(
@@ -611,6 +613,14 @@ def build_t6_flexfuel():
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)
 
+	# Hook: OBD Mode 0x22
+	p.check_and_replace(
+		m.get_sym_addr("hook_OBD_mode_0x22_loc"),
+		#PPC32.ppc_or(31, 3, 3),
+		PPC32.ppc_rlwinm(4, 0, 0, 16, 31),
+		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x22"))
+	)
+
 	# Move the pointer for the freeram counter
 	addr = m.get_seg_addr(".bss") + m.get_seg_size(".bss")
 	addr_ha = (addr >> 16) + ((addr >> 15) & 1)
@@ -621,13 +631,66 @@ def build_t6_flexfuel():
 		PPC32.ppc_lis(3, addr_ha) + PPC32.ppc_addi(0, 3, addr_l)
 	)
 
+	if(flexfuel == 'y'):
+		# Change SIU_PCR184 for primary function (Input RG4)
+		p.check_and_replace(
+			0x4285C,
+			PPC32.ppc_li(0, 0x0100),
+			PPC32.ppc_li(0, 0x0500)
+		)
+
+	if(wideband == 'y'):
+		addr = m.get_sym_addr("CAL_base")
+		addr_ha1 = (addr >> 16) + ((addr >> 15) & 1)
+		addr_l1 = addr & 0xFFFF
+		off1 = m.get_sym_addr("CAL_sensor_O2_heater_threshold") - addr
+		off2 = m.get_sym_addr("wb_ht_th")
+
+		# Patch to use wb_ht_th variable for pre o2 heater bank 1.
+		addr = m.get_sym_addr("wb_bank1")
+		addr_ha2 = (addr >> 16) + ((addr >> 15) & 1)
+		addr_l2 = addr & 0xFFFF
+		p.check_and_replace(
+			m.get_sym_addr("load_pre_O2_heater_threshold_bank1"),
+			PPC32.ppc_lis(3, addr_ha1) + PPC32.ppc_addi(3, 3, addr_l1) +
+			PPC32.ppc_lhz(0, 3, off1),
+			PPC32.ppc_lis(3, addr_ha2) + PPC32.ppc_addi(3, 3 ,addr_l2) +
+			PPC32.ppc_lhz(0, 3, off2)
+		)
+
+		# Patch to use wb_ht_th variable for pre o2 heater bank 2.
+		addr = m.get_sym_addr("wb_bank2")
+		addr_ha2 = (addr >> 16) + ((addr >> 15) & 1)
+		addr_l2 = addr & 0xFFFF
+		p.check_and_replace(
+			m.get_sym_addr("load_pre_O2_heater_threshold_bank2"),
+			PPC32.ppc_lis(3, addr_ha1) + PPC32.ppc_addi(3, 3, addr_l1) +
+			PPC32.ppc_lhz(0, 3, off1),
+			PPC32.ppc_lis(3, addr_ha2) + PPC32.ppc_addi(3, 3 ,addr_l2) +
+			PPC32.ppc_lhz(0, 3, off2)
+		)
+
+		# Remove the write to sensor_adc_pre_O2_bank1
+		p.check_and_replace(
+			m.get_sym_addr("adc_sample_pre_O2_bank1"),
+			PPC32.ppc_lis(3, 0x4000),
+			PPC32.ppc_b(0x18)
+		)
+
+		# Remove the write to sensor_adc_pre_O2_bank2
+		p.check_and_replace(
+			m.get_sym_addr("adc_sample_pre_O2_bank2"),
+			PPC32.ppc_lis(3, 0x4000),
+			PPC32.ppc_b(0x18)
+		)
+
 	# Merge and save.
-	p.add_text("t6/flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
-	c.add_cal("t6/flexfuel/flexfuel.data.bin", m.get_seg_addr(".data"))
+	p.add_text("t6/combined/patch.text.bin", m.get_seg_addr(".text"))
+	c.add_cal("t6/combined/patch.data.bin", m.get_seg_addr(".data"))
 	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss"))
 	#p.write_segments()
-	p.save("t6/flexfuel/prog.bin")
-	c.save("t6/flexfuel/calrom.bin")
+	p.save("t6/combined/prog.bin")
+	c.save("t6/combined/calrom.bin")
 
 	# Test
 	#p.print_segments()
@@ -635,4 +698,4 @@ def build_t6_flexfuel():
 if __name__ == "__main__":
 	build_stage15()
 	build_combined()
-	build_t6_flexfuel()
+	build_t6_combined()
