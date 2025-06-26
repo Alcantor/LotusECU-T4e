@@ -24,6 +24,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -100,6 +101,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 	private static final DF[] formats = new DF[] {
 		new DF("uint8_t","uint8","#","x","x","0","1","10","Number"),
+		new DF("uint32_t","uint32","#","x","x","0","1","10","Number"),
+		new DF("u8_count","uint8","#","x","x","0","1","10","Number"),
 		new DF("uint16_t","uint16","#","x","x","0","1","100","Number"),
 		new DF("u8_x256","uint8","#","x*256","x/256","0","256","2560","Number"),
 		new DF("u8_factor_1/32","uint8","%","x*100/32","x*32/100","0","1","5","Percent"),
@@ -117,6 +120,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_factor_1/1000","uint8","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/1023","uint8","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/2000","uint8","%","x*100/2000","x*2000/100","0.00","0.1","1","Percent"),
+		new DF("u8_fuel_gal_x10","uint8","gal","x/10","x*10","0.00","0.1","1","gallons"),
+
+
+		new DF("u16_distance_mm_div2","uint16","%","x/2","x*2","0","2","10","mm"),
 		new DF("u16_factor_1/100","uint16","%","x","x","0","1","5","Percent"),
 		new DF("i16_factor_1/1000","int16","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/1023","uint16","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
@@ -163,6 +170,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_time_-10us","uint8","us","x*-10","x/-10","0","10","100","Microsecond"),
 		new DF("u8_time_20us","uint8","us","x*20","x/20","0","20","200","Microsecond"),
 		new DF("u8_time_64us","uint8","us","x*64","x/64","0","64","200","Microsecond"),
+		new DF("u8_time_78us","uint8","ms","x*0.078","x/0.078","0.00","0.1","2","Millisecond"),
 		new DF("u8_time_256us","uint8","ms","x*256/1000","x*1000/256","0.0","0.2","1","Millisecond"),
 		new DF("u8_time_512us","uint8","ms","x*512/1000","x*1000/512","0.0","0.4","2","Millisecond"),
 		new DF("u8_time_5ms","uint8","ms","x*5","x/5","0","5","10","Millisecond"),
@@ -173,6 +181,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_time_25ms","uint8","ms","x*25","x/25","0","25","100","Millisecond"),
 		new DF("u8_time_50ms","uint8","s","x/20","x*20","0.0","0.05","1","Second"),
 		new DF("u8_time_100ms","uint8","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u16_time_50ms","uint16","s","x/20","x*20","0.0","0.1","1","Second"),
 		new DF("u16_time_100ms","uint16","s","x/10","x*10","0.0","0.1","1","Second"),
 		new DF("u32_time_100ms","uint32","s","x/10","x*10","0.0","0.1","1","Second"),
 		new DF("u8_time_800ms","uint8","s","x*0.8","x/0.8","0.0","1","5","Second"),
@@ -214,6 +223,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_pressure_4mbar","uint8","mbar","x*4","x/4","0","4","40","Millibar"),
 		new DF("u8_pressure_8mbar","uint8","mbar","x*8","x/8","0","8","80","Millibar"),
 		new DF("u8_pressure_50mbar","uint8","mbar","x*50","x/50","0","50","200","Millibar"),
+		new DF("u8_pressure_4784/1023+35mbar","uint8","mbar","x*4784/1023+35","(x-35)*1023/4784","0","50","200","Millibar"),
 		new DF("u8_lambda_1/100","uint8","λ","x/100","x*100","0.00","0.5","0.1","Lambda"),
 		new DF("u8_afr_1/20+5","uint8","A/F","(x/20)+5","(x-5)*20","0.0","0.5","0.1","AFR"),
 		new DF("u8_afr_1/100","uint8","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
@@ -393,6 +403,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		DF     dataformat;
 		String comment;
 
+		public String getCategory(){return category;}
+		public String getName() {return name;}
+		public long getOffset() { return offset;}
+
 		SymRec(String n, String ct, String it, long o, String dt, String c) {
 			name = n;
 			category = ct;
@@ -478,7 +492,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 		while (it.hasNext() && !monitor.isCancelled()) {
 			Symbol s = it.next();
-			if (s.getSource() != SourceType.USER_DEFINED) continue;
+			if (s.getSource() != SourceType.USER_DEFINED || !s.isPrimary()) continue;
 
 			/* Symbol name */
 			String name = s.getName();
@@ -501,6 +515,26 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		return all;
 	}
 
+	/**
+	 * Inserts a new element into the parent element's child nodes in sorted order.
+	 * @param parent
+	 * @param e
+	 */
+	private void sortedAdd(final Element parent, final Element e) {
+		for (int i = 0; i < parent.getChildNodes().getLength(); i++) {
+			final Node curNode = parent.getChildNodes().item(i);
+			if (curNode.getNodeType() == Node.ELEMENT_NODE) {
+				final Element curElement = (Element) curNode;
+				if (curElement.getAttribute("name").compareTo(e.getAttribute("name")) > 0) {
+					parent.insertBefore(e, curNode);
+					return; // exit after inserting
+				}
+			}
+		}
+		// fall through and add new node
+		parent.appendChild(e);
+	}
+
 	private void addXmlSwitch(Document doc, Element parent, SymRec s, String[][] valuey) {
 		Element e = doc.createElement("table");
 		e.setAttribute("type", "Switch");
@@ -516,7 +550,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			e.appendChild(ey);
 		}
 		createTextChild(doc, e, "description", s.comment);
-		parent.appendChild(e);
+	    sortedAdd(parent, e);
 	}
 
 	private void addXml2DFixed(Document doc, Element parent, SymRec s, String namex, DF dataformatx) throws Exception {
@@ -544,7 +578,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.appendChild(ex);
 
 		createTextChild(doc, e, "description", s.comment);
-		parent.appendChild(e);
+	    sortedAdd(parent, e);
 	}
 
 	private void addXml2DStatic(Document doc, Element parent, SymRec s) throws Exception {
@@ -553,7 +587,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 	private void addXml2DStatic(Document doc, Element parent, SymRec s, String [] valuex, String namex, DF dataformatx) throws Exception {
 		if (s.size > valuex.length)
-			throw new Exception("Invalid axis size: "+s.name);
+			throw new Exception("Invalid axis size: "+s.name + " (" + s.size + ">" + valuex.length + ")");
 
 		Element e = doc.createElement("table");
 		e.setAttribute("type", "2D");
@@ -577,7 +611,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.appendChild(ex);
 
 		createTextChild(doc, e, "description", s.comment);
-		parent.appendChild(e);
+	    sortedAdd(parent, e);
 	}
 
 	private void addXml2D(Document doc, Element parent, SymRec s, SymRec sx) throws Exception {
@@ -606,7 +640,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.appendChild(ex);
 
 		createTextChild(doc, e, "description", s.comment);
-		parent.appendChild(e);
+	    sortedAdd(parent, e);
 	}
 
 	private void addXml3D(Document doc, Element parent, SymRec s, SymRec sx, SymRec sy) throws Exception {
@@ -646,14 +680,15 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.appendChild(ey);
 
 		createTextChild(doc, e, "description", s.comment);
-		parent.appendChild(e);
+	    sortedAdd(parent, e);
 	}
 
 	private void doDefs(Document doc, Element parent, List<SymRec> syms) throws Exception {
 		int  dim = 1;
 		SymRec sx = null;
 		SymRec sy = null;
-
+		
+		// TODO: sorting these is not possible. Fix.
 		for (SymRec s : syms) {
 			if (s.datatype.equals("u8_obd2level"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL);
@@ -669,12 +704,13 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				addXmlSwitch(doc, parent, s, TC_MODE);
 			else if ("CAL_load_use_speed_density".equals(s.name))
 				addXmlSwitch(doc, parent, s, LOAD_MODE);
-			else if (s.dataformat == null)
-				println("WARNING - Ignoring: "+s.name);
-			else if (s.name.startsWith("CAL_misc_shift_lights_before_rev_limit"))
+			else if (s.dataformat == null){
+				println("WARNIN - Ignoring unknown data format: "+s.name);
+				dim = 1;
+			}else if (s.name.startsWith("CAL_misc_shift_lights_before_rev_limit"))
 				addXml2DFixed(doc, parent, s, "Gear Number", getDataformat("uint8_t"));
-			else if (s.isXaxis) { dim++;  sx = s; continue; }
-			else if (s.isYaxis) { dim++;  sy = s; continue; }
+			else if (s.isXaxis) { dim++; sx = s; continue; }
+			else if (s.isYaxis) { dim++; sy = s; continue; }
 			else {
 				if (dim == 1) {
 					int shift;
@@ -767,6 +803,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
 
 		File outxml = new File(all.calBase.xmlid+"_defs.xml");
+		//File outxml = new File("/home/tvv/LotusCar/LotusECU-T4e/romraider-defs/"+all.calBase.xmlid+"_defs.xml");
 
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(outxml);
