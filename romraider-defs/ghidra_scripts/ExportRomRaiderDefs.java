@@ -72,6 +72,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"N","1st","2nd","3rd","4th","5th","6th"};
 		if (n.equals("CAL_tpssmooth_decrement_adj1_b?"))
 			return new String [] {"N","1st","2nd","3rd","4th","5th","6th"};
+		if (n.equals("CAL_tpssmooth_decrement_adj_by_gears_ips"))
+			return new String [] {"N","1st","2nd","3rd","4th","5th","6th"};
+		if (n.equals("CAL_tpssmooth_decrement_adj_by_gears_manual"))
+			return new String [] {"N","1st","2nd","3rd","4th","5th","6th"};
 		if (n.equals("CAL_tpssmooth_increment_adj1_b?"))
 			return new String [] {"1st","2nd","3rd","4th","5th","6th"};
 		if (n.equals("CAL_misc_pps_1_range"))
