@@ -692,7 +692,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			else if ("CAL_load_use_speed_density".equals(s.name))
 				addXmlSwitch(doc, parent, s, LOAD_MODE);
 			else if (s.dataformat == null){
-				println("WARNIN - Ignoring unknown data format: "+s.name);
+				println("WARNING - Ignoring unknown data format: "+s.name+" ("+s.datatype+")");
 				dim = 1;
 			}else if (s.name.startsWith("CAL_misc_shift_lights_before_rev_limit"))
 				addXml2DFixed(doc, parent, s, "Gear Number", getDataformat("uint8_t"));
