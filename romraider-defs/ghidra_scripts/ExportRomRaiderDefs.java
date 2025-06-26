@@ -66,6 +66,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"Min 6th gear","Max 6th gear"};
 		if (n.equals("CAL_misc_gears_?b"))
 			return new String [] {"Min 1st gear","Max 1st gear","Min 2nd gear","Max 2nd gear","Min 3rd gear","Max 3rd gear","Min 4th gear","Max 4th gear","Min 5th gear","Max 5th gear","Min 6th gear","Max 6th gear"};
+		if (n.equals("CAL_inj_tip_in_adj_gears"))
+			return new String [] {"N","1st","2nd","3rd","4th","5th","6th"};
 		if (n.equals("CAL_tpssmooth_decrement_adj1_a?"))
 			return new String [] {"N","1st","2nd","3rd","4th","5th","6th"};
 		if (n.equals("CAL_tpssmooth_decrement_adj1_b?"))
@@ -80,6 +82,44 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"low","high"};
 		if (n.equals("CAL_misc_tps_2_range"))
 			return new String [] {"low","high"};
+		if (n.equals("CAL_accel_pedal_pos_d_threshold"))
+			return new String [] {"low","high"};
+		if (n.equals("CAL_accel_pedal_pos_e_threshold"))
+			return new String [] {"low","high"};
+		if (n.equals("CAL_tps_voltage_theshold???"))
+			return new String [] {"low","high"};
+		if (n.equals("CAL_ecu_system_voltage_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_sensor_knock_voltage_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_sensor_iat_voltage_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_sensor_coolant_voltage_threshold"))
+			return new String [] {"high","low"};
+
+		if (n.equals("CAL_sensor_intake_air_temp_voltage_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_sensor_fuel_level_sensor_voltage_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_sensor_adc37_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_ac_compressor_deactivate_car_speed"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_ac_compressor_engine_speed2"))
+			return new String [] {"high","low"};
+
+		if (n.equals("CAL_trans_pump_car_speed_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_trans_pump_fluid_temp_threshold"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_trans_temp_voltage_threshold"))
+			return new String [] {"high","low"};
+
+		if (n.equals("CAL_cluster_coolant_warning"))
+			return new String [] {"high","low"};
+		if (n.equals("CAL_cluster_fuel_level_warning_threshold"))
+			return new String [] {"on","off"};
+
 		return null;
 	};
 
