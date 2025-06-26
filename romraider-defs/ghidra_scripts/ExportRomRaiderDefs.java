@@ -12,31 +12,19 @@ import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SymbolIterator;
 import ghidra.program.model.symbol.SymbolTable;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.print.Doc;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.text.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.dom.DOMSource;
@@ -688,7 +676,6 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		SymRec sx = null;
 		SymRec sy = null;
 		
-		// TODO: sorting these is not possible. Fix.
 		for (SymRec s : syms) {
 			if (s.datatype.equals("u8_obd2level"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL);
@@ -803,7 +790,6 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
 
 		File outxml = new File(all.calBase.xmlid+"_defs.xml");
-		//File outxml = new File("/home/tvv/LotusCar/LotusECU-T4e/romraider-defs/"+all.calBase.xmlid+"_defs.xml");
 
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(outxml);
