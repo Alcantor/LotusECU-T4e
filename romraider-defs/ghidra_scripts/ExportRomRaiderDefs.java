@@ -91,6 +91,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("uint8_t","uint8","#","x","x","0","1","10","Number"),
 		new DF("uint32_t","uint32","#","x","x","0","1","10","Number"),
 		new DF("u8_count","uint8","#","x","x","0","1","10","Number"),
+		new DF("u8_gear","uint8","g","x","x","0","1","10","Gear"),
 		new DF("uint16_t","uint16","#","x","x","0","1","100","Number"),
 		new DF("u8_x256","uint8","#","x*256","x/256","0","256","2560","Number"),
 		new DF("u8_factor_1/32","uint8","%","x*100/32","x*32/100","0","1","5","Percent"),
@@ -109,8 +110,6 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_factor_1/1023","uint8","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/2000","uint8","%","x*100/2000","x*2000/100","0.00","0.1","1","Percent"),
 		new DF("u8_fuel_gal_x10","uint8","gal","x/10","x*10","0.00","0.1","1","gallons"),
-
-
 		new DF("u16_distance_mm_div2","uint16","%","x/2","x*2","0","2","10","mm"),
 		new DF("u16_factor_1/100","uint16","%","x","x","0","1","5","Percent"),
 		new DF("i16_factor_1/1000","int16","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
