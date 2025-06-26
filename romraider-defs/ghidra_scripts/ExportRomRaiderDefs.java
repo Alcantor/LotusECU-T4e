@@ -12,30 +12,19 @@ import ghidra.program.model.symbol.Symbol;
 import ghidra.program.model.symbol.SymbolIterator;
 import ghidra.program.model.symbol.SymbolTable;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.commons.text.StringEscapeUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.dom.DOMSource;
@@ -97,6 +86,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	/******************************/
 	/* Datatype formatting        */
 	/******************************/
+
+	private static final Map<String, List<DF>> formatMap = new HashMap<>();
 
 	private static final DF[] formats = new DF[] {
 		new DF("uint8_t","uint8","#","x","x","0","1","10","Number"),
@@ -216,11 +207,21 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_pressure_50mbar","uint8","mbar","x*50","x/50","0","50","200","Millibar"),
 		new DF("u8_lambda_1/100","uint8","λ","x/100","x*100","0.00","0.5","0.1","Lambda"),
 		new DF("u8_afr_1/20+5","uint8","A/F","(x/20)+5","(x-5)*20","0.0","0.5","0.1","AFR"),
+		new DF("u8_afr_1/20+5","uint8","λ","((x/20)+5)/14.6","((x14.6)-5)*20","0.00","0.5","0.1","Lambda"),
 		new DF("u8_afr_1/100","uint8","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
 		new DF("u16_afr_1/100","uint16","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
 		new DF("u16_torque_nm","uint16","Newton meter","x","x","0","1","8","nm"),
 		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm")
 	};
+
+	static {
+		for (DF df : formats)
+			formatMap.computeIfAbsent(df.name, k -> new ArrayList<>()).add(df);
+	}
+
+	private static List<DF> getDataformat(String datatype) {
+		return formatMap.get(datatype);
+	}
 
 	/******************************/
 	/* Multiple choices switch    */
@@ -237,6 +238,18 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		{"Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)", "53"},
 		{"Level 4 DTC: Permanent", "44"},
 		{"Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)", "54"}
+	};
+
+	private static final String[][] OBD2LEVEL_T6 = {
+		{"OFF", "00"},
+		{"ON 0x01", "01"},
+		{"ON 0x11", "11"},
+		{"ON 0x12", "12"},
+		{"ON 0x13", "13"},
+		{"ON 0x21", "21"},
+		{"ON 0x53", "53"},
+		{"ON 0x91", "91"},
+		{"ON 0x92", "92"}
 	};
 
 	private static final String[][] OBD2MONITORS = {
@@ -314,14 +327,6 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		}
 	}
 
-	private static DF getDataformat(String datatype) {
-		for (int i = 0; i < formats.length; i++) {
-			if (formats[i].name.equals(datatype))
-				return formats[i];
-		}
-		return null;
-	}
-
 	private static void createTextChild(Document doc, Element parent, String name, String text) {
 		Element e = doc.createElement(name);
 		e.appendChild(doc.createTextNode(text));
@@ -381,34 +386,22 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	}
 
 	private static class SymRec {
-		private static final Pattern VAR_ARRAY = Pattern.compile("([^\\[]+)\\[(\\d+)]");
+		private static final Pattern varFormat = Pattern.compile("([^\\[]+)\\[(\\d+)]");
 		String name;
 		String category;
-		boolean isXaxis;
-		boolean isYaxis;
 		String item;
-		long   offset;
+		long offset;
 		String datatype;
-		int    size;
-		DF     dataformat;
+		int size;
+		List<DF> dataformats;
 		String comment;
 
 		SymRec(String n, String ct, String it, long o, String dt, String c) {
 			name = n;
 			category = ct;
-			int i = it.indexOf("_X_");
-			isXaxis = i > 0;
-			if (isXaxis) {
-				it = it.substring(i + 3);
-				isYaxis = false;
-			} else {
-				i = it.indexOf("_Y_");
-				isYaxis = i > 0;
-				if (isYaxis) it = it.substring(i + 3);
-			}
 			item = it.replace('_', ' ');
 			offset = o;
-			Matcher m = VAR_ARRAY.matcher(dt);
+			Matcher m = varFormat.matcher(dt);
 			if (m.matches()) {
 				datatype = m.group(1);
 				size = Integer.parseInt(m.group(2));
@@ -416,7 +409,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				datatype = dt;
 				size = 1;
 			}
-			dataformat = getDataformat(datatype);
+			dataformats = getDataformat(datatype);
 			comment = c;
 		}
 
@@ -426,59 +419,57 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	}
 
 	private static class Syms {
-		private static final Pattern CAL_ENTRY = Pattern.compile("^CAL_([a-zA-Z0-9]+)_(.+)");
-		private static final Pattern LEA_ENTRY = Pattern.compile("^LEA_([a-zA-Z0-9]+)_(.+)");
-		SymRecBase calBase = null;
-		List<SymRec> calSyms = new ArrayList<>();
-		SymRecBase leaBase = null;
-		List<SymRec> leaSyms = new ArrayList<>();
+		private final String prefix;
+		private final Pattern symFormat;
+		SymRecBase base;
+		List<SymRec> syms = new ArrayList<>();
+		HashMap<String,SymRec> Xsyms = new HashMap<>();
+		HashMap<String,SymRec> Ysyms = new HashMap<>();
+
+		Syms(String prefix) {
+			this.prefix = prefix;
+			symFormat = Pattern.compile("^"+prefix+"([a-zA-Z0-9]+)_(?:(.+)_([XY])_)?(.+)$");
+		}
 
 		void handle(String n, long o, String dt, String c) throws Exception {
-			Matcher m;
-			//printf("%s 0x%x %s\n", n, o, dt);
-			if (n.equals("CAL_base")) {
-				calBase = new SymRecBase(n, o, c);
+			if (n.equals(prefix+"base")) {
+				base = new SymRecBase(n, o, c);
 				return;
 			}
-			if (n.equals("LEA_base")) {
-				leaBase = new SymRecBase(n, o, c);
-				return;
-			}
-			m = CAL_ENTRY.matcher(n);
+			Matcher m = symFormat.matcher(n);
 			if (m.matches()) {
-				calSyms.add(new SymRec(n, m.group(1), m.group(2), o, dt, c));
-				return;
-			}
-			m = LEA_ENTRY.matcher(n);
-			if (m.matches()) {
-				leaSyms.add(new SymRec(n, m.group(1), m.group(2), o, dt, c));
-				return;
+				SymRec s = new SymRec(n, m.group(1), m.group(4), o, dt, c);
+				if (m.group(3) != null) {
+					String key = prefix+m.group(1)+"_"+m.group(2);
+					HashMap<String,SymRec> h = Xsyms;
+					if (m.group(3).equals("Y")) h = Ysyms;
+					if (h.put(key, s) != null)
+						throw new Exception("Axis collision: "+n);
+				} else syms.add(s);
 			}
 		}
 
 		void finish() throws Exception {
-			if (calBase == null)
-				throw new Exception("CAL_base missing");
-			if (leaBase == null)
-				throw new Exception("LEA_base missing");
-			calSyms.sort(Comparator.comparingLong(r -> r.offset));
-			leaSyms.sort(Comparator.comparingLong(r -> r.offset));
-			calSyms.forEach(i -> i.offset -= calBase.offset);
-			leaSyms.forEach(i -> i.offset -= leaBase.offset);
+			if (base == null)
+				throw new Exception(prefix+"base missing");
+			syms.sort(Comparator.comparing(r -> r.name));
+			//syms.sort(Comparator.comparingLong(r -> r.offset));
+			syms.forEach(i -> i.offset -= base.offset);
+			Xsyms.values().forEach(i -> i.offset -= base.offset);
+			Ysyms.values().forEach(i -> i.offset -= base.offset);
 		}
 	}
 
-	private Syms getSymbols() throws Exception {
+	private Syms[] getSymbols() throws Exception {
 		SymbolTable st   = currentProgram.getSymbolTable();
 		Listing     lst  = currentProgram.getListing();
 
 		SymbolIterator it = st.getAllSymbols(true);
-
-		Syms all = new Syms();
+		Syms [] all = new Syms[] { new Syms("CAL_"), new Syms("LEA_") };
 
 		while (it.hasNext() && !monitor.isCancelled()) {
 			Symbol s = it.next();
-			if (s.getSource() != SourceType.USER_DEFINED) continue;
+			if (s.getSource() != SourceType.USER_DEFINED || !s.isPrimary()) continue;
 
 			/* Symbol name */
 			String name = s.getName();
@@ -494,14 +485,14 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			Data data = lst.getDefinedDataAt(addr);
 			String dt = (data != null) ? data.getDataType().getName() : "undefined";
 
-			all.handle(name, addr.getOffset(), dt, cmt);
+			for(Syms p: all) p.handle(name, addr.getOffset(), dt, cmt);
 		}
 
-		all.finish();
+		for(Syms p: all) p.finish();
 		return all;
 	}
 
-	private void addXmlSwitch(Document doc, Element parent, SymRec s, String[][] valuey) {
+	private static void addXmlSwitch(Document doc, Element parent, SymRec s, String[][] valuey) {
 		Element e = doc.createElement("table");
 		e.setAttribute("type", "Switch");
 		e.setAttribute("name", s.prettyName());
@@ -519,19 +510,19 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		parent.appendChild(e);
 	}
 
-	private void addXml2DFixed(Document doc, Element parent, SymRec s, String namex, DF dataformatx) throws Exception {
+	private static void addXml2DFixed(Document doc, Element parent, SymRec s, String namex, List<DF> dataformatx) throws Exception {
 		int sizex = s.size / 2;
 
 		Element e = doc.createElement("table");
 		e.setAttribute("type", "2D");
 		e.setAttribute("name", s.prettyName());
 		e.setAttribute("category", s.category);
-		e.setAttribute("storagetype", s.dataformat.storageType);
+		e.setAttribute("storagetype", s.dataformats.get(0).storageType);
 		e.setAttribute("endian", "big");
 		e.setAttribute("sizex", String.valueOf(sizex));
 		e.setAttribute("userlevel", "1");
 		e.setAttribute("storageaddress", String.format("0x%04X", s.offset+sizex));
-		s.dataformat.addXmlScaling(doc, e);
+		for (DF df : s.dataformats) df.addXmlScaling(doc, e);
 
 		Element ex = doc.createElement("table");
 		ex.setAttribute("type", "X Axis");
@@ -540,31 +531,31 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		ex.setAttribute("endian", "big");
 		ex.setAttribute("sizex", String.valueOf(sizex));
 		ex.setAttribute("storageaddress", String.format("0x%04X", s.offset));
-		dataformatx.addXmlScaling(doc, ex);
+		dataformatx.get(0).addXmlScaling(doc, ex);
 		e.appendChild(ex);
 
 		createTextChild(doc, e, "description", s.comment);
 		parent.appendChild(e);
 	}
 
-	private void addXml2DStatic(Document doc, Element parent, SymRec s) throws Exception {
+	private static void addXml2DStatic(Document doc, Element parent, SymRec s) throws Exception {
 		addXml2DStatic(doc, parent, s, new String[] {s.item}, "", null);
 	}
 
-	private void addXml2DStatic(Document doc, Element parent, SymRec s, String [] valuex, String namex, DF dataformatx) throws Exception {
+	private static void addXml2DStatic(Document doc, Element parent, SymRec s, String [] valuex, String namex, List<DF> dataformatx) throws Exception {
 		if (s.size > valuex.length)
-			throw new Exception("Invalid axis size: "+s.name);
+			throw new Exception("Invalid axis size: "+s.name + " (" + s.size + ">" + valuex.length + ")");
 
 		Element e = doc.createElement("table");
 		e.setAttribute("type", "2D");
 		e.setAttribute("name", s.prettyName());
 		e.setAttribute("category", s.category);
-		e.setAttribute("storagetype", s.dataformat.storageType);
+		e.setAttribute("storagetype", s.dataformats.get(0).storageType);
 		e.setAttribute("endian", "big");
 		e.setAttribute("sizex", String.valueOf(s.size));
 		e.setAttribute("userlevel", "1");
 		e.setAttribute("storageaddress", String.format("0x%04X", s.offset));
-		s.dataformat.addXmlScaling(doc, e);
+		for (DF df : s.dataformats) df.addXmlScaling(doc, e);
 
 		Element ex = doc.createElement("table");
 		ex.setAttribute("type", "Static X Axis");
@@ -573,14 +564,14 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		for(int i=0; i<s.size; ++i)
 			createTextChild(doc, ex, "data", valuex[i]);
 		if (dataformatx != null)
-			dataformatx.addXmlScaling(doc, ex);
+			dataformatx.get(0).addXmlScaling(doc, ex);
 		e.appendChild(ex);
 
 		createTextChild(doc, e, "description", s.comment);
 		parent.appendChild(e);
 	}
 
-	private void addXml2D(Document doc, Element parent, SymRec s, SymRec sx) throws Exception {
+	private static void addXml2D(Document doc, Element parent, SymRec s, SymRec sx) throws Exception {
 		if (s.size != sx.size)
 			throw new Exception("Invalid axis size: "+s.name);
 
@@ -588,28 +579,28 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.setAttribute("type", "2D");
 		e.setAttribute("name", s.prettyName());
 		e.setAttribute("category", s.category);
-		e.setAttribute("storagetype", s.dataformat.storageType);
+		e.setAttribute("storagetype", s.dataformats.get(0).storageType);
 		e.setAttribute("endian", "big");
 		e.setAttribute("sizex", String.valueOf(sx.size));
 		e.setAttribute("userlevel", "1");
 		e.setAttribute("storageaddress", String.format("0x%04X", s.offset));
-		s.dataformat.addXmlScaling(doc, e);
+		for (DF df : s.dataformats) df.addXmlScaling(doc, e);
 
 		Element ex = doc.createElement("table");
 		ex.setAttribute("type", "X Axis");
 		ex.setAttribute("name", sx.item);
-		ex.setAttribute("storagetype", sx.dataformat.storageType);
+		ex.setAttribute("storagetype", sx.dataformats.get(0).storageType);
 		ex.setAttribute("endian", "big");
 		ex.setAttribute("sizex", String.valueOf(sx.size));
 		ex.setAttribute("storageaddress", String.format("0x%04X", sx.offset));
-		sx.dataformat.addXmlScaling(doc, ex);
+		sx.dataformats.get(0).addXmlScaling(doc, ex);
 		e.appendChild(ex);
 
 		createTextChild(doc, e, "description", s.comment);
 		parent.appendChild(e);
 	}
 
-	private void addXml3D(Document doc, Element parent, SymRec s, SymRec sx, SymRec sy) throws Exception {
+	private static void addXml3D(Document doc, Element parent, SymRec s, SymRec sx, SymRec sy) throws Exception {
 		if (s.size != sx.size*sy.size)
 			throw new Exception("Invalid axis size: "+s.name);
 
@@ -617,46 +608,45 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.setAttribute("type", "3D");
 		e.setAttribute("name", s.prettyName());
 		e.setAttribute("category", s.category);
-		e.setAttribute("storagetype", s.dataformat.storageType);
+		e.setAttribute("storagetype", s.dataformats.get(0).storageType);
 		e.setAttribute("endian", "big");
 		e.setAttribute("sizex", String.valueOf(sx.size));
 		e.setAttribute("sizey", String.valueOf(sy.size));
 		e.setAttribute("userlevel", "1");
 		e.setAttribute("storageaddress", String.format("0x%04X", s.offset));
-		s.dataformat.addXmlScaling(doc, e);
+		for (DF df : s.dataformats) df.addXmlScaling(doc, e);
 
 		Element ex = doc.createElement("table");
 		ex.setAttribute("type", "X Axis");
 		ex.setAttribute("name", sx.item);
-		ex.setAttribute("storagetype", sx.dataformat.storageType);
+		ex.setAttribute("storagetype", sx.dataformats.get(0).storageType);
 		ex.setAttribute("endian", "big");
 		ex.setAttribute("sizex", String.valueOf(sx.size));
 		ex.setAttribute("storageaddress", String.format("0x%04X", sx.offset));
-		sx.dataformat.addXmlScaling(doc, ex);
+		sx.dataformats.get(0).addXmlScaling(doc, ex);
 		e.appendChild(ex);
 
 		Element ey = doc.createElement("table");
 		ey.setAttribute("type", "Y Axis");
 		ey.setAttribute("name", sy.item);
-		ey.setAttribute("storagetype", sy.dataformat.storageType);
+		ey.setAttribute("storagetype", sy.dataformats.get(0).storageType);
 		ey.setAttribute("endian", "big");
 		ey.setAttribute("sizey", String.valueOf(sy.size));
 		ey.setAttribute("storageaddress", String.format("0x%04X", sy.offset));
-		sy.dataformat.addXmlScaling(doc, ey);
+		sy.dataformats.get(0).addXmlScaling(doc, ey);
 		e.appendChild(ey);
 
 		createTextChild(doc, e, "description", s.comment);
 		parent.appendChild(e);
 	}
 
-	private void doDefs(Document doc, Element parent, List<SymRec> syms) throws Exception {
-		int  dim = 1;
-		SymRec sx = null;
-		SymRec sy = null;
-
-		for (SymRec s : syms) {
+	private void doDefs(Document doc, Element parent, Syms s2) throws Exception {
+		for (SymRec s : s2.syms) {
+			//println(s.name);
 			if (s.datatype.equals("u8_obd2level"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL);
+			else if (s.datatype.equals("u8_obd2level_t6"))
+				addXmlSwitch(doc, parent, s, OBD2LEVEL_T6);
 			else if ("CAL_obd2_monitors".equals(s.name))
 				addXmlSwitch(doc, parent, s, OBD2MONITORS);
 			else if ("CAL_ecu_unlock_magic".equals(s.name))
@@ -669,18 +659,25 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				addXmlSwitch(doc, parent, s, TC_MODE);
 			else if ("CAL_load_use_speed_density".equals(s.name))
 				addXmlSwitch(doc, parent, s, LOAD_MODE);
-			else if (s.dataformat == null)
-				println("WARNING - Ignoring: "+s.name);
+			else if (s.dataformats == null)
+				println("WARNING - Ignoring unknown format: "+s.name+" ("+s.datatype+")");
 			else if (s.name.startsWith("CAL_misc_shift_lights_before_rev_limit"))
 				addXml2DFixed(doc, parent, s, "Gear Number", getDataformat("uint8_t"));
-			else if (s.isXaxis) { dim++;  sx = s; continue; }
-			else if (s.isYaxis) { dim++;  sy = s; continue; }
 			else {
-				if (dim == 1) {
+				SymRec sx = s2.Xsyms.get(s.name);
+				SymRec sy = s2.Ysyms.get(s.name);
+				if (sx != null) {
+					if(sx.dataformats != null) {
+						if (sy != null) {
+							if(sy.dataformats != null) addXml3D(doc, parent, s, sx, sy);
+							else println("WARNING - Ignoring unknown Y format: "+s.name+" ("+sy.datatype+")");
+						} else addXml2D(doc, parent, s, sx);
+					} else println("WARNING - Ignoring unknown X format: "+s.name+" ("+sx.datatype+")");
+				} else {
 					int shift;
 					String [] valuex = getCustomAxis(s.name);
 					String namex = "";
-					DF dataformatx = null;
+					List<DF> dataformatx = null;
 					if (valuex != null)
 						addXml2DStatic(doc, parent, s, valuex, namex, dataformatx);
 					else if (s.size > 1) {
@@ -689,19 +686,19 @@ public class ExportRomRaiderDefs extends GhidraScript {
 							shift = 4;
 							namex = "stop coolant";
 							datatype = "u8_temp_5/8-40c";
-						}else if (s.name.equals("CAL_injtip_catalyst_adj")) {
+						} else if (s.name.equals("CAL_injtip_catalyst_adj")) {
 							shift = 1;
 							namex = "dfso_count";
 							datatype = "uint8_t";
-						}else if (s.name.equals("CAL_sensor_fuel_scaling")) {
+						} else if (s.name.equals("CAL_sensor_fuel_scaling")) {
 							shift = 1;
 							namex = "signal";
 							datatype = "u8_voltage_5/1023v";
-						}else if (s.name.equals("CAL_obd2_P0128_wait_air_mass")) {
+						} else if (s.name.equals("CAL_obd2_P0128_wait_air_mass")) {
 							shift = 4;
 							namex = "stop coolant";
 							datatype = "u8_temp_5/8-40c";
-						}else{
+						} else {
 							println("WARNING - Using a fixed voltage scale for: "+s.name);
 							shift = 3;
 							namex = "signal";
@@ -712,14 +709,12 @@ public class ExportRomRaiderDefs extends GhidraScript {
 						dataformatx = getDataformat(datatype);
 						addXml2DStatic(doc, parent, s, valuex, namex, dataformatx);
 					} else addXml2DStatic(doc, parent, s);
-				}else if (dim == 2) addXml2D(doc, parent, s, sx);
-				else if (dim == 3) addXml3D(doc, parent, s, sx, sy);
-				dim = 1;
+				}
 			}
 		}
 	}
 
-	private void removeWhitespaceNodes(Node node) {
+	private static void removeWhitespaceNodes(Node node) {
 		NodeList children = node.getChildNodes();
 		for (int i = children.getLength() - 1; i >= 0; i--) {
 			Node child = children.item(i);
@@ -737,9 +732,20 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		Document doc;
 		Element root;
 
-		Syms all = getSymbols();
+		// assert that all dataformats storagetype values are the same
+		for (final String k : formatMap.keySet()) {
+			List<DF> dfList = formatMap.get(k);
+			String storagetype = dfList.get(0).storageType;
+			for (final DF df : dfList) {
+				if (!df.storageType.equals(storagetype)) {
+					throw new Exception("Data format "+k+" has mixed storage types: "+storagetype+" vs "+df.storageType);
+				}
+			}
+		}
 
-		File inxml = new File(all.calBase.xmlid+"_defs.inc");
+		Syms [] all = getSymbols();
+
+		File inxml = new File(all[0].base.xmlid+"_defs.inc");
 		if (inxml.isFile()) {
 			println("Use template " + inxml.getAbsolutePath());
 			doc = builder.parse(inxml);
@@ -753,20 +759,20 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		}
 
 		Element calRom = doc.createElement("rom");
-		all.calBase.getXmlSignature(doc, calRom);
-		doDefs(doc, calRom, all.calSyms);
+		all[0].base.getXmlSignature(doc, calRom);
+		doDefs(doc, calRom, all[0]);
 		root.appendChild(calRom);
 
 		Element leaRom = doc.createElement("rom");
-		all.leaBase.getXmlSignature(doc, leaRom);
-		doDefs(doc, leaRom, all.leaSyms);
+		all[1].base.getXmlSignature(doc, leaRom);
+		doDefs(doc, leaRom, all[1]);
 		root.appendChild(leaRom);
 
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "1");
 
-		File outxml = new File(all.calBase.xmlid+"_defs.xml");
+		File outxml = new File(all[0].base.xmlid+"_defs.xml");
 
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(outxml);
