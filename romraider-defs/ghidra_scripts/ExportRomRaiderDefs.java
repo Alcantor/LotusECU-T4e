@@ -137,6 +137,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_rspeed_8rpm","uint8","rpm","x*8","x/8","0","8","32","RPM"),
 		new DF("u8_rspeed_4-512rpm","uint8","rpm","(x*4)-512","(x+512)/4","0","4","16","RPM"),
 		new DF("u16_rspeed_rpm","uint16","rpm","x","x","0","10","100","RPM"),
+		new DF("u16_rspeed_4rpm","uint16","rpm","x*4","x/4","0","10","100","RPM"),
 		new DF("u16_rspeed_1/4rpm","uint16","rpm","x/4","x*4","0","10","100","RPM"),
 		new DF("u8_rspeed_4+500rpm","uint8","rpm","(x*4)+500","(x-500)/4","0","4","16","RPM"),
 		new DF("u8_rspeed_125/4+500rpm","uint8","rpm","(x*125/4)+500","(x-500)*4/125","0","32","100","RPM"),
@@ -216,6 +217,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_afr_1/100","uint8","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
 		new DF("u16_afr_1/100","uint16","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
 		new DF("u16_torque_nm","uint16","Newton meter","x","x","0","1","8","nm"),
+		new DF("u16_pressure_kpa_x10","uint16","kPa","x/10","x*10","0.00","0.1","1","kPa"),
 		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm")
 	};
 
