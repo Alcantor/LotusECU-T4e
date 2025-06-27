@@ -78,6 +78,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"N","1st","2nd","3rd","4th","5th","6th"};
 		if (n.equals("CAL_tpssmooth_increment_adj1_b?"))
 			return new String [] {"1st","2nd","3rd","4th","5th","6th"};
+		if (n.equals("CAL_cluster_gear_lookup_ips"))
+			return new String [] {"R","N","1st","2nd","3rd","4th","5th","6th"};
+		if (n.equals("CAL_cluster_gear_lookup_manual"))
+			return new String [] {"R","N","1st","2nd","3rd","4th","5th","6th"};
 		if (n.equals("CAL_misc_pps_1_range"))
 			return new String [] {"low","high"};
 		if (n.equals("CAL_misc_pps_2_range"))
@@ -154,7 +158,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_factor_1/1023","uint8","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/2000","uint8","%","x*100/2000","x*2000/100","0.00","0.1","1","Percent"),
 		new DF("u8_fuel_gal_x10","uint8","gal","x/10","x*10","0.00","0.1","1","gallons"),
-		new DF("u16_distance_mm_div2","uint16","%","x/2","x*2","0","2","10","mm"),
+		new DF("u16_distance_mm_div2","uint16","%","x*2","x/2","0","2","10","mm"),
 		new DF("u16_factor_1/100","uint16","%","x","x","0","1","5","Percent"),
 		new DF("i16_factor_1/1000","int16","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/1023","uint16","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
@@ -221,6 +225,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_time_s","uint8","s","x","x","0","1","5","Second"),
 		new DF("u16_time_s","uint16","s","x","x","0","1","5","Second"),
 		new DF("u8_time_5s","uint8","s","x*5","x/5","0","5","25","Second"),
+		new DF("u8_load_150_pct","uint8","mg/stroke","x*690/150","x*150/690","0","4","20","Milligram/Stroke"),
 		new DF("u8_load_4mg/stroke","uint8","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"),
 		new DF("u8_load_1173mg/255stroke","uint8","mg/stroke","x*1173/255","x*255/1173","0.0","4","20","Milligram/Stroke"),
 		new DF("u16_load_4mg/stroke","uint16","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"),
