@@ -128,6 +128,18 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		if (n.equals("CAL_cluster_fuel_level_warning_threshold"))
 			return new String [] {"on","off"};
 
+		if (n.equals("CAL_traction_per_gear3_manual"))
+			return new String [] {"1st","2nd","3rd","4th","5th"};
+		if (n.equals("CAL_traction_per_gear3_ips"))
+			return new String [] {"1st","2nd","3rd","4th","5th"};
+
+		if (n.equals("CAL_cruise_speed_limit"))
+			return new String [] {"high","low"};
+
+
+		if (n.equals("CAL_inj_closedloop_activate_engine_timer"))
+			return new String [] {"0","16","32","48"};
+
 		return null;
 	};
 
