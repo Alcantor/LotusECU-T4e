@@ -90,10 +90,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"low","high"};
 		if (n.equals("CAL_misc_tps_2_range"))
 			return new String [] {"low","high"};
-		if (n.equals("CAL_accel_pedal_pos_d_threshold"))
-			return new String [] {"low","high"};
-		if (n.equals("CAL_accel_pedal_pos_e_threshold"))
-			return new String [] {"low","high"};
+
 		if (n.equals("CAL_tps_voltage_theshold???"))
 			return new String [] {"low","high"};
 		if (n.equals("CAL_ecu_system_voltage_threshold"))
@@ -115,6 +112,27 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"high","low"};
 		if (n.equals("CAL_ac_compressor_engine_speed2"))
 			return new String [] {"high","low"};
+		if (
+			n.equals("CAL_sensor_accel_pedal_pos_d_threshold") ||
+  		    n.equals("CAL_sensor_accel_pedal_pos_e_threshold") ||
+			n.equals("CAL_sensoraccel_pedal_speed_threshold_unknown")
+		)
+			return new String [] {"low","high"};
+
+		if (
+			n.equals("CAL_sensor_trans_temp_scaling") ||
+			n.equals("CAL_sensor_coolant_temp_sensor_engine_off_scaling") ||
+			n.equals("CAL_sensor_engine_air_scaling") ||
+			n.equals("CAL_sensor_intake_air_scaling")
+		)
+		// TODO: it's not clear that these scalings are correct. They are based on a u16_voltage_5/1023v scaled as (x>>5)*5/1024
+			return new String [] {"0.0","0.3125","0.625","0.9375","1.25","1.5625","1.875","2.1875","2.5","2.8125","3.125","3.4375","3.75","4.0625","4.375","4.6875","5.0","5.3125","5.625","5.9375","6.25","6.5625","6.875","7.1875","7.5","7.8125","8.125","8.4375","8.75","9.0625","9.375","9.6875"};
+
+		if (
+			n.equals("CAL_inj_closedloop_activate_engine_timer")
+		)
+			return new String [] {"-40.0","-30.0","-20.0","-10.0","0.0","10.0","20.0","30.0","40.0","50.0","60.0","70.0","80.0","90.0","100.0","110.0"};
+
 
 		if (n.equals("CAL_trans_pump_car_speed_threshold"))
 			return new String [] {"high","low"};
@@ -126,6 +144,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		if (n.equals("CAL_cluster_coolant_warning"))
 			return new String [] {"high","low"};
 		if (n.equals("CAL_cluster_fuel_level_warning_threshold"))
+			return new String [] {"on","off"};
+		if (n.equals("CAL_cluster_range_to_empty_limit"))
 			return new String [] {"on","off"};
 
 		if (n.equals("CAL_traction_per_gear3_manual"))
@@ -139,6 +159,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 		if (n.equals("CAL_inj_closedloop_activate_engine_timer"))
 			return new String [] {"0","16","32","48"};
+
+		if (n.equals("CAL_ecu_engine_running_threshold_unknown"))
+			return new String [] {"high","low"};
+
 
 		return null;
 	};
@@ -154,6 +178,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_gear","uint8","g","x","x","0","1","10","Gear"),
 		new DF("uint16_t","uint16","#","x","x","0","1","100","Number"),
 		new DF("u8_x256","uint8","#","x*256","x/256","0","256","2560","Number"),
+		new DF("u8_factor_1","uint8","%","x","x","0","1","5","Percent"),
 		new DF("u8_factor_1/32","uint8","%","x*100/32","x*32/100","0","1","5","Percent"),
 		new DF("u8_factor_1/64","uint8","%","x*100/64","x*64/100","0","1","5","Percent"),
 		new DF("u8_factor_10/1632","uint8","%","x*1000/1632","x*1632/1000","0","1","5","Percent"),
@@ -169,8 +194,9 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_factor_1/1000","uint8","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/1023","uint8","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/2000","uint8","%","x*100/2000","x*2000/100","0.00","0.1","1","Percent"),
+		new DF("u8_factor_1/2560","uint8","%","x*100/2560","x*2560/100","0.00","0.1","1","Percent"),
 		new DF("u8_fuel_gal_x10","uint8","gal","x/10","x*10","0.00","0.1","1","gallons"),
-		new DF("u16_distance_mm_div2","uint16","%","x*2","x/2","0","2","10","mm"),
+		new DF("u16_distance_mm_div2","uint16","mm","x*2","x/2","0","2","10","mm"),
 		new DF("u16_factor_1/100","uint16","%","x","x","0","1","5","Percent"),
 		new DF("i16_factor_1/1000","int16","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/1023","uint16","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
@@ -179,7 +205,6 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_factor_1/2000-2048/125","uint16","%","(x-32768)*100/2000","(x*2000/100)+32768","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/2048","uint16","%","x*100/2048","x*2048/100","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/65536","uint16","%","x*100/65536","x*65536/100","0.00","0.1","1","Percent"),
-		new DF("u8_factor_1/2560","uint8","%","x*100/2560","x*2560/100","0.00","0.1","1","Percent"),
 		new DF("u8_voltage_5/255v","uint8","v","x*5/255","x*255/5","0.0","0.1","0.5","Volt"),
 		new DF("u8_voltage_5/1023v","uint8","v","x*5/1023","x*1023/5","0.00","0.05","0.2","Volt"),
 		new DF("u16_voltage_5/1023v","uint16","v","x*5/1023","x*1023/5","0.00","0.05","0.2","Volt"),
@@ -205,6 +230,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_rspeed_125/4+500rpm","uint16","rpm","(x*125/4)+500","(x-500)*4/125","0","32","100","RPM"),
 		new DF("u8_rspeed_10+6000rpm","uint8","rpm","(x*10)+6000","(x-6000)/10","0","10","100","RPM"),
 		new DF("u16_length_mm","uint16","cm","x/10","x*10","0.0","0.1","2","Centimeter"),
+		new DF("u8_speed_1/10kph","uint8","km/h","x/10","x*10","0.0","1","10","km/h"),
 		new DF("u8_speed_kph","uint8","km/h","x","x","0","1","10","km/h"),
 		new DF("u16_speed_1/100kph","uint16","km/h","x/100","x*100","0.00","0.01","1","km/h"),
 		new DF("u8_temp_5/8-40c","uint8","°C","(x*5/8)-40","(x+40)*8/5","0.0","0.625","2","Degree Celsius"),
@@ -229,6 +255,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_time_25ms","uint8","ms","x*25","x/25","0","25","100","Millisecond"),
 		new DF("u8_time_50ms","uint8","s","x/20","x*20","0.0","0.05","1","Second"),
 		new DF("u8_time_100ms","uint8","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u8_time_250ms","uint8","s","x/4","x*4","0.00","0.1","1","Second"),
 		new DF("u16_time_50ms","uint16","s","x/20","x*20","0.0","0.1","1","Second"),
 		new DF("u16_time_100ms","uint16","s","x/10","x*10","0.0","0.1","1","Second"),
 		new DF("u32_time_100ms","uint32","s","x/10","x*10","0.0","0.1","1","Second"),
@@ -248,6 +275,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_flow_100/1024mg/s","uint8","mg/s","x*100/1024","x*1024/100","0.0","0.1","10","Milligram/Second"),
 		new DF("i16_flow_100/1024mg/s","int16","mg/s","x*100/1024","x*1024/100","0.0","0.1","10","Milligram/Second"),
 		new DF("u8_flow_100-12800mg/s","uint8","g/s","(x-128)/10","(x*10)+128","0.0","0.1","10","Gram/Second"),
+		new DF("u16_flow_g/s","uint16","g/s","x","x","0","1","5","Gram/Second"),
 		new DF("u16_flow_mg/s","uint16","mg/s","x","x","0","1","5","Milligram/Second"),
 		new DF("u16_flow_10mg/s","uint16","g/s","x/100","x*100","0.0","0.01","1","Gram/Second"),
 		new DF("u8_mass_g","uint8","g","x","x","0","1","5","Gram"),
@@ -279,6 +307,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_afr_1/100","uint16","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
 		new DF("u16_torque_nm","uint16","Newton meter","x","x","0","1","8","nm"),
 		new DF("u16_pressure_kpa_x10","uint16","kPa","x/10","x*10","0.00","0.1","1","kPa"),
+		new DF("u8_torque_nm","uint8","Newton meter","x","x","0","1","5","nm"),
 		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm")
 	};
 
