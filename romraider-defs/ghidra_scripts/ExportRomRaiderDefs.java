@@ -164,6 +164,20 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"high","low"};
 
 
+		if (
+			n.equals("CAL_traction_gear_speed_ratios_ips") ||
+			n.equals("CAL_traction_gear_speed_ratios_long") ||
+			n.equals("CAL_traction_gear_speed_ratios_cr")	
+		)
+			return new String [] {"1st","2nd","3rd","4th","5th","6th"};
+
+		if (
+			n.equals("CAL_traction_slip_threshold_per_gear_manual") ||
+			n.equals("CAL_traction_slip_threshold_per_gear_ips")			
+		)
+			return new String [] {"1st","2nd","3rd","4th","5th"};
+
+
 		return null;
 	};
 
@@ -310,7 +324,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_torque_nm","uint16","Newton meter","x","x","0","1","8","nm"),
 		new DF("u16_pressure_kpa_x10","uint16","kPa","x/10","x*10","0.00","0.1","1","kPa"),
 		new DF("u8_torque_nm","uint8","Newton meter","x","x","0","1","5","nm"),
-		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm")
+		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm"),
+		new DF("u8_torque_4nm","uint8","Newton meter","x*4","x/4","0","4","16","nm"),
+		new DF("u16_power_1/100kw","uint16","kW","x/100","x*100","0.0","10","50","kW"),
+
 	};
 
 	/******************************/
