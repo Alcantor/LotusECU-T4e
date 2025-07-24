@@ -80,6 +80,31 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"low","high"};
 		if (n.equals("CAL_misc_tps_2_range"))
 			return new String [] {"low","high"};
+		if (n.equals("CAL_cluster_fuel_level_warning_threshold"))
+			return new String [] {"low","high"};
+
+		if (
+			n.equals("CAL_ac_compressor_deactivate_car_speed") ||
+			n.equals("CAL_ac_compressor_engine_speed2") ||
+			n.equals("CAL_ac_compressor_engine_speed3"))
+			return new String [] {"high","low"};
+
+        if (n.equals("CAL_ecu_system_voltage_threshold") ||
+			n.equals("CAL_sensor_knock_voltage_threshold") ||
+			n.equals("CAL_sensor_iat_voltage_threshold") ||
+			n.equals("CAL_sensor_coolant_voltage_threshold") ||
+			n.equals("CAL_sensor_intake_air_temp_voltage_threshold") ||
+			n.equals("CAL_sensor_fuel_level_sensor_voltage_threshold") ||
+			n.equals("CAL_sensor_adc37_threshold") ||
+			n.equals("CAL_trans_pump_car_speed_threshold") || 
+			n.equals("CAL_trans_temp_voltage_threshold") ||
+			n.equals("CAL_ac_compressor_deactivate_car_speed") ||
+			n.equals("CAL_cluster_coolant_warning") ||
+			n.equals("CAL_ac_compressor_engine_speed2") ||
+			n.equals("CAL_cruise_speed_limit") ||
+			n.equals("CAL_ecu_engine_running_threshold_unknown"))
+			return new String[] {"high", "low"};
+
 		return null;
 	};
 
@@ -312,6 +337,13 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		{"Compute load from MAF", "00"},
 		{"Compute load from MAP", "01"}
 	};
+
+	/* This mode is for boolean types, often feature flags */
+	private static final String[][] ENABLE_MODE = {
+		{"Disabled", "00"},
+		{"Enabled", "01"}
+	};
+
 
 	/******************************/
 	/* Program code               */
@@ -669,8 +701,9 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 	private void doDefs(Document doc, Element parent, Syms s2) throws Exception {
 		for (SymRec s : s2.syms) {
-			//println(s.name);
-			if (s.datatype.equals("u8_obd2level"))
+			if (s.datatype.equals("bool"))
+				addXmlSwitch(doc, parent, s, ENABLE_MODE);
+			else if (s.datatype.equals("u8_obd2level"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL);
 			else if (s.datatype.equals("u8_obd2level_t6"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL_T6);
