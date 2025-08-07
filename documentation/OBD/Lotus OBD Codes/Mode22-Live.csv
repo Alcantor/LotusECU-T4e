@@ -173,3 +173,7 @@ Address,Text,Response,DataPos,DataSize,DataMask,isSigned,SimpleScale,TextUnit
 22 02 A4,Solenoid SL4 Demand,62 02 A4,0,2,65535,TRUE,0.01,%
 22 02 A5,Solenoid SLT Demand,62 02 A5,0,2,65535,TRUE,0.01,%
 22 02 A6,Solenoid SLU Demand,62 02 A6,0,2,65535,TRUE,0.01,%
+22 02 C7,Transmission Fluid Temp,62 02 C7,0,1,255,FALSE,0.625,degC-40
+22 02 C8,Radiator Fan Dutycycle,62 02 C8,0,1,255,FALSE,0.3922,%
+22 02 C9,Chargecooler Pump Dutycycle,62 02 C9,0,1,255,FALSE,0.3922,%
+22 02 CA,Variable Fuel Pump Dutycycle,62 02 CA,0,1,255,FALSE,0.3922,%
