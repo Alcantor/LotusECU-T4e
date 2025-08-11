@@ -83,6 +83,14 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		if (n.equals("CAL_cluster_fuel_level_warning_threshold"))
 			return new String [] {"low","high"};
 
+		if (n.equals("CAL_traction_slip_threshold_per_gear_ips")
+			|| n.equals("CAL_traction_slip_threshold_per_gear_manual"))
+			return new String [] {"1st","2nd","3rd","4th","5th"};
+		if (n.equals("CAL_traction_gear_speed_ratios_ips")
+			|| n.equals("CAL_traction_gear_speed_ratios_long")
+			|| n.equals("CAL_traction_gear_speed_ratios_cr"))
+			return new String [] {"1st","2nd","3rd","4th","5th", "6th"};
+
 		if (
 			n.equals("CAL_ac_compressor_deactivate_car_speed") ||
 			n.equals("CAL_ac_compressor_engine_speed2") ||
@@ -168,7 +176,9 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_angle_1/4-20deg","uint16","°","(x/4)-20","(x+20)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_1/4-30deg","uint8","°","(x/4)-30","(x+30)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_1/4-32deg","uint8","°","(x/4)-32","(x+32)*4","0.00","0.25","1.0","Degree"),
+		new DF("u8_angle_1/4-64deg","uint8","°","(x/4)-63.75","(x+63.75)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_720/256deg","uint8","°","x*720/256","x*256/720","0","2","8","Degree"),
+		new DF("u16_angle_1/10deg","uint16","°","x/10","x*10","0.0","0.1","1.0","Degree"),
 		new DF("i16_angle_1/4deg","int16","°","x/4","x*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_rspeed_4rpm","uint8","rpm","x*4","x/4","0","4","16","RPM"),
 		new DF("u8_rspeed_8rpm","uint8","rpm","x*8","x/8","0","8","32","RPM"),
@@ -209,6 +219,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_time_25ms","uint8","ms","x*25","x/25","0","25","100","Millisecond"),
 		new DF("u8_time_50ms","uint8","s","x/20","x*20","0.0","0.05","1","Second"),
 		new DF("u8_time_100ms","uint8","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u16_time_10ms","uint16","ms","x*10","x/10","0","10","20","Millisecond"),
 		new DF("u16_time_100ms","uint16","s","x/10","x*10","0.0","0.1","1","Second"),
 		new DF("u32_time_100ms","uint32","s","x/10","x*10","0.0","0.1","1","Second"),
 		new DF("u8_time_250ms","uint8","s","x/4","x*4","0.00","0.1","1","Second"),
