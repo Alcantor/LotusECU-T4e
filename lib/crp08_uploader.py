@@ -195,4 +195,3 @@ if __name__ == "__main__":
 		up.bootstrap(crp)
 	finally:
 		up.close_can()
-

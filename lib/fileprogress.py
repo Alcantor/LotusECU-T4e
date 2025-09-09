@@ -135,4 +135,3 @@ class FileProgress(Progress):
 
 if __name__ == "__main__":
 	print("Library to upload/download/verify files.")
-

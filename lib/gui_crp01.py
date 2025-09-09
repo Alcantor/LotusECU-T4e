@@ -275,4 +275,3 @@ class CRP01_uploader_win(tk.Toplevel):
 		finally:
 			self.run_task = False
 			up.close_com()
-

@@ -28,4 +28,3 @@ class FileProgress_widget(tk.Frame, FileProgress):
 	def progress_end(self):
 		self.pb['value'] = self.pb['maximum']
 		self.update()
-

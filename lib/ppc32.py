@@ -43,6 +43,10 @@ class PPC32:
 		PPC32.__verify_addr(addr)
 		return PPC32.__build2(16, 4, 1, addr >> 2, 0, 0)
 
+	def ppc_bne(addr):
+		PPC32.__verify_addr(addr)
+		return PPC32.__build2(16, 4, 2, addr >> 2, 0, 0)
+
 	def ppc_b(addr):
 		PPC32.__verify_addr(addr)
 		return PPC32.__build1(18, addr >> 2, 0, 0)
@@ -116,6 +120,7 @@ if __name__ == "__main__":
 	print("addis  %r3,%r2,10     " + print_hex(PPC32.ppc_addis(3, 2, 10)))
 	print("lis    %r3,1          " + print_hex(PPC32.ppc_lis(3, 1)))
 	print("ble    -0x50          " + print_hex(PPC32.ppc_ble(-0x50)))
+	print("bne    -0x50          " + print_hex(PPC32.ppc_bne(-0x50)))
 	print("b      -0x128         " + print_hex(PPC32.ppc_b(-0x128)))
 	print("bl     0x100          " + print_hex(PPC32.ppc_bl(0x100)))
 	print("ba     0x3DC400       " + print_hex(PPC32.ppc_ba(0x3DC400)))
@@ -135,4 +140,3 @@ if __name__ == "__main__":
 	print("stb    %r25,12(%r24)  " + print_hex(PPC32.ppc_stb(25, 24, 12)))
 	print("lhz    %r27,8(%r26)   " + print_hex(PPC32.ppc_lhz(27, 26, 8)))
 	print("sth    %r23,16(%r22)  " + print_hex(PPC32.ppc_sth(23, 22, 16)))
-

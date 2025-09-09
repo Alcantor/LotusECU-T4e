@@ -17,7 +17,7 @@
 .set WB_MAX_I, 3000
 
 # Sampling windows for calibration
-.set WB_CALWIN,	9 # 9 = log2(2560ms / 5ms)
+.set WB_CALWIN, 9 # 9 = log2(2560ms / 5ms)
 
 .section .data
 

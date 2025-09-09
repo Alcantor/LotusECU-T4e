@@ -32,9 +32,8 @@ heater ground is required during startup.
 
 ## Queries
 
- - Lambda            : OBD mode 0x01 pid 0x24
- - Correction Slope  : OBD mode 0x22 pid 0x0403
- - Correction Offset : OBD mode 0x22 pid 0x0404
+ - Lambda     : OBD mode 0x01 pid 0x24
+ - Correction : OBD mode 0x22 pid 0x0403 (AB: Slope 1/4096, CD: Offset 5/1023v)
 
 ## Pictures
 

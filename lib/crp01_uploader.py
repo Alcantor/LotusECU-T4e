@@ -135,11 +135,10 @@ if __name__ == "__main__":
 	crp_file = args['file']
 
 	crp = CRP01(None)
-	crp.read_file(crp_file)	
+	crp.read_file(crp_file)
 	up = CRP01_uploader(Progress());
 	up.open_com(ser_dev)
 	try:
 		up.bootstrap(crp)
 	finally:
 		up.close_com()
-

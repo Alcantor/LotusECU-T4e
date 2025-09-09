@@ -176,8 +176,6 @@ hook_OBD_mode_0x22:
 .ifdef WIDEBAND
 	cmplwi	%r8, 0x0403
 	beq	OBD_mode_0x22_pid_0x0403
-	cmplwi	%r8, 0x0404
-	beq	OBD_mode_0x22_pid_0x0404
 .endif
 	# Mask %r8 (Erase by patch in original code)
 	rlwinm	%r29, %r8, 0,16,31
@@ -205,18 +203,13 @@ OBD_mode_0x22_pid_0x0402:
 
 .ifdef WIDEBAND
 OBD_mode_0x22_pid_0x0403:
-	# Wideband correction slope
-	addi	%r31, %r31, 2 # Answer 2 bytes
+	# Wideband correction slope and offset
+	addi	%r31, %r31, 4 # Answer 4 bytes
 	lis	%r3, wb_slope@ha
 	lhz	%r3, wb_slope@l(%r3)
 	sth	%r3, 0(%r4)
-	ba	hook_OBD_mode_0x22_jump
-
-OBD_mode_0x22_pid_0x0404:
-	# Wideband correction offset
-	addi	%r31, %r31, 2 # Answer 2 bytes
 	lis	%r3, wb_offset@ha
 	lha	%r3, wb_offset@l(%r3)
-	sth	%r3, 0(%r4)
+	sth	%r3, 2(%r4)
 	ba	hook_OBD_mode_0x22_jump
 .endif

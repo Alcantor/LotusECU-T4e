@@ -194,4 +194,3 @@ class CAL_editor_win(tk.Toplevel):
 	def ext64(self):
 		self.cal.resize_file(0x10000)
 		self.update()
-

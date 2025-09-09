@@ -1,6 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox
-from tkinter import ttk
+from tkinter import messagebox, ttk
 from threading import *
 
 please_select_file = "Please select a file:"
@@ -65,4 +64,3 @@ class SelectCOM_widget(tk.LabelFrame):
 		port = self.string_port.get()
 		self.prefs['COM']['port'] = port
 		return port
-

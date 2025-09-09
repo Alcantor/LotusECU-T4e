@@ -534,4 +534,3 @@ if __name__ == "__main__":
 		print("usage:")
 		print(f"\t{prog} [K4|T4|T4e] pack SREC_FILE CRP_FILE")
 		print(f"\t{prog} [K4|T4|T4e] unpack CRP_FILE SREC_FILE")
-

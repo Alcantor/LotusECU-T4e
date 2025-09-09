@@ -1378,7 +1378,7 @@ Formula (cranking): adv = ADVANCE_CRANKING</description>
 Formula (low cam) : adv = low_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
 Formula (high cam): adv = high_cam_base * adj2 * tc_adj + adj1 + (adj3 * adj3_adj) + adj4
 Formula (idle)    : adv = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + idle_adj_ac_on
-Formula (cranking): adv = ADVANCE_DFSO
+Formula (dfso): adv = ADVANCE_DFSO
 Formula (cranking): adv = advance_cranking</description>
   </table>
   <table category="ign" endian="big" name="ign: advance high cam base" sizex="8" sizey="8" storageaddress="0x0A34" storagetype="uint8" type="3D" userlevel="1">
@@ -2277,7 +2277,7 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
    <description/>
   </table>
   <table category="misc" endian="big" name="misc: gears" sizex="10" storageaddress="0x0134" storagetype="uint16" type="2D" userlevel="1">
-   <scaling category="Gear Ratio" coarseincrement="5" expression="x" fineincrement="1" format="0.0" to_byte="x" units="rpm/km/h"/>
+   <scaling category="Gear Ratio" coarseincrement="5" expression="x" fineincrement="1" format="0" to_byte="x" units="rpm/km/h"/>
    <table name="" sizex="10" type="Static X Axis">
     <data>Min 1st gear</data>
     <data>Max 1st gear</data>
@@ -2293,7 +2293,7 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
    <description>The ECU estimates the current gear based on rpm and vehicle speed and these are the thresholds for that determination.</description>
   </table>
   <table category="misc" endian="big" name="misc: gears 6" sizex="2" storageaddress="0x01D0" storagetype="uint16" type="2D" userlevel="1">
-   <scaling category="Gear Ratio" coarseincrement="5" expression="x" fineincrement="1" format="0.0" to_byte="x" units="rpm/km/h"/>
+   <scaling category="Gear Ratio" coarseincrement="5" expression="x" fineincrement="1" format="0" to_byte="x" units="rpm/km/h"/>
    <table name="" sizex="2" type="Static X Axis">
     <data>Min 6th gear</data>
     <data>Max 6th gear</data>

@@ -35,6 +35,10 @@ LEFT JOIN TextId AS UnitTextId ON
 	ActivationItemAbstract.UnitTextMnemonic=UnitTextId.Mnemonic
 LEFT JOIN TextTranslation AS UnitTextTranslation ON
 	UnitTextId.PK_TextID=UnitTextTranslation.FK_Text_Id
+INNER JOIN EcuInstanceActivationItemInstance ON
+	ActivationItemInstance.PK_ActivationItemInstanceID=EcuInstanceActivationItemInstance.FK_ActivationItemInstance_Id
+INNER JOIN Ecu ON
+	Ecu.PK_ID=EcuInstanceActivationItemInstance.FK_Ecu_Id
 WHERE
-	Request.Address LIKE '2F %'
+	Ecu.Mnemonic = 'ECU_NAME_ABSTRACT_SYSTEM_LTS_EMS'
 ORDER BY Request.Address

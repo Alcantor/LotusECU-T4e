@@ -195,7 +195,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_volume_4cc","uint8","cc","x*4","x/4","0","4","40","Cubic centimeter"),
 		new DF("u8_dt_factor_1/100/5ms","uint8","%/5ms","x","x","0","1","5","Percent/5ms"),
 		new DF("u8_dt_factor_1/1023/5ms","uint8","%/5ms","x*100/1023","x*1023/100","0.00","0.1","1","Percent/5ms"),
-		new DF("u16_ratio_rpm/kph","uint16","rpm/km/h","x","x","0.0","1","5","Gear Ratio"),
+		new DF("u16_ratio_rpm/kph","uint16","rpm/km/h","x","x","0","1","5","Gear Ratio"),
 		new DF("u16_ratio_1/10mbar/5v","uint16","mbar/5volt","x/10","x*10","0.0","0.1","5","Millibar/5v"),
 		new DF("u16_ratio_mbar/5v","uint16","mbar/5volt","x","x","0","10","50","Millibar/5v"),
 		new DF("i16_pressure_1/10mbar","int16","mbar","x/10","x*10","0.0","0.1","5","Millibar"),

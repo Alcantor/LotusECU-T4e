@@ -260,4 +260,3 @@ if __name__ == "__main__":
 		print(f"\t{prog} check ORIGINAL_CALROM")
 		print(f"\t{prog} unlock CALROM OUTFILE")
 		#print("\t"+prog+" check_eeprom EEPROM")
-

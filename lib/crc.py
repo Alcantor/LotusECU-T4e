@@ -205,4 +205,3 @@ if __name__ == "__main__":
 	if(crc.get() ^ 0xFFFFFFFF == 0x22620404): print("CRC-32C is OK")
 	crc.update_reverse(data)
 	if(crc.get() == 0xFFFFFFFF): print("Reverse CRC-32C is OK")
-

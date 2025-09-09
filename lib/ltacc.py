@@ -342,4 +342,3 @@ if __name__ == "__main__":
 
 	lta.close_can()
 	print("Done")
-

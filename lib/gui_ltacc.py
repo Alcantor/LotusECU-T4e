@@ -188,4 +188,3 @@ Because the changes are in the RAM, everything will be lost after the ECU has sh
 			self.config['PATH']['bin'] = os.path.dirname(answer)
 			self.run_task = True
 			lta.watch(cal_base, answer, cal_size, copy, verify, self.waitmore)
-
