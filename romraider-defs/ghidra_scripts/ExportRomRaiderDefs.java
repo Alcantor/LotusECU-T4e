@@ -233,6 +233,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_time_s","uint16","s","x","x","0","1","5","Second"),
 		new DF("u8_time_5s","uint8","s","x*5","x/5","0","5","25","Second"),
 		new DF("u8_time_hours","uint8","hours","x","x","0","1","5","Hours"),
+		new DF("u8_load_2mg/stroke","uint8","mg/stroke","x*2","x/2","0","2","8","Milligram/Stroke"),
 		new DF("u8_load_4mg/stroke","uint8","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"),
 		new DF("u8_load_1173mg/255stroke","uint8","mg/stroke","x*1173/255","x*255/1173","0.0","4","20","Milligram/Stroke"),
 		new DF("u16_load_4mg/stroke","uint16","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"),
