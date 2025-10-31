@@ -3693,6 +3693,13 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
    <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
    <description>Throttle Actuator Control Range/Performance</description>
   </table>
+  <table category="obd2" endian="big" name="obd2: P0638 threshold" sizex="1" storageaddress="0x2CC2" storagetype="uint16" type="2D" userlevel="1">
+   <scaling category="Percent" coarseincrement="1" expression="x*100/1023" fineincrement="0.1" format="0.00" to_byte="x*1023/100" units="%"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>P0638 threshold</data>
+   </table>
+   <description/>
+  </table>
   <table category="obd2" name="obd2: P0646" sizey="1" storageaddress="0x307E" type="Switch" userlevel="1">
    <state data="00" name="Level 0 DTC: off"/>
    <state data="40" name="Level 0 DTC: off +self-heal"/>
@@ -4445,6 +4452,20 @@ Formula: pps2 = gain * (signal - OFFSET)</description>
    <description>Every 5ms, the sampled pps value is mixed with the previous value.
 
 Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</description>
+  </table>
+  <table category="sensor" endian="big" name="sensor: tps 1 offset" sizex="1" storageaddress="0x00E8" storagetype="uint16" type="2D" userlevel="1">
+   <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>tps 1 offset</data>
+   </table>
+   <description/>
+  </table>
+  <table category="sensor" endian="big" name="sensor: tps 2 offset" sizex="1" storageaddress="0x00EC" storagetype="uint16" type="2D" userlevel="1">
+   <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>tps 2 offset</data>
+   </table>
+   <description/>
   </table>
   <table category="tc" endian="big" name="tc: abs ring teeth count" sizex="1" storageaddress="0x004A" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
@@ -5924,6 +5945,20 @@ Formula: advance = BASE - adj</description>
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
    <table name="" sizex="1" type="Static X Axis">
     <data>pps2 offset</data>
+   </table>
+   <description/>
+  </table>
+  <table category="sensor" endian="big" name="sensor: tps 1 offset" sizex="1" storageaddress="0x02CA" storagetype="uint16" type="2D" userlevel="1">
+   <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>tps 1 offset</data>
+   </table>
+   <description/>
+  </table>
+  <table category="sensor" endian="big" name="sensor: tps 2 offset" sizex="1" storageaddress="0x02CC" storagetype="uint16" type="2D" userlevel="1">
+   <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>tps 2 offset</data>
    </table>
    <description/>
   </table>
