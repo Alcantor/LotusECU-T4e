@@ -186,6 +186,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_rspeed_4rpm","uint8","rpm","x*4","x/4","0","4","16","RPM"),
 		new DF("u8_rspeed_8rpm","uint8","rpm","x*8","x/8","0","8","32","RPM"),
 		new DF("u8_rspeed_10rpm","uint8","rpm","x*10","x/10","0","10","100","RPM"),
+		new DF("u8_rspeed_25rpm","uint8","rpm","x*25","x/25","0","25","100","RPM"),
 		new DF("u8_rspeed_50rpm","uint8","rpm","x*50","x/50","0","50","100","RPM"),
 		new DF("u8_rspeed_-128","uint8","rpm","x-128","x+128","0","1","5","RPM"),
 		new DF("u8_rspeed_4-512rpm","uint8","rpm","(x*4)-512","(x+512)/4","0","4","16","RPM"),
@@ -205,9 +206,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_temp_5/8-40c","uint8","°C","(x*5/8)-40","(x+40)*8/5","0.0","0.625","2","Degree Celsius"),
 		new DF("u16_temp_5/8-40c","uint16","°C","(x*5/8)-40","(x+40)*8/5","0.0","0.625","2","Degree Celsius"),
 		new DF("u8_temp_1-40c","uint8","°C","x-40","x+40","0","1","2","Degree Celsius"),
-		new DF("u16_time_25ns","uint16","ns","x*25","x/25","0","25","100","Nanosecond"),
 		new DF("u8_time_us","uint8","us","x","x","0","1","10","Microsecond"),
-		new DF("u16_time_4us","uint16","rpm","15000000/x","15000000/x","0","1","10","RPM"),
 		new DF("u8_time_8us","uint8","us","x*8","x/8","0","8","100","Microsecond"),
 		new DF("u8_time_10us","uint8","us","x*10","x/10","0","10","100","Microsecond"),
 		new DF("u8_time_-10us","uint8","us","x*-10","x/-10","0","10","100","Microsecond"),
@@ -215,24 +214,29 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_time_64us","uint8","us","x*64","x/64","0","64","200","Microsecond"),
 		new DF("u8_time_256us","uint8","ms","x*256/1000","x*1000/256","0.0","0.2","1","Millisecond"),
 		new DF("u8_time_512us","uint8","ms","x*512/1000","x*1000/512","0.0","0.4","2","Millisecond"),
+		new DF("u8_time_ms","uint8","ms","x","x","0","1","10","Millisecond"),
 		new DF("u8_time_5ms","uint8","ms","x*5","x/5","0","5","10","Millisecond"),
-		new DF("i16_time_us","int16","us","x","x","0","1","10","Microsecond"),
-		new DF("u16_time_5ms","uint16","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
-		new DF("u32_time_5ms","uint32","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
 		new DF("u8_time_10ms","uint8","ms","x*10","x/10","0","10","20","Millisecond"),
+		new DF("u8_time_20ms","uint8","ms","x*20","x/20","0","20","60","Millisecond"),
 		new DF("u8_time_25ms","uint8","ms","x*25","x/25","0","25","100","Millisecond"),
 		new DF("u8_time_50ms","uint8","s","x/20","x*20","0.0","0.05","1","Second"),
 		new DF("u8_time_100ms","uint8","s","x/10","x*10","0.0","0.1","1","Second"),
-		new DF("u16_time_10ms","uint16","ms","x*10","x/10","0","10","20","Millisecond"),
-		new DF("u16_time_100ms","uint16","s","x/10","x*10","0.0","0.1","1","Second"),
-		new DF("u32_time_100ms","uint32","s","x/10","x*10","0.0","0.1","1","Second"),
 		new DF("u8_time_250ms","uint8","s","x/4","x*4","0.00","0.1","1","Second"),
 		new DF("u8_time_800ms","uint8","s","x*0.8","x/0.8","0.0","1","5","Second"),
 		new DF("u8_time_1600ms","uint8","s","x*1.6","x/1.6","0.0","1","5","Second"),
 		new DF("u8_time_s","uint8","s","x","x","0","1","5","Second"),
-		new DF("u16_time_s","uint16","s","x","x","0","1","5","Second"),
 		new DF("u8_time_5s","uint8","s","x*5","x/5","0","5","25","Second"),
 		new DF("u8_time_hours","uint8","hours","x","x","0","1","5","Hours"),
+		new DF("u16_time_25ns","uint16","ns","x*25","x/25","0","25","100","Nanosecond"),
+		new DF("u16_time_us","uint16","us","x","x","0","1","10","microseconds"),
+		new DF("u16_time_4us","uint16","rpm","15000000/x","15000000/x","0","1","10","RPM"),
+		new DF("i16_time_us","int16","us","x","x","0","1","10","Microsecond"),
+		new DF("u16_time_5ms","uint16","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
+		new DF("u32_time_5ms","uint32","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
+		new DF("u16_time_10ms","uint16","ms","x*10","x/10","0","10","20","Millisecond"),
+		new DF("u16_time_100ms","uint16","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u32_time_100ms","uint32","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u16_time_s","uint16","s","x","x","0","1","5","Second"),
 		new DF("u8_load_2mg/stroke","uint8","mg/stroke","x*2","x/2","0","2","8","Milligram/Stroke"),
 		new DF("u8_load_4mg/stroke","uint8","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"),
 		new DF("u8_load_1173mg/255stroke","uint8","mg/stroke","x*1173/255","x*255/1173","0.0","4","20","Milligram/Stroke"),
@@ -280,6 +284,11 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm"),
 		new DF("u8_torque_4nm","uint8","Newton meter","x*4","x/4","0","4","16","nm"),
 		new DF("u16_power_1/100kw","uint16","kW","x/100","x*100","0.0","10","50","kW"),
+
+		// TODO: this struct was an experiment and doesn't really work. It should really
+		// just be 3 variables.
+		new DF("struct_dtc_state","uint16","","x","x","0.0","1","2",""),
+
 	};
 
 	static {
@@ -354,11 +363,29 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		{"Compute load from MAP", "01"}
 	};
 
+	private static final String[][] KNOCK_MODE = {
+		{"NONE", "0"},
+		{"goertzel_64sample", "1"},
+		{"goertzel_2window", "2"},
+		{"spectral_128window", "3"},
+		{"goertzel_32sample_x3", "4"},
+	};
+
+	private static final String[][] TRACTION_MODE = {
+		{"DISABLED", "0"},
+		{"external only", "1"},
+		{"enabled", "2"},
+		{"variable", "3"},
+	};
+
+
 	/* This mode is for boolean types, often feature flags */
 	private static final String[][] ENABLE_MODE = {
 		{"Disabled", "00"},
 		{"Enabled", "01"}
 	};
+
+
 
 
 	/******************************/
@@ -733,6 +760,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				addXmlSwitch(doc, parent, s, USE_TPMS);
 			else if ("CAL_tc_mode".equals(s.name))
 				addXmlSwitch(doc, parent, s, TC_MODE);
+			else if ("CAL_traction_mode".equals(s.name))
+				addXmlSwitch(doc, parent, s, TRACTION_MODE);
+			else if ("CAL_knock_mode".equals(s.name))
+				addXmlSwitch(doc, parent, s, KNOCK_MODE);
 			else if ("CAL_load_use_speed_density".equals(s.name))
 				addXmlSwitch(doc, parent, s, LOAD_MODE);
 			else if (s.dataformats == null)
