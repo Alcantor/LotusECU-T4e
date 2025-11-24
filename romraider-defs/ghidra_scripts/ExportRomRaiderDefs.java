@@ -318,15 +318,15 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	};
 
 	private static final String[][] OBD2LEVEL_T6 = {
-		{"OFF", "00"},
-		{"ON 0x01", "01"},
-		{"ON 0x11", "11"},
-		{"ON 0x12", "12"},
-		{"ON 0x13", "13"},
-		{"ON 0x21", "21"},
-		{"ON 0x53", "53"},
-		{"ON 0x91", "91"},
-		{"ON 0x92", "92"}
+		{"Disabled", "00"},
+		{"Non-emissions 1-trip", "01"},
+		{"Emissions Type A (1-trip MIL)", "11"},
+		{"Emissions Type B (2-trip MIL)", "12"},
+		{"Emissions Type B (2-trip MIL alt)", "13"},
+		{"Non-emissions Mode08 test", "21"},
+		{"Emissions Type B continuous", "53"},
+		{"Emissions Type A critical (1-trip MIL priority)", "91"},
+		{"Emissions Type B critical (2-trip MIL priority)", "92"}
 	};
 
 	private static final String[][] OBD2MONITORS = {
