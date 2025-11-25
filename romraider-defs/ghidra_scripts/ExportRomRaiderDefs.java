@@ -283,7 +283,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_torque_nm","uint8","Newton meter","x","x","0","1","5","nm"),
 		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm"),
 		new DF("u8_torque_4nm","uint8","Newton meter","x*4","x/4","0","4","16","nm"),
-		new DF("u16_power_1/100kw","uint16","kW","x/100","x*100","0.0","10","50","kW"),
+		new DF("u16_power_1/100kw","uint16","kW","x/100","x*100","0.00","10","50","kW"),
+		new DF("u16_wheelslip_1/8pct","uint16","%","x/8","x*8","0.00","1","2","Wheelslip"),
 
 		// TODO: this struct was an experiment and doesn't really work. It should really
 		// just be 3 variables.
