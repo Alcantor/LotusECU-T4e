@@ -435,7 +435,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		parent.appendChild(e);
 	}
 
-	private static class SymRecBase {
+	private class SymRecBase {
 		String name;
 		long   offset;
 		String xmlid;
@@ -452,10 +452,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 		SymRecBase(String n, long o, String c) throws Exception {
 			name = n;
-			offset = o;
+			offset = o;		
 			String[] d = c.split("#");
 			if (d.length < 11)
-				throw new Exception("XXX_base has not enough info!");
+				throw new Exception(String.format("XXX_base has not enough info (%s)", n));
 			xmlid = d[0];
 			market = d[1];
 			make = d[2];
@@ -487,7 +487,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		}
 	}
 
-	private static class SymRec {
+	private class SymRec {
 		private static final Pattern varFormat = Pattern.compile("([^\\[]+)\\[(\\d+)]");
 		String name;
 		String category;
@@ -520,7 +520,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		}
 	}
 
-	private static class Syms {
+	private class Syms {
 		private final String prefix;
 		private final Pattern symFormat;
 		SymRecBase base;
