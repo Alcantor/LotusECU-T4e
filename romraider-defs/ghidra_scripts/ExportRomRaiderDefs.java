@@ -131,6 +131,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("int16_t","int16","#","x","x","0","1","10","Number"),
 		new DF("u8_count","uint8","#","x","x","0","1","10","Number"),
 		new DF("u8_gear","uint8","gear","x","x","0","1","10","Gear"),
+		new DF("u8_dutycycle_100/255", "uint8", "%", "x*100/255", "x*255/100", "0", "1", "5", "Dutycycle"),
 		new DF("u8_x256","uint8","#","x*256","x/256","0","256","2560","Number"),
 		new DF("u8_factor_1","uint8","%","x","x","0","1","5","Percent"),
 		new DF("u8_factor_1/32","uint8","%","x*100/32","x*32/100","0","1","5","Percent"),
@@ -284,7 +285,9 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm"),
 		new DF("u8_torque_4nm","uint8","Newton meter","x*4","x/4","0","4","16","nm"),
 		new DF("u16_power_1/100kw","uint16","kW","x/100","x*100","0.00","10","50","kW"),
-		new DF("u16_wheelslip_1/8pct","uint16","%","x/8","x*8","0.00","1","2","Wheelslip"),
+		new DF("u8_slip_2pct","uint8","%","x*2","x/2","0.00","2","8","Wheelslip"),
+		new DF("u8_slip_1/8pct","uint8","%","x/8","x*8","0.00","1","2","Wheelslip"),
+		new DF("u16_slip_1/8pct","uint16","%","x/8","x*8","0.00","1","2","Wheelslip"),
 
 		// TODO: this struct was an experiment and doesn't really work. It should really
 		// just be 3 variables.
@@ -386,6 +389,11 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		{"Enabled", "01"}
 	};
 
+	private static final String[][] OIL_PRESSURE_SENSOR_MODE = {
+		{"None", "0"},
+		{"Switch", "1"},
+		{"Analog 5v", "2"}
+	};
 
 
 
@@ -751,6 +759,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				addXmlSwitch(doc, parent, s, OBD2LEVEL);
 			else if (s.datatype.equals("u8_obd2level_t6"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL_T6);
+			else if (s.datatype.equals("enum_oil_pressure_sensor_mode"))
+				addXmlSwitch(doc, parent, s, OIL_PRESSURE_SENSOR_MODE);
 			else if ("CAL_obd2_monitors".equals(s.name))
 				addXmlSwitch(doc, parent, s, OBD2MONITORS);
 			else if ("CAL_ecu_unlock_magic".equals(s.name))
