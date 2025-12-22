@@ -125,6 +125,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	private static final DF[] formats = new DF[] {
 		new DF("bool","uint8","#","x","x","0","1","10","Number"),
 		new DF("uint8_t","uint8","#","x","x","0","1","10","Number"),
+		new DF("u8_-127","uint8","#","x-127","x+127","0","1","10","Number"),
 		new DF("uint16_t","uint16","#","x","x","0","1","100","Number"),
 		new DF("uint32_t","uint32","#","x","x","0","1","100","Number"),
 		new DF("int8_t","int8","#","x","x","0","1","10","Number"),
@@ -163,6 +164,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_factor_1/65536","uint16","%","x*100/65536","x*65536/100","0.00","0.1","1","Percent"),
 		new DF("u8_accel_1/2550g","uint8","G","x/2550","x*2550","0.0000","0.0004","0.004","G"),
 		new DF("u8_fuel_gal_x10","uint8","gal","x/10","x*10","0.00","0.1","1","gallons"),
+		new DF("u16_distance_km","uint16", "km","x","x","0","1","10","km"),
 		new DF("u16_distance_mm_div2","uint16","mm","x*2","x/2","0","2","10","mm"),
 		new DF("u8_factor_1/2560","uint8","%","x*100/2560","x*2560/100","0.00","0.1","1","Percent"),
 		new DF("u8_voltage_5/255v","uint8","v","x*5/255","x*255/5","0.0","0.1","0.5","Volt"),
@@ -633,7 +635,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.setAttribute("sizex", String.valueOf(sizex));
 		e.setAttribute("userlevel", "1");
 		e.setAttribute("storageaddress", String.format("0x%04X", s.offset+sizex));
-		for (DF df : s.dataformats) df.addXmlScaling(doc, e);
+		for (final DF df : s.dataformats) df.addXmlScaling(doc, e);
 
 		Element ex = doc.createElement("table");
 		ex.setAttribute("type", "X Axis");
