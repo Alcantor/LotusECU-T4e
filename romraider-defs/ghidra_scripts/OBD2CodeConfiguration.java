@@ -328,11 +328,11 @@ public class OBD2CodeConfiguration extends GhidraScript {
 
 					try {
 						DataTypeManager dtm = currentProgram.getDataTypeManager();
-						DataType byteType = dtm.getDataType("/byte");
+						DataType byteType = dtm.getDataType("/stdint.h/uint8_t");
 						if (byteType != null) {
 							clearListing(dtcStateAddr);
 							createData(dtcStateAddr, byteType);
-							println("    Set type: byte");
+							println("    Set type: uint8_t");
 						}
 					} catch (Exception e) {
 						println("    WARNING: Could not set type: " + e.getMessage());
@@ -364,11 +364,11 @@ public class OBD2CodeConfiguration extends GhidraScript {
 
 					try {
 						DataTypeManager dtm = currentProgram.getDataTypeManager();
-						DataType byteType = dtm.getDataType("/byte");
+						DataType byteType = dtm.getDataType("/stdint.h/uint8_t");
 						if (byteType != null) {
 							clearListing(failCounterAddr);
 							createData(failCounterAddr, byteType);
-							println("    Set type: byte");
+							println("    Set type: uint8_t");
 						}
 					} catch (Exception e) {
 						println("    WARNING: Could not set type: " + e.getMessage());
@@ -400,11 +400,11 @@ public class OBD2CodeConfiguration extends GhidraScript {
 
 					try {
 						DataTypeManager dtm = currentProgram.getDataTypeManager();
-						DataType byteType = dtm.getDataType("/byte");
+						DataType byteType = dtm.getDataType("/stdint.h/uint8_t");
 						if (byteType != null) {
 							clearListing(passCounterAddr);
 							createData(passCounterAddr, byteType);
-							println("    Set type: byte");
+							println("    Set type: uint8_t");
 						}
 					} catch (Exception e) {
 						println("    WARNING: Could not set type: " + e.getMessage());
