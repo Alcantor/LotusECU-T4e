@@ -289,6 +289,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_power_1/100kw","uint16","kW","x/100","x*100","0.00","10","50","kW"),
 		new DF("u8_slip_2pct","uint8","%","x*2","x/2","0.00","2","8","Wheelslip"),
 		new DF("u8_slip_1/8pct","uint8","%","x/8","x*8","0.00","1","2","Wheelslip"),
+		new DF("u8_slip_1/128pct","uint8","%","x/128","x*128","0.00","0.01","0.1","Wheelslip"),
 		new DF("u16_slip_1/8pct","uint16","%","x/8","x*8","0.00","1","2","Wheelslip"),
 
 		// TODO: this struct was an experiment and doesn't really work. It should really
