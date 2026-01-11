@@ -400,6 +400,13 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		{"Analog 5v", "2"}
 	};
 
+	private static final String[][] EXHAUST_VALVE_OVERRIDE_MODE = {
+		{"Disabled", "0"},
+		{"Tour/Sport Only", "1"},
+		{"Race Only", "2"},
+		{"All Modes", "3"}
+	};
+
 
 
 	/******************************/
@@ -766,6 +773,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				addXmlSwitch(doc, parent, s, OBD2LEVEL_T6);
 			else if (s.datatype.equals("enum_oil_pressure_sensor_mode"))
 				addXmlSwitch(doc, parent, s, OIL_PRESSURE_SENSOR_MODE);
+			else if (s.datatype.equals("enum_exhaust_stationary_override")) 
+				addXmlSwitch(doc, parent, s, EXHAUST_VALVE_OVERRIDE_MODE);
 			else if ("CAL_obd2_monitors".equals(s.name))
 				addXmlSwitch(doc, parent, s, OBD2MONITORS);
 			else if ("CAL_ecu_unlock_magic".equals(s.name))
