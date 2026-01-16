@@ -442,7 +442,8 @@ class TunerWin(tk.Toplevel):
 		self.log_file.write('\n')
 
 	def log_put(self):
-		self.log_file.write(datetime.now().strftime("%H:%M:%S.%f"))
+		now = datetime.now()
+		self.log_file.write(f"{now.strftime("%H:%M:%S")}.{(now.microsecond//1000):03d}")
 		for g in self.gauges: self.log_file.write(','+str(g.data))
 		self.log_file.write('\n')
 
