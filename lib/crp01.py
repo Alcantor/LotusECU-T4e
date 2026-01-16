@@ -75,12 +75,12 @@ class CRP01_3by2enc:
 		self.K = ~(9744 + sum(crp_size.to_bytes(4, BO_BE)))
 
 	def encrypt(self, buf_in, buf_out):
-		for i in range(0, len(buf_in)//2, 1):
+		for i in range(len(buf_in)//2):
 			x = i*2
 			w_plain = int.from_bytes(buf_in[x:x+2], BO_LE)
 			w_bit_flag = (w_plain + self.K) & 0xFFFF
 			w_sum = 0;
-			for j in reversed(range(0, 16)):
+			for j in reversed(range(16)):
 				if(w_bit_flag & (1<<j)):
 					w_sum += self.key_table[j]
 			w_cipher = (w_sum * self.key_mult_inv) % self.key_mod
@@ -89,12 +89,12 @@ class CRP01_3by2enc:
 			buf_out[x:x+3] = w_cipher.to_bytes(3, BO_LE)
 
 	def decrypt(self, buf_in, buf_out):
-		for i in range(0, len(buf_in)//3, 1):
+		for i in range(len(buf_in)//3):
 			x = i*3
 			w_cipher = int.from_bytes(buf_in[x:x+3], BO_LE)
 			w_sum = (w_cipher * self.key_mult) % self.key_mod
 			w_bit_flag = 0;
-			for j in reversed(range(0, 16)):
+			for j in reversed(range(16)):
 				if(w_sum >= self.key_table[j]):
 					w_sum -= self.key_table[j]
 					w_bit_flag |= 1<<j
@@ -126,7 +126,7 @@ class CRP01_hdr_ecu_k4(BinData):
 		self.clear()
 
 	def parse(self, data):
-		for i in range(0, 7):
+		for i in range(7):
 			if(data[i] == 0): self.erase_sector[i] = False
 			elif(data[i] == 1): self.erase_sector[i] = True
 			else: raise Exception("Invalid header")
@@ -135,7 +135,7 @@ class CRP01_hdr_ecu_k4(BinData):
 		return 16
 
 	def compose(self, data):
-		for i in range(0, 7):
+		for i in range(7):
 			data[i] = 1 if(self.erase_sector[i]) else 0
 		data[7:16] = b'\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xFF'
 
@@ -173,7 +173,7 @@ class CRP01_hdr_ecu_t4(BinData):
 		self.clear()
 
 	def parse(self, data):
-		for i in range(0, 11):
+		for i in range(11):
 			if(data[i] == 0): self.erase_sector[i] = False
 			elif(data[i] == 1): self.erase_sector[i] = True
 			else: raise Exception("Invalid header")
@@ -182,7 +182,7 @@ class CRP01_hdr_ecu_t4(BinData):
 		return 16
 
 	def compose(self, data):
-		for i in range(0, 11):
+		for i in range(11):
 			data[i] = 1 if(self.erase_sector[i]) else 0
 		data[11:16] = b'\xFF\xFF\xFF\xFF\xFF'
 
@@ -230,7 +230,7 @@ class CRP01_hdr_ecu_t4e(BinData):
 		signature = data[0:4]
 		if(signature != self.SIGNATURE):
 			raise Exception("Wrong Signature")
-		for i in range(0, 3):
+		for i in range(3):
 			if(data[i+4] == ord('0')): self.erase_sector[i] = False
 			elif(data[i+4] == ord('1')): self.erase_sector[i] = True
 			else: raise Exception("Invalid header")
@@ -240,7 +240,7 @@ class CRP01_hdr_ecu_t4e(BinData):
 
 	def compose(self, data):
 		data[0:4] = self.SIGNATURE
-		for i in range(0, 3):
+		for i in range(3):
 			data[i+4] = ord('1') if(self.erase_sector[i]) else ord('0')
 		data[7:16] = b'\x00\x00\x00\x00\xFF\xFF\xFF\xFF\xFF'
 

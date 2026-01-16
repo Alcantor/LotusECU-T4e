@@ -33,13 +33,13 @@ class CRC8Normal(CRC):
 	def __init__(self, polynomial, initvalue=0xFF):
 		super().__init__(initvalue)
 		# Forward table
-		for i in range(0,256):
+		for i in range(256):
 			c = i
-			for j in range(0,8):
+			for j in range(8):
 				c = polynomial ^ (c << 1) if (c & 0x80) else c << 1
 			self.table[i] = c & 0xFF;
 		# Backward table
-		for i in range(0,256):
+		for i in range(256):
 			self.table_reverse[self.table[i]] = i
 	def update_byte(self, byte):
 		self.crc = self.table[self.crc ^ byte]
@@ -51,13 +51,13 @@ class CRC8Reflect(CRC):
 		super().__init__(initvalue)
 		invertPolynomial = CRC8Reflect.reflect(polynomial)
 		# Forward table
-		for i in range(0,256):
+		for i in range(256):
 			c = i
-			for j in range(0,8):
+			for j in range(8):
 				c = invertPolynomial ^ (c >> 1) if (c & 0x01) else c >> 1
 			self.table[i] = c;
 		# Backward table
-		for i in range(0,256):
+		for i in range(256):
 			self.table_reverse[self.table[i]] = i
 	def update_byte(self, byte):
 		self.crc = self.table[self.crc ^ byte]
@@ -73,13 +73,13 @@ class CRC16Normal(CRC):
 	def __init__(self, polynomial, initvalue=0xFFFF):
 		super().__init__(initvalue)
 		# Forward table
-		for i in range(0,256):
+		for i in range(256):
 			c = i << 8
-			for j in range(0,8):
+			for j in range(8):
 				c = polynomial ^ (c << 1) if (c & 0x8000) else c << 1
 			self.table[i] = c & 0xFFFF
 		# Backward table
-		for i in range(0,256):
+		for i in range(256):
 			self.table_reverse[self.table[i] & 0xFF] = i
 	def update_byte(self, byte):
 		self.crc = self.table[(self.crc >> 8) ^ byte] ^ (self.crc << 8)
@@ -93,13 +93,13 @@ class CRC16Reflect(CRC):
 		super().__init__(initvalue)
 		invertPolynomial = CRC16Reflect.reflect(polynomial)
 		# Forward table
-		for i in range(0,256):
+		for i in range(256):
 			c = i
-			for j in range(0,8):
+			for j in range(8):
 				c = invertPolynomial ^ (c >> 1) if (c & 0x0001) else c >> 1
 			self.table[i] = c
 		# Backward table
-		for i in range(0,256):
+		for i in range(256):
 			self.table_reverse[self.table[i] >> 8] = i
 	def update_byte(self, byte):
 		self.crc = self.table[(self.crc & 0xFF) ^ byte] ^ (self.crc >> 8)
@@ -118,13 +118,13 @@ class CRC32Normal(CRC):
 	def __init__(self, polynomial, initvalue=0xFFFFFFFF):
 		super().__init__(initvalue)
 		# Forward table
-		for i in range(0,256):
+		for i in range(256):
 			c = i << 24
-			for j in range(0,8):
+			for j in range(8):
 				c = polynomial ^ (c << 1) if (c & 0x80000000) else c << 1
 			self.table[i] = c & 0xFFFFFFFF
 		# Backward table
-		for i in range(0,256):
+		for i in range(256):
 			self.table_reverse[self.table[i] & 0xFF] = i
 	def update_byte(self, byte):
 		self.crc = self.table[(self.crc >> 24) ^ byte] ^ (self.crc << 8)
@@ -138,13 +138,13 @@ class CRC32Reflect(CRC):
 		super().__init__(initvalue)
 		invertPolynomial = CRC32Reflect.reflect(polynomial)
 		# Forward table
-		for i in range(0,256):
+		for i in range(256):
 			c = i
-			for j in range(0,8):
+			for j in range(8):
 				c = invertPolynomial ^ (c >> 1) if (c & 0x00000001) else c >> 1
 			self.table[i] = c
 		# Backward table
-		for i in range(0,256):
+		for i in range(256):
 			self.table_reverse[self.table[i] >> 24] = i
 	def update_byte(self, byte):
 		self.crc = self.table[(self.crc & 0xFF) ^ byte] ^ (self.crc >> 8)

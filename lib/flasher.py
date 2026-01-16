@@ -155,7 +155,7 @@ class Flasher:
 
 	def canstrap(self, timeout=60, ui_cb=lambda:None):
 		self.fp.log("Power On ECU, please! (within "+str(timeout)+"sec.)")
-		for _ in range(0, int(timeout/0.5)):
+		for _ in range(int(timeout/0.5)):
 			ui_cb()
 			msg = self.bus.recv(timeout=0.5)
 			if(msg != None): break
@@ -167,7 +167,7 @@ class Flasher:
 	def prepare_crc(self):
 		crc = CRC32Reflect(0x1EDC6F41, initvalue=0xFFFFFFFF)
 		self.fp.log("Upload CRC lookup table...")
-		for i in range(0, len(crc.table)):
+		for i in range(len(crc.table)):
 			self.write_word(
 				0x3F8000+(i*4),
 				crc.table[i].to_bytes(4, BO_BE)
@@ -255,7 +255,7 @@ if __name__ == "__main__":
 		nargs='*',
 		type=int,
 		help="Specify a block",
-		choices=range(0, len(Flasher.blocks)),
+		choices=range(len(Flasher.blocks)),
 		default=(1,)
 	)
 	ap.add_argument(
@@ -280,7 +280,7 @@ if __name__ == "__main__":
 		canstrap_file = "flasher/t4e/canstrap-white.bin"
 	if(args['listblock']):
 		print("Blocks ECU")
-		for i in range(0, len(Flasher.blocks)):
+		for i in range(len(Flasher.blocks)):
 			print("%i: %s" % (i, Flasher.blocks[i][0]))
 		sys.exit(0)
 

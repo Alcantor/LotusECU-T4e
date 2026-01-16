@@ -1,26 +1,27 @@
-import os
+import os, importlib, pkgutil
 import tkinter as tk
-from tkinter import filedialog, simpledialog
+from tkinter import ttk, filedialog, simpledialog
 from lib.ltacc import LiveTuningAccess
 from lib.flasher import Flasher
 from lib.gui_common import *
 from lib.gui_fileprogress import FileProgress_widget
+from lib.gui_tuner import MapTable, SimpleGauge, TunerWin
 
 # Some constants
 BO_BE = 'big'
 CHARSET = 'ISO-8859-15'
 
 class LiveTuningAccess_win(tk.Toplevel):
-	def __init__(self, config, parent=None):
+	def __init__(self, prefs, parent=None):
 		tk.Toplevel.__init__(self, parent)
 		self.title('Live-Tuning Access')
 		self.resizable(0, 0)
 		self.grab_set()
 		self.protocol("WM_DELETE_WINDOW", self.on_closing)
 		self.run_task = False
-		self.config = config
+		self.prefs = prefs
 
-		self.can_device = SelectCAN_widget(config, self)
+		self.can_device = SelectCAN_widget(prefs, self)
 		self.can_device.pack(fill=tk.X)
 
 		lta_frame = tk.LabelFrame(self, text="Dump")
@@ -48,17 +49,22 @@ class LiveTuningAccess_win(tk.Toplevel):
 		self.button_pmt = tk.Button(lta_frame, text="The poor man's live-tuning", command=self.watch)
 		self.button_pmt.pack(fill=tk.X)
 
+		self.button_tune = tk.Button(lta_frame, text=">>> Tuner <<<", command=self.tuner)
+		self.button_tune.pack(fill=tk.X)
+
 	def lock_buttons_decorator(func):
 		def wrapper(self):
 			self.button_dl['state'] = tk.DISABLED
 			self.button_v['state'] = tk.DISABLED
 			self.button_ifp['state'] = tk.DISABLED
 			self.button_pmt['state'] = tk.DISABLED
+			self.button_tune['state'] = tk.DISABLED
 			func(self)
 			self.button_dl['state'] = tk.NORMAL
 			self.button_v['state'] = tk.NORMAL
 			self.button_ifp['state'] = tk.NORMAL
 			self.button_pmt['state'] = tk.NORMAL
+			self.button_tune['state'] = tk.NORMAL
 		return wrapper
 
 	def lta_decorator(func):
@@ -82,13 +88,13 @@ class LiveTuningAccess_win(tk.Toplevel):
 		zone = LiveTuningAccess.zones[self.combo_zones.current()]
 		answer = filedialog.asksaveasfilename(
 			parent = self,
-			initialdir = self.config['PATH']['bin'],
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = zone[3],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
 		if(answer):
-			self.config['PATH']['bin'] = os.path.dirname(answer)
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			lta.download(zone[1], zone[2], answer)
 
 	@lock_buttons_decorator
@@ -98,13 +104,13 @@ class LiveTuningAccess_win(tk.Toplevel):
 		zone = LiveTuningAccess.zones[self.combo_zones.current()]
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = self.config['PATH']['bin'],
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = zone[3],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
 		if(answer):
-			self.config['PATH']['bin'] = os.path.dirname(answer)
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			lta.verify(zone[1], answer)
 
 	@lock_buttons_decorator
@@ -179,12 +185,36 @@ Because the changes are in the RAM, everything will be lost after the ECU has sh
 		verify = (answer == 'yes')
 		answer = filedialog.askopenfilename(
 			parent = self,
-			initialdir = self.config['PATH']['bin'],
+			initialdir = self.prefs['PATH']['bin'],
 			initialfile = LiveTuningAccess.zones[1][3],
 			title = "Please select a file:",
 			filetypes = bin_file
 		)
 		if(answer):
-			self.config['PATH']['bin'] = os.path.dirname(answer)
+			self.prefs['PATH']['bin'] = os.path.dirname(answer)
 			self.run_task = True
 			lta.watch(cal_base, answer, cal_size, copy, verify, self.waitmore)
+
+	@lock_buttons_decorator
+	@try_msgbox_decorator
+	@lta_decorator
+	def tuner(self, lta):
+		import lib.tuner_defs
+		modules = sorted((name for _, name, _ in pkgutil.iter_modules(lib.tuner_defs.__path__)))
+		for name in modules:
+			module = importlib.import_module("lib.tuner_defs."+name)
+			try:
+				ecudef = module.TunerDefinition(lta)
+				self.fp.log(f"Try: {ecudef.name}")
+				res = ecudef.check()
+			except Exception as e:
+				self.fp.log(f" --> {str(e)}")
+				res = False
+			if(res):
+				TunerWin(self.prefs, ecudef, self)
+				return
+		tk.messagebox.showinfo(
+			parent = self,
+			title = "Tuner",
+			message = "No definition was found for your car. Contact me if you want one."
+		)

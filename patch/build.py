@@ -507,46 +507,46 @@ def build_combined():
 		# Copy Ignition adj
 		addr_src = m.get_sym_addr("CAL_ign_advance_adj1")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_adj1") - c.offset
-		for i in range(0, 16): c.data[addr_dst+i] = c.data[addr_src+i]
+		for i in range(16): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy ignition (high cam) table for ethanol.
 		addr_src = m.get_sym_addr("CAL_ign_advance_high_cam_base")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_high_cam_base") - c.offset
-		for i in range(0, 64): c.data[addr_dst+i] = c.data[addr_src+i]
+		for i in range(64): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy Tip-In table for ethanol, add more fuel.
 		addr_src = m.get_sym_addr("CAL_injtip_in_adj1")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_injtip_in_adj1") - c.offset
-		for i in range(0, 16):
+		for i in range(16):
 			c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 		# Copy Tip-Out table for ethanol, add more fuel.
 		addr_src = m.get_sym_addr("CAL_injtip_out_adj1")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_injtip_out_adj1") - c.offset
-		for i in range(0, 16):
+		for i in range(16):
 			c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 		# Copy fuel efficieny table for ethanol, add more fuel.
 		addr_src = m.get_sym_addr("CAL_inj_efficiency")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_inj_efficiency") - c.offset
-		for i in range(0, 1024):
+		for i in range(1024):
 			c.data[addr_dst+i] = int(c.data[addr_src+i]/afr_ratio)
 
 		# Copy fuel warmup table for ethanol.
 		addr_src = m.get_sym_addr("CAL_inj_time_adj3")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj3") - c.offset
-		for i in range(0, 256): c.data[addr_dst+i] = c.data[addr_src+i]
+		for i in range(256): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy fuel cranking table for ethanol, add more fuel.
 		addr_src = m.get_sym_addr("CAL_inj_time_adj_cranking")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_inj_time_adj_cranking") - c.offset
-		for i in range(0, 16):
+		for i in range(16):
 			c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 		# Copy ignition (low cam) table for ethanol.
 		addr_src = m.get_sym_addr("CAL_ign_advance_low_cam_base")-m.get_sym_addr("CAL_base")
 		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_low_cam_base") - c.offset
-		for i in range(0, 1024): c.data[addr_dst+i] = c.data[addr_src+i]
+		for i in range(1024): c.data[addr_dst+i] = c.data[addr_src+i]
 
 	p.save("t4e/combined/prog.bin")
 	c.save("t4e/combined/calrom.bin")

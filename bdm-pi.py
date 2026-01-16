@@ -34,7 +34,7 @@ class BDM_PI:
 
 	def io_byte(self, byte_in):
 		byte_out = 0
-		for i in reversed(range(0, 8)):
+		for i in reversed(range(8)):
 			# Put the bit at the falling edge of clock
 			GPIO.output(self.gpio_dsdi, byte_in & (1 << i) > 0)
 			GPIO.output(self.gpio_dsck, False)

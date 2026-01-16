@@ -190,13 +190,14 @@ class LiveTuningAccess:
 		return ptrmap
 
 	def download(self, address, size, filename):
-		self.fp.download(address, size, filename, self.read_memory, 128, False)
+		self.fp.download(address, size, filename, self.read_memory, 128)
 
 	def verify(self, address, filename):
-		self.fp.verify(address, filename, self.read_memory, 128, False)
+		self.fp.verify(address, filename, self.read_memory, 128)
 
 	def upload(self, address, filename):
-		self.fp.upload(address, filename, self.write_memory, 128, False)
+		# TODO: This chunk_pause is a workaround to the buffer full problem!
+		self.fp.upload(address, filename, self.write_memory, 128, chunk_pause=0.01)
 
 	def watch(self, address, filename, size, copy, verify, ui_cb=lambda:None):
 		write_fnct = lambda a,d: self.write_memory(a,d,verify)
@@ -272,8 +273,8 @@ if __name__ == "__main__":
 		nargs='*',
 		type=int,
 		help="Specify a zone",
-		choices=range(0, len(LiveTuningAccess.zones)),
-		default=range(0, 5)
+		choices=range(len(LiveTuningAccess.zones)),
+		default=range(5)
 	)
 	ap.add_argument(
 		"-lz",
@@ -297,7 +298,7 @@ if __name__ == "__main__":
 		canstrap_file = "flasher/t4e/canstrap-white.bin"
 	if(args['listzone']):
 		print("Zones ECU")
-		for i in range(0, len(LiveTuningAccess.zones)):
+		for i in range(len(LiveTuningAccess.zones)):
 			print(f"{i:02d}: "+LiveTuningAccess.zones[i][0])
 		sys.exit(0)
 
