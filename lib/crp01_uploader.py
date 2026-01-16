@@ -58,7 +58,7 @@ class CRP01_uploader:
 	#	0x72: Ok, next frame (1 byte data, error code)
 	def recv(self, timeout=10.0):
 		# Recv
-		for _ in range(0, int(timeout/self.ser.timeout)):
+		for _ in range(int(timeout/self.ser.timeout)):
 			data = self.ser.read(1)
 			if(len(data) > 0): break
 		if(len(data) == 0): raise CRP01_exception("No answer!")

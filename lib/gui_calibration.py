@@ -22,7 +22,7 @@ class CAL_editor_win(tk.Toplevel):
 		menubar.add_cascade(label="File", menu=menu)
 		menu = tk.Menu(menubar, tearoff=0)
 		self.variant = tk.IntVar()
-		for i in range(0, len(Calibration.offsets)):
+		for i in range(len(Calibration.offsets)):
 			menu.add_radiobutton(
 				label=Calibration.offsets[i][0],
 				value=i,

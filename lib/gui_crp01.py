@@ -42,7 +42,7 @@ class CRP01_editor_win(tk.Toplevel):
 		menubar.add_cascade(label="Edit", menu=menu)
 		menu = tk.Menu(menubar, tearoff=0)
 		self.variant = tk.IntVar()
-		for i in range(0, len(CRP01.variants)):
+		for i in range(len(CRP01.variants)):
 			menu.add_radiobutton(
 				label=CRP01.variants[i][0],
 				value=i,

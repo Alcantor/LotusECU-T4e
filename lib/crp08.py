@@ -36,7 +36,7 @@ class CRP08_xtea():
 
 	def encrypt(self, v0, v1):
 		xsum = 0;
-		for i in range(0, self.rounds):
+		for i in range(self.rounds):
 			v0 = (v0 + (((v1 << 4 ^ v1 >> 5) + v1) ^ (xsum + self.key[xsum & 3]))) & self.mask
 			xsum = (xsum + self.delta) & self.mask
 			v1 = (v1 + (((v0 << 4 ^ v0 >> 5) + v0) ^ (xsum + self.key[(xsum >> 11) & 3]))) & self.mask
@@ -44,7 +44,7 @@ class CRP08_xtea():
 
 	def decrypt(self, v0, v1):
 		xsum = (self.delta * self.rounds) & self.mask
-		for i in range(0, self.rounds):
+		for i in range(self.rounds):
 			v1 = (v1 - (((v0 << 4 ^ v0 >> 5) + v0) ^ (xsum + self.key[(xsum >> 11) & 3]))) & self.mask
 			xsum = (xsum - self.delta) & self.mask
 			v0 = (v0 - (((v1 << 4 ^ v1 >> 5) + v1) ^ (xsum + self.key[xsum & 3]))) & self.mask
@@ -108,34 +108,34 @@ class CRP08_chunk_toc(BinData):
 
 	def parse(self, data):
 		self.toc_values = [None] * int.from_bytes(data[0:4], BO_LE)
-		for i in range(0, len(self.toc_values)):
+		for i in range(len(self.toc_values)):
 			x = 4+(8*i)
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
 			if(int.from_bytes(data[offset:offset+4], BO_LE) != i+1):
 				raise CRP08_exception("Index chunk!")
 			self.toc_values[i] = [None] * ((size-4) // self.ENS)
-			for j in range(0, len(self.toc_values[i])):
+			for j in range(len(self.toc_values[i])):
 				x = offset+4+(self.ENS*j)
 				self.toc_values[i][j] = str(data[x:x+self.ENS], CHARSET).rstrip()
 
 	def get_size(self):
 		nb_entries = len(self.toc_values)
 		size = 4+(8*nb_entries)
-		for i in range(0, nb_entries):
+		for i in range(nb_entries):
 			size += 4+(len(self.toc_values[i])*self.ENS)
 		return size
 
 	def compose(self, data):
 		data[0:4] = len(self.toc_values).to_bytes(4, BO_LE)
 		offset = 4+(8*len(self.toc_values))
-		for i in range(0, len(self.toc_values)):
+		for i in range(len(self.toc_values)):
 			size = 4+(len(self.toc_values[i])*self.ENS)
 			x = 4+(8*i)
 			data[x:x+4] = offset.to_bytes(4, BO_LE)
 			data[x+4:x+8] = size.to_bytes(4, BO_LE)
 			data[offset:offset+4] = (i+1).to_bytes(4, BO_LE)
-			for j in range(0, len(self.toc_values[i])):
+			for j in range(len(self.toc_values[i])):
 				x = offset+4+(self.ENS*j)
 				data[x:x+self.ENS] = bytes(self.toc_values[i][j].ljust(self.ENS), CHARSET)
 			offset += size
@@ -477,7 +477,7 @@ class CRP08(BinData):
 
 		# Parse the chunks
 		self.chunks = [None] * int.from_bytes(data[0:4], BO_LE)
-		for i in range(0, len(self.chunks)):
+		for i in range(len(self.chunks)):
 			x = 4+(8*i)
 			offset = int.from_bytes(data[x:x+4], BO_LE)
 			size = int.from_bytes(data[x+4:x+8], BO_LE)
@@ -496,7 +496,7 @@ class CRP08(BinData):
 		# Compose the chunks
 		data[0:4] = len(self.chunks).to_bytes(4, BO_LE)
 		offset = 4+(8*len(self.chunks))
-		for i in range(0, len(self.chunks)):
+		for i in range(len(self.chunks)):
 			size = self.chunks[i].get_size()
 			x = 4+(8*i)
 			data[x:x+4] = offset.to_bytes(4, BO_LE)
