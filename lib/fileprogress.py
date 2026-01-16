@@ -25,7 +25,7 @@ class FileProgress(Progress):
 		if(size % chunk_size != 0 and chunk_align):
 			raise FileProgressException(f"File size is not a multiple of {chunk_size:d}")
 
-	def download(self, address, size, filename, read_fnct, chunk_size, chunk_align):
+	def download(self, address, size, filename, read_fnct, chunk_size, chunk_align=False):
 		self.log(f"Download {size:d} bytes @ 0x{address:08X} into {filename}")
 		self.__aligned(size, chunk_size, chunk_align)
 		with open(filename,'wb') as f:
@@ -42,7 +42,7 @@ class FileProgress(Progress):
 				size -= chunk_size
 			self.progress_end()
 
-	def verify(self, address, filename, read_fnct, chunk_size, chunk_align, offset=0, size=None):
+	def verify(self, address, filename, read_fnct, chunk_size, chunk_align=False, offset=0, size=None):
 		if(not size): size = os.path.getsize(filename) - offset
 		self.log(f"Verify {size:d} bytes @ 0x{address:08X} from {filename} +0x{offset:X}")
 		self.__aligned(size, chunk_size, chunk_align)
@@ -63,7 +63,7 @@ class FileProgress(Progress):
 				size -= chunk_size
 			self.progress_end()
 
-	def verify_blank(self, address, size, read_fnct, chunk_size, chunk_align):
+	def verify_blank(self, address, size, read_fnct, chunk_size, chunk_align=False):
 		self.log(f"Verify Blank {size:d} bytes @ 0x{address:08X}")
 		self.__aligned(size, chunk_size, chunk_align)
 		self.progress_start(size)
@@ -81,7 +81,7 @@ class FileProgress(Progress):
 			size -= chunk_size
 		self.progress_end()
 
-	def upload(self, address, filename, write_fnct, chunk_size, chunk_align, offset=0, size=None):
+	def upload(self, address, filename, write_fnct, chunk_size, chunk_align=False, offset=0, size=None, chunk_pause=0.0):
 		if(not size): size = os.path.getsize(filename) - offset
 		self.log(f"Upload {size:d} bytes @ 0x{address:08X} from {filename} +0x{offset:X}")
 		self.__aligned(size, chunk_size, chunk_align)
@@ -95,6 +95,7 @@ class FileProgress(Progress):
 				self.progress(chunk_size)
 				address += chunk_size
 				size -= chunk_size
+				time.sleep(chunk_pause)
 			self.progress_end()
 
 	def watch(self, address, filename, write_fnct, offset=0, size=None, ui_cb=lambda:None):

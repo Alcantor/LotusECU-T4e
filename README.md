@@ -184,7 +184,7 @@ and a compatible [CAN-BUS adapter].
 For the K4, T4 and locked T4e white dashboard, a K-Line adapter is also needed.
 To enter the bootlooder with the VAG-COM adapter, the L-line must be grounded.
 
-The [Korlan USB2CAN] is a very good cable and I recommend it. It's just a little
+The [Korlan USB2CAN] is a very good cable. It's just a little
 bit more complicated to install it (it requires additional module and a DLL).
 
 The [CANable] (with slcan firmware) is straightforward to use, but I've
@@ -193,6 +193,9 @@ occurs when a large amount of data is being transferred.
 
 The [CANable] (with CandleLight firmware) is better, but it necessitates the use
 of another version of python-can (gs_usb).
+
+The [CANable 2.5] firmware makes the CANable adapter very reliable, so it’s
+becoming a good option.
 
 The [IXXAT] USB-to-CAN Adapter is easy to use and reliable but expensive.
 
@@ -209,6 +212,7 @@ so HW-Filtering would be a big improvement!
 [CAN-BUS adapter]: https://python-can.readthedocs.io/en/stable/interfaces.html
 [Korlan USB2CAN]: https://www.8devices.com/products/usb2can_korlan
 [CANable]: https://canable.io/
+[CANable 2.5]: https://github.com/Elmue/CANable-2.5-firmware-Slcan-and-Candlelight
 [IXXAT]: https://www.ixxat.com/products/products-industrial/can-interfaces/usb-can-interfaces/usb-to-can-v2-professional
 [patch]: https://github.com/craigpeacock/mcp251x
 
@@ -368,6 +372,40 @@ In the below example, the idling speed is adjusted with the engine running!
 All changes are temporary (only in RAM) and go lost when you turn off the ECU.
 
 ![Live Tuning Idle](documentation/Usage/videos/live-tuning-idle.webp)
+
+### The tuner tool
+
+With standard OBD tools, where you can configure custom Lotus PIDs, and by using
+the “Poor Man’s Live-Tuning” feature, you can already achieve a great deal.
+
+However, during a dyno session you are naturally tempted to do steady-state
+tuning. What really annoyed me with RomRaider was that, even though I could
+change values on the fly, it was never clear which cell the ECU was actually
+using at that moment.
+
+So I decided to write a small application to edit the key tables you would
+typically tune on a dyno day, this time with a live cursor showing which cells
+are currently being used by the ECU.
+
+What a pleasure it is to simply add ignition timing by pressing a key on my
+laptop...
+
+![Tuner](documentation/Usage/videos/tuner.webp)
+
+***Note 1***: What you see here is a 2008 Lotus Exige on a parking lot, with me
+giving it a few revs. This can be implemented for any recent Lotus car, but
+because each ECU software version uses different memory locations, it must be
+defined individually for each one.
+
+***Note 2***: No wideband sensor was connected during this recording, which is
+why the measured AFR incorrectly shows a constant value of 10.
+
+***Note 3***: There is a dedicated ignition table used while the car is idling.
+When the accelerator pedal is not pressed, the ignition values in use do not
+match the cell indicated by the cursor, this is expected behavior.
+
+***Note 4***: Sorry for the lack of sound, the engine noise completely saturated
+my laptop’s microphone.
 
 ## Contact
 

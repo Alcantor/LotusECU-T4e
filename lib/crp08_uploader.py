@@ -95,7 +95,7 @@ class CRP08_uploader:
 		self.send(7, efi_id.to_bytes(1, BO_BE) + bytes(5))
 
 	def recv(self, timeout, ui_cb):
-		for _ in range(0, int(timeout/0.5)):
+		for _ in range(int(timeout/0.5)):
 			ui_cb()
 			msg = self.bus.recv(timeout=0.5)
 			if(msg != None): break

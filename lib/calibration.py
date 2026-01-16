@@ -74,7 +74,7 @@ class Calibration():
 
 	def detect(self):
 		blank = b'\xFF\xFF\xFF\xFF'
-		for i in range(0, len(Calibration.offsets)):
+		for i in range(len(Calibration.offsets)):
 			self.map(i)
 			if(len(self.data) >= self.size and (len(self.free) == 0
 					or self.free[0:4] == blank) and self.magic in [
@@ -139,7 +139,7 @@ class Calibration():
 		crc.set_initvalue(crc.get())
 		# Search a VIN that satisfied the CRC using printable characters
 		c = bytes(string.digits+string.ascii_letters, CHARSET)
-		ca = [len(c)**x for x in reversed(range(0,4))]
+		ca = [len(c)**x for x in reversed(range(4))]
 		max = len(c)**4
 		i = 0
 		while(True):
