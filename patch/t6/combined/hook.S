@@ -9,8 +9,8 @@ hook_init:
 .ifdef WIDEBAND
 	bl	wideband_init
 .endif
-	# Load 128 (Erase by patch in original code)
-	li	%r0, 128
+	# Pop link register from stack (Erase by patch in original code)
+	lwz	%r0, 20(%r1)
 	ba	hook_init_continue
 
 hook_loop:

@@ -559,8 +559,9 @@ def build_t6_combined():
 	print("Combined T6 patch...")
 	#c = Patcher_T6Calibration("../dump/t6/P138E0009/calrom.bin")
 	#p = Patcher_T6Prog("../dump/t6/P138E0009/prog.bin")
-	c = Patcher_T6Calibration("../../LotusCRP/extracted/P138E0009/P138E0009_TAB.cpt")
-	p = Patcher_T6Prog("../../LotusCRP/extracted/P138E0009/T6BRK0S01_BIN.cpt")
+	c = Patcher_T6Calibration("../../LotusCRP/extracted/C132E0278/C132E0278_TAB.cpt")
+	#p = Patcher_T6Prog("../../LotusCRP/extracted/C132E0278/T6EVRGT430E01_BIN.cpt")
+	p = Patcher_T6Prog("../dump/T6EVRGT430E01_BIN_USDM_PATCHED.cpt")
 	flexfuel = input("Include flexfuel support (y/n) ? ")
 	wideband = input("Include wideband support (y/n) ? ")
 	os.system(
@@ -570,7 +571,7 @@ def build_t6_combined():
 		c.get_free_cal(),
 		p.get_free_rom(),
 		p.get_free_ram(),
-		"../T6-V000S.sym",
+		"../T6-GT430.sym",
 		flexfuel, wideband
 	))
 	m = HDRMap("t6/combined/patch.txt")
@@ -578,7 +579,7 @@ def build_t6_combined():
 	# Hook: Init
 	p.check_and_replace(
 		m.get_sym_addr("hook_init_loc"),
-		PPC32.ppc_li(0, 0x80),
+		PPC32.ppc_lwz(0, 1, 20),
 		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
 	)
 
@@ -594,8 +595,8 @@ def build_t6_combined():
 
 	# Hook: Main Loop Correction
 	p.check_and_replace(
-		0x43050,
-		PPC32.ppc_ble(-0x280),
+		0x42fbc,
+		PPC32.ppc_ble(-0x294),
 		PPC32.ppc_ble( 0x1C)
 	)
 
@@ -609,7 +610,7 @@ def build_t6_combined():
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
 		m.get_sym_addr("hook_OBD_mode_0x01_loc"),
-		PPC32.ppc_rlwinm(0, 3, 0, 24, 31),
+		PPC32.ppc_rlwinm(0, 31, 0, 24, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)
 
@@ -626,7 +627,7 @@ def build_t6_combined():
 	addr_ha = (addr >> 16) + ((addr >> 15) & 1)
 	addr_l = addr & 0xFFFF
 	p.check_and_replace(
-		0x4307C,
+		0x42fe8,
 		PPC32.ppc_lis(3, 0x4001) + PPC32.ppc_addi(0, 3, -0x1000),
 		PPC32.ppc_lis(3, addr_ha) + PPC32.ppc_addi(0, 3, addr_l)
 	)
@@ -696,6 +697,6 @@ def build_t6_combined():
 	#p.print_segments()
 
 if __name__ == "__main__":
-	build_stage15()
-	build_combined()
+	#build_stage15()
+	#build_combined()
 	build_t6_combined()
