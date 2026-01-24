@@ -479,7 +479,7 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
    <table endian="big" name="engine speed" sizex="8" storageaddress="0x0B64" storagetype="uint8" type="X Axis">
     <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
    </table>
-   <table endian="big" name="load" sizey="8" storageaddress="0x0B6C" storagetype="uint8" type="Y Axis">
+   <table endian="big" name="engine load" sizey="8" storageaddress="0x0B6C" storagetype="uint8" type="Y Axis">
     <scaling category="Milligram/Stroke" coarseincrement="20" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mg/stroke"/>
    </table>
    <description>When a rich condition is detected, the stft will enlean the mixture.
@@ -493,7 +493,7 @@ Formula (with adj)  : stft = stft - step * adj</description>
    <table endian="big" name="engine speed" sizex="8" storageaddress="0x0AC4" storagetype="uint8" type="X Axis">
     <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
    </table>
-   <table endian="big" name="load" sizey="8" storageaddress="0x0ACC" storagetype="uint8" type="Y Axis">
+   <table endian="big" name="engine load" sizey="8" storageaddress="0x0ACC" storagetype="uint8" type="Y Axis">
     <scaling category="Milligram/Stroke" coarseincrement="20" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mg/stroke"/>
    </table>
    <description>When a rich condition is detected, the stft will enlean the mixture.
@@ -518,7 +518,7 @@ Formula (with adj)  : stft = stft - step * ADJ</description>
    <table endian="big" name="engine speed" sizex="8" storageaddress="0x0B14" storagetype="uint8" type="X Axis">
     <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
    </table>
-   <table endian="big" name="load" sizey="8" storageaddress="0x0B1C" storagetype="uint8" type="Y Axis">
+   <table endian="big" name="engine load" sizey="8" storageaddress="0x0B1C" storagetype="uint8" type="Y Axis">
     <scaling category="Milligram/Stroke" coarseincrement="20" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mg/stroke"/>
    </table>
    <description>When a lean condition is detected, the stft will enrich the mixture.
@@ -532,7 +532,7 @@ Formula (with adj)  : stft = stft + step * adj</description>
    <table endian="big" name="engine speed" sizex="8" storageaddress="0x0A74" storagetype="uint8" type="X Axis">
     <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
    </table>
-   <table endian="big" name="load" sizey="8" storageaddress="0x0A7C" storagetype="uint8" type="Y Axis">
+   <table endian="big" name="engine load" sizey="8" storageaddress="0x0A7C" storagetype="uint8" type="Y Axis">
     <scaling category="Milligram/Stroke" coarseincrement="20" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mg/stroke"/>
    </table>
    <description>When a lean condition is detected, the stft will enrich the mixture.
@@ -1527,6 +1527,16 @@ Formula (cranking): adv = advance_cranking</description>
    </table>
    <description>Minimum allowable ignition advance.</description>
   </table>
+  <table category="ign" endian="big" name="ign: advance smooth step" sizex="8" sizey="16" storageaddress="0x0382" storagetype="uint8" type="3D" userlevel="1">
+   <scaling category="Degrees" coarseincrement="1.0" expression="x/4" fineincrement="0.25" format="0.00" to_byte="x*4" units="°"/>
+   <table endian="big" name="engine speed" sizex="8" storageaddress="0x036A" storagetype="uint8" type="X Axis">
+    <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
+   </table>
+   <table endian="big" name="pps" sizey="16" storageaddress="0x0372" storagetype="uint8" type="Y Axis">
+    <scaling category="Percent" coarseincrement="5" expression="x*100/255" fineincrement="1" format="0.0" to_byte="x*255/100" units="%"/>
+   </table>
+   <description>The ignition advance timing is adjusted smoothly in steps defined by this table every 50 ms.</description>
+  </table>
   <table category="ign" endian="big" name="ign: cranking max runtime" sizex="1" storageaddress="0x0046" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Millisecond" coarseincrement="20" expression="x*10" fineincrement="10" format="0" to_byte="x/10" units="ms"/>
    <table name="" sizex="1" type="Static X Axis">
@@ -1889,7 +1899,7 @@ Formula: tip_out(t) = time_base * (DT_TPS2 - (adj2 * t)) * adj1 * adj3</descript
    <table endian="big" name="engine speed" sizex="8" storageaddress="0x26BC" storagetype="uint8" type="X Axis">
     <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
    </table>
-   <table endian="big" name="load" sizey="8" storageaddress="0x26C4" storagetype="uint8" type="Y Axis">
+   <table endian="big" name="engine load" sizey="8" storageaddress="0x26C4" storagetype="uint8" type="Y Axis">
     <scaling category="Milligram/Stroke" coarseincrement="20" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mg/stroke"/>
    </table>
    <description>When the peak is above this threshold, the ECU takes it as a real knock.
@@ -2072,6 +2082,26 @@ peak_over_threshold = peak - threshold</description>
     <data>speed margin</data>
    </table>
    <description>Engine speed margin for retard1_engine_speed_min and retard1_engine_speed_max thresholds.</description>
+  </table>
+  <table category="knock" endian="big" name="knock: window start" sizex="16" sizey="16" storageaddress="0x201C" storagetype="uint8" type="3D" userlevel="1">
+   <scaling category="Degree" coarseincrement="1" expression="(x*10/128)+2" fineincrement="0.1" format="0.0" to_byte="(x-2)*128/10" units="°"/>
+   <table endian="big" name="engine speed" sizex="16" storageaddress="0x1FFC" storagetype="uint8" type="X Axis">
+    <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
+   </table>
+   <table endian="big" name="engine load" sizey="16" storageaddress="0x200C" storagetype="uint8" type="Y Axis">
+    <scaling category="Milligram/Stroke" coarseincrement="20" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mg/stroke"/>
+   </table>
+   <description>Knock detection window start position relative to cylinder TDC reference tooth.</description>
+  </table>
+  <table category="knock" endian="big" name="knock: window width" sizex="16" sizey="16" storageaddress="0x213C" storagetype="uint8" type="3D" userlevel="1">
+   <scaling category="Degree" coarseincrement="1" expression="x*10/128" fineincrement="0.1" format="0.0" to_byte="x*128/10" units="°"/>
+   <table endian="big" name="engine spped" sizex="16" storageaddress="0x211C" storagetype="uint8" type="X Axis">
+    <scaling category="RPM" coarseincrement="100" expression="(x*125/4)+500" fineincrement="32" format="0" to_byte="(x-500)*4/125" units="rpm"/>
+   </table>
+   <table endian="big" name="engine load" sizey="16" storageaddress="0x212C" storagetype="uint8" type="Y Axis">
+    <scaling category="Milligram/Stroke" coarseincrement="20" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mg/stroke"/>
+   </table>
+   <description>Knock detection window duration.</description>
   </table>
   <table category="load" endian="big" name="load: alphaN adj corr high threshold" sizex="1" storageaddress="0x0160" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Percent" coarseincrement="5" expression="x" fineincrement="1" format="0" to_byte="x" units="%"/>

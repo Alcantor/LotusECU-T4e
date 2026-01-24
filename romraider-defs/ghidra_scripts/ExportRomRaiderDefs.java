@@ -129,6 +129,8 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_angle_1/4-20deg","uint16","°","(x/4)-20","(x+20)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_1/4-30deg","uint8","°","(x/4)-30","(x+30)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_1/4-32deg","uint8","°","(x/4)-32","(x+32)*4","0.00","0.25","1.0","Degree"),
+		new DF("u8_angle_10/128deg","uint8","°","x*10/128","x*128/10","0.0","0.1","1","Degree"),
+		new DF("u8_angle_10/128+2deg","uint8","°","(x*10/128)+2","(x-2)*128/10","0.0","0.1","1","Degree"),
 		new DF("u8_angle_720/256deg","uint8","°","x*720/256","x*256/720","0","2","8","Degree"),
 		new DF("u8_rspeed_4rpm","uint8","rpm","x*4","x/4","0","4","16","RPM"),
 		new DF("u8_rspeed_8rpm","uint8","rpm","x*8","x/8","0","8","32","RPM"),
