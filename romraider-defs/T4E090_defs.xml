@@ -775,61 +775,19 @@ Formula: engine_speed = coefficient / flywheel_tooth_count_period - OFFSET.</des
    <state data="57 54 46 3F" name="Unlocked"/>
    <description>Unlocked ECU have a read/write access through CAN-Bus (Live-Tuning).</description>
   </table>
-  <table category="evap" endian="big" name="evap: ?a" sizex="1" storageaddress="0x00A4" storagetype="uint8" type="2D" userlevel="1">
+  <table category="evap" endian="big" name="evap: closedloop delay" sizex="1" storageaddress="0x00BA" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
    <table name="" sizex="1" type="Static X Axis">
-    <data>?a</data>
+    <data>closedloop delay</data>
    </table>
-   <description/>
+   <description>Closed loop entry delay.</description>
   </table>
-  <table category="evap" endian="big" name="evap: ?b" sizex="1" storageaddress="0x00A9" storagetype="uint8" type="2D" userlevel="1">
+  <table category="evap" endian="big" name="evap: dfso recovery delay" sizex="1" storageaddress="0x00A9" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
    <table name="" sizex="1" type="Static X Axis">
-    <data>?b</data>
+    <data>dfso recovery delay</data>
    </table>
-   <description/>
-  </table>
-  <table category="evap" endian="big" name="evap: ?c" sizex="1" storageaddress="0x00B9" storagetype="uint8" type="2D" userlevel="1">
-   <scaling category="Second" coarseincrement="5" expression="x*0.8" fineincrement="1" format="0.0" to_byte="x/0.8" units="s"/>
-   <table name="" sizex="1" type="Static X Axis">
-    <data>?c</data>
-   </table>
-   <description/>
-  </table>
-  <table category="evap" endian="big" name="evap: ?d" sizex="1" storageaddress="0x00BA" storagetype="uint8" type="2D" userlevel="1">
-   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
-   <table name="" sizex="1" type="Static X Axis">
-    <data>?d</data>
-   </table>
-   <description/>
-  </table>
-  <table category="evap" endian="big" name="evap: ?e" sizex="1" storageaddress="0x00BC" storagetype="uint8" type="2D" userlevel="1">
-   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
-   <table name="" sizex="1" type="Static X Axis">
-    <data>?e</data>
-   </table>
-   <description/>
-  </table>
-  <table category="evap" endian="big" name="evap: ?f" sizex="1" storageaddress="0x01AA" storagetype="uint8" type="2D" userlevel="1">
-   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
-   <table name="" sizex="1" type="Static X Axis">
-    <data>?f</data>
-   </table>
-   <description/>
-  </table>
-  <table category="evap" endian="big" name="evap: ?g" sizex="1" storageaddress="0x01AB" storagetype="uint8" type="2D" userlevel="1">
-   <scaling category="Second" coarseincrement="5" expression="x*1.6" fineincrement="1" format="0.0" to_byte="x/1.6" units="s"/>
-   <table name="" sizex="1" type="Static X Axis">
-    <data>?g</data>
-   </table>
-   <description/>
-  </table>
-  <table category="evap" endian="big" name="evap: ?h" sizex="1" storageaddress="0x01AC" storagetype="uint8" type="2D" userlevel="1">
-   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
-   <table name="" sizex="1" type="Static X Axis">
-    <data>?h</data>
-   </table>
-   <description/>
+   <description>DFSO recovery delay.</description>
   </table>
   <table category="evap" endian="big" name="evap: disable idle flow threshold" sizex="1" storageaddress="0x00AC" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Gram/Second" coarseincrement="10" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="g/s"/>
@@ -844,6 +802,20 @@ Formula: engine_speed = coefficient / flywheel_tooth_count_period - OFFSET.</des
     <data>disable inj time threshold</data>
    </table>
    <description>When the injection is below this time threshold, disable the evaporative canister purge.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: duty cycle initial" sizex="1" storageaddress="0x01AD" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Percent" coarseincrement="5" expression="x*100/255" fineincrement="1" format="0.0" to_byte="x*255/100" units="%"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>duty cycle initial</data>
+   </table>
+   <description>Initial duty cycle used during initial period.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: duty cycle initial time" sizex="1" storageaddress="0x01AC" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>duty cycle initial time</data>
+   </table>
+   <description>Time to use initial duty cycle before calculated duty.</description>
   </table>
   <table category="evap" endian="big" name="evap: duty cycle max" sizex="1" storageaddress="0x01AE" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Percent" coarseincrement="5" expression="x*100/255" fineincrement="1" format="0.0" to_byte="x*255/100" units="%"/>
@@ -873,12 +845,33 @@ Formula: engine_speed = coefficient / flywheel_tooth_count_period - OFFSET.</des
    </table>
    <description>When the INJECTION TIME and idle flow are above their respective thresholds, enable the evaporative canister purge.</description>
   </table>
-  <table category="evap" endian="big" name="evap: mode ? 0 1 2" sizex="1" storageaddress="0x00A2" storagetype="uint8" type="2D" userlevel="1">
+  <table category="evap" endian="big" name="evap: engine start delay" sizex="1" storageaddress="0x00B9" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Second" coarseincrement="5" expression="x*0.8" fineincrement="1" format="0.0" to_byte="x/0.8" units="s"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>engine start delay</data>
+   </table>
+   <description>Engine-off to engine-on delay.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: flow divisor" sizex="1" storageaddress="0x00B8" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
    <table name="" sizex="1" type="Static X Axis">
-    <data>mode ? 0 1 2</data>
+    <data>flow divisor</data>
    </table>
-   <description/>
+   <description>Flow divisor for scaled calculation.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: initial delay" sizex="1" storageaddress="0x00A4" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>initial delay</data>
+   </table>
+   <description>Initial delay before purge starts.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: learn enable delay" sizex="1" storageaddress="0x00BC" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>learn enable delay</data>
+   </table>
+   <description>Concentration learn enable delay.</description>
   </table>
   <table category="evap" endian="big" name="evap: period" sizex="1" storageaddress="0x0122" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Nanosecond" coarseincrement="100" expression="x*25" fineincrement="25" format="0" to_byte="x/25" units="ns"/>
@@ -887,17 +880,66 @@ Formula: engine_speed = coefficient / flywheel_tooth_count_period - OFFSET.</des
    </table>
    <description>TODO: Check scale, it could be u16_time_50ns too.</description>
   </table>
+  <table category="evap" endian="big" name="evap: pressure drop dec initial" sizex="1" storageaddress="0x00A8" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Millibar" coarseincrement="0.1" expression="x/64" fineincrement="0.01" format="0.00" to_byte="x*64" units="mbar"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>pressure drop dec initial</data>
+   </table>
+   <description>Initial pressure drop decrement.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: pressure drop inc min" sizex="1" storageaddress="0x00A7" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Millibar" coarseincrement="0.1" expression="x/64" fineincrement="0.01" format="0.00" to_byte="x*64" units="mbar"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>pressure drop inc min</data>
+   </table>
+   <description>Minimum/initial pressure drop increment.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: pressure drop max" sizex="8" storageaddress="0x2864" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Millibar" coarseincrement="40" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mbar"/>
+   <table endian="big" name="vacuum" sizex="8" storageaddress="0x285C" storagetype="uint8" type="X Axis">
+    <scaling category="Millibar" coarseincrement="40" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mbar"/>
+   </table>
+   <description>Maximum permitted canister pressure drop for a given intake manifold vacuum.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: pressure drop max idle" sizex="1" storageaddress="0x008A" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Millibar" coarseincrement="40" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mbar"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>pressure drop max idle</data>
+   </table>
+   <description>Maximum pressure drop during idle.</description>
+  </table>
   <table category="evap" endian="big" name="evap: purge" sizex="16" sizey="16" storageaddress="0x275C" storagetype="uint8" type="3D" userlevel="1">
    <scaling category="Percent" coarseincrement="5" expression="x*100/255" fineincrement="1" format="0.0" to_byte="x*255/100" units="%"/>
-   <table endian="big" name="?" sizex="16" storageaddress="0x273C" storagetype="uint8" type="X Axis">
-    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
+   <table endian="big" name="pressure drop" sizex="16" storageaddress="0x273C" storagetype="uint8" type="X Axis">
+    <scaling category="Millibar" coarseincrement="40" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mbar"/>
    </table>
    <table endian="big" name="vacuum avg" sizey="16" storageaddress="0x274C" storagetype="uint8" type="Y Axis">
     <scaling category="Millibar" coarseincrement="40" expression="x*4" fineincrement="4" format="0" to_byte="x/4" units="mbar"/>
    </table>
-   <description>The evap purge valve is normally closed.
+   <description>The evaporative system purge valve is normally closed. The opening duty cycle is calculated based on the intake vacuum and the pressure drop across the canister.
 
 Formula: opening = duty_cylce_min + PURGE</description>
+  </table>
+  <table category="evap" endian="big" name="evap: purge mode" sizex="1" storageaddress="0x00A2" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>purge mode</data>
+   </table>
+   <description>Evaporative system purge mode (0=normal 1=force ready 2=force off).</description>
+  </table>
+  <table category="evap" endian="big" name="evap: restart delay" sizex="1" storageaddress="0x01AB" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Second" coarseincrement="5" expression="x*1.6" fineincrement="1" format="0.0" to_byte="x/1.6" units="s"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>restart delay</data>
+   </table>
+   <description>Long delay for restart condition.</description>
+  </table>
+  <table category="evap" endian="big" name="evap: stft stability delay" sizex="1" storageaddress="0x01AA" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Second" coarseincrement="1" expression="x/10" fineincrement="0.1" format="0.0" to_byte="x*10" units="s"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>stft stability delay</data>
+   </table>
+   <description>STFT stability check delay.</description>
   </table>
   <table category="evap" endian="big" name="evap: vacuum reactivity" sizex="1" storageaddress="0x00AA" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Percent" coarseincrement="5" expression="x*100/256" fineincrement="1" format="0.0" to_byte="x*256/100" units="%"/>
