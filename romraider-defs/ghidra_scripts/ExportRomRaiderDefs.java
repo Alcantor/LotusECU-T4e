@@ -80,6 +80,39 @@ public class ExportRomRaiderDefs extends GhidraScript {
 			return new String [] {"low","high"};
 		if (n.equals("CAL_misc_tps_2_range"))
 			return new String [] {"low","high"};
+		if (n.equals("CAL_cluster_fuel_level_warning_threshold"))
+			return new String [] {"low","high"};
+
+		if (n.equals("CAL_traction_slip_threshold_per_gear_ips")
+			|| n.equals("CAL_traction_slip_threshold_per_gear_manual"))
+			return new String [] {"1st","2nd","3rd","4th","5th"};
+		if (n.equals("CAL_traction_gear_speed_ratios_ips")
+			|| n.equals("CAL_traction_gear_speed_ratios_long")
+			|| n.equals("CAL_traction_gear_speed_ratios_cr"))
+			return new String [] {"1st","2nd","3rd","4th","5th", "6th"};
+
+		if (
+			n.equals("CAL_ac_compressor_deactivate_car_speed") ||
+			n.equals("CAL_ac_compressor_engine_speed2") ||
+			n.equals("CAL_ac_compressor_engine_speed3"))
+			return new String [] {"high","low"};
+
+        if (n.equals("CAL_ecu_system_voltage_threshold") ||
+			n.equals("CAL_sensor_knock_voltage_threshold") ||
+			n.equals("CAL_sensor_iat_voltage_threshold") ||
+			n.equals("CAL_sensor_coolant_voltage_threshold") ||
+			n.equals("CAL_sensor_intake_air_temp_voltage_threshold") ||
+			n.equals("CAL_sensor_fuel_level_sensor_voltage_threshold") ||
+			n.equals("CAL_sensor_adc37_threshold") ||
+			n.equals("CAL_trans_pump_car_speed_threshold") || 
+			n.equals("CAL_trans_temp_voltage_threshold") ||
+			n.equals("CAL_ac_compressor_deactivate_car_speed") ||
+			n.equals("CAL_cluster_coolant_warning") ||
+			n.equals("CAL_ac_compressor_engine_speed2") ||
+			n.equals("CAL_cruise_speed_limit") ||
+			n.equals("CAL_ecu_engine_running_threshold_unknown"))
+			return new String[] {"high", "low"};
+
 		return null;
 	};
 
@@ -90,9 +123,18 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	private static final Map<String, List<DF>> formatMap = new HashMap<>();
 
 	private static final DF[] formats = new DF[] {
+		new DF("bool","uint8","#","x","x","0","1","10","Number"),
 		new DF("uint8_t","uint8","#","x","x","0","1","10","Number"),
+		new DF("u8_-127","uint8","#","x-127","x+127","0","1","10","Number"),
 		new DF("uint16_t","uint16","#","x","x","0","1","100","Number"),
+		new DF("uint32_t","uint32","#","x","x","0","1","100","Number"),
+		new DF("int8_t","int8","#","x","x","0","1","10","Number"),
+		new DF("int16_t","int16","#","x","x","0","1","10","Number"),
+		new DF("u8_count","uint8","#","x","x","0","1","10","Number"),
+		new DF("u8_gear","uint8","gear","x","x","0","1","10","Gear"),
+		new DF("u8_dutycycle_100/255", "uint8", "%", "x*100/255", "x*255/100", "0", "1", "5", "Dutycycle"),
 		new DF("u8_x256","uint8","#","x*256","x/256","0","256","2560","Number"),
+		new DF("u8_factor_1","uint8","%","x","x","0","1","5","Percent"),
 		new DF("u8_factor_1/32","uint8","%","x*100/32","x*32/100","0","1","5","Percent"),
 		new DF("u8_factor_1/64","uint8","%","x*100/64","x*64/100","0","1","5","Percent"),
 		new DF("u8_factor_10/1632","uint8","%","x*1000/1632","x*1632/1000","0","1","5","Percent"),
@@ -108,14 +150,24 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_factor_1/1000","uint8","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/1023","uint8","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
 		new DF("u8_factor_1/2000","uint8","%","x*100/2000","x*2000/100","0.00","0.1","1","Percent"),
+		new DF("u8_factor_1/2560","uint8","%","x*100/2560","x*2560/100","0.00","0.1","1","Percent"),
+		new DF("u16_factor_1/32","uint16","%","x*100/32","x*32/100","0","1","5","Percent"),
 		new DF("u16_factor_1/100","uint16","%","x","x","0","1","5","Percent"),
+		new DF("u16_factor_1/255","uint16","%","x*100/255","x*255/100","0.0","1","5","Percent"),
+		new DF("i16_factor_1/20","int16","%","x*100/20","x*20/100","0.00","0.1","1","Percent"),
 		new DF("i16_factor_1/1000","int16","%","x*100/1000","x*1000/100","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/1023","uint16","%","x*100/1023","x*1023/100","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/2000","uint16","%","x*100/2000","x*2000/100","0.00","0.1","1","Percent"),
 		new DF("i16_factor_1/2000","int16","%","x*100/2000","x*2000/100","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/2000-2048/125","uint16","%","(x-32768)*100/2000","(x*2000/100)+32768","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/2048","uint16","%","x*100/2048","x*2048/100","0.00","0.1","1","Percent"),
+		new DF("u16_factor_1/10000","uint16","%","x/10","x*10","0.00","0.1","1","Percent"),
 		new DF("u16_factor_1/65536","uint16","%","x*100/65536","x*65536/100","0.00","0.1","1","Percent"),
+		new DF("u8_accel_1/2550g","uint8","G","x/2550","x*2550","0.0000","0.0004","0.004","G"),
+		new DF("u8_fuel_gal_x10","uint8","gal","x/10","x*10","0.00","0.1","1","gallons"),
+		new DF("u8_distance_km","uint8", "km","x","x","0","1","10","km"),
+		new DF("u16_distance_km","uint16", "km","x","x","0","1","10","km"),
+		new DF("u16_distance_mm_div2","uint16","mm","x*2","x/2","0","2","10","mm"),
 		new DF("u8_factor_1/2560","uint8","%","x*100/2560","x*2560/100","0.00","0.1","1","Percent"),
 		new DF("u8_voltage_5/255v","uint8","v","x*5/255","x*255/5","0.0","0.1","0.5","Volt"),
 		new DF("u8_voltage_5/1023v","uint8","v","x*5/1023","x*1023/5","0.00","0.05","0.2","Volt"),
@@ -123,18 +175,29 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u16_voltage_18/1023v","uint16","v","x*18/1023","x*1023/18","0.00","0.05","0.2","Volt"),
 		new DF("u16_current_mA","uint16","A","x/1000","x*1000","0.00","0.01","0.2","Ampere"),
 		new DF("u8_voltage_72/1023v","uint8","v","x*72/1023","x/72*1023","0.0","0.2","1.0","Volt"),
+		new DF("i8_angle_1/4deg","int8","°","x/4","x*4","0.00","0.25","1.0","Degrees"),
 		new DF("u8_angle_1/4deg","uint8","°","x/4","x*4","0.00","0.25","1.0","Degrees"),
 		new DF("u8_angle_1/4-10deg","uint8","°","(x/4)-10","(x+10)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_1/4-20deg","uint8","°","(x/4)-20","(x+20)*4","0.00","0.25","1.0","Degree"),
 		new DF("u16_angle_1/4-20deg","uint16","°","(x/4)-20","(x+20)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_1/4-30deg","uint8","°","(x/4)-30","(x+30)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_1/4-32deg","uint8","°","(x/4)-32","(x+32)*4","0.00","0.25","1.0","Degree"),
+		new DF("u8_angle_1/4-64deg","uint8","°","(x/4)-63.75","(x+63.75)*4","0.00","0.25","1.0","Degree"),
 		new DF("u8_angle_720/256deg","uint8","°","x*720/256","x*256/720","0","2","8","Degree"),
+		new DF("u16_angle_1/10deg","uint16","°","x/10","x*10","0.0","0.1","1.0","Degree"),
+		new DF("i16_angle_1/4deg","int16","°","x/4","x*4","0.00","0.25","1.0","Degree"),
+		new DF("u8_rspeed_rpm","uint8","rpm","x","x","0","1","5","RPM"),
+		new DF("u8_rspeed_2rpm","uint8","rpm","x*2","x/2","0","2","8","RPM"),
 		new DF("u8_rspeed_4rpm","uint8","rpm","x*4","x/4","0","4","16","RPM"),
 		new DF("u8_rspeed_8rpm","uint8","rpm","x*8","x/8","0","8","32","RPM"),
+		new DF("u8_rspeed_10rpm","uint8","rpm","x*10","x/10","0","10","100","RPM"),
+		new DF("u8_rspeed_25rpm","uint8","rpm","x*25","x/25","0","25","100","RPM"),
+		new DF("u8_rspeed_50rpm","uint8","rpm","x*50","x/50","0","50","100","RPM"),
+		new DF("u8_rspeed_-128","uint8","rpm","x-128","x+128","0","1","5","RPM"),
 		new DF("u8_rspeed_4-512rpm","uint8","rpm","(x*4)-512","(x+512)/4","0","4","16","RPM"),
 		new DF("u16_rspeed_rpm","uint16","rpm","x","x","0","10","100","RPM"),
 		new DF("u16_rspeed_1/4rpm","uint16","rpm","x/4","x*4","0","10","100","RPM"),
+		new DF("u16_rspeed_4rpm","uint16","rpm","x*4","x/4","0","10","100","RPM"),
 		new DF("u8_rspeed_4+500rpm","uint8","rpm","(x*4)+500","(x-500)/4","0","4","16","RPM"),
 		new DF("u8_rspeed_125/4+500rpm","uint8","rpm","(x*125/4)+500","(x-500)*4/125","0","32","100","RPM"),
 		new DF("u8_rspeed_125/4rpm","uint8","rpm","x*125/4","x*4/125","0","32","100","RPM"),
@@ -142,13 +205,13 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_rspeed_10+6000rpm","uint8","rpm","(x*10)+6000","(x-6000)/10","0","10","100","RPM"),
 		new DF("u16_length_mm","uint16","cm","x/10","x*10","0.0","0.1","2","Centimeter"),
 		new DF("u8_speed_kph","uint8","km/h","x","x","0","1","10","km/h"),
+		new DF("u8_speed_1/10kph","uint8","km/h","x/10","x*10","0.0","0.1","1","km/h"),
+		new DF("u8_speed_1/100kph","uint8","km/h","x/100","x*100","0.00","0.01","0.1","km/h"),
 		new DF("u16_speed_1/100kph","uint16","km/h","x/100","x*100","0.00","0.01","1","km/h"),
 		new DF("u8_temp_5/8-40c","uint8","°C","(x*5/8)-40","(x+40)*8/5","0.0","0.625","2","Degree Celsius"),
 		new DF("u16_temp_5/8-40c","uint16","°C","(x*5/8)-40","(x+40)*8/5","0.0","0.625","2","Degree Celsius"),
 		new DF("u8_temp_1-40c","uint8","°C","x-40","x+40","0","1","2","Degree Celsius"),
-		new DF("u16_time_25ns","uint16","ns","x*25","x/25","0","25","100","Nanosecond"),
 		new DF("u8_time_us","uint8","us","x","x","0","1","10","Microsecond"),
-		new DF("u16_time_4us","uint16","rpm","15000000/x","15000000/x","0","1","10","RPM"),
 		new DF("u8_time_8us","uint8","us","x*8","x/8","0","8","100","Microsecond"),
 		new DF("u8_time_10us","uint8","us","x*10","x/10","0","10","100","Microsecond"),
 		new DF("u8_time_-10us","uint8","us","x*-10","x/-10","0","10","100","Microsecond"),
@@ -156,25 +219,35 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_time_64us","uint8","us","x*64","x/64","0","64","200","Microsecond"),
 		new DF("u8_time_256us","uint8","ms","x*256/1000","x*1000/256","0.0","0.2","1","Millisecond"),
 		new DF("u8_time_512us","uint8","ms","x*512/1000","x*1000/512","0.0","0.4","2","Millisecond"),
+		new DF("u8_time_ms","uint8","ms","x","x","0","1","10","Millisecond"),
 		new DF("u8_time_5ms","uint8","ms","x*5","x/5","0","5","10","Millisecond"),
-		new DF("i16_time_us","int16","us","x","x","0","1","10","Microsecond"),
-		new DF("u16_time_5ms","uint16","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
-		new DF("u32_time_5ms","uint32","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
 		new DF("u8_time_10ms","uint8","ms","x*10","x/10","0","10","20","Millisecond"),
+		new DF("u8_time_20ms","uint8","ms","x*20","x/20","0","20","60","Millisecond"),
 		new DF("u8_time_25ms","uint8","ms","x*25","x/25","0","25","100","Millisecond"),
 		new DF("u8_time_50ms","uint8","s","x/20","x*20","0.0","0.05","1","Second"),
 		new DF("u8_time_100ms","uint8","s","x/10","x*10","0.0","0.1","1","Second"),
-		new DF("u16_time_100ms","uint16","s","x/10","x*10","0.0","0.1","1","Second"),
-		new DF("u32_time_100ms","uint32","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u8_time_250ms","uint8","s","x/4","x*4","0.00","0.1","1","Second"),
 		new DF("u8_time_800ms","uint8","s","x*0.8","x/0.8","0.0","1","5","Second"),
 		new DF("u8_time_1600ms","uint8","s","x*1.6","x/1.6","0.0","1","5","Second"),
 		new DF("u8_time_s","uint8","s","x","x","0","1","5","Second"),
-		new DF("u16_time_s","uint16","s","x","x","0","1","5","Second"),
 		new DF("u8_time_5s","uint8","s","x*5","x/5","0","5","25","Second"),
+		new DF("u8_time_hours","uint8","hours","x","x","0","1","5","Hours"),
+		new DF("u16_time_25ns","uint16","ns","x*25","x/25","0","25","100","Nanosecond"),
+		new DF("u16_time_us","uint16","us","x","x","0","1","10","microseconds"),
+		new DF("u16_time_4us","uint16","rpm","15000000/x","15000000/x","0","1","10","RPM"),
+		new DF("i16_time_us","int16","us","x","x","0","1","10","Microsecond"),
+		new DF("u16_time_5ms","uint16","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
+		new DF("u32_time_5ms","uint32","s","x*5/1000","x*1000/5","0.00","0.1","1","Second"),
+		new DF("u16_time_10ms","uint16","ms","x*10","x/10","0","10","20","Millisecond"),
+		new DF("u16_time_100ms","uint16","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u32_time_100ms","uint32","s","x/10","x*10","0.0","0.1","1","Second"),
+		new DF("u16_time_s","uint16","s","x","x","0","1","5","Second"),
+		new DF("u8_load_2mg/stroke","uint8","mg/stroke","x*2","x/2","0","2","8","Milligram/Stroke"),
 		new DF("u8_load_4mg/stroke","uint8","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"),
 		new DF("u8_load_1173mg/255stroke","uint8","mg/stroke","x*1173/255","x*255/1173","0.0","4","20","Milligram/Stroke"),
 		new DF("u16_load_4mg/stroke","uint16","mg/stroke","x*4","x/4","0","4","20","Milligram/Stroke"),
 		new DF("u16_load_mg/stroke","uint16","mg/stroke","x","x","0","1","20","Milligram/Stroke"),
+		new DF("u8_flow_2g/s","uint8","g/s","x*2","x/2","0","2","10","Gram/Second"),
 		new DF("u8_flow_100mg/s","uint8","g/s","x/10","x*10","0.0","0.1","10","Gram/Second"),
 		new DF("u8_flow_-100mg/s","uint8","g/s","x/-10","x*-10","0.0","0.1","10","Gram/Second"),
 		new DF("u16_flow_100/256mg/s","uint16","mg/s","x*100/256","x*256/100","0.0","0.1","10","Milligram/Second"),
@@ -183,6 +256,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_flow_100-12800mg/s","uint8","g/s","(x-128)/10","(x*10)+128","0.0","0.1","10","Gram/Second"),
 		new DF("u16_flow_mg/s","uint16","mg/s","x","x","0","1","5","Milligram/Second"),
 		new DF("u16_flow_10mg/s","uint16","g/s","x/100","x*100","0.0","0.01","1","Gram/Second"),
+		new DF("u16_flow_100mg/s","uint16","g/s","x/10","x*10","0.0","0.01","1","Gram/Second"),
 		new DF("u8_mass_g","uint8","g","x","x","0","1","5","Gram"),
 		new DF("u16_mass_g","uint16","g","x","x","0","1","5","Gram"),
 		new DF("u16_mass_mg","uint16","mg","x","x","0","1","5","Milligram"),
@@ -211,7 +285,19 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		new DF("u8_afr_1/100","uint8","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
 		new DF("u16_afr_1/100","uint16","A/F","x/100","x*100","0.0","0.5","0.1","AFR"),
 		new DF("u16_torque_nm","uint16","Newton meter","x","x","0","1","8","nm"),
-		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm")
+		new DF("u8_torque_nm","uint8","Newton meter","x","x","0","1","5","nm"),
+		new DF("u8_torque_2nm","uint8","Newton meter","x*2","x/2","0","2","8","nm"),
+		new DF("u8_torque_4nm","uint8","Newton meter","x*4","x/4","0","4","16","nm"),
+		new DF("u16_power_1/100kw","uint16","kW","x/100","x*100","0.00","10","50","kW"),
+		new DF("u8_slip_2pct","uint8","%","x*2","x/2","0.00","2","8","Wheelslip"),
+		new DF("u8_slip_1/8pct","uint8","%","x/8","x*8","0.00","1","2","Wheelslip"),
+		new DF("u8_slip_1/128pct","uint8","%","x/128","x*128","0.00","0.01","0.1","Wheelslip"),
+		new DF("u16_slip_1/8pct","uint16","%","x/8","x*8","0.00","1","2","Wheelslip"),
+
+		// TODO: this struct was an experiment and doesn't really work. It should really
+		// just be 3 variables.
+		new DF("struct_dtc_state","uint16","","x","x","0.0","1","2",""),
+
 	};
 
 	static {
@@ -241,15 +327,15 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	};
 
 	private static final String[][] OBD2LEVEL_T6 = {
-		{"OFF", "00"},
-		{"ON 0x01", "01"},
-		{"ON 0x11", "11"},
-		{"ON 0x12", "12"},
-		{"ON 0x13", "13"},
-		{"ON 0x21", "21"},
-		{"ON 0x53", "53"},
-		{"ON 0x91", "91"},
-		{"ON 0x92", "92"}
+		{"Disabled", "00"},
+		{"Non-emissions 1-trip", "01"},
+		{"Emissions Type A (1-trip MIL)", "11"},
+		{"Emissions Type B (2-trip MIL)", "12"},
+		{"Emissions Type B (2-trip MIL alt)", "13"},
+		{"Non-emissions Mode08 test", "21"},
+		{"Emissions Type B continuous", "53"},
+		{"Emissions Type A critical (1-trip MIL priority)", "91"},
+		{"Emissions Type B critical (2-trip MIL priority)", "92"}
 	};
 
 	private static final String[][] OBD2MONITORS = {
@@ -285,6 +371,43 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		{"Compute load from MAF", "00"},
 		{"Compute load from MAP", "01"}
 	};
+
+	private static final String[][] KNOCK_MODE = {
+		{"NONE", "0"},
+		{"goertzel_64sample", "1"},
+		{"goertzel_2window", "2"},
+		{"spectral_128window", "3"},
+		{"goertzel_32sample_x3", "4"},
+	};
+
+	private static final String[][] TRACTION_MODE = {
+		{"DISABLED", "0"},
+		{"external only", "1"},
+		{"enabled", "2"},
+		{"variable", "3"},
+	};
+
+
+	/* This mode is for boolean types, often feature flags */
+	private static final String[][] ENABLE_MODE = {
+		{"Disabled", "00"},
+		{"Enabled", "01"}
+	};
+
+	private static final String[][] OIL_PRESSURE_SENSOR_MODE = {
+		{"None", "0"},
+		{"Switch", "1"},
+		{"Analog 5v", "2"}
+	};
+
+	private static final String[][] EXHAUST_VALVE_OVERRIDE_MODE = {
+		{"Disabled", "0"},
+		{"Tour/Sport Only", "1"},
+		{"Race Only", "2"},
+		{"All Modes", "3"}
+	};
+
+
 
 	/******************************/
 	/* Program code               */
@@ -333,7 +456,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		parent.appendChild(e);
 	}
 
-	private static class SymRecBase {
+	private class SymRecBase {
 		String name;
 		long   offset;
 		String xmlid;
@@ -350,10 +473,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 		SymRecBase(String n, long o, String c) throws Exception {
 			name = n;
-			offset = o;
+			offset = o;		
 			String[] d = c.split("#");
 			if (d.length < 11)
-				throw new Exception("XXX_base has not enough info!");
+				throw new Exception(String.format("XXX_base has not enough info (%s)", n));
 			xmlid = d[0];
 			market = d[1];
 			make = d[2];
@@ -385,7 +508,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		}
 	}
 
-	private static class SymRec {
+	private class SymRec {
 		private static final Pattern varFormat = Pattern.compile("([^\\[]+)\\[(\\d+)]");
 		String name;
 		String category;
@@ -418,7 +541,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		}
 	}
 
-	private static class Syms {
+	private class Syms {
 		private final String prefix;
 		private final Pattern symFormat;
 		SymRecBase base;
@@ -522,7 +645,7 @@ public class ExportRomRaiderDefs extends GhidraScript {
 		e.setAttribute("sizex", String.valueOf(sizex));
 		e.setAttribute("userlevel", "1");
 		e.setAttribute("storageaddress", String.format("0x%04X", s.offset+sizex));
-		for (DF df : s.dataformats) df.addXmlScaling(doc, e);
+		for (final DF df : s.dataformats) df.addXmlScaling(doc, e);
 
 		Element ex = doc.createElement("table");
 		ex.setAttribute("type", "X Axis");
@@ -642,11 +765,16 @@ public class ExportRomRaiderDefs extends GhidraScript {
 
 	private void doDefs(Document doc, Element parent, Syms s2) throws Exception {
 		for (SymRec s : s2.syms) {
-			//println(s.name);
-			if (s.datatype.equals("u8_obd2level"))
+			if (s.datatype.equals("bool"))
+				addXmlSwitch(doc, parent, s, ENABLE_MODE);
+			else if (s.datatype.equals("u8_obd2level"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL);
 			else if (s.datatype.equals("u8_obd2level_t6"))
 				addXmlSwitch(doc, parent, s, OBD2LEVEL_T6);
+			else if (s.datatype.equals("enum_oil_pressure_sensor_mode"))
+				addXmlSwitch(doc, parent, s, OIL_PRESSURE_SENSOR_MODE);
+			else if (s.datatype.equals("enum_exhaust_stationary_override")) 
+				addXmlSwitch(doc, parent, s, EXHAUST_VALVE_OVERRIDE_MODE);
 			else if ("CAL_obd2_monitors".equals(s.name))
 				addXmlSwitch(doc, parent, s, OBD2MONITORS);
 			else if ("CAL_ecu_unlock_magic".equals(s.name))
@@ -657,6 +785,10 @@ public class ExportRomRaiderDefs extends GhidraScript {
 				addXmlSwitch(doc, parent, s, USE_TPMS);
 			else if ("CAL_tc_mode".equals(s.name))
 				addXmlSwitch(doc, parent, s, TC_MODE);
+			else if ("CAL_traction_mode".equals(s.name))
+				addXmlSwitch(doc, parent, s, TRACTION_MODE);
+			else if ("CAL_knock_mode".equals(s.name))
+				addXmlSwitch(doc, parent, s, KNOCK_MODE);
 			else if ("CAL_load_use_speed_density".equals(s.name))
 				addXmlSwitch(doc, parent, s, LOAD_MODE);
 			else if (s.dataformats == null)
