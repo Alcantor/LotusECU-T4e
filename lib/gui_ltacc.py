@@ -160,9 +160,9 @@ Once everyhing is set up, open the file with RomRaider, make the needed modifica
 Because the changes are in the RAM, everything will be lost after the ECU has shut down. This is for testing with running engine.
 """
 		)
-		ptrmap = lta.read_ptrmap()
-		cal_base = ptrmap[253][0]
-		cal_size = int.from_bytes(lta.read_memory(*ptrmap[254]), BO_BE)
+		varptr = lta.read_varptr_list()
+		cal_base = varptr[253][0]
+		cal_size = int.from_bytes(lta.read_memory(*varptr[254]), BO_BE)
 		cal_name = str(lta.read_memory(cal_base, 32), CHARSET)
 		self.fp.log(f"RAM Calibration 0x{cal_size:04X} bytes @ 0x{cal_base:08X}")
 		answer = tk.messagebox.askquestion(

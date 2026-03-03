@@ -118,7 +118,7 @@ class TunerDefinition:
 		),
 		SimpleGauge(parent,
 			"LTFT",
-			lambda: self.read_i16(0x3fd978) / 10,
+			lambda: self.read_i16(0x3fd978) / 20,
 			"{:.1f} %",
 			-10, 10
 		),

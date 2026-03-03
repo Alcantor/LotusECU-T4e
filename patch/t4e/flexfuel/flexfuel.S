@@ -1,11 +1,11 @@
 .section .bss
 .global ethanol_temp, ethanol_content
 
-.lcomm	ethanol_timer,       1, 1
-.lcomm	ethanol_temp,        1, 1 # 0 = -40°C, 255 = 120°C
-.lcomm	ethanol_content,     1, 1 # 0 = 0%, 255 = 100%
-.lcomm	ethanol_temp_avg,    4, 4
-.lcomm	ethanol_content_avg, 4, 4
+.lcomm	ethanol_timer,            1, 1
+.lcomm	ethanol_temp,             1, 1 # 0 = -40°C, 255 = 120°C
+.lcomm	ethanol_content,          1, 1 # 0 = 0%, 255 = 100%
+.lcomm	ethanol_temp_smooth_x,    4, 4
+.lcomm	ethanol_content_smooth_x, 4, 4
 
 .section .text
 .global flexfuel_init, flexfuel, flexfuel_5ms, lookup_2D_uint8_interpolated_withblend, lookup_3D_uint8_interpolated_withblend
@@ -44,16 +44,16 @@ flexfuel_init:
 	lis	%r4, ethanol_temp@ha
 	stb	%r3, ethanol_temp@l(%r4)
 	slwi	%r3, %r3, 8
-	lis	%r4, ethanol_temp_avg@ha
-	stw	%r3, ethanol_temp_avg@l(%r4)
+	lis	%r4, ethanol_temp_smooth_x@ha
+	stw	%r3, ethanol_temp_smooth_x@l(%r4)
 
 	# Start with 10% ethanol
 	li	%r3, 25
 	lis	%r4, ethanol_content@ha
 	stb	%r3, ethanol_content@l(%r4)
 	slwi	%r3, %r3, 8
-	lis	%r4, ethanol_content_avg@ha
-	stw	%r3, ethanol_content_avg@l(%r4)
+	lis	%r4, ethanol_content_smooth_x@ha
+	stw	%r3, ethanol_content_smooth_x@l(%r4)
 
 	blr
 
@@ -121,22 +121,22 @@ flex_1:
 	ble	flex_2
 	li	%r3, 255 # Maximum is 255
 flex_2:
-	# Average
+	# Smooth (low-pass filter)
 	#
-	# avg = (avg * (256 - reactivity))/256 + (value * reactivity)
+	# smooth = (smooth * (256 - reactivity)) / 256 + (value * reactivity) / 256
 	#
 	#lis	%r12, CAL_base_extra@ha
 	#addi	%r12, %r12, CAL_base_extra@l
 	lbz	%r4, OFF_CAL_ethanol_sensor_temp_reactivity(%r12)
 	subfic	%r5, %r4, 256
-	lis	%r7, ethanol_temp_avg@ha
-	lwz	%r6, ethanol_temp_avg@l(%r7)
+	lis	%r7, ethanol_temp_smooth_x@ha
+	lwz	%r6, ethanol_temp_smooth_x@l(%r7)
 	mullw	%r6, %r6, %r5
 	srwi	%r6, %r6, 8
 	mullw	%r3, %r3, %r4
 	add	%r3, %r3, %r6
-	#lis	%r7, ethanol_temp_avg@ha
-	stw	%r3, ethanol_temp_avg@l(%r7)
+	#lis	%r7, ethanol_temp_smooth_x@ha
+	stw	%r3, ethanol_temp_smooth_x@l(%r7)
 	srwi	%r3, %r3, 8
 	lis	%r4, ethanol_temp@ha
 	stb	%r3, ethanol_temp@l(%r4)
@@ -167,22 +167,22 @@ flex_3:
 	ble	flex_4
 	li	%r3, 255 # Maximum is 255
 flex_4:
-	# Average
+	# Smooth (low-pass filter)
 	#
-	# avg = (avg * (256 - reactivity))/256 + (value * reactivity)
+	# smooth = (smooth * (256 - reactivity)) / 256 + (value * reactivity) / 256
 	#
 	#lis	%r12, CAL_base_extra@ha
 	#addi	%r12, %r12, CAL_base_extra@l
 	lbz	%r4, OFF_CAL_ethanol_sensor_content_reactivity(%r12)
 	subfic	%r5, %r4, 256
-	lis	%r7, ethanol_content_avg@ha
-	lwz	%r6, ethanol_content_avg@l(%r7)
+	lis	%r7, ethanol_content_smooth_x@ha
+	lwz	%r6, ethanol_content_smooth_x@l(%r7)
 	mullw	%r6, %r6, %r5
 	srwi	%r6, %r6, 8
 	mullw	%r3, %r3, %r4
 	add	%r3, %r3, %r6
-	#lis	%r7, ethanol_content_avg@ha
-	stw	%r3, ethanol_content_avg@l(%r7)
+	#lis	%r7, ethanol_content_smooth_x@ha
+	stw	%r3, ethanol_content_smooth_x@l(%r7)
 	srwi	%r3, %r3, 8
 	lis	%r4, ethanol_content@ha
 	stb	%r3, ethanol_content@l(%r4)

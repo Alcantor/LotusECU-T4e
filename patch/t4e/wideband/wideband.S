@@ -22,7 +22,7 @@
 .section .data
 
 .section .bss
-.global wb_slope, wb_offset, wb_corr_adc, wb_ht_th
+.global wb_slope, wb_offset, wb_corr_adc, wb_ht_max
 
 .lcomm	wb_state,    2, 2 # 0-2000 = Calibration, 2001 = Ready, 2002 = NB mode
 .lcomm	wb_sampleA,  4, 4 # u32_voltage_5/1023v
@@ -30,7 +30,7 @@
 .lcomm	wb_slope,    2, 2 # Calibration slope, u16_factor_1/4096
 .lcomm	wb_offset,   2, 2 # Calibration offset, i16_voltage_5/1023v
 .lcomm	wb_corr_adc, 2, 2 # u16_voltage_5/1023v with correction !
-.lcomm	wb_ht_th,    2, 2 # u16_current_mA
+.lcomm	wb_ht_max,   2, 2 # u16_current_mA
 
 .section .text
 .global wideband_init, wideband, wideband_5ms
@@ -58,11 +58,11 @@ wideband_init:
 	#li	%r3, 0
 	lis	%r4, wb_corr_adc@ha
 	sth	%r3, wb_corr_adc@l(%r4)
-	# Copy CAL_sensor_O2_heater_threshold
-	lis	%r3, CAL_sensor_O2_heater_threshold@ha
-	lhz	%r3, CAL_sensor_O2_heater_threshold@l(%r3)
-	lis	%r4, wb_ht_th@ha
-	sth	%r3, wb_ht_th@l(%r4)
+	# Copy CAL_sensor_o2_heater_max
+	lis	%r3, CAL_sensor_o2_heater_max@ha
+	lhz	%r3, CAL_sensor_o2_heater_max@l(%r3)
+	lis	%r4, wb_ht_max@ha
+	sth	%r3, wb_ht_max@l(%r4)
 	blr
 
 wideband:
@@ -120,8 +120,8 @@ wb_5:
 	srwi	%r3, %r3, 20
 	subfic	%r3, %r3, NB_RICH
 wb_6:
-	lis	%r4, sensor_adc_pre_O2@ha
-	sth	%r3, sensor_adc_pre_O2@l(%r4)
+	lis	%r4, sensor_adc_pre_o2@ha
+	sth	%r3, sensor_adc_pre_o2@l(%r4)
 	blr
 
 wideband_5ms:
@@ -200,8 +200,8 @@ timer_3:
 	# Don't turn off the heater output unless it's more than 3 A.
 	# The Spartan controller should be in charge of the heating process.
 	li	%r4, WB_MAX_I
-	lis	%r5, wb_ht_th@ha
-	sth	%r4, wb_ht_th@l(%r5)
+	lis	%r5, wb_ht_max@ha
+	sth	%r4, wb_ht_max@l(%r5)
 timer_4:
 	# Increment
 	addi	%r3, %r3, 1

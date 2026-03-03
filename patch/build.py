@@ -385,32 +385,32 @@ def build_combined():
 	if(flexfuel == 'y'):
 		# Hook: High cam ignition
 		p.check_and_replace(
-			m.get_sym_addr("hook_ign_advance_high_cam_base_loc"),
+			m.get_sym_addr("hook_ign_adv_high_cam_base_loc"),
 			PPC32.ppc_bl(
 				m.get_sym_addr("lookup_3D_uint8_interpolated") -
-				m.get_sym_addr("hook_ign_advance_high_cam_base_loc")
+				m.get_sym_addr("hook_ign_adv_high_cam_base_loc")
 			),
-			PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_high_cam_base"))
+			PPC32.ppc_ba(m.get_sym_addr("hook_ign_adv_high_cam_base"))
 		)
 
 		# Hook: Low cam ignition
 		p.check_and_replace(
-			m.get_sym_addr("hook_ign_advance_low_cam_base_loc"),
+			m.get_sym_addr("hook_ign_adv_low_cam_base_loc"),
 			PPC32.ppc_bl(
 				m.get_sym_addr("lookup_3D_uint8_interpolated") -
-				m.get_sym_addr("hook_ign_advance_low_cam_base_loc")
+				m.get_sym_addr("hook_ign_adv_low_cam_base_loc")
 			),
-			PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_low_cam_base"))
+			PPC32.ppc_ba(m.get_sym_addr("hook_ign_adv_low_cam_base"))
 		)
 
 		# Hook: Ignition adj1
 		p.check_and_replace(
-			m.get_sym_addr("hook_ign_advance_adj1_loc"),
+			m.get_sym_addr("hook_ign_adv_adj1_loc"),
 			PPC32.ppc_bl(
 				m.get_sym_addr("lookup_2D_uint8_interpolated") -
-				m.get_sym_addr("hook_ign_advance_adj1_loc")
+				m.get_sym_addr("hook_ign_adv_adj1_loc")
 			),
-			PPC32.ppc_ba(m.get_sym_addr("hook_ign_advance_adj1"))
+			PPC32.ppc_ba(m.get_sym_addr("hook_ign_adv_adj1"))
 		)
 
 		# Hook: Injection cranking
@@ -464,25 +464,25 @@ def build_combined():
 		)
 
 	if(wideband == 'y'):
-		# Patch to use wb_ht_th variable for pre o2 heater.
+		# Patch to use wb_ht_max variable for pre o2 heater.
 		# Power comes only when engine is running.
 		addr = m.get_sym_addr("CAL_base")
 		addr_ha1 = (addr >> 16) + ((addr >> 15) & 1)
 		addr_l1 = addr & 0xFFFF
-		addr = m.get_sym_addr("wb_ht_th")
+		addr = m.get_sym_addr("wb_ht_max")
 		addr_ha2 = (addr >> 16) + ((addr >> 15) & 1)
 		addr_l2 = addr & 0xFFFF
 		p.check_and_replace(
-			m.get_sym_addr("load_pre_O2_heater_threshold"),
+			m.get_sym_addr("load_pre_o2_heater_max"),
 			PPC32.ppc_lis(3, addr_ha1) + PPC32.ppc_addi(3, 3, addr_l1) +
 			PPC32.ppc_lhz(0, 3, 0x2ca8),
 			PPC32.ppc_lis(3, addr_ha2) + PPC32.ppc_addi(3, 3 ,addr_l2) +
 			PPC32.ppc_lhz(0, 3, 0)
 		)
 
-		# Remove the write to sensor_adc_pre_O2
+		# Remove the write to sensor_adc_pre_o2
 		p.check_and_replace(
-			m.get_sym_addr("adc_sample_pre_O2"),
+			m.get_sym_addr("adc_sample_pre_o2"),
 			PPC32.ppc_lis(3, 0x30),
 			PPC32.ppc_b(0x18)
 		)
@@ -505,13 +505,13 @@ def build_combined():
 
 	if(flexfuel == 'y'):
 		# Copy Ignition adj
-		addr_src = m.get_sym_addr("CAL_ign_advance_adj1")-m.get_sym_addr("CAL_base")
-		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_adj1") - c.offset
+		addr_src = m.get_sym_addr("CAL_ign_adv_adj1")-m.get_sym_addr("CAL_base")
+		addr_dst = m.get_sym_addr("CAL_ethanol_ign_adv_adj1") - c.offset
 		for i in range(16): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy ignition (high cam) table for ethanol.
-		addr_src = m.get_sym_addr("CAL_ign_advance_high_cam_base")-m.get_sym_addr("CAL_base")
-		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_high_cam_base") - c.offset
+		addr_src = m.get_sym_addr("CAL_ign_adv_high_cam_base")-m.get_sym_addr("CAL_base")
+		addr_dst = m.get_sym_addr("CAL_ethanol_ign_adv_high_cam_base") - c.offset
 		for i in range(64): c.data[addr_dst+i] = c.data[addr_src+i]
 
 		# Copy Tip-In table for ethanol, add more fuel.
@@ -544,8 +544,8 @@ def build_combined():
 			c.data[addr_dst+i] = min(int(c.data[addr_src+i]*afr_ratio), 255)
 
 		# Copy ignition (low cam) table for ethanol.
-		addr_src = m.get_sym_addr("CAL_ign_advance_low_cam_base")-m.get_sym_addr("CAL_base")
-		addr_dst = m.get_sym_addr("CAL_ethanol_ign_advance_low_cam_base") - c.offset
+		addr_src = m.get_sym_addr("CAL_ign_adv_low_cam_base")-m.get_sym_addr("CAL_base")
+		addr_dst = m.get_sym_addr("CAL_ethanol_ign_adv_low_cam_base") - c.offset
 		for i in range(1024): c.data[addr_dst+i] = c.data[addr_src+i]
 
 	p.save("t4e/combined/prog.bin")
