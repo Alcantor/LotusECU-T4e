@@ -1,0 +1,55 @@
+// Ignition Advance - DFSO Mode
+// Render: dot -Tpng -Gdpi=150 ign_dfso.dot -o ign_dfso.png
+//
+// During DFSO, the entire normal ignition calculation is bypassed.
+// A single fixed advance value is used (line 11734):
+//   advance = CAL_ign_advance_dfso
+// Per-cylinder stage: see ign_percyl graph
+
+digraph ign_dfso {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=12];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=1.5;
+    ranksep=0.5;
+
+    // ========== Detail box ABOVE ==========
+    d_dfso [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+        <TR><TD><B>DFSO Fixed Advance</B></TD></TR>
+        <TR><TD>Fixed ignition advance during fuel cut</TD></TR>
+        <TR><TD>Bypasses all normal adjustments</TD></TR>
+        <TR><TD> </TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv dfso</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="8" CELLPADDING="6">
+        <TR>
+            <TD><B>advance (DFSO)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="dfso"><B>dfso</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $01 PID $0E</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ==========
+    {rank=min; d_dfso}
+    {rank=max; legend}
+
+    // ========== Edges ==========
+    d_dfso -> formula:dfso [arrowhead=vee, arrowsize=0.8];
+}

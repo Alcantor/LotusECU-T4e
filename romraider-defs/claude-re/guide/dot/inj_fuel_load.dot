@@ -1,0 +1,113 @@
+// Fuel Load Calculation Detail
+// Render: dot -Tpng -Gdpi=150 dot/inj_fuel_load.dot -o dot/inj_fuel_load.png
+//
+// C code (lines 12123-12172, 14142-14218):
+//   load = MAF or Alpha-N path (selected by conditions)
+//   afr_target = CAL_inj_afr_base(speed, load) * 5 + dev_afr_adj + 500
+//   afr_adj = CAL_inj_afr_adj_per_advance_adj * retard / 4  (if afr_target < stft_afr)
+//   fuel_load = load * 10000 / (afr_target - afr_adj)
+//   fuel_load = fuel_load - evap_fuel_load  (if evap < fuel_load)
+
+digraph inj_fuel_load {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1,3) ==========
+
+    // Term 1: load (ABOVE)
+    d_load [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Air Mass per Stroke</B></TD></TR>
+        <TR><TD>MAF path or Alpha-N path</TD></TR>
+        <TR><TD>Selected by throttle rate and TPS</TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN base</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">sensor maf scaling</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN engine speed max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN timer</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN tps min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="purple">load alphaN adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: afr_adj (ABOVE)
+    d_afr_adj [shape=box, style=filled, fillcolor=lightgreen, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Timing Retard AFR Compensation</B></TD></TR>
+        <TR><TD>Richer AFR under total timing retard</TD></TR>
+        <TR><TD>Compensates for knock + base timing adjustments</TD></TR>
+        <TR><TD>Active when afr_target &lt; stft_afr (open-loop)</TD></TR>
+        <TR><TD><FONT COLOR="red">inj afr adj per advance adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>Fuel Load</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="load"><B>load</B></TD>
+            <TD><B>/ (</B></TD>
+            <TD PORT="afr_target"><B>afr target</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="afr_adj"><B>afr adj</B></TD>
+            <TD><B>) -</B></TD>
+            <TD PORT="evap"><B>evap</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (even terms: 2,4) ==========
+
+    // Term 2: afr_target (BELOW)
+    d_afr_target [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Target AFR</B></TD></TR>
+        <TR><TD>Base AFR by speed and load</TD></TR>
+        <TR><TD>Stoich ~14.7, rich &lt;14.7, lean &gt;14.7</TD></TR>
+        <TR><TD><FONT COLOR="red">inj afr base</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">stft afr</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 4: evap (BELOW)
+    d_evap [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>EVAP Purge Fuel</B></TD></TR>
+        <TR><TD>Fuel from canister purge</TD></TR>
+        <TR><TD>Subtracted: already in intake</TD></TR>
+        <TR><TD><FONT COLOR="red">evap duty cycle limit l</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">evap duty cycle limit h</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD BGCOLOR="lightgreen" WIDTH="16"> </TD><TD ALIGN="LEFT">Enrichment</TD></TR>
+        <TR><TD BGCOLOR="lightpink" WIDTH="16"> </TD><TD ALIGN="LEFT">Subtraction</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_load; d_afr_adj}
+    {rank=same; formula}
+    {rank=max; d_afr_target; d_evap; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms (row 1)
+    d_load -> formula:load [arrowhead=vee, arrowsize=0.7];
+    d_afr_adj -> formula:afr_adj [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms (row 2)
+    d_afr_target -> formula:afr_target [arrowtail=vee, arrowsize=0.7];
+    d_evap -> formula:evap [arrowtail=vee, arrowsize=0.7];
+}

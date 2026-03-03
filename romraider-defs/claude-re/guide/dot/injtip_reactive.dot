@@ -1,0 +1,122 @@
+// DFSO Reactive Enrichment Detail
+// Render: dot -Tpng -Gdpi=150 dot/injtip_reactive.dot -o dot/injtip_reactive.png
+//
+// Triggered on DFSO exit (line 13071-13073):
+//   reactive = CAL_injtip_time_base * CAL_injtip_catalyst_adj(dfso_count)
+//
+// Exponential decay each cycle (lines 12914-12916):
+//   reactive = reactive * CAL_injtip_catalyst_adj_fadeout / 256
+//
+// As function of time:
+//   reactive(t) = time_base * catalyst_adj * fadeout^t
+//
+// DFSO enable (lines 13057-13061):
+//   engine_speed > enable_speed AND runtime > min_runtime
+//   AND coolant > enable_coolant AND pps < enable_pps
+//   AND (car_speed > enable_car_speed OR car_speed == 0)
+//
+// DFSO disable (lines 13067-13070):
+//   engine_speed <= disable_speed OR car_speed <= disable_car_speed
+//   OR coolant < disable_coolant OR pps >= disable_pps
+
+digraph injtip_reactive {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1,3) ==========
+
+    // Term 1: time_base (ABOVE)
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Base Time</B></TD></TR>
+        <TR><TD>Scales entire enrichment</TD></TR>
+        <TR><TD>Shared with tip-in/tip-out</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip time base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: fadeout (ABOVE)
+    d_fadeout [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Exponential Decay</B></TD></TR>
+        <TR><TD>Factor applied each cycle</TD></TR>
+        <TR><TD>fadeout/256 &lt; 1 → decays to zero</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip catalyst adj fadeout</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>reactive(t)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>time base</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="catalyst"><B>catalyst adj</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="fadeout"><B>fadeout</B></TD>
+            <TD><B>^</B></TD>
+            <TD><B>t</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (even terms: 2) + DFSO conditions ==========
+
+    // Term 2: catalyst_adj (BELOW)
+    d_catalyst [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Catalyst Protection Amount</B></TD></TR>
+        <TR><TD>Lookup by DFSO duration</TD></TR>
+        <TR><TD>Longer fuel cut → more enrichment</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip catalyst adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // DFSO conditions (left of formula, no arrow)
+    d_dfso [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>DFSO Enable / Disable</B></TD></TR>
+        <TR><TD>Hysteresis on each condition</TD></TR>
+        <TR><TD><FONT COLOR="red">dfso engine speed enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso engine speed disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso pps enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso pps disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso coolant enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso coolant disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso car speed enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso car speed disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso runtime min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso delay</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD BGCOLOR="#ffe0e0" WIDTH="16"> </TD><TD ALIGN="LEFT">Enable conditions</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_base; d_fadeout}
+    {rank=same; d_dfso; formula}
+    {rank=max; d_catalyst; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms (row 1)
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_fadeout -> formula:fadeout [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms (row 2)
+    d_catalyst -> formula:catalyst [arrowtail=vee, arrowsize=0.7];
+
+}

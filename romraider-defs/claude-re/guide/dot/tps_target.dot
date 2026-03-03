@@ -1,0 +1,109 @@
+// TPS Target - Throttle Position Target Calculation
+// Render: dot -Tpdf -Gpad=0 dot/tps_target.dot -o dot/tps_target.pdf
+//
+// C code:
+//   pps_tps_target = lookup_2D(pps, CAL_tps_target)  (line 25732)
+//   idle_tps_target: running = 3D(flow_target, vacuum), stopped = 3D(atmo, coolant)
+//                    (lines 12291, 12310, 12546-12552)
+//   tps_target = clamp(pps + idle, limit_l, limit_h)  (lines 26119-26129)
+//   tps_target_smooth: ramp with separate inc/dec rates  (lines 26151-26207)
+
+digraph tps_target {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1, 3) ==========
+
+    // Term 1: pps (ABOVE)
+    d_pps [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>PPS Demand</B></TD></TR>
+        <TR><TD>2D lookup vs pedal position</TD></TR>
+        <TR><TD>Zero when PPS below threshold</TD></TR>
+        <TR><TD><FONT COLOR="red">tps target</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow pps max</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: smooth (ABOVE)
+    d_smooth [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Ramp Smoothing</B></TD></TR>
+        <TR><TD>Separate inc/dec rates</TD></TR>
+        <TR><TD>2D lookup vs tps target</TD></TR>
+        <TR><TD>255 = instant (no ramp)</TD></TR>
+        <TR><TD><FONT COLOR="red">tps smooth inc</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tps smooth dec</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Enable conditions + Main formula ==========
+
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Conditions</B></TD></TR>
+        <TR><TD>PPS &gt; idle flow pps max</TD></TR>
+        <TR><TD>Clamped to [limit_l, limit_h]</TD></TR>
+        <TR><TD><FONT COLOR="red">tps limit l</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tps limit h</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>tps target</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="smooth"><B>smooth(</B></TD>
+            <TD PORT="pps"><B>pps</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="idle"><B>idle</B></TD>
+            <TD><B>)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $023B</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (even terms: 2) ==========
+
+    // Term 2: idle (BELOW)
+    d_idle [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Idle Contribution</B></TD></TR>
+        <TR><TD>Converts idle flow target to TPS</TD></TR>
+        <TR><TD>Running: 3D vs flow target &amp; vacuum</TD></TR>
+        <TR><TD>Stopped: 3D vs atmo &amp; coolant</TD></TR>
+        <TR><TD><FONT COLOR="red">idle tps</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle tps engine stop</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle tps limit h</FONT></TD></TR>
+        <TR><TD><I>See idle flow target formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_pps; d_smooth}
+    {rank=same; d_enable; formula}
+    {rank=max; d_idle; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes -> formula terms
+    d_pps -> formula:pps [arrowhead=vee, arrowsize=0.7];
+    d_smooth -> formula:smooth [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes <- formula terms
+    formula:idle -> d_idle [dir=back, arrowtail=vee, arrowsize=0.7];
+}

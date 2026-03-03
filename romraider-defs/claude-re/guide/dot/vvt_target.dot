@@ -1,0 +1,91 @@
+// Variable Valve Timing - Target Advance Angle
+// Render: dot -Tpng -Gdpi=150 dot/vvt_target.dot -o dot/vvt_target.png
+//
+// C code (lines 13089-13110):
+//   base = lookup_3D(rpm, load) from low_cam or high_cam table
+//   coolant_adj = lookup_2D(coolant_temp)
+//   vvt_target = max(base − coolant_adj, 5°)
+//
+// Table selection: high_cam table when VVL active, low_cam otherwise
+// Target clamped to max 40° (low cam) or 43° (high cam)
+// PI controller (lines 13131-13143) drives VVT solenoid PWM
+
+digraph vvt_target {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1) ==========
+
+    // Term 1: base (ABOVE)
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>VVT Base Advance</B></TD></TR>
+        <TR><TD>3D map vs RPM and load</TD></TR>
+        <TR><TD>Table selected by VVL state</TD></TR>
+        <TR><TD><FONT COLOR="red">vvt adv low cam base</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">vvt adv high cam base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>VVT target</B></TD>
+            <TD><B>=</B></TD>
+	    <TD><B>smooth(</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="coolant"><B>adj</B></TD>
+            <TD><B>)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0207</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (even terms: 2) ==========
+
+    // Term 2: coolant adj (BELOW)
+    d_coolant [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Coolant Retard</B></TD></TR>
+        <TR><TD>2D map vs coolant temp</TD></TR>
+        <TR><TD>Retards VVT timing when cold</TD></TR>
+        <TR><TD><FONT COLOR="red">vvt adv adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Enable conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>VVT Active</B></TD></TR>
+        <TR><TD>Engine runtime above minimum</TD></TR>
+        <TR><TD>No VVT fault</TD></TR>
+        <TR><TD>System ready</TD></TR>
+        <TR><TD><FONT COLOR="red">vvt runtime min</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightpink" WIDTH="16"> </TD><TD ALIGN="LEFT">Retard / subtraction</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_base}
+    {rank=same; d_enable; formula}
+    {rank=max; d_coolant; legend}
+
+    // ========== Edges ==========
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_coolant -> formula:coolant [arrowtail=vee, arrowsize=0.7];
+}

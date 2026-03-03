@@ -1,0 +1,154 @@
+// Traction Control - Slip Detection
+// Render: dot -Tpng -Gdpi=150 dot/tc_slip.dot -o dot/tc_slip.png
+//
+// C code (lines 27122-27307):
+//   wheel_speed = tyre_circumference × 360000 / (period × teeth_count)
+//   slip = rear_max × 100 / front_max − 100 (% overspeed)
+//   slip_target = knob >> (base + 5) + adj    [VTC on, base limits knob gain]
+//   slip_target = base + adj                  [VTC off, base is target directly]
+//   tc_slip_diff_smooth = max(slip − slip_target, 0) with asymmetric filter
+//
+// VTC knob (Variable Traction Control):
+//   State 0 (knob low):  target = base map directly
+//   State 1 (knob mid):  target = knob >> (base + 5), base controls sensitivity
+//   State 3 (knob high): TC disabled
+//
+// Asymmetric filtering on tc_slip_diff_smooth (CAL_tc_slip_reactivity):
+//   Increasing slip: instant, Decreasing slip: smoothed
+
+digraph tc_slip {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (slip formula) ==========
+
+    d_rear [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Rear Wheel Speed</B></TD></TR>
+        <TR><TD>Max of RL and RR</TD></TR>
+        <TR><TD>From ABS ring period and tyre circ</TD></TR>
+        <TR><TD><FONT COLOR="red">tc rear tyre circumference</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc abs ring teeth count</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_front [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Front Wheel Speed</B></TD></TR>
+        <TR><TD>Max of FL and FR (reference)</TD></TR>
+        <TR><TD>Non-driven axle</TD></TR>
+        <TR><TD><FONT COLOR="red">tc front tyre circumference</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc abs ring teeth count</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>slip</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="rear"><B>rear max</B></TD>
+            <TD><B>×</B></TD>
+            <TD><B>100</B></TD>
+            <TD><B>/</B></TD>
+            <TD PORT="front"><B>front max</B></TD>
+            <TD><B>−</B></TD>
+            <TD><B>100</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0242</FONT></TD>
+        </TR>
+        <TR>
+            <TD><B>slip target</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>|</B></TD>
+            <TD PORT="vtc"><B>VTC</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj"><B>adj</B></TD>
+            <TD></TD>
+            <TD></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0243</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (slip target formula) ==========
+
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Slip Target Base</B></TD></TR>
+        <TR><TD>3D map vs front speed and PPS</TD></TR>
+        <TR><TD>VTC off: base IS the target (0-3%)</TD></TR>
+        <TR><TD>VTC on: knob &gt;&gt; (base+5), limits knob gain</TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip target base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_vtc [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>VTC Knob</B></TD></TR>
+        <TR><TD>Driver-adjustable slip target</TD></TR>
+        <TR><TD>Low: no effect, base used directly</TD></TR>
+        <TR><TD>Mid: knob replaces base, more slip</TD></TR>
+        <TR><TD>High: TC disabled entirely</TD></TR>
+        </TABLE>
+    >];
+
+    d_adj [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Straight-Line Offset</B></TD></TR>
+        <TR><TD>More slip allowed when not cornering</TD></TR>
+        <TR><TD>Disabled with high L-R wheel diff</TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip target adj</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip adj left right enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip target adj delay disable</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Enable conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>TC Enable Conditions</B></TD></TR>
+        <TR><TD>TC mode enabled</TD></TR>
+        <TR><TD>Front speed in valid range</TD></TR>
+        <TR><TD>Engine speed above minimum</TD></TR>
+        <TR><TD>Not in DFSO</TD></TR>
+        <TR><TD>Slip above minimum threshold</TD></TR>
+        <TR><TD><FONT COLOR="red">tc mode</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc front speed min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc front speed max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc engine speed min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip min</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_rear; d_front}
+    {rank=same; d_enable; formula}
+    {rank=max; d_base; d_vtc; d_adj; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → slip formula terms
+    d_rear -> formula:rear [arrowhead=vee, arrowsize=0.7];
+    d_front -> formula:front [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes ← slip target formula terms
+    formula:base -> d_base [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:vtc -> d_vtc [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:adj -> d_adj [dir=back, arrowtail=vee, arrowsize=0.7];
+}

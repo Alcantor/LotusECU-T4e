@@ -1,0 +1,124 @@
+// Tip-Out Enrichment Detail
+// Render: dot -Tpng -Gdpi=150 dot/injtip_tip_out.dot -o dot/injtip_tip_out.png
+//
+// C code (lines 13030-13036):
+//   a = (-dt_tps_injtip) * tip_out_speed                    (adj1)
+//   b = tip_out_coolant * (a / 128)                          (adj3)
+//   tip_out = CAL_injtip_time_base * (b / 64)                (time_base)
+//
+// Decay model (dt_tps_injtip filtering, lines 10510-10549):
+//   tip_out(t) = time_base * adj1 * (-dt_tps_target_2 - adj2 * t) * adj3
+//   Activated when dt_tps_target_2 < -threshold, clamped to -limit
+//   Decays linearly toward zero by adj2 step every 5ms cycle
+//   Negated before multiplication (enrichment, not enleanment)
+
+digraph injtip_tip_out {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1,3,5) ==========
+
+    // Term 1: time_base (ABOVE)
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Base Time</B></TD></TR>
+        <TR><TD>Scales entire enrichment</TD></TR>
+        <TR><TD>Shared with tip-in</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip time base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: adj2 (ABOVE)
+    d_adj2 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Decay Rate</B></TD></TR>
+        <TR><TD>Enrichment fade-off per 5ms</TD></TR>
+        <TR><TD>By engine speed</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip out adj2</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 5: adj3 (ABOVE)
+    d_adj3 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Coolant Factor</B></TD></TR>
+        <TR><TD>Temperature sensitivity</TD></TR>
+        <TR><TD>More enrichment when cold</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip out adj3</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>Tip Out(t)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>time base</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj1"><B>adj1</B></TD>
+            <TD><B>× (</B></TD>
+            <TD PORT="dt_tps_target_2"><B>−dt tps target 2</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="adj2"><B>adj2</B></TD>
+            <TD><B>×</B></TD>
+            <TD><B>t</B></TD>
+            <TD><B>) ×</B></TD>
+            <TD PORT="adj3"><B>adj3</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (even terms: 2,4) ==========
+
+    // Term 2: -dt_tps_target_2 (BELOW)
+    d_dt_tps_target_2 [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Throttle Rate of Change</B></TD></TR>
+        <TR><TD>Negative on throttle closing</TD></TR>
+        <TR><TD>Negated: enrichment not enleanment</TD></TR>
+        <TR><TD>Active when dt_tps_target_2 &lt; −threshold</TD></TR>
+        <TR><TD>Clamped to −limit</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip out dt tps target 2 min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">injtip out dt tps target 2 limit</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">sensor dt tps target 2 age</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 4: adj1 (BELOW)
+    d_adj1 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Speed Factor</B></TD></TR>
+        <TR><TD>Sensitivity by engine speed</TD></TR>
+        <TR><TD><FONT COLOR="red">injtip out adj1</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_base; d_dt_tps_target_2; d_adj3}
+    {rank=same; formula}
+    {rank=max; d_adj1; d_adj2; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms (row 1)
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_dt_tps_target_2 -> formula:dt_tps_target_2 [arrowhead=vee, arrowsize=0.7];
+    d_adj3 -> formula:adj3 [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms (row 2)
+    d_adj1 -> formula:adj1 [arrowtail=vee, arrowsize=0.7];
+    d_adj2 -> formula:adj2 [arrowtail=vee, arrowsize=0.7];
+}

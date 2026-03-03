@@ -1,0 +1,141 @@
+// Knock Retard 1 - Immediate Knock Retard (per cylinder)
+// Render: dot -Tpng -Gdpi=150 knock_retard1.dot -o knock_retard1.png
+//
+// Increment (per firing event, line 16100-16110):
+//   if knock_peak_over_threshold[cyl] != 0:
+//     inc = lookup(peak_over_threshold, CAL_knock_retard1_inc)
+//     retard1[cyl] = min(retard1[cyl] + inc, CAL_knock_retard1_limit)
+//
+// Decrement (ISR, every 5ms, lines 5316-5321):
+//   if knock_retard1_timer[cyl] == 0:
+//     retard1[cyl] = max(retard1[cyl] - CAL_knock_retard1_dec, 0)
+//   timer reloads to CAL_knock_retard1_time_between_step
+//
+// Peak detection (line 16170-16179):
+//   if knock_peak[cyl] > knock_peak_threshold:
+//     knock_peak_over_threshold[cyl] = knock_peak[cyl] - knock_peak_threshold
+
+digraph knock_retard1 {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE ==========
+
+    // retard1 current value (shared by both formulas)
+    d_retard1 [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Previous Value</B></TD></TR>
+        <TR><TD>Per-cylinder retard from last cycle</TD></TR>
+        <TR><TD>Accumulates over successive knocks</TD></TR>
+        </TABLE>
+    >];
+
+    // dec (decay step)
+    d_dec [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Decay Step</B></TD></TR>
+        <TR><TD>Gradual recovery toward zero</TD></TR>
+        <TR><TD>Applied every N × 5ms</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 dec</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 time between step</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Two formula rows ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>retard1 (every N × 5ms)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>max</B></TD>
+            <TD><B>(</B></TD>
+            <TD PORT="r1_dec"><B>retard1</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="dec"><B>dec</B></TD>
+            <TD><B>,</B></TD>
+            <TD><B>0</B></TD>
+            <TD><B>)</B></TD>
+        </TR>
+        <TR>
+            <TD><B>retard1 (peak &gt; threshold)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>min</B></TD>
+            <TD><B>(</B></TD>
+            <TD><B>retard1</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="inc"><B>inc</B></TD>
+            <TD><B>,</B></TD>
+            <TD PORT="limit"><B>limit</B></TD>
+            <TD><B>)</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW ==========
+
+    // inc (knock increment lookup)
+    d_inc [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Knock Increment</B></TD></TR>
+        <TR><TD>Lookup by peak over threshold</TD></TR>
+        <TR><TD>Larger knock = larger retard step</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 inc</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock peak threshold</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // limit
+    d_limit [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Maximum Limit</B></TD></TR>
+        <TR><TD>Clamp to prevent over-retard</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 limit</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Enable conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Enable Conditions (all must be true)</B></TD></TR>
+        <TR><TD>RPM in valid window</TD></TR>
+        <TR><TD>Coolant above minimum</TD></TR>
+        <TR><TD>VVT variation within limits</TD></TR>
+        <TR><TD>Load above threshold</TD></TR>
+        <TR><TD>No rapid throttle change</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 engine speed min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 engine speed max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 coolant min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 vvt diff max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard load min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 dt tps target 2 max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 dt tps target 2 time</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_retard1; d_dec}
+    {rank=same; d_enable; formula}
+    {rank=max; d_inc; d_limit; legend}
+
+    // ========== Edges ==========
+    // Above boxes → formula terms
+    d_retard1 -> formula:r1_dec [arrowhead=vee, arrowsize=0.7];
+    d_limit -> formula:limit [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms
+    d_inc -> formula:inc [arrowhead=vee, arrowsize=0.7];
+    d_dec -> formula:dec [arrowhead=vee, arrowsize=0.7];
+}

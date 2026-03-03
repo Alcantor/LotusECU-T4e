@@ -1,0 +1,90 @@
+// Fuel Injection - Rev Limiter
+// Render: dot -Tpng -Gdpi=150 inj_revlimit.dot -o inj_revlimit.png
+//
+// When RPM exceeds rev limit, injection time is set to 0 (fuel cut).
+// Rev limit decreases over time at limit (via timer axis).
+// Launch control can override with a lower rev limit.
+
+digraph inj_revlimit {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE ==========
+
+    // Rev limit base
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Rev Limit Base</B></TD></TR>
+        <TR><TD>3D map vs coolant temp and time at limit</TD></TR>
+        <TR><TD>Decreases over time at rev limit</TD></TR>
+        <TR><TD><FONT COLOR="red">revlimit speed base</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">revlimit offset reset timer</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Limp mode adjustment
+    d_limp [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Limp Mode Reduction</B></TD></TR>
+        <TR><TD>Lowered rev limit in limp mode</TD></TR>
+        <TR><TD><FONT COLOR="red">revlimit speed adj limp reduced</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>Inj Time (Rev Limiter)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>0</B></TD>
+            <TD><B>when</B></TD>
+            <TD><B>RPM</B></TD>
+            <TD><B>&gt; (</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="limp"><B>limp adj</B></TD>
+            <TD><B>)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0205</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW ==========
+
+    // Launch control override
+    d_launch [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Launch Control Override</B></TD></TR>
+        <TR><TD>Lower rev limit when stationary</TD></TR>
+        <TR><TD>with traction control active</TD></TR>
+        <TR><TD><FONT COLOR="purple">tc launchcontrol revlimit</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD BGCOLOR="lightpink" WIDTH="16"> </TD><TD ALIGN="LEFT">Retard / subtraction</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_base; d_limp}
+    {rank=same; formula}
+    {rank=max; d_launch; legend}
+
+    // ========== Edges ==========
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_limp -> formula:limp [arrowhead=vee, arrowsize=0.7];
+    d_launch -> formula:base [arrowhead=vee, arrowsize=0.7];
+}

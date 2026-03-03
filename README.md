@@ -91,9 +91,14 @@ necessary.
 I've spent hundreds of hours creating definition files.
 The file for the 2008 T4e ECU is available in the folder [romraider-defs].
 
+Years after the definition file first saw the light, a full tuning guide finally
+came to life: **[T4E090 Guide]**. If you are serious about understanding and
+tuning your T4e, this is a must-read.
+
 For other cars, please reach out to me.
 
 [romraider-defs]: romraider-defs/
+[T4E090 Guide]: romraider-defs/T4E090_guide.pdf
 
 ### Documentation
 

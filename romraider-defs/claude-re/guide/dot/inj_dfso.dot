@@ -1,0 +1,74 @@
+// Fuel Injection - DFSO (Decel Fuel Shut-Off)
+// Render: dot -Tpng -Gdpi=150 inj_dfso.dot -o inj_dfso.png
+//
+// During DFSO, injection time is set to 0 (fuel cut).
+// Enable/disable uses hysteresis on multiple conditions.
+
+digraph inj_dfso {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="8" CELLPADDING="6">
+        <TR>
+            <TD><B>Inj Time (DFSO)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>0</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0205</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // Enable conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>DFSO Enable (all must be true)</B></TD></TR>
+        <TR><TD>RPM above enable threshold</TD></TR>
+        <TR><TD>Engine runtime above minimum</TD></TR>
+        <TR><TD>Coolant above enable threshold</TD></TR>
+        <TR><TD>Car speed above enable threshold</TD></TR>
+        <TR><TD>Pedal position below enable threshold</TD></TR>
+        <TR><TD><FONT COLOR="red">dfso engine speed enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso runtime min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso coolant enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso car speed enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso pps enable</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Disable conditions
+    d_disable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>DFSO Disable (any is true)</B></TD></TR>
+        <TR><TD>RPM below disable threshold</TD></TR>
+        <TR><TD>Car speed below disable threshold</TD></TR>
+        <TR><TD>Coolant below disable threshold</TD></TR>
+        <TR><TD>Pedal position above disable threshold</TD></TR>
+        <TR><TD><FONT COLOR="red">dfso engine speed disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso car speed disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso coolant disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">dfso pps disable</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_enable; d_disable}
+    {rank=same; formula}
+    {rank=max; legend}
+
+    // Invisible edges to enforce row separation
+    d_enable -> formula [style=invis];
+}

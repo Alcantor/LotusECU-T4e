@@ -1,0 +1,96 @@
+// Variable Valve Lift - Engagement Control
+// Render: dot -Tpng -Gdpi=150 dot/vvl_engage.dot -o dot/vvl_engage.png
+//
+// C code (lines 13205-13218):
+//   Enable: coolant > threshold AND (RPM > enable_rpm OR (RPM > high_load_rpm AND load > threshold))
+//   Disable: coolant < threshold OR (RPM < disable_rpm AND load < threshold) OR RPM < disable_rpm_high_load
+//
+// Hysteresis between enable and disable prevents oscillation
+// Two RPM paths: primary RPM threshold, or lower RPM with high load (boost)
+
+digraph vvl_engage {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (terms 1,3) ==========
+
+    // Term 1: warmed-up (ABOVE)
+    d_warmup [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Warmed-Up</B></TD></TR>
+        <TR><TD>Coolant temperature gate</TD></TR>
+        <TR><TD>Enable above / disable below</TD></TR>
+        <TR><TD><FONT COLOR="red">vvl coolant enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">vvl coolant disable</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: boost (ABOVE)
+    d_boost [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Boost (High Load Path)</B></TD></TR>
+        <TR><TD>Lower RPM + high load</TD></TR>
+        <TR><TD>Both thresholds must be met</TD></TR>
+        <TR><TD><FONT COLOR="red">vvl rpm high load enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">vvl rpm high load disable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">vvl high load enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">vvl high load disable</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>VVL status</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="warmup"><B>warmed-up</B></TD>
+            <TD><B>AND (</B></TD>
+            <TD PORT="normal"><B>normal</B></TD>
+            <TD><B>OR</B></TD>
+            <TD PORT="boost"><B>boost</B></TD>
+            <TD><B>)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0207</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail box BELOW (term 2) ==========
+
+    // Term 2: normal (BELOW)
+    d_normal [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Normal (RPM Path)</B></TD></TR>
+        <TR><TD>Primary RPM threshold</TD></TR>
+        <TR><TD>Enable above / disable below</TD></TR>
+        <TR><TD><FONT COLOR="red">vvl rpm enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">vvl rpm disable</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_warmup; d_boost}
+    {rank=same; formula}
+    {rank=max; d_normal; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms
+    d_warmup -> formula:warmup [arrowhead=vee, arrowsize=0.7];
+    d_boost -> formula:boost [arrowhead=vee, arrowsize=0.7];
+
+    // Below box ← formula term
+    formula:normal -> d_normal [dir=back, arrowtail=vee, arrowsize=0.7];
+}

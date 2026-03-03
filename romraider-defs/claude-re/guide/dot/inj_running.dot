@@ -1,0 +1,211 @@
+// Fuel Injection - Running Mode
+// Render: dot -Tpng -Gdpi=150 dot/inj_running.dot -o dot/inj_running.png
+//
+// C code order (lines 12079-12257):
+//   a = (load / (afr_target - afr_adj)) - evap
+//   b = a / (efficiency * flow_rate)
+//   c = b * adj1 * adj2 * adj3 + tip_in + tip_out + reactive
+//   d = base + ltft_idle + (1 + stft + ltft) * c
+//   inj_time = d
+
+digraph inj_running {
+    rankdir=TB;
+    newrank=true;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Row 1: ABOVE far (terms 3,7,11) ==========
+
+    d_stft [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Short-Term Fuel Trim</B></TD></TR>
+        <TR><TD>Pre-cat O2 feedback</TD></TR>
+        <TR><TD><I>See STFT formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    d_flow [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Injector Flow Rate</B></TD></TR>
+        <TR><TD>Static flow characteristic</TD></TR>
+        <TR><TD><FONT COLOR="red">inj flow rate</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_tipin [shape=box, style=filled, fillcolor=lightgreen, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Tip-In Enrichment</B></TD></TR>
+        <TR><TD>Throttle opening fuel</TD></TR>
+        <TR><TD><I>See tip-in formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Row 2: ABOVE near (terms 1,5,9,13) ==========
+
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Injector Dead Time</B></TD></TR>
+        <TR><TD>Opening latency vs voltage</TD></TR>
+        <TR><TD><FONT COLOR="red">inj time base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_fuel [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Fuel Load</B></TD></TR>
+        <TR><TD>Fuel mass needed minus evap purge</TD></TR>
+        <TR><TD><I>See fuel load formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj2 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Intake Air Temp</B></TD></TR>
+        <TR><TD>Air density correction</TD></TR>
+        <TR><TD><FONT COLOR="red">inj time adj2</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_tipout [shape=box, style=filled, fillcolor=lightgreen, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Tip-Out Enrichment</B></TD></TR>
+        <TR><TD>Throttle closing fuel</TD></TR>
+        <TR><TD><I>See tip-out formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Row 3: Main formula ==========
+
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>Inj Time (Running)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="ltft_idle"><B>ltft idle</B></TD>
+            <TD><B>+ (</B></TD>
+            <TD><B>1</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="stft"><B>stft</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="ltft"><B>ltft</B></TD>
+            <TD><B>) × (</B></TD>
+            <TD PORT="fuel"><B>fuel load</B></TD>
+            <TD><B>/</B></TD>
+            <TD PORT="eff"><B>efficiency</B></TD>
+            <TD><B>/</B></TD>
+            <TD PORT="flow"><B>flow rate</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj1"><B>adj1</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj2"><B>adj2</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj3"><B>adj3</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="tipin"><B>tip in</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="reactive"><B>reactive</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="tipout"><B>tip out</B></TD>
+            <TD><B>)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0205</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Row 4: BELOW near (terms 4,8,12) ==========
+
+    d_ltft [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Long-Term Fuel Trim</B></TD></TR>
+        <TR><TD>Learned zones: low / high</TD></TR>
+        <TR><TD><I>See LTFT formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj1 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Start Enrichment</B></TD></TR>
+        <TR><TD>Decays as air mass accumulates</TD></TR>
+        <TR><TD><FONT COLOR="red">inj time adj1</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_reactive [shape=box, style=filled, fillcolor=lightgreen, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>DFSO Recovery</B></TD></TR>
+        <TR><TD>Enrichment after fuel cut</TD></TR>
+        <TR><TD><I>See reactive formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Row 5: BELOW far (terms 2,6,10) + legend ==========
+
+    d_ltft_idle [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>LTFT Idle Additive</B></TD></TR>
+        <TR><TD>Learned idle correction</TD></TR>
+        <TR><TD><I>See LTFT formula</I></TD></TR>
+        </TABLE>
+    >];
+
+    d_eff [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Injector Efficiency</B></TD></TR>
+        <TR><TD>Volumetric efficiency vs RPM/load</TD></TR>
+        <TR><TD><FONT COLOR="red">inj efficiency</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj3 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Warm-Up Enrichment</B></TD></TR>
+        <TR><TD>Richens mixture until engine is warm</TD></TR>
+        <TR><TD><FONT COLOR="red">inj time adj3</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD BGCOLOR="lightgreen" WIDTH="16"> </TD><TD ALIGN="LEFT">Enrichment</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout: 5-row ranks ==========
+    {rank=min; d_stft; d_flow; d_tipin}
+    {rank=same; d_base; d_fuel; d_adj2; d_tipout}
+    {rank=same; formula}
+    {rank=same; d_ltft; d_adj1; d_reactive}
+    {rank=max; d_ltft_idle; d_eff; d_adj3; legend}
+
+    // Invisible edges to enforce row separation
+    d_stft -> d_base [style=invis];
+    d_ltft_idle -> d_ltft [style=invis];
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms (rows 1+2)
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_stft -> formula:stft [arrowhead=vee, arrowsize=0.7];
+    d_fuel -> formula:fuel [arrowhead=vee, arrowsize=0.7];
+    d_flow -> formula:flow [arrowhead=vee, arrowsize=0.7];
+    d_adj2 -> formula:adj2 [arrowhead=vee, arrowsize=0.7];
+    d_tipin -> formula:tipin [arrowhead=vee, arrowsize=0.7];
+    d_tipout -> formula:tipout [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms (rows 4+5)
+    formula:ltft_idle -> d_ltft_idle [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:ltft -> d_ltft [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:eff -> d_eff [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:adj1 -> d_adj1 [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:adj3 -> d_adj3 [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:reactive -> d_reactive [dir=back, arrowtail=vee, arrowsize=0.7];
+}

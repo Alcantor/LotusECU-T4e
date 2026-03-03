@@ -1,0 +1,110 @@
+// Alpha-N Learned Adjustment Correction
+// Render: dot -Tpng -Gdpi=150 load_alphaN_adj.dot -o load_alphaN_adj.png
+//
+// The ECU continuously learns LEA_load_alphaN_adj by comparing
+// Alpha-N estimate to MAF measurement (lines 10571-10606).
+//
+// When error < low_threshold:  adj = adj + 1  (Alpha-N too high)
+// When error >= high_threshold: adj = adj - 1  (Alpha-N too low)
+
+digraph load_alphaN_adj {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE ==========
+
+    // Current learned value
+    d_adj [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Learned Adjustment</B></TD></TR>
+        <TR><TD>3D map vs RPM and TPS</TD></TR>
+        <TR><TD><FONT COLOR="purple">load alphaN adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Step size
+    d_step [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Correction Step</B></TD></TR>
+        <TR><TD>±1 per step</TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr time between step</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr limit l</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr limit h</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Two formula rows ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>adj (error ≤ low threshold)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="adj_inc"><B>adj</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="step_inc"><B>1</B></TD>
+        </TR>
+        <TR>
+            <TD PORT="cond"><B>adj (error &gt; high threshold)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>adj</B></TD>
+            <TD><B>−</B></TD>
+            <TD><B>1</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW ==========
+
+    // Error signal
+    d_error [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Alpha-N vs MAF Error</B></TD></TR>
+        <TR><TD>Ratio between Alpha-N and MAF estimates</TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr max</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Enable conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Enable Conditions (all must be true)</B></TD></TR>
+        <TR><TD>Coolant above minimum</TD></TR>
+        <TR><TD>TPS rate within limits</TD></TR>
+        <TR><TD>Engine speed rate within limits</TD></TR>
+        <TR><TD>TPS below Alpha-N activation threshold</TD></TR>
+        <TR><TD>DFSO not active</TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr coolant min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr dt tps target 1 max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN adj corr dt engine speed max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN tps min</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_adj; d_step}
+    {rank=same; d_enable; formula}
+    {rank=max; d_error; legend}
+
+    // ========== Edges ==========
+    // Above boxes → formula terms
+    d_adj -> formula:adj_inc [arrowhead=vee, arrowsize=0.7];
+    d_step -> formula:step_inc [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms
+    d_error -> formula:cond [arrowhead=vee, arrowsize=0.7];
+}
