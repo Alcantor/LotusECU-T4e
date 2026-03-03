@@ -15,6 +15,8 @@ The T4e ECU supports both K-Line and CAN-Bus for OBD diagnostics. Since 2008, CA
 - `black91.c` - Exported C code from Ghidra of the Lotus T4e 2008 ECU (black cluster version 91)
 - `boot08.c` - Exported C code from Ghidra of the Lotus T4e 2008 ECU (crp08 updater)
 - `hc08.c` - Exported C code from Ghidra of the Lotus T4e 2008 ECU (HC08 Safety CPU)
+- `guide/dot/*.dot` - Graphviz DOT files that visualize ECU formula calculations
+- `guide/T4E090_guide.tex` - Detailed description of ECU functions (LaTeX guide)
 
 ## Naming Conventions
 

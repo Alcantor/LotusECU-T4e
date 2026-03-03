@@ -1,0 +1,162 @@
+// Air Load Calculation - Alpha-N and MAF
+// Render: dot -Tpng -Gdpi=150 load_air.dot -o load_air.png
+//
+// Two parallel load estimates, selected by operating conditions:
+//   Transient / low speed: Alpha-N (speed-density via TPS)
+//   Steady state:          MAF (mass air flow sensor)
+//
+// Alpha-N formula (lines 14170-14186):
+//   alphaN = base[rpm,tps] × adj[rpm,tps] / 100 × atmo / 1013 × 298 / (air_temp*5/8 + 233)
+//
+// MAF formula (lines 14188-14193):
+//   maf = avg(maf_flow_1, maf_flow_2) × engine_speed_period × scaling
+//
+// Evap purge flow (line 14119):
+//   evap = evap_flow × engine_speed_period / 10000 (converted to mg/stroke)
+//
+// Final load (line 14142):
+//   load_1 = (alphaN or maf) + evap
+//
+// Selection logic (lines 14203-14218):
+//   Use Alpha-N when: engine stopped, or transient TPS, or diagnostic mode
+
+digraph load_air {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE ==========
+
+    // Alpha-N base table
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Alpha-N Base</B></TD></TR>
+        <TR><TD>3D map vs RPM and TPS</TD></TR>
+        <TR><TD><FONT COLOR="red">load alphaN base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Alpha-N learned adjustment
+    d_adj [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Alpha-N Learned Adj</B></TD></TR>
+        <TR><TD>3D map vs RPM and TPS</TD></TR>
+        <TR><TD>Corrects Alpha-N to match MAF</TD></TR>
+        <TR><TD><FONT COLOR="purple">load alphaN adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Atmospheric pressure correction
+    d_atmo [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Atmo Pressure Corr</B></TD></TR>
+        <TR><TD>atmo / 1013 mbar</TD></TR>
+        <TR><TD>Altitude compensation</TD></TR>
+        </TABLE>
+    >];
+
+    // Air temperature correction
+    d_temp [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Air Temp Corr</B></TD></TR>
+        <TR><TD>298 / (air temp + 273)</TD></TR>
+        <TR><TD>Ideal gas law compensation</TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Two formula rows ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>load (transient)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj"><B>adj</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="atmo"><B>atmo corr</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="temp"><B>temp corr</B></TD>
+            <TD><B>+</B></TD>
+            <TD><B>evap</B></TD>
+            <TD><B>=</B></TD>
+            <TD rowspan="2"><FONT POINT-SIZE="32">}</FONT></TD>
+            <TD rowspan="2"><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0226</FONT></TD>
+        </TR>
+        <TR>
+            <TD><B>load (steady state)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="maf"><B>maf</B></TD>
+            <TD colspan="6"></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="evap"><B>evap</B></TD>
+            <TD><B>=</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW ==========
+
+    // MAF sensor
+    d_maf [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>MAF Sensor</B></TD></TR>
+        <TR><TD>Average of dual MAF readings</TD></TR>
+        <TR><TD>Scaled by engine speed period</TD></TR>
+        <TR><TD><FONT COLOR="red">sensor maf scaling</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Evap purge flow
+    d_evap [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>EVAP Purge Flow</B></TD></TR>
+        <TR><TD>Estimated from purge valve pressure drop</TD></TR>
+        <TR><TD>Converted from mg/s to mg/stroke</TD></TR>
+        </TABLE>
+    >];
+
+    // Selection conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Use Alpha-N when</B></TD></TR>
+        <TR><TD>Engine not running</TD></TR>
+        <TR><TD>TPS rate exceeds threshold</TD></TR>
+        <TR><TD>TPS above idle threshold</TD></TR>
+        <TR><TD>Engine speed below limit</TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN dt tps target 1 positive min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN dt tps target 1 negative min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN timer</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">load use alphaN engine speed max</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_base; d_adj; d_atmo; d_temp}
+    {rank=same; d_enable; formula}
+    {rank=max; d_maf; d_evap; legend}
+
+    // ========== Edges ==========
+    // Above boxes → formula terms
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_adj -> formula:adj [arrowhead=vee, arrowsize=0.7];
+    d_atmo -> formula:atmo [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms
+    d_temp -> formula:temp [arrowhead=vee, arrowsize=0.7];
+    d_maf -> formula:maf [arrowhead=vee, arrowsize=0.7];
+    formula:evap -> d_evap [dir=back, arrowtail=vee, arrowsize=0.7];
+}

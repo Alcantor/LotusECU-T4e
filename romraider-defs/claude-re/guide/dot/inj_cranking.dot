@@ -1,0 +1,65 @@
+// Fuel Injection - Cranking Mode
+// Render: dot -Tpng -Gdpi=150 inj_cranking.dot -o inj_cranking.png
+
+digraph inj_cranking {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=12];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=1.5;
+    ranksep=0.5;
+
+    // ========== Detail box ABOVE (term 1: base) ==========
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+        <TR><TD><B>Injector Dead Time</B></TD></TR>
+        <TR><TD>Opening latency compensation</TD></TR>
+        <TR><TD>for battery voltage variation</TD></TR>
+        <TR><TD> </TD></TR>
+        <TR><TD><FONT COLOR="red">inj time base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula - terms have no border/background ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="8" CELLPADDING="6">
+        <TR>
+            <TD><B>Inj Time (Cranking)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="cranking"><B>cranking adj</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0205</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail box BELOW (term 2: cranking adj) ==========
+    d_cranking [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+        <TR><TD><B>Cranking Enrichment</B></TD></TR>
+        <TR><TD>Extra fuel for cold engine starting</TD></TR>
+        <TR><TD>based on coolant temperature at engine shutdown</TD></TR>
+        <TR><TD> </TD></TR>
+        <TR><TD><FONT COLOR="red">inj time adj cranking</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ==========
+    {rank=min; d_base}
+    {rank=same; formula}
+    {rank=max; d_cranking; legend}
+
+    // ========== Edges ==========
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.8];
+    d_cranking -> formula:cranking [arrowtail=vee, arrowsize=0.8];
+}

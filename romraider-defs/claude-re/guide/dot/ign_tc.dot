@@ -1,0 +1,118 @@
+// Ignition - Traction Control Retard
+// Render: dot -Tpng -Gdpi=150 dot/ign_tc.dot -o dot/ign_tc.png
+//
+// C code (lines 27309-27337, 27438-27451):
+//   adj2 = (tc_slip × ratio) / 64                 transient retard (proportional)
+//   adj1 increments when active, decrements when not (persistent retard, integral)
+//   ign_adj = 100% − (adj1 + adj2), clamped to limit
+//
+// ign_adj applied multiplicatively: advance × ign_adj / 255
+// 255 = no retard, lower = more retard
+
+digraph ign_tc {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=1.0;
+
+    // ========== Detail boxes ABOVE (terms 1,3) ==========
+
+    // Term 1: tc slip (ABOVE)
+    d_slip [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>TC Slip</B></TD></TR>
+        <TR><TD>From slip detection</TD></TR>
+        <TR><TD>Excess rear speed over target</TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip reactivity</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: ratio (ABOVE)
+    d_ratio [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Slip to Retard Ratio</B></TD></TR>
+        <TR><TD>Proportional gain for transient retard</TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip to retard ratio</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Condition + Limit + Main formula ==========
+
+    // Enable conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>TC Intervention Active</B></TD></TR>
+        <TR><TD>Slip exceeds minimum threshold</TD></TR>
+        <TR><TD><FONT COLOR="red">tc slip min</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Retard limit (constrains output, left of =)
+    d_limit [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Retard Limit</B></TD></TR>
+        <TR><TD>Minimum ign adj value (max retard)</TD></TR>
+        <TR><TD><FONT COLOR="red">tc ign adv adj limit</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD PORT="tc_adj"><B>tc adj</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>100%</B></TD>
+            <TD><B>− (</B></TD>
+            <TD PORT="retard"><B>retard</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="smooth"><B>smooth(</B></TD>
+            <TD><B>slip</B></TD>
+            <TD><B>−</B></TD>
+            <TD><B>target</B></TD>
+            <TD><B>) ×</B></TD>
+            <TD PORT="ratio"><B>ratio</B></TD>
+            <TD><B>)</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (term 2) ==========
+
+    // Term 2: persistent retard (BELOW)
+    d_retard [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Persistent Retard</B></TD></TR>
+        <TR><TD>Integrator: accumulates while TC active</TD></TR>
+        <TR><TD>Increments every N × 5ms</TD></TR>
+        <TR><TD>Decrements by 1 when TC inactive</TD></TR>
+        <TR><TD><FONT COLOR="red">tc time between step</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_slip; d_ratio}
+    {rank=same; d_enable; formula}
+    {rank=max; d_limit; d_retard; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms
+    d_slip -> formula:smooth [arrowhead=vee, arrowsize=0.7];
+    d_ratio -> formula:ratio [arrowhead=vee, arrowsize=0.7];
+
+    // Limit → output term (constrains tc adj)
+    d_limit -> formula:tc_adj [arrowhead=vee, arrowsize=0.7];
+
+    // Below box ← formula term
+    formula:retard -> d_retard [dir=back, arrowtail=vee, arrowsize=0.7];
+}

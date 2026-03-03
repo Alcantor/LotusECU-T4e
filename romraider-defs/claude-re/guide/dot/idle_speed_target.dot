@@ -1,0 +1,86 @@
+// Idle Speed Target
+// Render: dot -Tpng -Gdpi=150 idle_speed_target.dot -o idle_speed_target.png
+//
+// C code (lines 12277-12310):
+//   base = CAL_idle_speed_base(coolant) * 4 + 500
+//   car_speed_adj = CAL_idle_speed_adj(car_speed) * 4
+//   ac_adj = CAL_idle_speed_adj_ac_on (if AC on)
+//   speed_target = base + car_speed_adj + ac_adj
+//   Clamped to 1520 RPM
+
+digraph idle_speed_target {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE ==========
+
+    // Term 1: base (ABOVE)
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Base Idle Speed</B></TD></TR>
+        <TR><TD>2D map vs coolant temperature</TD></TR>
+        <TR><TD>Higher when cold</TD></TR>
+        <TR><TD><FONT COLOR="red">idle speed base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: ac adj (ABOVE)
+    d_ac [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>A/C Speed Adj</B></TD></TR>
+        <TR><TD>Extra RPM when A/C compressor on</TD></TR>
+        <TR><TD><FONT COLOR="red">idle speed adj ac on</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>speed target</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="car_speed"><B>car speed adj</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="ac"><B>ac adj</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $020D</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW ==========
+
+    // Term 2: car speed adj (BELOW)
+    d_car_speed [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Car Speed Adj</B></TD></TR>
+        <TR><TD>2D map vs vehicle speed</TD></TR>
+        <TR><TD>Higher idle when moving</TD></TR>
+        <TR><TD><FONT COLOR="red">idle speed adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_base; d_ac}
+    {rank=same; formula}
+    {rank=max; d_car_speed; legend}
+
+    // ========== Edges ==========
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_ac -> formula:ac [arrowhead=vee, arrowsize=0.7];
+    d_car_speed -> formula:car_speed [arrowtail=vee, arrowsize=0.7];
+}

@@ -17,3 +17,8 @@ Read the description of the tables:
 
 ![Description](../documentation/Usage/RomRaider2.png)
 
+The **[T4E090 Guide]** documents the full ECU signal path — load, fuel,
+ignition, knock, idle, VVT/VVL, closed-loop control, OBD, and live tuning
+access. Mandatory reading before editing any table.
+
+[T4E090 Guide]: T4E090_guide.pdf

@@ -1,0 +1,124 @@
+// Knock Retard 2 - Octane Learned Factor (per cylinder, 0-100%)
+// Render: dot -Tpng -Gdpi=150 dot/knock_retard2.dot -o dot/knock_retard2.png
+//
+// retard2 is a learned factor (0 to 100%) per cylinder.
+// Applied in ignition formula as: (base - knock_safe) * retard2
+//
+// LEA_ adaptation (lines 16220-16238):
+//   retard1 = 0:  LEA_retard2 = LEA_retard2 - dec_step        (decay)
+//   retard1 > 0:  LEA_retard2 = LEA_retard2 + retard1 * inc_coef  (learn)
+
+digraph knock_retard2 {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE ==========
+
+    // retard2 current value (shared by both formulas)
+    d_retard2 [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Learned Factor</B></TD></TR>
+        <TR><TD>Per-cylinder (0% to 100%)</TD></TR>
+        <TR><TD><FONT COLOR="purple">knock retard2</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // dec_step
+    d_dec [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Decay Step</B></TD></TR>
+        <TR><TD>Slow recovery when no knock</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard2 corr dec step</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Two formula rows ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>retard2 (retard1 = 0)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="r2_dec"><B>retard2</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="dec"><B>dec step</B></TD>
+        </TR>
+        <TR>
+            <TD><B>retard2 (retard1 &gt; 0)</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>retard2</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="r1"><B>retard1</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="inc"><B>inc coef</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW ==========
+
+    // retard1 (active knock)
+    d_retard1 [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Active Knock Retard</B></TD></TR>
+        <TR><TD>Per-cylinder retard1 value</TD></TR>
+        <TR><TD>Forced to 0 when conditions unmet</TD></TR>
+        <TR><TD>Decays to 0 after knock stops</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 engine speed min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 engine speed max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 coolant min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 vvt diff max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 dec</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 time between step</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // inc_coef
+    d_inc [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Learn Rate</B></TD></TR>
+        <TR><TD>How fast retard2 increases</TD></TR>
+        <TR><TD>Scaled by retard1 magnitude</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard2 corr inc coef</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Enable conditions (left of formula, no arrow)
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Enable Conditions</B></TD></TR>
+        <TR><TD>Load above correction threshold</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard2 corr load min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock load margin</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD BGCOLOR="lightpink" WIDTH="16"> </TD><TD ALIGN="LEFT">Retard</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_retard2; d_dec}
+    {rank=same; d_enable; formula}
+    {rank=max; d_retard1; d_inc; legend}
+
+    // ========== Edges ==========
+    // Above boxes → formula terms (row 1)
+    d_retard2 -> formula:r2_dec [arrowhead=vee, arrowsize=0.7];
+    d_dec -> formula:dec [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms (row 2)
+    d_retard1 -> formula:r1 [arrowtail=vee, arrowsize=0.7];
+    d_inc -> formula:inc [arrowtail=vee, arrowsize=0.7];
+
+}

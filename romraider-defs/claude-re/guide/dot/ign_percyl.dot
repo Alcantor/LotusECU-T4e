@@ -1,0 +1,133 @@
+// Ignition Advance - Per-Cylinder Final Stage
+// Render: dot -Tpng -Gdpi=150 ign_percyl.dot -o ign_percyl.png
+//
+// C code (lines 11737-11756):
+//   per_cyl = smooth(advance) + cyl_adj − retard1 − (base − knock_safe) × retard2
+//
+// "advance" is computed by mode-specific graphs:
+//   ign_running, ign_idle, ign_cranking, ign_dfso
+// "base" is the running base advance (3D RPM/load map lookup)
+
+digraph ign_percyl {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1,3,5) ==========
+
+    // Term 1: smooth(advance)
+    d_smooth [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Advance Smoothing</B></TD></TR>
+        <TR><TD>Low-pass filter on mode advance</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv smooth</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 3: retard1
+    d_retard1 [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Knock Retard 1</B></TD></TR>
+        <TR><TD>Per-cylinder knock detection retard</TD></TR>
+        <TR><TD>Increments on knock, decays slowly</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 inc</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 dec</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 limit</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard1 time between step</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 5: retard2
+    d_retard2 [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Octane Learned Factor</B></TD></TR>
+        <TR><TD>0% = no retard, 100% = full margin</TD></TR>
+        <TR><TD>Per-cylinder octane quality based retard</TD></TR>
+        <TR><TD><FONT COLOR="red">knock retard2 corr load min</FONT></TD></TR>
+        <TR><TD><FONT COLOR="purple">knock retard2</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>Ignition advance</B></TD>
+            <TD><B>=</B></TD>
+            <TD><B>smooth(</B></TD>
+            <TD PORT="input"><B>advance</B></TD>
+            <TD><B>) +</B></TD>
+            <TD PORT="cyl"><B>cyl adj</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="retard1"><B>retard1</B></TD>
+            <TD><B>− (</B></TD>
+            <TD><B>base</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="knock_safe"><B>knock safe</B></TD>
+            <TD><B>) ×</B></TD>
+            <TD PORT="retard2"><B>retard2</B></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Detail boxes BELOW (even terms: 2,4) ==========
+
+    d_input [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Mode Advance</B></TD></TR>
+        <TR><TD>From: ign_running, ign_idle,</TD></TR>
+        <TR><TD>ign_cranking, ign_dfso</TD></TR>
+        </TABLE>
+    >];
+
+    // Term 2: cyl adj
+    d_cyl [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Per-Cylinder Offset</B></TD></TR>
+        <TR><TD>Individual cylinder correction</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv adj cyl</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // Term 4: knock safe
+    d_knock_safe [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Knock Safe Advance</B></TD></TR>
+        <TR><TD>Low octane ignition table</TD></TR>
+        <TR><TD>Margin = base − knock safe</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv low cam knock safe</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv high cam knock safe</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightpink" WIDTH="16"> </TD><TD ALIGN="LEFT">Retard / subtraction</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_smooth; d_retard1; d_retard2}
+    {rank=same; formula}
+    {rank=max; d_input; d_cyl; d_knock_safe; legend}
+
+    // ========== Edges ==========
+    // Above boxes → formula terms
+    d_smooth -> formula:input [arrowhead=vee, arrowsize=0.7];
+    d_retard1 -> formula:retard1 [arrowhead=vee, arrowsize=0.7];
+    d_retard2 -> formula:retard2 [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms
+    d_cyl -> formula:cyl [arrowtail=vee, arrowsize=0.7];
+    d_knock_safe -> formula:knock_safe [arrowtail=vee, arrowsize=0.7];
+
+    // Input note → input
+    d_input -> formula:input [style=dashed, arrowhead=open, arrowsize=0.7];
+}

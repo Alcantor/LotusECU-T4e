@@ -1,0 +1,235 @@
+// Idle Flow Target (Air Bypass Control)
+// Render: dot -Tpng -Gdpi=150 idle_flow_target.dot -o idle_flow_target.png
+//
+// C code (lines 12315-12611):
+//   flow = base + adj1 − adj2 + adj3 + adj4 × adj4_adj
+//          + adj5 + adj6 + adj7 + adj8 + ac + fan_low + fan_high − evap
+//   adj7 added post-sum with hysteresis (lines 12345-12356)
+//   Terms reordered numerically (code order: lines 12591-12600)
+//
+// PI controller (Lotus terminology):
+//   adj5 = Idle Control Proportional Term
+//   adj8 = Idle Control Integral Term
+//
+// Speed error = engine_speed − idle_speed_target (from idle_speed_target graph)
+
+digraph idle_flow_target {
+    rankdir=TB;
+    newrank=true;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Row 1: ABOVE far ==========
+
+    d_adj2 [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Atmo Pressure Corr</B></TD></TR>
+        <TR><TD>2D map vs atmospheric pressure</TD></TR>
+        <TR><TD>Altitude compensation</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj2</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj5 [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Proportional Term</B></TD></TR>
+        <TR><TD>Immediate response to speed error</TD></TR>
+        <TR><TD>Disabled at high car speed</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj5</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj5 max</FONT></TD></TR>
+        <TR><TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0232</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_ac_fan [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>AC / Fan Load Corr</B></TD></TR>
+        <TR><TD>Ramp-up vs on-time for each</TD></TR>
+        <TR><TD>AC compressor + low fan + high fan</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj ac</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj fan low</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj fan high</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Row 2: ABOVE near ==========
+
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Base Flow</B></TD></TR>
+        <TR><TD>Initial flow at startup</TD></TR>
+        <TR><TD>Decrements over time</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj4 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Speed Target Feedforward</B></TD></TR>
+        <TR><TD>2D map vs idle speed target</TD></TR>
+        <TR><TD>More flow at higher target RPM</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj4</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj7 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>High RPM Corr</B></TD></TR>
+        <TR><TD>2D map vs engine speed</TD></TR>
+        <TR><TD>Interpolated between thresholds</TD></TR>
+        <TR><TD>Active above idle speed target</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj7</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj7 enable</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj7 disable</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Row 3: Enable conditions + Main formula ==========
+
+    d_enable [shape=box, style=dashed, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Idle Control Active</B></TD></TR>
+        <TR><TD>PPS below threshold</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow pps max</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>flow target</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj1"><B>adj1</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="adj2"><B>adj2</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj3"><B>adj3</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj4"><B>adj4</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj4_adj"><B>adj4 adj</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj5"><B>adj5</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj6"><B>adj6</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj7"><B>adj7</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj8"><B>adj8</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="ac_fan"><B>adj ac &amp; fan</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="evap"><B>evap</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0204</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Row 4: BELOW near ==========
+
+    d_adj1 [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Learned Flow Trim</B></TD></TR>
+        <TR><TD>Long-term correction</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj1 corr limit h</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj1 corr limit l</FONT></TD></TR>
+        <TR><TD><FONT COLOR="purple">idle flow adj1</FONT></TD></TR>
+        <TR><TD><FONT COLOR="purple">idle flow adj1 ac on</FONT></TD></TR>
+        <TR><TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0203</FONT></TD></TR>
+        <TR><TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $023C</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj4_adj [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Feedforward Multiplier</B></TD></TR>
+        <TR><TD>3D map vs coolant and MAF accumulated</TD></TR>
+        <TR><TD>Warmup and load compensation</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj4 adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj8 [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Integral Term</B></TD></TR>
+        <TR><TD>Accumulated speed error</TD></TR>
+        <TR><TD>Eliminates steady-state offset</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj8 corr step</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj8 corr limit h</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj8 corr limit l</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj8 corr time between step</FONT></TD></TR>
+        <TR><TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $22 PID $0233</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Row 5: BELOW far + legend ==========
+
+    d_adj3 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Voltage Corr</B></TD></TR>
+        <TR><TD>2D map vs battery voltage</TD></TR>
+        <TR><TD>Compensates electrical load</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj3</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_adj6 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Car Speed Corr</B></TD></TR>
+        <TR><TD>2D map vs vehicle speed</TD></TR>
+        <TR><TD><FONT COLOR="red">idle flow adj6</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    d_evap [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>EVAP Purge Flow</B></TD></TR>
+        <TR><TD>Fuel vapor from canister purge</TD></TR>
+        <TR><TD>Already in intake, subtracted</TD></TR>
+        </TABLE>
+    >];
+
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD BGCOLOR="lightpink" WIDTH="16"> </TD><TD ALIGN="LEFT">Subtraction</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="purple">LEA_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout: 5-row ranks ==========
+    {rank=min; d_adj2; d_adj5; d_ac_fan}
+    {rank=same; d_base; d_adj4; d_adj7}
+    {rank=same; d_enable; formula}
+    {rank=same; d_adj1; d_adj4_adj; d_adj8}
+    {rank=max; d_adj3; d_adj6; d_evap; legend}
+
+    // Invisible edges to enforce row separation
+    d_adj2 -> d_base [style=invis];
+    d_adj3 -> d_adj1 [style=invis];
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms (rows 1+2)
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_adj2 -> formula:adj2 [arrowhead=vee, arrowsize=0.7];
+    d_adj4 -> formula:adj4 [arrowhead=vee, arrowsize=0.7];
+    d_adj5 -> formula:adj5 [arrowhead=vee, arrowsize=0.7];
+    d_adj7 -> formula:adj7 [arrowhead=vee, arrowsize=0.7];
+    d_ac_fan -> formula:ac_fan [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes ← formula terms (rows 4+5)
+    formula:adj1 -> d_adj1 [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:adj3 -> d_adj3 [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:adj4_adj -> d_adj4_adj [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:adj6 -> d_adj6 [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:adj8 -> d_adj8 [dir=back, arrowtail=vee, arrowsize=0.7];
+    formula:evap -> d_evap [dir=back, arrowtail=vee, arrowsize=0.7];
+}

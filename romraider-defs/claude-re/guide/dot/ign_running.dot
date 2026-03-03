@@ -1,0 +1,139 @@
+// Ignition Advance - Running Mode
+// Render: dot -Tpng -Gdpi=150 ign_running.dot -o ign_running.png
+//
+// C code (lines 11544-11576, 11695-11711, 11737-11756):
+//   base = lookup_3D(rpm, load) from low_cam or high_cam table
+//   adj2 = lookup_3D(maf_accumulated, tps) - warm-up scaling factor
+//   advance = base × adj2 × tc_adj + adj1 + adj3 × adj3_adj − adj4
+//   Per-cylinder stage: see ign_percyl graph
+
+digraph ign_running {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1,3,5) ==========
+
+    // base
+    d_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Base Advance</B></TD></TR>
+        <TR><TD>3D map vs RPM and load</TD></TR>
+        <TR><TD>Separate maps for low/high cam</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv low cam base</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv high cam base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // adj2
+    d_adj2 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Warm-Up Factor</B></TD></TR>
+        <TR><TD>3D map vs MAF accumulated and TPS</TD></TR>
+        <TR><TD>Scales base advance during warm-up</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv adj2</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // tc adj
+    d_tc [shape=box, style=filled, fillcolor=lightcyan, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Traction Control Adj</B></TD></TR>
+        <TR><TD>Scales base advance (0-100%)</TD></TR>
+        <TR><TD>for traction control retard</TD></TR>
+        </TABLE>
+    >];
+
+    // adj1
+    d_adj1 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Air Temp Adj</B></TD></TR>
+        <TR><TD>Intake air temperature correction</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv adj1</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // adj3
+    d_adj3 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>RPM Correction</B></TD></TR>
+        <TR><TD>2D map vs engine speed</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv adj3</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // adj3_adj
+    d_adj3_adj [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Coolant Scaling</B></TD></TR>
+        <TR><TD>2D map vs coolant temperature</TD></TR>
+        <TR><TD>Factor 0-100% applied to adj3</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv adj3 adj</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // adj4
+    d_adj4 [shape=box, style=filled, fillcolor=lightpink, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Tip-In Retard</B></TD></TR>
+        <TR><TD>Retard during throttle transients</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv adj4</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>advance (Running)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="base"><B>base</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj2"><B>adj2</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="tc"><B>tc adj</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj1"><B>adj1</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="adj3"><B>adj3</B></TD>
+            <TD><B>×</B></TD>
+            <TD PORT="adj3_adj"><B>adj3 adj</B></TD>
+            <TD><B>−</B></TD>
+            <TD PORT="adj4"><B>adj4</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $01 PID $0E</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD BGCOLOR="lightcyan" WIDTH="16"> </TD><TD ALIGN="LEFT">Computed value</TD></TR>
+        <TR><TD BGCOLOR="lightpink" WIDTH="16"> </TD><TD ALIGN="LEFT">Retard / subtraction</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_base; d_tc; d_adj3; d_adj4}
+    {rank=same; formula}
+    {rank=max; d_adj2; d_adj1; d_adj3_adj; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms
+    d_base -> formula:base [arrowhead=vee, arrowsize=0.7];
+    d_tc -> formula:tc [arrowhead=vee, arrowsize=0.7];
+    d_adj3 -> formula:adj3 [arrowhead=vee, arrowsize=0.7];
+    d_adj4 -> formula:adj4 [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms
+    d_adj2 -> formula:adj2 [arrowtail=vee, arrowsize=0.7];
+    d_adj1 -> formula:adj1 [arrowtail=vee, arrowsize=0.7];
+    d_adj3_adj -> formula:adj3_adj [arrowtail=vee, arrowsize=0.7];
+
+}

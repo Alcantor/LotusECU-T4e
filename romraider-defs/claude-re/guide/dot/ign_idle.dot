@@ -1,0 +1,109 @@
+// Ignition Advance - Idle Mode
+// Render: dot -Tpng -Gdpi=150 ign_idle.dot -o ign_idle.png
+//
+// C code (lines 11714-11724, 11737-11756):
+//   advance = idle_base + idle_adj1 + idle_adj2 + idle_adj3 + ac_adj
+//   Per-cylinder stage: see ign_percyl graph
+
+digraph ign_idle {
+    rankdir=TB;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.5;
+    ranksep=0.5;
+
+    // ========== Detail boxes ABOVE (odd terms: 1,3,5) ==========
+
+    // idle base
+    d_idle_base [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Idle Base Advance</B></TD></TR>
+        <TR><TD>Base timing vs coolant temp</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv idle base</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // idle adj3
+    d_idle_adj3 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Idle Decel Adj</B></TD></TR>
+        <TR><TD>Correction for RPM deceleration</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv idle adj3</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ac adj
+    d_ac [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>A/C Compensation</B></TD></TR>
+        <TR><TD>Extra advance when A/C on</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv idle adj ac on</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // idle adj1
+    d_idle_adj1 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Idle Speed Error Adj</B></TD></TR>
+        <TR><TD>Feedback on idle speed error</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv idle adj1</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv idle adj1 alternative</FONT></TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv idle adj1 time</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // idle adj2
+    d_idle_adj2 [shape=box, style=filled, fillcolor=lightyellow, label=<
+        <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="1">
+        <TR><TD><B>Idle Air Temp Adj</B></TD></TR>
+        <TR><TD>Air temperature correction at idle</TD></TR>
+        <TR><TD><FONT COLOR="red">ign adv idle adj2</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Main formula ==========
+    formula [shape=none, label=<
+        <TABLE BORDER="0" CELLSPACING="2" CELLPADDING="2">
+        <TR>
+            <TD><B>advance (Idle)</B></TD>
+            <TD><B>=</B></TD>
+            <TD PORT="idle_base"><B>idle base</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="idle_adj1"><B>idle adj1</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="idle_adj2"><B>idle adj2</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="idle_adj3"><B>idle adj3</B></TD>
+            <TD><B>+</B></TD>
+            <TD PORT="ac"><B>ac adj</B></TD>
+            <TD><B>=</B></TD>
+            <TD><FONT COLOR="dodgerblue" POINT-SIZE="9">OBD Mode $01 PID $0E</FONT></TD>
+        </TR>
+        </TABLE>
+    >];
+
+    // ========== Legend ==========
+    legend [shape=plaintext, label=<
+        <TABLE BORDER="1" CELLBORDER="0" CELLSPACING="2" CELLPADDING="3" COLOR="gray60">
+        <TR><TD COLSPAN="2"><B>Legend</B></TD></TR>
+        <TR><TD BGCOLOR="lightyellow" WIDTH="16"> </TD><TD ALIGN="LEFT">CAL_ lookup</TD></TR>
+        <TR><TD WIDTH="16"> </TD><TD ALIGN="LEFT"><FONT COLOR="red">CAL_ parameter</FONT></TD></TR>
+        </TABLE>
+    >];
+
+    // ========== Layout ranks ==========
+    {rank=min; d_idle_base; d_idle_adj2; d_ac}
+    {rank=same; formula}
+    {rank=max; d_idle_adj1; d_idle_adj3; legend}
+
+    // ========== Edges: all arrows point at the formula term ==========
+    // Above boxes → formula terms
+    d_idle_base -> formula:idle_base [arrowhead=vee, arrowsize=0.7];
+    d_idle_adj2 -> formula:idle_adj2 [arrowhead=vee, arrowsize=0.7];
+    d_ac -> formula:ac [arrowhead=vee, arrowsize=0.7];
+
+    // Below boxes → formula terms
+    d_idle_adj1 -> formula:idle_adj1 [arrowtail=vee, arrowsize=0.7];
+    d_idle_adj3 -> formula:idle_adj3 [arrowtail=vee, arrowsize=0.7];
+
+}
