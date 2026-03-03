@@ -163,7 +163,7 @@ class LiveTuningAccess:
 	# This retrieve a list of pointers to access common data. For example
 	# the pointer to RPM is always at index 31. P138E0009, A129E0002 and
 	# B117M0039F have respectively 753, 494 and 313 items.
-	def read_ptrmap(self):
+	def read_varptr_list(self):
 		msg = can.Message(
 			is_extended_id = False, arbitration_id = 0x53,
 			data = bytes(4)
@@ -175,19 +175,19 @@ class LiveTuningAccess:
 		address = int.from_bytes(msg.data, BO_BE)
 		self.fp.log(f"Download pointers map @ 0x{address:08X}")
 		self.fp.progress_start(753)
-		ptrmap = []
+		varptr = []
 		while(True):
 			entry = self.read_memory(address, 6)
 			if(entry == b'\x00\x00\x00\x00\x00\x00'): break
-			ptrmap.append((
+			varptr.append((
 				int.from_bytes(entry[0:4], BO_BE), # Data pointer
 				int.from_bytes(entry[4:6], BO_LE)  # Data size
 			))
 			address += 6
 			self.fp.progress(1)
 		self.fp.progress_end()
-		self.fp.log(f"Done: {len(ptrmap):d} items")
-		return ptrmap
+		self.fp.log(f"Done: {len(varptr):d} items")
+		return varptr
 
 	def download(self, address, size, filename):
 		self.fp.download(address, size, filename, self.read_memory, 128)

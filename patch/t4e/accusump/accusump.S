@@ -46,12 +46,12 @@ accusump:
 .endif
 
 	# OBD Override
-	lis	%r3, OBD_mode_0x2F_state@ha
-	lbz	%r3, OBD_mode_0x2F_state@l(%r3)
+	lis	%r3, obd_mode_0x2F_state@ha
+	lbz	%r3, obd_mode_0x2F_state@l(%r3)
 	cmplwi	%r3, 0x16
 	bne	accusump_normal
-	lis	%r3, OBD_mode_0x2F_value@ha
-	lbz	%r3, OBD_mode_0x2F_value@l(%r3)
+	lis	%r3, obd_mode_0x2F_value@ha
+	lbz	%r3, obd_mode_0x2F_value@l(%r3)
 	cmplwi	%r3, 0
 	beq	accusump_close
 	b	accusump_open
