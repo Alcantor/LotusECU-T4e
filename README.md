@@ -119,11 +119,12 @@ You may not use this material for commercial purposes without my approval.
 [CC-NC-SA]: https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 Commercial rights lisenced to [Phil's Targed Tuning],
-[FRS performance engineering] and [VF Tuner].
+[FRS performance engineering], [VF Tuner] and [Aderholdt racing].
 
 [Phil's Targed Tuning]: https://targedtuning.ch
 [FRS performance engineering]: https://www.fujiirs.com
 [VF Tuner]: https://vftuner.com/
+[Aderholdt racing]: https://aderholdtracing.com
 
 ## Factory Method
 
@@ -196,11 +197,8 @@ The [CANable] (with slcan firmware) is straightforward to use, but I've
 encountered some packet loss issues. This is likely due to a firmware bug that
 occurs when a large amount of data is being transferred.
 
-The [CANable] (with CandleLight firmware) is better, but it necessitates the use
-of another version of python-can (gs_usb).
-
-The [CANable 2.5] firmware makes the CANable adapter very reliable, so it’s
-becoming a good option.
+The [CANable] (with CandleLight firmware) is better. On Windows, also install
+the [python-can-candle] module. The [CANable 2.5] firmware is also worth a try.
 
 The [IXXAT] USB-to-CAN Adapter is easy to use and reliable but expensive.
 
@@ -214,6 +212,7 @@ so HW-Filtering would be a big improvement!
 [Python 3]: https://www.python.org/download/releases/3.0/
 [pyserial]: https://pyserial.readthedocs.io/en/latest/pyserial.html
 [python-can]: https://python-can.readthedocs.io/en/stable/
+[python-can-candle]: https://github.com/BIRLab/python-can-candle
 [CAN-BUS adapter]: https://python-can.readthedocs.io/en/stable/interfaces.html
 [Korlan USB2CAN]: https://www.8devices.com/products/usb2can_korlan
 [CANable]: https://canable.io/
@@ -309,11 +308,13 @@ Setup example on Windows:
 
 ![Installation video](documentation/Usage/videos/install-tools.webp)
 
-For the Korlan adapter, run "python -m pip install pywin32", install the
+The "pywin32" module is needed for the Korlan adapter, you will have to install
 [Korlan Driver] and copy the [CANAL DLL] into your python installation directory.
 
 [Korlan Driver]: http://www.8devices.com/media/products/usb2can_korlan/downloads/usb2can_winusb.msi
 [CANAL DLL]: http://www.8devices.com/media/products/usb2can_korlan/downloads/usb2can_canal_v2.0.0.zip
+
+The "python-can-candle" module is easy to use for any candlelight device.
 
 ### Flash a white T4/T4e ECU (2001-2008)
 

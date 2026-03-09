@@ -102,7 +102,7 @@ public class MPC561_RegisterMap extends GhidraScript {
 		println("Creating BBC (Burst Buffer Controller) registers...");
 
 		// DCCR0-DCCR15 - Decompressor Class Configuration Registers
-		for (int i = 0; i <= 15; i++) {
+		for (int i = 0; i < 16; i++) {
 			createRegLabel(0x002FA000L + (i * 4), "DCCR" + i, 4);
 		}
 	}
@@ -415,7 +415,7 @@ public class MPC561_RegisterMap extends GhidraScript {
 		println("Creating MIOS14 registers...");
 
 		// MPWMSM0-5 (PWM Submodules 0-5)
-		for (int i = 0; i <= 5; i++) {
+		for (int i = 0; i < 6; i++) {
 			long base = 0x00306000L + (i * 8);
 			createRegLabel(base + 0, "MPWMSM" + i + "_PERR", 2);
 			createRegLabel(base + 2, "MPWMSM" + i + "_PULR", 2);
@@ -447,7 +447,7 @@ public class MPC561_RegisterMap extends GhidraScript {
 		}
 
 		// MPWMSM16-21 (PWM Submodules 16-21)
-		for (int i = 16; i <= 21; i++) {
+		for (int i = 16; i < 22; i++) {
 			long base = 0x00306080L + ((i - 16) * 8);
 			createRegLabel(base + 0, "MPWMSM" + i + "_PERR", 2);
 			createRegLabel(base + 2, "MPWMSM" + i + "_PULR", 2);
@@ -551,7 +551,7 @@ public class MPC561_RegisterMap extends GhidraScript {
 		// Offset 0x0C: Data bytes 6-7 (2 bytes)
 		// Offset 0x0E: Reserved (2 bytes)
 
-		for (int buf = 0; buf <= 15; buf++) {
+		for (int buf = 0; buf < 16; buf++) {
 			long bufBase = mbuffBase + (buf * 0x10);
 			createRegLabel(bufBase + 0x00, "CAN" + suffix + "_MB" + buf + "_CS", 2);
 			createRegLabel(bufBase + 0x02, "CAN" + suffix + "_MB" + buf + "_ID_HI", 2);

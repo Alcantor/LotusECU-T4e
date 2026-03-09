@@ -4,7 +4,7 @@ from lib.crc import CRC16Reflect
 # Mode 0x22 PID 0x0263 return 0x1C004 in little endian
 # Mode 0x22 PID 0x0264 return 0x1C000 in little endian
 #
-# Send CAN frame with 8 bytes variant in big endian to:
+# Send CAN frame with content of 0x0264 (bytes 0-3) then 0x0263 (bytes 4-7) to:
 #
 #	0x500 - Instruments Cluster
 #	0x501 - ?
@@ -109,11 +109,11 @@ class Coding():
 	def set_variant_lotus(self, code):
 		self.set_variant(Coding._swap_32(code))
 
-	def get_variant_little(self):
-		return Coding._swap_endian_64(self.get_variant())
+	def get_variant_can(self):
+		return Coding._swap_32(Coding._swap_endian_64(self.get_variant()))
 
-	def set_variant_little(self, code):
-		self.set_variant(Coding._swap_endian_64(code))
+	def set_variant_can(self, code):
+		self.set_variant(Coding._swap_32(Coding._swap_endian_64(code)))
 
 	def get_vin(self):
 		return str(self.data[8:25], CHARSET).rstrip(" \x00")
@@ -158,9 +158,9 @@ Coding:
 			"MODEL", self.get_model(),
 			"CRC", self.compute_crc(),
 			"Stored CRC", self.get_crc(),
-			"Variant (Big Endian)", self.get_variant(),
+			"Variant (File Bytes)", self.get_variant(),
 			"Variant (Lotus Tools)", self.get_variant_lotus(),
-            "Variant (Little Endian)", self.get_variant_little()
+			"Variant (CAN 0x50x)", self.get_variant_can()
 		)
 
 if __name__ == "__main__":
@@ -175,8 +175,8 @@ if __name__ == "__main__":
 	elif(len(sys.argv) >= 3 and sys.argv[1] == "lotus"):
 		cod.set_variant_lotus(int(sys.argv[2], 0))
 		print(cod)
-	elif(len(sys.argv) >= 3 and sys.argv[1] == "little"):
-		cod.set_variant_little(int(sys.argv[2], 0))
+	elif(len(sys.argv) >= 3 and sys.argv[1] == "can"):
+		cod.set_variant_can(int(sys.argv[2], 0))
 		print(cod)
 	else:
 		prog = os.path.basename(sys.argv[0])
@@ -184,4 +184,4 @@ if __name__ == "__main__":
 		print(f"\t{prog} file COD_FILE")
 		print(f"\t{prog} big VALUE")
 		print(f"\t{prog} lotus VALUE")
-		print(f"\t{prog} little VALUE")
+		print(f"\t{prog} can VALUE")

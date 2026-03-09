@@ -32,6 +32,7 @@ as much as possible, so an export script can merge them if desired.
 | `ac_` | Air conditioning | |
 | `CAL_` | Calibration data | Exported to RomRaider definitions. Format: `CAL_category_name`. Underscores become spaces. **EOL comments are used as table descriptions.** In formulas, the current calibration value is CAPITALIZED (e.g., `stft = stft + STEP * adj`). |
 | `closedloop_` | Closed-loop fuel control | Shared state spanning both STFT and LTFT (e.g. `closedloop_flags`). Use `stft_` or `ltft_` for STFT/LTFT-specific symbols. |
+| `cruise_` | Cruise control | T6 and G6 ECUs only |
 | `ltft_` | Long-term fuel trim | LTFT correction zones (zone1=idle, zone2=low load, zone3=high load) and conditions |
 | `stft_` | Short-term fuel trim | STFT O2 feedback, parameters, and enabling conditions |
 | `COD_` | Coding data | Vehicle options (T6 ECU only) |
@@ -59,6 +60,7 @@ as much as possible, so an export script can merge them if desired.
 | `sensor_` | Values from various sensors | |
 | `sensor_adc_` | Voltage sensor values | |
 | `tc_` | Traction control | |
+| `trq_` | Torque model and torque limiter | T6 and G6 ECUs only |
 | `tpms_` | Tire Pressure Monitoring System | CAN communication with TPMS module |
 | `tps_` | Throttle position sensor | Dual sensors: `_1`, `_2` suffixes |
 | `vvl_` | Variable Valve Lift | High-lift cam engagement |
@@ -106,6 +108,8 @@ All `CAL_` and `LEA_` symbols must use types supported by: `../ghidra_scripts/Ex
 | `_retard1` | Knock spark advance retard (Lotus terminology) |
 | `_retard2` | Octane scaler (Lotus terminology) |
 | `_smooth` | Variable that has been through a low pass filter |
+| `_ips` | Qualifier: value applies when the IPS automatic gearbox is fitted (T6 and G6 ECUs only; e.g., `CAL_ign_advance_base_ips`) |
+| `_sport` | Qualifier: value applies in sport driving mode (T6 and G6 ECUs only; e.g., `CAL_tc_threshold_sport`) |
 | `_smooth_x` | Low-pass filter accumulator storing scaled value. Divide by the scale to get `_smooth` |
 | `_state` | State machine current state |
 | `_step` | Increment/Decrement value (same in both direction) |
@@ -179,3 +183,85 @@ Injector timing, VVT/VVL PWM control, ignition feedback
 | 27M2C | Dual op-amp |
 | SM5A27 | Transient voltage suppressors (protection) |
 | MAAC V358 | |
+
+## T6 Architecture
+
+The T6 is the evolution of the T4e, used in Lotus Elise, Exige, and Evora from 2011 onwards. It adds V6 engine support, more I/O, and new vehicle features.
+
+### Engine
+- **Supported engines**: Toyota 1ZR-FAE, 2ZR-FE (inline 4-cylinder); Toyota 2GR-FE (V6, 2 banks)
+- **Supercharger**: Optional depending on model
+- **EGR**: None
+- **Features**: IPS automatic gearbox, cruise control, torque model and torque limiter, variable traction control, Bosch ABS (newer generation), launch control, sport/race driving modes
+
+### Flash (1MB)
+
+| Address Range | Size | Sector | Content |
+|---------------|------|--------|---------|
+| 0x00000000-0x0000FFFF | 64KB | L0-L1 | Bootloader |
+| 0x00010000-0x0001BFFF | 48KB | L2 | Learned parameters (`LEA_` variables, stored directly in flash) |
+| 0x0001C000-0x0001FFFF | 16KB | L3 | Coding data (`COD_` variables — vehicle option flags) |
+| 0x00020000-0x0002FFFF | 64KB | L4 | Calibration (`CAL_` variables) |
+| 0x00040000-0x000FFFFF | 768KB | M0-H3 | Program code |
+
+### RAM (64KB)
+
+| Address Range | Size | Content |
+|---------------|------|---------|
+| 0x40000000-0x4000FFFF | 64KB | Internal SRAM (runtime variables) |
+
+### Hardware Components
+
+- **MCU**: MPC5534MVZ80 (PowerPC e200z3 core, 32-bit, 80 MHz, 324-pin PBGA)
+- **eTPU**: Enhanced Time Processor Unit, 32 channels, 24-bit timers with angle clock. Crank/cam position, ignition coil dwell, knock AGC
+- **eMIOS**: Enhanced Modular I/O System, 24 channels, PWM/counter. VVT/VVL PWM control
+- **DSPI**: Multiple Dual SPI controllers (DSPI_B, DSPI_C) for peripheral communication
+
+| Chip | Purpose |
+|------|---------|
+| MPC5534MVZ80 | Main MCU (32-bit PowerPC e200z3, 80 MHz) |
+| MC68HC908JK8 | Safety processor (monitors PPS/TPS) |
+| TLE7230R | 8-channel serial low-side switch (Infineon) |
+| TLE6220 | Quad low-side switch |
+| TLE6209R | H-Bridge for DC motor (throttle) |
+
+## G6 Architecture
+
+The G6 is used in the Lotus Emira V6. It is a further evolution of the T6 with a larger MCU, more flash, and more RAM.
+
+### Engine
+- **Supported engines**: Toyota 2GR-FE (V6, 2 banks) with Dual VVT-i (intake + exhaust cams on each bank)
+- **Supercharger**: Yes
+- **O2 sensor**: Wideband pre-catalyst (lambda sensor)
+
+### Flash (8MB + 256KB)
+
+| Flash address | Size | Sector | Content |
+|---------------|------|--------|---------|
+| 0x00000000-0x0000FFFF | 64KB | Low | Unused |
+| 0x00010000-0x0001FFFF | 64KB | Low | Learned parameters (`LEA_` variables) |
+| 0x00020000-0x0002FFFF | 64KB | Mid | Calibration (`CAL_` variables) |
+| 0x00030000-0x0003FFFF | 64KB | Mid | Coding data (`COD_` variables) |
+| 0x00800000-0x009FFFFF | 2MB | Large | Bootloader |
+| 0x00A00000-0x00FFFFFF | 6MB | Large | Program code |
+
+The dump file produced by third-party tools is a flat binary with the 8MB block first, followed by the 256KB block:
+
+| File offset | Size | Flash address |
+|-------------|------|---------------|
+| 0x000000-0x7FFFFF | 8MB | 0x00800000-0x00FFFFFF |
+| 0x800000-0x83FFFF | 256KB | 0x00000000-0x0003FFFF |
+
+### RAM (512KB)
+
+| Address Range | Size | Content |
+|---------------|------|---------|
+| 0x40000000-0x4000FFFF | 64KB | Standby SRAM (XBAR Slave Port 2) |
+| 0x40010000-0x40030000 | 192KB | SRAM (XBAR Slave Port 2) |
+| 0x40040000-0x40070000 | 256KB | SRAM (XBAR Slave Port 4) |
+
+### Hardware Components
+
+| Chip | Purpose |
+|------|---------|
+| SPC5777CDMME3 | Main MCU (32-bit PowerPC e200z7) |

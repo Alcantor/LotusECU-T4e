@@ -5,5 +5,4 @@ a single output here.
 
 ## Definition
 
-The RomRaider definition is valid only when all patches are included. Otherwise,
-modify it to suit your needs.
+The RomRaider definition is generated based on the patch included.

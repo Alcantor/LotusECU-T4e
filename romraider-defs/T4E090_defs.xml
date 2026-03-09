@@ -2126,94 +2126,87 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description>On supercharged car, there is an additional sensor build after the intercooler.</description>
   </table>
   <table category="obd" name="obd: P0011" sizey="1" storageaddress="0x308C" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Camshaft Position - Timing Over-Advanced or System Performance</description>
   </table>
   <table category="obd" name="obd: P0012" sizey="1" storageaddress="0x308D" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Camshaft Position - Timing Over-Retarded</description>
   </table>
   <table category="obd" name="obd: P0016" sizey="1" storageaddress="0x3092" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Crankshaft Position - Camshaft Position Correlation Error</description>
   </table>
   <table category="obd" name="obd: P0076" sizey="1" storageaddress="0x302D" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Intake Valve Control Solenoid Circuit Low</description>
   </table>
   <table category="obd" name="obd: P0077" sizey="1" storageaddress="0x302E" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Intake Valve Control Solenoid Circuit High</description>
   </table>
   <table category="obd" name="obd: P0101" sizey="1" storageaddress="0x301F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Mass or Volume Air Flow Circuit Range/Performance Problem</description>
   </table>
   <table category="obd" name="obd: P0102" sizey="1" storageaddress="0x301D" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Mass or Volume Air Flow Circuit Low Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0102 threshold" sizex="1" storageaddress="0x2C18" storagetype="uint16" type="2D" userlevel="1">
@@ -2224,16 +2217,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0103" sizey="1" storageaddress="0x301E" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Mass or Volume Air Flow Circuit High Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0103 threshold" sizex="1" storageaddress="0x2C16" storagetype="uint16" type="2D" userlevel="1">
@@ -2244,29 +2236,27 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0106" sizey="1" storageaddress="0x3001" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance Problem</description>
   </table>
   <table category="obd" name="obd: P0107" sizey="1" storageaddress="0x3002" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Manifold Absolute Pressure/Barometric Pressure Circuit Low Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0107 threshold" sizex="1" storageaddress="0x2C3E" storagetype="uint16" type="2D" userlevel="1">
@@ -2277,16 +2267,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0108" sizey="1" storageaddress="0x3003" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Manifold Absolute Pressure/Barometric Pressure Circuit High Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0108 threshold" sizex="1" storageaddress="0x2C3C" storagetype="uint16" type="2D" userlevel="1">
@@ -2297,29 +2286,27 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0111" sizey="1" storageaddress="0x3005" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Intake Air Temperature Circuit Range/Performance Problem</description>
   </table>
   <table category="obd" name="obd: P0112" sizey="1" storageaddress="0x3006" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Intake Air Temperature Circuit Low Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0112 threshold" sizex="1" storageaddress="0x2C2C" storagetype="uint16" type="2D" userlevel="1">
@@ -2330,16 +2317,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0113" sizey="1" storageaddress="0x3007" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Intake Air Temperature Circuit High Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0113 threshold" sizex="1" storageaddress="0x2C2A" storagetype="uint16" type="2D" userlevel="1">
@@ -2350,16 +2336,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0116" sizey="1" storageaddress="0x3009" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Engine Coolant Temperature Circuit Range/Performance Problem</description>
   </table>
   <table category="obd" endian="big" name="obd: P0116 engine runtime min" sizex="1" storageaddress="0x2D24" storagetype="uint16" type="2D" userlevel="1">
@@ -2377,16 +2362,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0117" sizey="1" storageaddress="0x300A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Engine Coolant Temperature Circuit Low Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0117 threshold" sizex="1" storageaddress="0x2C42" storagetype="uint16" type="2D" userlevel="1">
@@ -2397,16 +2381,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0118" sizey="1" storageaddress="0x300B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Engine Coolant Temperature Circuit High Input</description>
   </table>
   <table category="obd" endian="big" name="obd: P0118 threshold" sizex="1" storageaddress="0x2C40" storagetype="uint16" type="2D" userlevel="1">
@@ -2417,42 +2400,39 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0122" sizey="1" storageaddress="0x300E" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Position Sensor/Switch A Circuit Low Input</description>
   </table>
   <table category="obd" name="obd: P0123" sizey="1" storageaddress="0x300F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Position Sensor/Switch A Circuit High Input</description>
   </table>
   <table category="obd" name="obd: P0128" sizey="1" storageaddress="0x3011" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Coolant Thermostat (Coolant Temperature Below Thermostat Regulating Temperature)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0128 air mass factor" sizex="8" storageaddress="0x3C46" storagetype="uint8" type="2D" userlevel="1">
@@ -2494,16 +2474,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description>Wait for a certain amount of air to enter the engine before evaluating whether the thermostat is stuck open with the P0128 threshold value.</description>
   </table>
   <table category="obd" name="obd: P0131" sizey="1" storageaddress="0x3012" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit Low Voltage (Pre Catalyst)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0131 threshold" sizex="1" storageaddress="0x2C22" storagetype="uint16" type="2D" userlevel="1">
@@ -2514,16 +2493,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0132" sizey="1" storageaddress="0x3013" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit High Voltage (Pre Catalyst)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0132 threshold" sizex="1" storageaddress="0x2C24" storagetype="uint16" type="2D" userlevel="1">
@@ -2534,16 +2512,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0133" sizey="1" storageaddress="0x3014" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit Slow Response (Pre Catalyst)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0133 consecutive" sizex="1" storageaddress="0x3150" storagetype="uint8" type="2D" userlevel="1">
@@ -2596,29 +2573,27 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description>P0133 Threshold 3: With a ratio threshold of 50% and a TIME threshold of 70ms, this means that if the rich-to-lean transition is twice as slow as the lean-to-rich transition and takes more than 70ms, it will trigger an error code.</description>
   </table>
   <table category="obd" name="obd: P0134" sizey="1" storageaddress="0x3015" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit No Activity Detected (Pre Catalyst)</description>
   </table>
   <table category="obd" name="obd: P0135" sizey="1" storageaddress="0x3016" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Heater Circuit (Pre Catalyst)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0135 P0141 threshold" sizex="1" storageaddress="0x2CA6" storagetype="uint16" type="2D" userlevel="1">
@@ -2636,16 +2611,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0137" sizey="1" storageaddress="0x3018" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit Low Voltage (Post Catalyst)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0137 threshold" sizex="1" storageaddress="0x2C26" storagetype="uint16" type="2D" userlevel="1">
@@ -2656,16 +2630,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0138" sizey="1" storageaddress="0x3019" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit High Voltage (Post Catalyst)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0138 threshold" sizex="1" storageaddress="0x2C28" storagetype="uint16" type="2D" userlevel="1">
@@ -2676,42 +2649,39 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0139" sizey="1" storageaddress="0x301A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit Slow Response (Post Catalyst)</description>
   </table>
   <table category="obd" name="obd: P0140" sizey="1" storageaddress="0x301B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Circuit No Activity Detected (Post Catalyst)</description>
   </table>
   <table category="obd" name="obd: P0141" sizey="1" storageaddress="0x301C" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>O2 Sensor Heater Circuit (Post Catalyst)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0141 confirm threshold" sizex="1" storageaddress="0x3157" storagetype="uint8" type="2D" userlevel="1">
@@ -2722,133 +2692,123 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0171" sizey="1" storageaddress="0x302A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>System Too Lean</description>
   </table>
   <table category="obd" name="obd: P0172" sizey="1" storageaddress="0x302B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>System Too Rich</description>
   </table>
   <table category="obd" name="obd: P0201" sizey="1" storageaddress="0x302F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Injector Circuit/Open - Cylinder 1</description>
   </table>
   <table category="obd" name="obd: P0202" sizey="1" storageaddress="0x3030" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Injector Circuit/Open - Cylinder 2</description>
   </table>
   <table category="obd" name="obd: P0203" sizey="1" storageaddress="0x3031" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Injector Circuit/Open - Cylinder 3</description>
   </table>
   <table category="obd" name="obd: P0204" sizey="1" storageaddress="0x3032" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Injector Circuit/Open - Cylinder 4</description>
   </table>
   <table category="obd" name="obd: P0205" sizey="1" storageaddress="0x3033" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Injector Circuit/Open - Extra Injector</description>
   </table>
   <table category="obd" name="obd: P0222" sizey="1" storageaddress="0x3024" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Position Sensor B Circuit Low</description>
   </table>
   <table category="obd" name="obd: P0223" sizey="1" storageaddress="0x3025" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Position Sensor B Circuit High</description>
   </table>
   <table category="obd" name="obd: P0237" sizey="1" storageaddress="0x3034" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Supercharger Boost Sensor A Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0237 threshold" sizex="1" storageaddress="0x2D52" storagetype="uint16" type="2D" userlevel="1">
@@ -2859,16 +2819,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0238" sizey="1" storageaddress="0x3035" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Supercharger Boost Sensor A Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0238 threshold" sizex="1" storageaddress="0x2D50" storagetype="uint16" type="2D" userlevel="1">
@@ -2879,289 +2838,267 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0301" sizey="1" storageaddress="0x3040" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Cylinder 1 Misfire Detected</description>
   </table>
   <table category="obd" name="obd: P0302" sizey="1" storageaddress="0x3041" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Cylinder 2 Misfire Detected</description>
   </table>
   <table category="obd" name="obd: P0303" sizey="1" storageaddress="0x3042" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Cylinder 3 Misfire Detected</description>
   </table>
   <table category="obd" name="obd: P0304" sizey="1" storageaddress="0x3043" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Cylinder 4 Misfire Detected</description>
   </table>
   <table category="obd" name="obd: P0327" sizey="1" storageaddress="0x304A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Knock Sensor 1 Circuit Low</description>
   </table>
   <table category="obd" name="obd: P0328" sizey="1" storageaddress="0x304B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Knock Sensor 1 Circuit High</description>
   </table>
   <table category="obd" name="obd: P0335" sizey="1" storageaddress="0x304C" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Crankshaft Position Sensor A Circuit Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0340" sizey="1" storageaddress="0x304D" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Camshaft Position Sensor A Circuit</description>
   </table>
   <table category="obd" name="obd: P0351" sizey="1" storageaddress="0x303A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Ignition Coil A Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0352" sizey="1" storageaddress="0x303B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Ignition Coil B Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0353" sizey="1" storageaddress="0x303C" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Ignition Coil C Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0354" sizey="1" storageaddress="0x303D" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Ignition Coil D Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0420" sizey="1" storageaddress="0x3058" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Catalyst System Efficiency Below Threshold</description>
   </table>
   <table category="obd" name="obd: P0441" sizey="1" storageaddress="0x3063" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Incorrect Purge Flow</description>
   </table>
   <table category="obd" name="obd: P0442" sizey="1" storageaddress="0x3064" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Leak Detected (small leak)</description>
   </table>
   <table category="obd" name="obd: P0444" sizey="1" storageaddress="0x3066" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Purge Control Valve Circuit Open</description>
   </table>
   <table category="obd" name="obd: P0445" sizey="1" storageaddress="0x3067" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Purge Control Valve Circuit Shorted</description>
   </table>
   <table category="obd" name="obd: P0446" sizey="1" storageaddress="0x3068" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Vent Control Circuit</description>
   </table>
   <table category="obd" name="obd: P0447" sizey="1" storageaddress="0x3069" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Vent Control Circuit Open</description>
   </table>
   <table category="obd" name="obd: P0448" sizey="1" storageaddress="0x306A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Vent Control Circuit Shorted</description>
   </table>
   <table category="obd" name="obd: P0451" sizey="1" storageaddress="0x306C" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Pressure Sensor/Switch Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0452" sizey="1" storageaddress="0x306D" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Pressure Sensor/Switch Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0452 threshold" sizex="1" storageaddress="0x2D22" storagetype="uint16" type="2D" userlevel="1">
@@ -3172,16 +3109,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0453" sizey="1" storageaddress="0x306E" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Pressure Sensor/Switch High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0453 threshold" sizex="1" storageaddress="0x2D20" storagetype="uint16" type="2D" userlevel="1">
@@ -3192,55 +3128,51 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0455" sizey="1" storageaddress="0x3090" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Leak Detected (large leak)</description>
   </table>
   <table category="obd" name="obd: P0456" sizey="1" storageaddress="0x3091" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Evaporative Emission System Leak Detected (very small leak)</description>
   </table>
   <table category="obd" name="obd: P0461" sizey="1" storageaddress="0x3076" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fuel Level Sensor A Circuit Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0462" sizey="1" storageaddress="0x3077" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fuel Level Sensor A Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0462 threshold" sizex="1" storageaddress="0x2D28" storagetype="uint16" type="2D" userlevel="1">
@@ -3251,16 +3183,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0463" sizey="1" storageaddress="0x3078" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fuel Level Sensor A Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0463 threshold" sizex="1" storageaddress="0x2D26" storagetype="uint16" type="2D" userlevel="1">
@@ -3271,68 +3202,63 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0480" sizey="1" storageaddress="0x306F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fan 1 Control Circuit</description>
   </table>
   <table category="obd" name="obd: P0481" sizey="1" storageaddress="0x3070" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fan 2 Control Circuit</description>
   </table>
   <table category="obd" name="obd: P0506" sizey="1" storageaddress="0x3081" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Idle Air Control System RPM Lower Than Expected</description>
   </table>
   <table category="obd" name="obd: P0507" sizey="1" storageaddress="0x3082" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Idle Air Control System RPM Higher Than Expected</description>
   </table>
   <table category="obd" name="obd: P0562" sizey="1" storageaddress="0x307B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>System Voltage Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0562 threshold" sizex="1" storageaddress="0x2C4A" storagetype="uint16" type="2D" userlevel="1">
@@ -3343,16 +3269,15 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0563" sizey="1" storageaddress="0x307A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>System Voltage High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0563 threshold" sizex="1" storageaddress="0x2C48" storagetype="uint16" type="2D" userlevel="1">
@@ -3363,68 +3288,63 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0601" sizey="1" storageaddress="0x308E" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Watchdog</description>
   </table>
   <table category="obd" name="obd: P0606" sizey="1" storageaddress="0x308F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Checksum</description>
   </table>
   <table category="obd" name="obd: P0627" sizey="1" storageaddress="0x3039" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fuel Pump Control Circuit/Open</description>
   </table>
   <table category="obd" name="obd: P0630" sizey="1" storageaddress="0x3088" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>VIN Not Programmed or Incompatible - ECU</description>
   </table>
   <table category="obd" name="obd: P0638" sizey="1" storageaddress="0x3027" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control Range/Performance</description>
   </table>
   <table category="obd" endian="big" name="obd: P0638 threshold" sizex="1" storageaddress="0x2CC2" storagetype="uint16" type="2D" userlevel="1">
@@ -3435,354 +3355,327 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <description/>
   </table>
   <table category="obd" name="obd: P0646" sizey="1" storageaddress="0x307E" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>A/C Clutch Relay Control Circuit Low</description>
   </table>
   <table category="obd" name="obd: P0647" sizey="1" storageaddress="0x307F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>A/C Clutch Relay Control Circuit High</description>
   </table>
   <table category="obd" name="obd: P0768" sizey="1" storageaddress="0x303F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Shift Solenoid D Electrical</description>
   </table>
   <table category="obd" name="obd: P1280" sizey="1" storageaddress="0x3080" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fuel System Relay Circuit</description>
   </table>
   <table category="obd" name="obd: P1301" sizey="1" storageaddress="0x304E" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Misfire level causing emissions increase</description>
   </table>
   <table category="obd" name="obd: P1302" sizey="1" storageaddress="0x304F" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Misfire level causing catalyst system damage</description>
   </table>
   <table category="obd" name="obd: P2100" sizey="1" storageaddress="0x3098" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control Motor Circuit/Open</description>
   </table>
   <table category="obd" name="obd: P2102" sizey="1" storageaddress="0x3099" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control Motor Circuit/Low</description>
   </table>
   <table category="obd" name="obd: P2103" sizey="1" storageaddress="0x309A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control Motor Circuit/High</description>
   </table>
   <table category="obd" name="obd: P2104" sizey="1" storageaddress="0x3094" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control System - Forced Idle</description>
   </table>
   <table category="obd" name="obd: P2105" sizey="1" storageaddress="0x3095" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control System - Forced Engine Shutdown</description>
   </table>
   <table category="obd" name="obd: P2106" sizey="1" storageaddress="0x3096" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control System - Forced Limited Power</description>
   </table>
   <table category="obd" name="obd: P2107" sizey="1" storageaddress="0x3097" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control Module Processor</description>
   </table>
   <table category="obd" name="obd: P2108" sizey="1" storageaddress="0x309B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control Module Performance</description>
   </table>
   <table category="obd" name="obd: P2122" sizey="1" storageaddress="0x3020" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Pedal Position Sensor D Circuit Low</description>
   </table>
   <table category="obd" name="obd: P2123" sizey="1" storageaddress="0x3021" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Pedal Position Sensor D Circuit High</description>
   </table>
   <table category="obd" name="obd: P2127" sizey="1" storageaddress="0x3022" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Pedal Position Sensor E Circuit Low</description>
   </table>
   <table category="obd" name="obd: P2128" sizey="1" storageaddress="0x3023" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Pedal Position Sensor E Circuit High</description>
   </table>
   <table category="obd" name="obd: P2135" sizey="1" storageaddress="0x3026" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Position Sensor A/B Voltage Correlation</description>
   </table>
   <table category="obd" name="obd: P2138" sizey="1" storageaddress="0x3089" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Pedal Position Sensor D/E Voltage Correlation</description>
   </table>
   <table category="obd" name="obd: P2173" sizey="1" storageaddress="0x3093" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Throttle Actuator Control System - High Airflow Detected</description>
   </table>
   <table category="obd" name="obd: P2602" sizey="1" storageaddress="0x308A" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Coolant Pump Control Circuit Low</description>
   </table>
   <table category="obd" name="obd: P2603" sizey="1" storageaddress="0x308B" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Coolant Pump Control Circuit High</description>
   </table>
   <table category="obd" name="obd: P2646" sizey="1" storageaddress="0x3071" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>A Rocker Arm Actuator System Performance or Stuck Off</description>
   </table>
   <table category="obd" name="obd: P2647" sizey="1" storageaddress="0x3072" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>A Rocker Arm Actuator System Stuck On</description>
   </table>
   <table category="obd" name="obd: P2648" sizey="1" storageaddress="0x3073" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>A Rocker Arm Actuator Control Circuit Low</description>
   </table>
   <table category="obd" name="obd: P2649" sizey="1" storageaddress="0x3074" type="Switch" userlevel="1">
-   <state data="00" name="Level 0 DTC: off"/>
-   <state data="40" name="Level 0 DTC: off +self-heal"/>
-   <state data="41" name="Level 1 DTC: Permanent"/>
-   <state data="51" name="Level 1 DTC: Permanent, freeze frame (no overwrite)"/>
-   <state data="42" name="Level 2 DTC: Pending and Permanent"/>
-   <state data="52" name="Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"/>
-   <state data="43" name="Level 3 DTC: Pending and Permanent"/>
-   <state data="53" name="Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"/>
-   <state data="44" name="Level 4 DTC: Permanent"/>
-   <state data="54" name="Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"/>
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>A Rocker Arm Actuator Control Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: misfire threshold" sizex="16" sizey="16" storageaddress="0x36B6" storagetype="uint16" type="3D" userlevel="1">

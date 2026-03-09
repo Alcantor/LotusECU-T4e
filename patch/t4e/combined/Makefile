@@ -6,6 +6,7 @@ OD=powerpc-linux-gnu-objdump
 NAME=patch
 SRCS=hook.S cal.S
 ASFLAGS=-a32 -be
+DEFS=defs.inc
 ifeq ($(OBD_KLINE), y)
   SRCS+=obd_kline.S
 else
@@ -14,14 +15,17 @@ endif
 ifeq ($(ACCUSUMP), y)
 	SRCS+=../accusump/accusump.S
 	ASFLAGS+=--defsym ACCUSUMP=1
+	DEFS+=../accusump/defs.inc
 endif
 ifeq ($(FLEXFUEL), y)
 	SRCS+=../flexfuel/hook.S ../flexfuel/flexfuel.S
 	ASFLAGS+=--defsym FLEXFUEL=1
+	DEFS+=../flexfuel/defs.inc
 endif
 ifeq ($(OBDOIL), y)
 	SRCS+=../obdoil/obdoil.S
 	ASFLAGS+=--defsym OBDOIL=1
+	DEFS+=../obdoil/defs.inc
 endif
 ifeq ($(WIDEBAND), y)
 	SRCS+=../wideband/wideband.S
@@ -29,7 +33,7 @@ ifeq ($(WIDEBAND), y)
 endif
 OBJS=$(SRCS:.S=.o)
 
-all: $(NAME).text.bin $(NAME).data.bin $(NAME).txt
+all: $(NAME).text.bin $(NAME).data.bin $(NAME).txt $(NAME)_defs.xml
 
 %.o: %.S
 	$(AS) ${ASFLAGS} -o $@ $<
@@ -46,6 +50,9 @@ all: $(NAME).text.bin $(NAME).data.bin $(NAME).txt
 %.txt: %.elf
 	$(OD) -x $< > $@
 
+%_defs.xml: %.txt $(DEFS)
+	gawk -v base=0x10000 -f gen_defs.awk $< $(DEFS) > $@
+
 clean:
-	rm -f $(NAME).text.bin $(NAME).data.bin $(NAME).txt
+	rm -f $(NAME).text.bin $(NAME).data.bin $(NAME).txt $(NAME)_defs.xml
 

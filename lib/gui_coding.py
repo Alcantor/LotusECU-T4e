@@ -58,9 +58,9 @@ class COD_editor_win(tk.Toplevel):
 			("MODEL", lambda: self.cod.get_model()),
 			("CRC", lambda: f"0x{self.cod.compute_crc():04X}"),
 			("Stored CRC", lambda: f"0x{self.cod.get_crc():04X}"),
-			("Variant (Big Endian)", lambda: f"0x{self.cod.get_variant():016X}"),
+			("Variant (File Bytes)", lambda: f"0x{self.cod.get_variant():016X}"),
 			("Variant (Lotus Tools)", lambda: f"0x{self.cod.get_variant_lotus():016X}"),
-			("Variant (Little Endian)", lambda: f"0x{self.cod.get_variant_little():016X}")
+			("Variant (CAN 0x50x)", lambda: f"0x{self.cod.get_variant_can():016X}")
 		)
 		self.results = [None]*len(self.r_items)
 		for i in range(len(self.r_items)):
