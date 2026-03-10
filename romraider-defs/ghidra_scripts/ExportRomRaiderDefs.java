@@ -272,29 +272,52 @@ public class ExportRomRaiderDefs extends GhidraScript {
 	/* Multiple choices switch    */
 	/******************************/
 
+	/*
+	 * T4e u8_obd_config:
+	 *   Bits 0-2 0x0F:
+	 *	            0: Off
+	 *                  1: Type A (1-trip, steady MIL)
+	 *                  2: Type B (2-trip, priority freeze frame)
+	 *                  3: Type B (2-trip, normal freeze frame)
+	 *                  4: Type A (1-trip, blinking MIL)
+	 *   Bit    4 0x10: Freeze frame enable
+	 *   Bit    6 0x40: Self-heal (DTC can un-confirm after repeated passing events)
+	 */
 	private static final String[][] OBD_CONFIG = {
-		{"00", "Level 0 DTC: off"},
-		{"40", "Level 0 DTC: off +self-heal"},
-		{"41", "Level 1 DTC: Permanent"},
-		{"51", "Level 1 DTC: Permanent, freeze frame (no overwrite)"},
-		{"42", "Level 2 DTC: Pending and Permanent"},
-		{"52", "Level 2 DTC: Pending and Permanent, freeze frame (overwrite level 1,3)"},
-		{"43", "Level 3 DTC: Pending and Permanent"},
-		{"53", "Level 3 DTC: Pending and Permanent, freeze frame (no overwrite)"},
-		{"44", "Level 4 DTC: Permanent"},
-		{"54", "Level 4 DTC: Permanent, freeze frame (overwrite level 1,3)"}
+		{"00", "Disabled"},
+		{"41", "Type A (1-trip MIL)"},
+		{"51", "Type A (1-trip MIL) + Freeze frame"},
+		{"42", "Type B (2-trip MIL)"},
+		{"52", "Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"},
+		{"43", "Type B (2-trip MIL)"},
+		{"53", "Type B (2-trip MIL) + Freeze frame"},
+		{"44", "Type A (1-trip blinking MIL)"},
+		{"54", "Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"}
 	};
 
+	/*
+	 * T6 u8_obd2level_t6:
+	 *   Bits 0-2 0x0F:
+	 *	            0: Off
+	 *                  1: Type A (1-trip, steady MIL)
+	 *                  2: Type B (2-trip, with Mode06 data)
+	 *                  3: Type B (2-trip)
+	 *                  4: Type A (1-trip, blinking MIL)
+	 *   Bit    4 0x10: Emissions (freeze frame + pending/confirmed DTC; else Mode08 only)
+	 *   Bit    5 0x20: Mode08 timed test
+	 *   Bit    6 0x40: Continuous monitor
+	 *   Bit    7 0x80: Priority freeze frame (overwrites existing)
+	 */
 	private static final String[][] OBD_CONFIG_T6 = {
-		{"00", "OFF"},
-		{"01", "ON 0x01"},
-		{"11", "ON 0x11"},
-		{"12", "ON 0x12"},
-		{"13", "ON 0x13"},
-		{"21", "ON 0x21"},
-		{"53", "ON 0x53"},
-		{"91", "ON 0x91"},
-		{"92", "ON 0x92"}
+		{"00", "Disabled"},
+		{"01", "Non-emissions (1-trip, Mode08)"},
+		{"11", "Type A (1-trip MIL) + Freeze frame"},
+		{"12", "Type B (2-trip MIL) + Freeze frame + Mode06 data"},
+		{"13", "Type B (2-trip MIL) + Freeze frame"},
+		{"21", "Non-emissions (1-trip, Mode08 timed)"},
+		{"53", "Type B (2-trip MIL) + Freeze frame (continuous monitor)"},
+		{"91", "Type A (1-trip MIL) + Priority freeze frame"},
+		{"92", "Type B (2-trip MIL) + Priority freeze frame"}
 	};
 
 	private static final String[][] BOOLEAN = {
