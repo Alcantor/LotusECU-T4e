@@ -60,9 +60,8 @@ wideband_init_bank:
 	# Set 0 for wideband value
 	#li	%r4, 0
 	sth	%r4, wb_corr_adc(%r3)
-	# Copy CAL_sensor_O2_heater_threshold
-	lis	%r4, CAL_sensor_O2_heater_threshold@ha
-	lhz	%r4, CAL_sensor_O2_heater_threshold@l(%r4)
+	# Allow more current to be drawned unless we decided it's a narrow-band
+	li	%r4, WB_MAX_I
 	sth	%r4, wb_ht_th(%r3)
 	blr
 
@@ -175,51 +174,59 @@ wideband:
 # Param r3 is pointer to bank struct
 # Param r4 is input adc value
 wideband_5ms_bank:
+	# Reset and exit if ignition is off because the controller is wired to
+	# the rear ignition relay and not the main relay.
+	lis	%r5, ignition_on_flags@ha
+	lhz	%r5, ignition_on_flags@l(%r5)
+	rlwinm.	%r5, %r5, 0, 31, 31
+	bne	timer_1
+	b	wideband_init_bank
+timer_1:
 	# Only if state is less or equal 2000
 	lhz	%r5, wb_state(%r3)
 	cmplwi	%r5, 2000
-	ble	timer_1
+	ble	timer_2
 	blr
-timer_1:
+timer_2:
 	# ADC Shift
 	srawi	%r4, %r4, 4
 	# Take 512 samples from 1.22s to 3.78s
 	cmplwi	%r5, (500-(1<<(WB_CALWIN-1)))
-	blt	timer_4
+	blt	timer_5
 	cmplwi	%r5, (500+(1<<(WB_CALWIN-1)))
-	bge	timer_2
+	bge	timer_3
 	# If it's below than 1.16 V assume NB
 	cmplwi	%r4, (WB_CAL_A-WB_CAL_T)
-	blt	timer_5
+	blt	timer_6
 	# If it's higher than 2.16 V assume NB
 	cmplwi	%r4, (WB_CAL_A+WB_CAL_T)
-	bgt	timer_5
+	bgt	timer_6
 	# Accumulate
 	lwz	%r6, wb_sampleA(%r3)
 	add	%r6, %r6, %r4
 	stw	%r6, wb_sampleA(%r3)
-	b	timer_4
-timer_2:
+	b	timer_5
+timer_3:
 	# Take 512 samples from 6.22s to 8.78s
 	cmplwi	%r5, (1500-(1<<(WB_CALWIN-1)))
-	blt	timer_4
+	blt	timer_5
 	cmplwi	%r5, (1500+(1<<(WB_CALWIN-1)))
-	bge	timer_3
+	bge	timer_4
 	# If it's below than 2.83 V assume NB
 	cmplwi	%r4, (WB_CAL_B-WB_CAL_T)
-	blt	timer_5
+	blt	timer_6
 	# If it's higher than 3.83 V assume NB
 	cmplwi	%r4, (WB_CAL_B+WB_CAL_T)
-	bgt	timer_5
+	bgt	timer_6
 	# Accumulate
 	lwz	%r6, wb_sampleB(%r3)
 	add	%r6, %r6, %r4
 	stw	%r6, wb_sampleB(%r3)
-	b	timer_4
-timer_3:
+	b	timer_5
+timer_4:
 	# Result at 10s
 	cmplwi	%r5, 2000
-	bne	timer_4
+	bne	timer_5
 	# Load the samples into r6 and r7
 	lwz	%r6, wb_sampleA(%r3)
 	lwz	%r7, wb_sampleB(%r3)
@@ -234,16 +241,16 @@ timer_3:
 	srwi	%r6, %r6, (WB_CALWIN+12)
 	subfic	%r6, %r6, WB_CAL_A
 	sth	%r6, wb_offset(%r3)
-	# Don't turn off the heater output unless it's more than 3 A.
-	# The Spartan controller should be in charge of the heating process.
-	li	%r6, WB_MAX_I
-	sth	%r6, wb_ht_th(%r3)
-timer_4:
+timer_5:
 	# Increment
 	addi	%r5, %r5, 1
 	sth	%r5, wb_state(%r3)
 	blr
-timer_5:
+timer_6:
+	# So it's a narrow-band sensor restore the original value
+	lis	%r6, CAL_sensor_O2_heater_threshold@ha
+	lhz	%r6, CAL_sensor_O2_heater_threshold@l(%r6)
+	sth	%r6, wb_ht_th(%r3)
 	# Change state
 	li	%r5, 2002
 	sth	%r5, wb_state(%r3)
