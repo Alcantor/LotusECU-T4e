@@ -1,30 +1,44 @@
-  <table type="2D" name="ethanol: sensor temp reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_ethanol_sensor_temp_reactivity}">
+  <table type="2D" name="sensor: ethanol temp reactivity" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_sensor_ethanol_temp_reactivity}">
    <scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Static X Axis" name="" sizex="1">
     <data>reactivity</data>
    </table>
    <description>Sensivity of the fuel temperature sensor.</description>
   </table>
-  <table type="2D" name="ethanol: sensor content reactivity" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_ethanol_sensor_content_reactivity}">
+  <table type="2D" name="sensor: ethanol content reactivity" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_sensor_ethanol_content_reactivity}">
    <scaling category="Percent" units="%" expression="x*100/256" to_byte="x*256/100" format="0.0" fineincrement="1" coarseincrement="5" />
    <table type="Static X Axis" name="" sizex="1">
     <data>reactivity</data>
    </table>
    <description>Sensivity of the fuel ethanol content sensor.</description>
   </table>
-  <table type="2D" name="ethanol: sensor engine speed limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_ethanol_sensor_engine_speed_limit}">
+  <table type="2D" name="sensor: ethanol engine speed limit" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_sensor_ethanol_engine_speed_limit}">
    <scaling category="RPM" units="rpm" expression="(x*125/4)+500" to_byte="(x-500)*4/125" format="0" fineincrement="32" coarseincrement="100" />
    <table type="Static X Axis" name="" sizex="1">
     <data>engine speed limit</data>
    </table>
    <description>When the engine is above this speed limit, stop reading the flexfuel sensor.</description>
   </table>
-  <table type="2D" name="ethanol: sensor engine load limit" category="ethanol" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_ethanol_sensor_engine_load_limit}">
+  <table type="2D" name="sensor: ethanol engine load limit" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_sensor_ethanol_engine_load_limit}">
    <scaling category="Milligram/Stroke" units="mg/stroke" expression="x*4" to_byte="x/4" format="0" fineincrement="4" coarseincrement="20" />
    <table type="Static X Axis" name="" sizex="1">
     <data>engine load limit</data>
    </table>
    <description>When the engine is above this load limit, stop reading the flexfuel sensor.</description>
+  </table>
+  <table type="2D" name="sensor: ethanol temp fallback" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_sensor_ethanol_temp_fallback}">
+   <scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
+   <table type="Static X Axis" name="" sizex="1">
+    <data>fallback</data>
+   </table>
+   <description>Initial fuel temperature value used at startup before the sensor produces a valid reading.</description>
+  </table>
+  <table type="2D" name="sensor: ethanol content fallback" category="sensor" storagetype="uint8" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_sensor_ethanol_content_fallback}">
+   <scaling category="Percent" units="%" expression="x*100/255" to_byte="x*255/100" format="0.0" fineincrement="1" coarseincrement="5" />
+   <table type="Static X Axis" name="" sizex="1">
+    <data>fallback</data>
+   </table>
+   <description>Initial ethanol content value used at startup before the sensor produces a valid reading.</description>
   </table>
   <table type="2D" name="ethanol: ign adv adj1" category="ethanol" storagetype="uint8" endian="big" sizex="16" userlevel="1" storageaddress="{CAL_ethanol_ign_adv_adj1}">
    <scaling category="Degree" units="&#176;" expression="(x/4)-32" to_byte="(x+32)*4" format="0.00" fineincrement="0.25" coarseincrement="1.0" />
@@ -109,5 +123,29 @@
     <data>High</data>
    </table>
    <description>This defines the ethanol content for which a table is applicable. If you change this value, you need to rework the all tables using the scale 2.</description>
+  </table>
+  <table category="obd" name="obd: P0176 config" sizey="1" storageaddress="{CAL_obd_P0176}" type="Switch" userlevel="1">
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
+   <description>P0176: Fuel Composition Sensor Circuit (no signal)</description>
+  </table>
+  <table category="obd" name="obd: P0177 config" sizey="1" storageaddress="{CAL_obd_P0177}" type="Switch" userlevel="1">
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
+   <description>P0177: Fuel Composition Sensor Range/Performance (frequency >= 170 Hz)</description>
   </table>
 

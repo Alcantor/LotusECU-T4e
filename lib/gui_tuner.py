@@ -260,23 +260,41 @@ class MapTable(tk.Canvas):
 		self.selection[5] = False
 
 class SimpleGauge(tk.Canvas):
-	def __init__(self, parent, name, read_data, fmt, low, high, font='Helvetica 16'):
-		tk.Canvas.__init__(self, parent, width=180, height=30)
-		self.create_rectangle(1, 1, 180, 30, fill="white", outline="black", width=1)
-		self.colorbar = self.create_rectangle(3, 20, 179, 29, fill="red", width=0)
-		self.create_text(3, 3, anchor=tk.NW, justify=tk.LEFT, text=name, font='Helvetica 8')
-		self.value = self.create_text(178, 30, anchor=tk.SE, justify=tk.RIGHT, text="---", font=font)
+	def __init__(self, parent, name, read_data, fmt, low, high, font=None):
+		if callable(read_data): read_data = [read_data]
+		count = len(read_data)
+		if font is None: font = 'Helvetica 16' if count == 1 else 'Helvetica 10'
+		tk.Canvas.__init__(self, parent, width=180, height=15+15*count)
+		self.create_rectangle(1, 1, 180, 15+15*count, fill="white", outline="black", width=1)
+		self.create_text(3, 3, anchor=tk.NW, text=name, font='Helvetica 8')
+		self.colorbar = []
+		self.value = []
+		for i in range(count):
+			self.colorbar.append(self.create_rectangle(3, 20+15*i, 179, 29+15*i, fill="red", width=0))
+			self.value.append(self.create_text(178, 30+15*i, anchor=tk.SE, text="---", font=font))
 		self.name = name
 		self.read_data = read_data
 		self.fmt = fmt
 		self.low = low
 		self.high = high
+		self.data = [0] * count
+
 	def update(self):
-		self.data = self.read_data()
-		self.itemconfigure(self.value, text=self.fmt.format(self.data))
-		ratio = sorted([0, (self.data-self.low)/(self.high-self.low), 1.0])[1]
-		self.coords(self.colorbar, 3, 20, 179*ratio, 29)
-		self.itemconfigure(self.colorbar, fill=hls_to_hex(0.7-(0.7*ratio), 0.5, 1.0))
+		self.data = [read() for read in self.read_data]
+		for i, data in enumerate(self.data):
+			self.itemconfigure(self.value[i], text=self.fmt.format(data))
+			ratio = sorted([0.0, (data - self.low) / (self.high - self.low), 1.0])[1]
+			self.coords(self.colorbar[i], 3, 20+15*i, 3+176*ratio, 29+15*i)
+			self.itemconfigure(self.colorbar[i], fill=hls_to_hex(0.7-(0.7*ratio), 0.5, 1.0))
+
+	def log_header(self):
+		if len(self.data) == 1: return self.name
+		return ','.join(f'{self.name} #{i+1}' for i in range(len(self.data)))
+
+	def log_data(self):
+		if len(self.data) == 1: return str(self.data[0])
+		return ','.join(str(d) for d in self.data)
+
 
 class TunerWin(tk.Toplevel):
 	def __init__(self, prefs, ecudef, parent=None):
@@ -438,12 +456,12 @@ class TunerWin(tk.Toplevel):
 		filename = f"tuner-session-{now}.csv"
 		self.log_file = open(filename, "w", encoding="utf-8")
 		self.log_file.write('Timestamp')
-		for g in self.gauges: self.log_file.write(','+g.name)
+		for g in self.gauges: self.log_file.write(',' + g.log_header())
 		self.log_file.write('\n')
 
 	def log_put(self):
 		self.log_file.write(datetime.now().strftime("%H:%M:%S.%f"))
-		for g in self.gauges: self.log_file.write(','+str(g.data))
+		for g in self.gauges: self.log_file.write(',' + g.log_data())
 		self.log_file.write('\n')
 
 	def log_close(self, event):

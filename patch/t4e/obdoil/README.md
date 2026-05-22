@@ -16,6 +16,11 @@ As a bonus, it also adds the missing intake manifold absolute pressure (Exige).
 ***Note***: The oil temperature input is calibrated for a NTC 53k (at 25°C) and
 Beta 3940.
 
+## OBD Diagnostic Trouble Codes
+
+ - P0522: Oil Pressure Sensor Circuit Low (ADC voltage below threshold — sensor shorted to ground or disconnected)
+ - P0523: Oil Pressure Sensor Circuit High (ADC voltage above threshold — sensor shorted to 5V)
+
 ## Queries
 
  - Intake Manifold Pressure : OBD mode 0x01 pid 0x0B

@@ -73,6 +73,7 @@ All `CAL_` and `LEA_` symbols must use types supported by: `../ghidra_scripts/Ex
 | Suffix | Meaning |
 |--------|---------|
 | `_1`, `_2` | General numbering (e.g., `pps_1`, `tps_2`) |
+| `_bank1`, `_bank2` | Cylinder bank qualifier for V6 engines (bank 1 = cylinders 1-3-5, bank 2 = cylinders 2-4-6) |
 | `_5ms` | Called every 5ms |
 | `_10ms` | Called every 10ms |
 | `_100ms` | Called every 100ms |
@@ -108,8 +109,9 @@ All `CAL_` and `LEA_` symbols must use types supported by: `../ghidra_scripts/Ex
 | `_retard1` | Knock spark advance retard (Lotus terminology) |
 | `_retard2` | Octane scaler (Lotus terminology) |
 | `_smooth` | Variable that has been through a low pass filter |
-| `_ips` | Qualifier: value applies when the IPS automatic gearbox is fitted (T6 and G6 ECUs only; e.g., `CAL_ign_advance_base_ips`) |
+| `_ips` | Qualifier: value applies when the IPS automatic gearbox is fitted (T6 and G6 ECUs only; e.g., `CAL_ign_adv_base_ips`) |
 | `_sport` | Qualifier: value applies in sport driving mode (T6 and G6 ECUs only; e.g., `CAL_tc_threshold_sport`) |
+| `_race` | Qualifier: value applies in race driving mode (T6 and G6 ECUs only; e.g., `CAL_vvt_intake_adv_race_base`) |
 | `_smooth_x` | Low-pass filter accumulator storing scaled value. Divide by the scale to get `_smooth` |
 | `_state` | State machine current state |
 | `_step` | Increment/Decrement value (same in both direction) |

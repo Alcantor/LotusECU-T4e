@@ -1,0 +1,117 @@
+// HC08 Safety Processor (MC68HC908JK8) - State machine
+// Render: dot -Tpng -Gdpi=150 hc08_safety.dot -o hc08_safety.png
+//
+// The HC08 is an independent safety co-processor. Every 1ms it samples the
+// pedal (PPS) and throttle (TPS) sensors directly and checks that the throttle
+// is never more open than the pedal commands. The main MPC talks to it over
+// SCI; loss of that link, or an implausible throttle, forces idle then shutdown.
+//
+// Normally a throttle-over-pedal mismatch trips P2104 after 100ms (timer_1 cap
+// in state 2). The MPC raises flags_from_mpc 0x04 while its throttle-smoothing
+// algorithm runs - the smoothed throttle command can briefly lead/lag the pedal
+// - to hold the check off: the machine drops to state 1, pins the fault timers
+// at 0, and runs out the timer_3 budget (400ms = 0x190) before the check resumes
+// - extending the tolerated mismatch from 100ms to 400ms. The build.py autoblip
+// patch reuses this same flag/budget (stretched to 2000ms) so a rev-match blip
+// does not trip P2104.
+//
+// hc08.c references:
+//   state_machine_1ms()   lines 692-760   (state dispatch, run every 1ms)
+//   main()                lines 767-797   (SCI handshake + comms watchdog)
+//   check_pps_tps()       lines 624-658   (plausibility compare, P2104)
+//   pps_tps_target()      lines 545-557   (CAL_tps_target lookup vs PPS)
+//   init_state()          lines 492-539   (target table, only path back to 0)
+//   monitor_maf()         lines 664-685   (PTB1 = MAF; P2105 escalation in state 4)
+//   force_idle()          lines 439-449   (assert PTD4, state>=4, flag 0x10)
+//   force_engine_shutdown() lines 474-484 (clear PTD3, state>=5, flag 0x20)
+//
+// Faults latch: force_idle/force_engine_shutdown only raise the state, and the
+// matching release_* only act when state is still below the latch, so recovery
+// requires init_state() (a reset).
+
+digraph hc08_safety {
+    rankdir=TB;
+    newrank=true;
+    node [fontname="Helvetica", fontsize=11];
+    edge [fontname="Helvetica", fontsize=10];
+    nodesep=0.45;
+    ranksep=0.55;
+
+    // ===================== State machine =====================
+    subgraph cluster_states {
+        label=<<B>State machine</B>  (variable <FONT COLOR="red">state</FONT>, escalates only)>;
+        fontname="Helvetica"; fontsize=13; style=dashed; color=gray50;
+
+        s0 [shape=box, style="filled,rounded", fillcolor=lightgray, label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+            <TR><TD><B>0 - Init / Reset</B></TD></TR>
+            <TR><TD>Reset entry (init_state)</TD></TR>
+            <TR><TD> </TD></TR>
+            <TR><TD>Load target table</TD></TR>
+            <TR><TD>Clear timers 1 / 2 / 3</TD></TR>
+            <TR><TD>Release forced idle + shutdown</TD></TR>
+            </TABLE>
+        >];
+
+        s1 [shape=box, style="filled,rounded", fillcolor=lightcyan, label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+            <TR><TD><B>1 - Check suppressed</B></TD></TR>
+            <TR><TD>MPC throttle-smoothing</TD></TR>
+            <TR><TD> </TD></TR>
+            <TR><TD>Reset P2104 timer (timer_1)</TD></TR>
+            <TR><TD>Reset P2105 timer (timer_2)</TD></TR>
+            <TR><TD>Run 400ms budget (timer_3)</TD></TR>
+            </TABLE>
+        >];
+
+        s2 [shape=box, style="filled,rounded", fillcolor=palegreen, label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+            <TR><TD><B>2 - Monitor (normal)</B></TD></TR>
+            <TR><TD>Plausibility check, every 1ms</TD></TR>
+            <TR><TD> </TD></TR>
+            <TR><TD>Target = 16-pt PPS table (floor ~10%)</TD></TR>
+            <TR><TD>Bypass check above 80% pedal</TD></TR>
+            </TABLE>
+        >];
+
+        s3 [shape=box, style="filled,rounded", fillcolor=palegreen, label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+            <TR><TD><B>3 - Degraded monitor</B></TD></TR>
+            <TR><TD>MPC reported sensor fault</TD></TR>
+            <TR><TD> </TD></TR>
+            <TR><TD>Target forced to fixed 20%</TD></TR>
+            </TABLE>
+        >];
+
+        s4 [shape=box, style="filled,rounded", fillcolor=khaki, label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+            <TR><TD><B>4 - Forced idle (P2104)</B></TD></TR>
+            <TR><TD>Disable throttle actuator</TD></TR>
+            <TR><TD> </TD></TR>
+            <TR><TD>Assert PTD4</TD></TR>
+            <TR><TD>Set MPC flag 0x10</TD></TR>
+            </TABLE>
+        >];
+
+        s5 [shape=box, style="filled,rounded", fillcolor=lightpink, label=<
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="2">
+            <TR><TD><B>5 - Engine shutdown (P2105)</B></TD></TR>
+            <TR><TD>Disable injectors</TD></TR>
+            <TR><TD> </TD></TR>
+            <TR><TD>Clear PTD3 (active-low)</TD></TR>
+            <TR><TD>Set MPC flag 0x20</TD></TR>
+            </TABLE>
+        >];
+
+        s0 -> s2 [label="first tick"];
+        s2 -> s1 [label="MPC smoothing active\n(flags & 0x04)", color=blue, fontcolor=blue];
+        s1 -> s2 [label="flag cleared or\ntimer elapsed", color=blue, fontcolor=blue];
+        s2 -> s3 [label="MPC sensor fault\n(flags & 0x08)", color=blue, fontcolor=blue];
+        s2 -> s4 [label="TPS > target for 100ms (timer_1)", color=red, fontcolor=red];
+        s3 -> s4 [label="TPS > target for 100ms (timer_1)", color=red, fontcolor=red];
+        s4 -> s5 [label="MAF airflow still higher than\n2.2V for 100ms (timer_2)", color=red, fontcolor=red];
+
+        s2 -> s4 [style=dotted, label="MPC limp (flags & 0x10)\nor communication timeout", fontcolor=gray40, color=gray40];
+        s3 -> s4 [style=invis];
+    }
+}

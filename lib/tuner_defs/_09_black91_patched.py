@@ -110,9 +110,9 @@ class TunerDefinition(Black91):
 		),
 		MapTable(parent,
 			"ETHANOL Ignition Low Cam",
-			lambda: [[int(v)/4-10 for v in self.read_extracal("OFF_CAL_ethanol_ign_advance_low_cam_base", i*32, 32)] for i in range(32)],
+			lambda: [[int(v)/4-10 for v in self.read_extracal("OFF_CAL_ethanol_ign_adv_low_cam_base", i*32, 32)] for i in range(32)],
 			"{:.1f}",
-			lambda x,y,value:self.write_extracal("OFF_CAL_ethanol_ign_advance_low_cam_base", (y*32)+x, int((value+10)*4).to_bytes(1, BO_BE)),
+			lambda x,y,value:self.write_extracal("OFF_CAL_ethanol_ign_adv_low_cam_base", (y*32)+x, int((value+10)*4).to_bytes(1, BO_BE)),
 			0.25,
 
 			"RPM",
@@ -127,9 +127,9 @@ class TunerDefinition(Black91):
 		),
 		MapTable(parent,
 			"ETHANOL Ignition High Cam",
-			lambda: [[int(v)/4-10 for v in self.read_extracal("OFF_CAL_ethanol_ign_advance_high_cam_base", i*8, 8)] for i in range(8)],
+			lambda: [[int(v)/4-10 for v in self.read_extracal("OFF_CAL_ethanol_ign_adv_high_cam_base", i*8, 8)] for i in range(8)],
 			"{:.1f}",
-			lambda x,y,value:self.write_extracal("OFF_CAL_ethanol_ign_advance_high_cam_base", (y*8)+x, int((value+10)*4).to_bytes(1, BO_BE)),
+			lambda x,y,value:self.write_extracal("OFF_CAL_ethanol_ign_adv_high_cam_base", (y*8)+x, int((value+10)*4).to_bytes(1, BO_BE)),
 			0.25,
 
 			"RPM",

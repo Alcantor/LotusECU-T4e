@@ -11,5 +11,13 @@ CALENTRY CAL_sensor_oil_pressure_offset
 	.short	-1250
 CALENTRY CAL_sensor_oil_pressure_reactivity
 	.byte	0x40
+CALENTRY CAL_obd_P0522_threshold
+	.short	50   # ~0.24V (below 0.5V valid range)
+CALENTRY CAL_obd_P0523_threshold
+	.short	973  # ~4.76V (above 4.5V valid range)
+CALENTRY CAL_obd_P0522
+	.byte	0x51
+CALENTRY CAL_obd_P0523
+	.byte	0x51
 # Padding
-	.byte	0xFF
+	.byte	0xFF, 0xFF, 0xFF

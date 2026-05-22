@@ -15,7 +15,7 @@ class FileProgress_widget(tk.Frame, FileProgress):
 		self.lb.insert(tk.END, msg)
 		if(self.lb.size() > self.log_size):
 			self.lb.delete(0, 0)
-		self.update()
+		self.update_idletasks()
 
 	def progress_start(self, total_size):
 		self.pb['value'] = 0
@@ -23,8 +23,8 @@ class FileProgress_widget(tk.Frame, FileProgress):
 
 	def progress(self, chunk_size):
 		self.pb['value'] += chunk_size
-		self.update()
+		self.update_idletasks()
 
 	def progress_end(self):
 		self.pb['value'] = self.pb['maximum']
-		self.update()
+		self.update_idletasks()

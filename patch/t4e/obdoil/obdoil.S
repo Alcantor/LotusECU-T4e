@@ -5,6 +5,11 @@
 .lcomm	oil_pressure,          2, 2 # i16_pressure_mbar
 .lcomm	oil_temp_smooth_x,     4, 4
 .lcomm	oil_pressure_smooth_x, 4, 4
+.lcomm	obd_P0522_config,      1, 1 # P0522: Oil Pressure Sensor Circuit Low
+.lcomm	obd_P0522_flags,       1, 1
+.lcomm	obd_P0523_config,      1, 1 # P0523: Oil Pressure Sensor Circuit High
+.lcomm	obd_P0523_flags,       1, 1
+.lcomm	obd_obdoil_counter,    1, 1 # Dummy shared start/warm counter for obd_set_dtc
 
 .section .text
 .global obdoil_init, obdoil
@@ -26,6 +31,15 @@ obdoil_init:
 	lis	%r4, oil_pressure_smooth_x@ha
 	stw	%r3, oil_pressure_smooth_x@l(%r4)
 
+	# Initialize OBD DTC config bytes
+	lis	%r12, CAL_base_extra@ha
+	addi	%r12, %r12, CAL_base_extra@l
+	lbz	%r3, OFF_CAL_obd_P0522(%r12)
+	lis	%r4, obd_P0522_config@ha
+	stb	%r3, obd_P0522_config@l(%r4)
+	lbz	%r3, OFF_CAL_obd_P0523(%r12)
+	lis	%r4, obd_P0523_config@ha
+	stb	%r3, obd_P0523_config@l(%r4)
 	blr
 
 obdoil:
@@ -68,9 +82,21 @@ obdoil:
 	lis	%r4, oil_temp@ha
 	stb	%r3, oil_temp@l(%r4)
 
-	# Oil pressure scaling
+	# Read raw ADC for oil pressure fault detection
 	lis	%r3, sensor_adc_free_3@ha
 	lhz	%r3, sensor_adc_free_3@l(%r3)
+
+	# P0522: ADC too low (sensor shorted to ground)
+	lhz	%r4, OFF_CAL_obd_P0522_threshold(%r12)
+	cmplw	%r3, %r4
+	blt	obdoil_p0522_set
+
+	# P0523: ADC too high (sensor shorted to 5V)
+	lhz	%r4, OFF_CAL_obd_P0523_threshold(%r12)
+	cmplw	%r3, %r4
+	bgt	obdoil_p0523_set
+
+	# Oil pressure scaling
 	#lis	%r12, CAL_base_extra@ha
 	#addi	%r12, %r12, CAL_base_extra@l
 	lhz	%r4, OFF_CAL_sensor_oil_pressure_gain(%r12)
@@ -101,6 +127,44 @@ obdoil:
 	lis	%r4, oil_pressure@ha
 	sth	%r3, oil_pressure@l(%r4)
 
+	# ADC in valid range: clear P0522 and P0523
+	lis	%r3, obd_P0522_config@ha
+	addi	%r3, %r3, obd_P0522_config@l
+	lis	%r4, obd_P0522_flags@ha
+	addi	%r4, %r4, obd_P0522_flags@l
+	bla	obd_clr_dtc
+	lis	%r3, obd_P0523_config@ha
+	addi	%r3, %r3, obd_P0523_config@l
+	lis	%r4, obd_P0523_flags@ha
+	addi	%r4, %r4, obd_P0523_flags@l
+	bla	obd_clr_dtc
+	b	obdoil_end
+
+obdoil_p0522_set:
+	lis	%r3, obd_P0522_config@ha
+	addi	%r3, %r3, obd_P0522_config@l
+	lis	%r4, obd_P0522_flags@ha
+	addi	%r4, %r4, obd_P0522_flags@l
+	lis	%r5, obd_obdoil_counter@ha
+	addi	%r5, %r5, obd_obdoil_counter@l
+	mr	%r6, %r5
+	li	%r7, 522
+	bla	obd_set_dtc
+	b	obdoil_end
+
+obdoil_p0523_set:
+	lis	%r3, obd_P0523_config@ha
+	addi	%r3, %r3, obd_P0523_config@l
+	lis	%r4, obd_P0523_flags@ha
+	addi	%r4, %r4, obd_P0523_flags@l
+	lis	%r5, obd_obdoil_counter@ha
+	addi	%r5, %r5, obd_obdoil_counter@l
+	mr	%r6, %r5
+	li	%r7, 523
+	bla	obd_set_dtc
+	b	obdoil_end
+
+obdoil_end:
 	# Pop link register from stack
 	lwz	%r0, 12(%r1)
 	mtlr	%r0

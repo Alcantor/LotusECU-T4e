@@ -1,4 +1,4 @@
-  <table type="2D" name="sensor: oil temperature scaling" category="sensor" storagetype="uint8" endian="big" sizex="33" userlevel="1" storageaddress="{CAL_sensor_oil_temp_scaling}">
+  <table type="2D" name="sensor: oil temp scaling" category="sensor" storagetype="uint8" endian="big" sizex="33" userlevel="1" storageaddress="{CAL_sensor_oil_temp_scaling}">
    <scaling category="Degree Celsius" units="&#176;C" expression="(x*5/8)-40" to_byte="(x+40)*8/5" format="0.0" fineincrement="0.625" coarseincrement="2" />
    <table type="Static X Axis" name="signal" sizex="33">
     <data>0</data>
@@ -69,5 +69,43 @@ Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</descripti
    <description>At every cycle, the sampled oil pressure value is mixed with the previous value.
 
 Formula: value = (100% - REACTIVITY) * previous + REACTIVITY * sample</description>
+  </table>
+  <table type="2D" name="obd: P0522 threshold" category="obd" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_obd_P0522_threshold}">
+   <scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.1" />
+   <table type="Static X Axis" name="" sizex="1">
+    <data>threshold</data>
+   </table>
+   <description>P0522: ADC voltage below this threshold triggers oil pressure sensor circuit low fault (sensor shorted to ground).</description>
+  </table>
+  <table type="2D" name="obd: P0523 threshold" category="obd" storagetype="uint16" endian="big" sizex="1" userlevel="1" storageaddress="{CAL_obd_P0523_threshold}">
+   <scaling category="Volt" units="v" expression="x*5/1023" to_byte="x*1023/5" format="0.00" fineincrement="0.05" coarseincrement="0.1" />
+   <table type="Static X Axis" name="" sizex="1">
+    <data>threshold</data>
+   </table>
+   <description>P0523: ADC voltage above this threshold triggers oil pressure sensor circuit high fault (sensor shorted to 5V).</description>
+  </table>
+  <table category="obd" name="obd: P0522 config" sizey="1" storageaddress="{CAL_obd_P0522}" type="Switch" userlevel="1">
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
+   <description>P0522: Oil Pressure Sensor Circuit Low</description>
+  </table>
+  <table category="obd" name="obd: P0523 config" sizey="1" storageaddress="{CAL_obd_P0523}" type="Switch" userlevel="1">
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
+   <description>P0523: Oil Pressure Sensor Circuit High</description>
   </table>
 

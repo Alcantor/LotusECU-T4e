@@ -8,23 +8,25 @@ BO_BE = 'big'
 
 class CRP08_uploader:
 	errors = {
-		0x80: "Max enquiry error",
-		0x81: "Preamble error (Message 7,1 or 8,0 or 9,0 expected)",
-		0x82: "Max retry error",
+		0x80: "Max enquiry error", # not emitted by boot08.c
+		0x81: "Preamble error (Expected Start (7), Pause (8), Resume (9))",
+		0x82: "Max retransmit error",
 		0x83: "Rx timeout error",
-		0x84: "Decipher error",
+		0x84: "Decipher error", # not emitted by boot08.c
 		0x85: "Programming error",
-		0x86: "Memory copy error",
-		0x87: "End procedure error (Message 9,1 related)",
+		0x86: "Memory copy error", # not emitted by boot08.c
+		0x87: "End procedure error (Expected Retransmit (4), Start (7), Resume (9))",
 		0x88: "Erase error",
-		0x89: "Protocol error (Message 6 excepted)",
+		0x89: "Protocol error (Expected Data (6))",
 		0x8A: "Blank serial number (Flash address is not 0xA00)",
 		0x8B: "ECU information error (T4E/T6 not matching)",
 		0x8C: "Serial number error (Version 0xA00 is not between Min and Max)",
 		0x8D: "Device information error (Invalid destination address and/or size)",
 		0x8E: "Max unanswered request data",
 		0x8F: "Device not blank (For addresses: 0xA00, 0xA2C, 0xA4C, 0x7C0)",
-		0x90: "Wrong HC908 passphrase (8 bytes)",
+		0x90: "HC08 wrong passphrase (8 bytes)",
+		0x91: "HC08 erase error",
+		0x92: "HC08 programming error",
 		0x96: "Rx buffer overflow error (>0x400 bytes)",
 		0x97: "CRC error",
 		0x98: "Index error",
@@ -94,22 +96,36 @@ class CRP08_uploader:
 		# Should be 1 for EMS and 2 for TCU
 		self.send(7, efi_id.to_bytes(1, BO_BE) + bytes(5))
 
+	def send_pause(self):
+		# Hold the ECU in the updater (sub-byte must be 0).
+		self.send(8, bytes(6))
+
+	def send_resume(self):
+		# Release the ECU so it boots the application (sub-byte must be 0).
+		self.send(9, bytes(6))
+
+	def send_retransmit(self, efi_id):
+		# Ask the ECU to resend its last message (cmd 4, efi_id in byte 1).
+		self.send(4, efi_id.to_bytes(1, BO_BE) + bytes(5))
+
 	def recv(self, timeout, ui_cb):
 		for _ in range(int(timeout/0.5)):
 			ui_cb()
 			msg = self.bus.recv(timeout=0.5)
-			if(msg != None): break
-		if(msg == None): raise CRP08_exception("No answer!")
-		self.crc.reset()
-		self.crc.update(msg.data[0:-1])
-		if(self.crc.get() != msg.data[-1]):
-			raise CRP08_exception("Wrong CRC!")
-		return (msg.data[0], msg.data[1], msg.data[2:-1])
+			if(msg == None): continue
+			self.crc.reset()
+			self.crc.update(msg.data[0:-1])
+			if(self.crc.get() == msg.data[-1]):
+				return (msg.data[0], msg.data[1], msg.data[2:-1])
+			self.p.log("Dropped frame (wrong CRC)")
+			# The official flasher does not request a retransmit either.
+		raise CRP08_exception("No answer!")
 
 	def bootstrap(self, crp, timeout=60, ui_cb=lambda:None):
 		if(len(crp.chunks)<2):
 			raise CRP08_exception("CRP file is empty!")
 		crp_chunk_i = 1
+		frame_id = frame_size = 0
 		self.open_can(crp.chunks[crp_chunk_i])
 		self.p.log(f"Power On ECU, please! (within {timeout:d} seconds)")
 		while(True):
@@ -151,10 +167,33 @@ class CRP08_uploader:
 				else:
 					self.p.log("ECU: Programming completed!")
 					break
-			# Error
-			if(cmd == 0x04 or cmd == 0x05):
+			# Retransmit request (not fatal), re-send the frame
+			elif(cmd == 0x04):
+				error = data[3]
+				self.p.log(f"ECU: Retransmit frame {frame_id:d} ({self.errors.get(error, 'Unknown')})")
+				self.send_frame(crp.chunks[crp_chunk_i].data, frame_id, frame_size)
+			# Error (fatal)
+			elif(cmd == 0x05):
 				error = data[3]
 				raise CRP08_exception(f"ECU: Error {error:02X} " + self.errors.get(error, "Unknown"))
+			# HC08 programming start (sent after the main flash session, when
+			# an HC08 safety-processor image was marked for flashing). data[0:2]
+			# is a time estimate in ms for init + authentication.
+			#elif(cmd == 0x0B):
+			#	timeout = int.from_bytes(data[0:2], BO_BE)/1000
+			#	self.p.log(f"ECU: HC08 programming... (~{timeout:.1f}s)")
+			# HC08 erase/program info: mass erase done, flash programming
+			# follows. data[0:2] is a time estimate in ms (0 = erase-only path).
+			#elif(cmd == 0x0D):
+			#	timeout = int.from_bytes(data[0:2], BO_BE)/1000
+			#	self.p.log(f"ECU: HC08 erasing/programming... (~{timeout:.1f}s)")
+			# HC08 programming result (terminal message). data[0:2] is a timeout
+			# in ms (0 = done, 3000 = done after a verify-fail reprogram).
+			# Failures arrive as cmd 0x05 instead.
+			#elif(cmd == 0x0C):
+			#	timeout = int.from_bytes(data[0:2], BO_BE) / 1000
+			#	self.p.log(f"ECU: HC08 programming completed! (~{timeout:.1f}s)")
+			#	break
 		self.close_can()
 
 if __name__ == "__main__":

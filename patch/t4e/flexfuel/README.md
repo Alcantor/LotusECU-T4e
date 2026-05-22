@@ -37,6 +37,11 @@ Various tables have been added for different injection and ignition values.
 ***Note***: The PIN LG1 is the only input which can sample a PWM signal. It's a 5V input,
 but the sensor has a open-drain output, so even if it's powered by 12V, it's ok.
 
+## OBD Diagnostic Trouble Codes
+
+ - P0176: Fuel Composition Sensor Circuit (no signal more than 1 second)
+ - P0177: Fuel Composition Sensor Range/Performance (frequency ≥ 170 Hz)
+
 ## Queries
 
  - Ethanol content (%) : OBD mode 0x01 pid 0x52

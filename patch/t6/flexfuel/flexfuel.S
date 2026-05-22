@@ -151,10 +151,21 @@ flexfuel_init:
 	# We cannot read the temperature and the content at the same time, so
 	# we alternate the measurement.
 	#
-	#	100 ms reading the temperature
-	#	100 ms reading the content
+	#	  5 ms mode switch (sample dropped, see below)
+	#	 95 ms reading the temperature
+	#	  5 ms mode switch (sample dropped, see below)
+	#	 95 ms reading the content
 	#
 	# The ethanol sensor update his output every 225ms.
+	#
+	# The EMIOS_CCR5 mode is switched by flexfuel_5ms (a 5ms ISR) exactly on
+	# the ticks 0 and 20. That ISR can preempt the flexfuel reader (main loop)
+	# between the EMIOS capture and the temperature/content decision, which
+	# would make the data and the mode disagree (e.g. a pulse-width capture
+	# read as a period, giving a bogus content reading). As flexfuel runs in
+	# well under 5ms, only one tick can elapse, so 0 and 20 are the only timer
+	# values that can pair stale data with the wrong mode. The reader therefore
+	# drops the sample on those ticks.
 	#
 	li	%r3, 39
 	lis	%r4, ethanol_timer@ha
@@ -221,7 +232,10 @@ flexfuel:
 	# Read the timer
 	lis	%r4, ethanol_timer@ha
 	lbz	%r4, ethanol_timer@l(%r4)
+	cmplwi	%r4, 0
+	beq	flex_end
 	cmplwi	%r4, 20
+	beq	flex_end
 	bge	flex_content
 
 	# Temperature (Duty cycle: 1ms = -40°C and 5ms = 125°C)

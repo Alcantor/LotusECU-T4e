@@ -135,26 +135,11 @@ class TunerDefinition:
 			-10, 50
 		),
 		SimpleGauge(parent,
-			"Octane Scaler #1",
-			lambda: self.read_u16(0x2f814a + 0) / 655.36,
-			"{:.1f} %",
-			0, 100
-		),
-		SimpleGauge(parent,
-			"Octane Scaler #2",
+			"Octane Scaler",
+			[lambda: self.read_u16(0x2f814a + 0) / 655.36,
 			lambda: self.read_u16(0x2f814a + 2) / 655.36,
-			"{:.1f} %",
-			0, 100
-		),
-		SimpleGauge(parent,
-			"Octane Scaler #3",
 			lambda: self.read_u16(0x2f814a + 4) / 655.36,
-			"{:.1f} %",
-			0, 100
-		),
-		SimpleGauge(parent,
-			"Octane Scaler #4",
-			lambda: self.read_u16(0x2f814a + 6) / 655.36,
+			lambda: self.read_u16(0x2f814a + 6) / 655.36],
 			"{:.1f} %",
 			0, 100
 		),

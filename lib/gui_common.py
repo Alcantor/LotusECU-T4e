@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox, ttk
-from threading import *
 
 please_select_file = "Please select a file:"
 bin_file = [("Raw binary file", "*.BIN *.bin *.cpt")]

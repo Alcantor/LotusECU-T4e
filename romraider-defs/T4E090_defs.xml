@@ -2135,7 +2135,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Camshaft Position - Timing Over-Advanced or System Performance</description>
+   <description>Fuel Volume Regulator Control Circuit Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0012" sizey="1" storageaddress="0x308D" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2147,7 +2147,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Camshaft Position - Timing Over-Retarded</description>
+   <description>Fuel Volume Regulator Control Circuit Low</description>
   </table>
   <table category="obd" name="obd: P0016" sizey="1" storageaddress="0x3092" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2159,7 +2159,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Crankshaft Position - Camshaft Position Correlation Error</description>
+   <description>Fuel Shutoff Valve 'A' Control Circuit High</description>
   </table>
   <table category="obd" name="obd: P0076" sizey="1" storageaddress="0x302D" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2171,7 +2171,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Intake Valve Control Solenoid Circuit Low</description>
+   <description>Intake Valve Control Solenoid Circuit Low (Bank 1)</description>
   </table>
   <table category="obd" name="obd: P0077" sizey="1" storageaddress="0x302E" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2183,7 +2183,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Intake Valve Control Solenoid Circuit High</description>
+   <description>Intake Valve Control Solenoid Circuit High (Bank 1)</description>
   </table>
   <table category="obd" name="obd: P0101" sizey="1" storageaddress="0x301F" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2195,7 +2195,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Mass or Volume Air Flow Circuit Range/Performance Problem</description>
+   <description>Mass or Volume Air Flow 'A' Circuit Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0102" sizey="1" storageaddress="0x301D" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2207,7 +2207,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Mass or Volume Air Flow Circuit Low Input</description>
+   <description>Mass or Volume Air Flow 'A' Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0102 threshold" sizex="1" storageaddress="0x2C18" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2226,7 +2226,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Mass or Volume Air Flow Circuit High Input</description>
+   <description>Mass or Volume Air Flow 'A' Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0103 threshold" sizex="1" storageaddress="0x2C16" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2245,7 +2245,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance Problem</description>
+   <description>Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0107" sizey="1" storageaddress="0x3002" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2257,7 +2257,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Manifold Absolute Pressure/Barometric Pressure Circuit Low Input</description>
+   <description>Manifold Absolute Pressure/Barometric Pressure Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0107 threshold" sizex="1" storageaddress="0x2C3E" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2276,7 +2276,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Manifold Absolute Pressure/Barometric Pressure Circuit High Input</description>
+   <description>Manifold Absolute Pressure/Barometric Pressure Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0108 threshold" sizex="1" storageaddress="0x2C3C" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2295,7 +2295,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Intake Air Temperature Circuit Range/Performance Problem</description>
+   <description>Intake Air Temperature Sensor 1 Circuit Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0112" sizey="1" storageaddress="0x3006" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2307,7 +2307,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Intake Air Temperature Circuit Low Input</description>
+   <description>Intake Air Temperature Sensor 1 Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0112 threshold" sizex="1" storageaddress="0x2C2C" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2326,7 +2326,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Intake Air Temperature Circuit High Input</description>
+   <description>Intake Air Temperature Sensor 1 Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0113 threshold" sizex="1" storageaddress="0x2C2A" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2345,7 +2345,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Engine Coolant Temperature Circuit Range/Performance Problem</description>
+   <description>Engine Coolant Temperature Sensor 1 Circuit Range/Performance</description>
   </table>
   <table category="obd" endian="big" name="obd: P0116 engine runtime min" sizex="1" storageaddress="0x2D24" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Second" coarseincrement="5" expression="x" fineincrement="1" format="0" to_byte="x" units="s"/>
@@ -2371,7 +2371,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Engine Coolant Temperature Circuit Low Input</description>
+   <description>Engine Coolant Temperature Sensor 1 Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0117 threshold" sizex="1" storageaddress="0x2C42" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2390,7 +2390,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Engine Coolant Temperature Circuit High Input</description>
+   <description>Engine Coolant Temperature Sensor 1 Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0118 threshold" sizex="1" storageaddress="0x2C40" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2409,7 +2409,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Position Sensor/Switch A Circuit Low Input</description>
+   <description>Throttle Position Sensor 'A' Circuit Low</description>
   </table>
   <table category="obd" name="obd: P0123" sizey="1" storageaddress="0x300F" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2421,7 +2421,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Position Sensor/Switch A Circuit High Input</description>
+   <description>Throttle Position Sensor 'A' Circuit High</description>
   </table>
   <table category="obd" name="obd: P0128" sizey="1" storageaddress="0x3011" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2483,7 +2483,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit Low Voltage (Pre Catalyst)</description>
+   <description>O2 Sensor Circuit Low Voltage (Bank 1 Sensor 1)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0131 threshold" sizex="1" storageaddress="0x2C22" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2502,7 +2502,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit High Voltage (Pre Catalyst)</description>
+   <description>O2 Sensor Circuit High Voltage (Bank 1 Sensor 1)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0132 threshold" sizex="1" storageaddress="0x2C24" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2521,7 +2521,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit Slow Response (Pre Catalyst)</description>
+   <description>O2 Sensor Circuit Slow Response (Bank 1 Sensor 1)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0133 consecutive" sizex="1" storageaddress="0x3150" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
@@ -2582,7 +2582,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit No Activity Detected (Pre Catalyst)</description>
+   <description>O2 Sensor Circuit No Activity Detected (Bank 1 Sensor 1)</description>
   </table>
   <table category="obd" name="obd: P0135" sizey="1" storageaddress="0x3016" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2594,7 +2594,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Heater Circuit (Pre Catalyst)</description>
+   <description>O2 Sensor Heater Circuit (Bank 1 Sensor 1)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0135 P0141 threshold" sizex="1" storageaddress="0x2CA6" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Ampere" coarseincrement="0.2" expression="x/1000" fineincrement="0.01" format="0.00" to_byte="x*1000" units="A"/>
@@ -2620,7 +2620,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit Low Voltage (Post Catalyst)</description>
+   <description>O2 Sensor Circuit Low Voltage (Bank 1 Sensor 2)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0137 threshold" sizex="1" storageaddress="0x2C26" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2639,7 +2639,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit High Voltage (Post Catalyst)</description>
+   <description>O2 Sensor Circuit High Voltage (Bank 1 Sensor 2)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0138 threshold" sizex="1" storageaddress="0x2C28" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2658,7 +2658,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit Slow Response (Post Catalyst)</description>
+   <description>O2 Sensor Circuit Slow Response (Bank 1 Sensor 2)</description>
   </table>
   <table category="obd" name="obd: P0140" sizey="1" storageaddress="0x301B" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2670,7 +2670,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Circuit No Activity Detected (Post Catalyst)</description>
+   <description>O2 Sensor Circuit No Activity Detected (Bank 1 Sensor 2)</description>
   </table>
   <table category="obd" name="obd: P0141" sizey="1" storageaddress="0x301C" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2682,7 +2682,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>O2 Sensor Heater Circuit (Post Catalyst)</description>
+   <description>O2 Sensor Heater Circuit (Bank 1 Sensor 2)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0141 confirm threshold" sizex="1" storageaddress="0x3157" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
@@ -2701,7 +2701,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>System Too Lean</description>
+   <description>System Too Lean (Bank 1)</description>
   </table>
   <table category="obd" name="obd: P0172" sizey="1" storageaddress="0x302B" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2713,7 +2713,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>System Too Rich</description>
+   <description>System Too Rich (Bank 1)</description>
   </table>
   <table category="obd" name="obd: P0201" sizey="1" storageaddress="0x302F" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2773,7 +2773,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Injector Circuit/Open - Extra Injector</description>
+   <description>Injector Circuit/Open - Cylinder 5</description>
   </table>
   <table category="obd" name="obd: P0222" sizey="1" storageaddress="0x3024" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2785,7 +2785,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Position Sensor B Circuit Low</description>
+   <description>Throttle Position Sensor 'B' Circuit Low</description>
   </table>
   <table category="obd" name="obd: P0223" sizey="1" storageaddress="0x3025" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2797,7 +2797,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Position Sensor B Circuit High</description>
+   <description>Throttle Position Sensor 'B' Circuit High</description>
   </table>
   <table category="obd" name="obd: P0237" sizey="1" storageaddress="0x3034" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2809,7 +2809,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Supercharger Boost Sensor A Circuit Low</description>
+   <description>Turbocharger/Supercharger Boost Sensor 'A' Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0237 threshold" sizex="1" storageaddress="0x2D52" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2828,7 +2828,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Supercharger Boost Sensor A Circuit High</description>
+   <description>Turbocharger/Supercharger Boost Sensor 'A' Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0238 threshold" sizex="1" storageaddress="0x2D50" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -2836,6 +2836,18 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
     <data>P0238 threshold</data>
    </table>
    <description/>
+  </table>
+  <table category="obd" name="obd: P0300" sizey="1" storageaddress="0x303F" type="Switch" userlevel="1">
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
+   <description>Random/Multiple Cylinder Misfire Detected</description>
   </table>
   <table category="obd" name="obd: P0301" sizey="1" storageaddress="0x3040" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2895,7 +2907,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Knock Sensor 1 Circuit Low</description>
+   <description>Knock Sensor 1 Circuit Low (Bank 1 or Single Sensor )</description>
   </table>
   <table category="obd" name="obd: P0328" sizey="1" storageaddress="0x304B" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2907,7 +2919,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Knock Sensor 1 Circuit High</description>
+   <description>Knock Sensor 1 Circuit High (Bank 1 or Single Sensor)</description>
   </table>
   <table category="obd" name="obd: P0335" sizey="1" storageaddress="0x304C" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2919,7 +2931,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Crankshaft Position Sensor A Circuit Range/Performance</description>
+   <description>Crankshaft Position Sensor 'A' Circuit</description>
   </table>
   <table category="obd" name="obd: P0340" sizey="1" storageaddress="0x304D" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2931,7 +2943,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Camshaft Position Sensor A Circuit</description>
+   <description>Camshaft Position Sensor 'A' Circuit (Bank 1 or Single Sensor)</description>
   </table>
   <table category="obd" name="obd: P0351" sizey="1" storageaddress="0x303A" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2943,7 +2955,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Ignition Coil A Primary/Secondary Circuit</description>
+   <description>Ignition Coil 'A' Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0352" sizey="1" storageaddress="0x303B" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2955,7 +2967,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Ignition Coil B Primary/Secondary Circuit</description>
+   <description>Ignition Coil 'B' Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0353" sizey="1" storageaddress="0x303C" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2967,7 +2979,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Ignition Coil C Primary/Secondary Circuit</description>
+   <description>Ignition Coil 'C' Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0354" sizey="1" storageaddress="0x303D" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2979,7 +2991,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Ignition Coil D Primary/Secondary Circuit</description>
+   <description>Ignition Coil 'D' Primary/Secondary Circuit</description>
   </table>
   <table category="obd" name="obd: P0420" sizey="1" storageaddress="0x3058" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -2991,7 +3003,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Catalyst System Efficiency Below Threshold</description>
+   <description>Catalyst System Efficiency Below Threshold (Bank 1)</description>
   </table>
   <table category="obd" name="obd: P0441" sizey="1" storageaddress="0x3063" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3161,7 +3173,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Fuel Level Sensor A Circuit Range/Performance</description>
+   <description>Fuel Level Sensor 'A' Circuit Range/Performance</description>
   </table>
   <table category="obd" name="obd: P0462" sizey="1" storageaddress="0x3077" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3173,7 +3185,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Fuel Level Sensor A Circuit Low</description>
+   <description>Fuel Level Sensor 'A' Circuit Low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0462 threshold" sizex="1" storageaddress="0x2D28" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -3192,7 +3204,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Fuel Level Sensor A Circuit High</description>
+   <description>Fuel Level Sensor 'A' Circuit High</description>
   </table>
   <table category="obd" endian="big" name="obd: P0463 threshold" sizex="1" storageaddress="0x2D26" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*5/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/5" units="v"/>
@@ -3224,6 +3236,18 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>Fan 2 Control Circuit</description>
+  </table>
+  <table category="obd" name="obd: P0500" sizey="1" storageaddress="0x3080" type="Switch" userlevel="1">
+   <state data="00" name="Disabled"/>
+   <state data="41" name="Type A (1-trip MIL)"/>
+   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
+   <state data="42" name="Type B (2-trip MIL)"/>
+   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
+   <state data="43" name="Type B (2-trip MIL)"/>
+   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
+   <state data="44" name="Type A (1-trip blinking MIL)"/>
+   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
+   <description>Vehicle speed sensor fault</description>
   </table>
   <table category="obd" name="obd: P0506" sizey="1" storageaddress="0x3081" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3259,7 +3283,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>System Voltage Low</description>
+   <description>BATTERY voltage low</description>
   </table>
   <table category="obd" endian="big" name="obd: P0562 threshold" sizex="1" storageaddress="0x2C4A" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*18/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/18" units="v"/>
@@ -3278,7 +3302,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>System Voltage High</description>
+   <description>BATTERY voltage high</description>
   </table>
   <table category="obd" endian="big" name="obd: P0563 threshold" sizex="1" storageaddress="0x2C48" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Volt" coarseincrement="0.2" expression="x*18/1023" fineincrement="0.05" format="0.00" to_byte="x*1023/18" units="v"/>
@@ -3297,7 +3321,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Watchdog</description>
+   <description>Internal Control Module Memory Check Sum Error</description>
   </table>
   <table category="obd" name="obd: P0606" sizey="1" storageaddress="0x308F" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3309,7 +3333,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Checksum</description>
+   <description>ECU Watch dog timer error</description>
   </table>
   <table category="obd" name="obd: P0627" sizey="1" storageaddress="0x3039" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3321,7 +3345,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Fuel Pump Control Circuit/Open</description>
+   <description>Fuel Pump 'A' Control Circuit/Open</description>
   </table>
   <table category="obd" name="obd: P0630" sizey="1" storageaddress="0x3088" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3333,7 +3357,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>VIN Not Programmed or Incompatible - ECU</description>
+   <description>VIN Not Programmed or Incompatible - ECM/PCM</description>
   </table>
   <table category="obd" name="obd: P0638" sizey="1" storageaddress="0x3027" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3345,7 +3369,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Actuator Control Range/Performance</description>
+   <description>Throttle Actuator Control Range/Performance (Bank 1)</description>
   </table>
   <table category="obd" endian="big" name="obd: P0638 threshold" sizex="1" storageaddress="0x2CC2" storagetype="uint16" type="2D" userlevel="1">
    <scaling category="Percent" coarseincrement="1" expression="x*100/1023" fineincrement="0.1" format="0.00" to_byte="x*1023/100" units="%"/>
@@ -3378,30 +3402,6 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
    <description>A/C Clutch Relay Control Circuit High</description>
   </table>
-  <table category="obd" name="obd: P0768" sizey="1" storageaddress="0x303F" type="Switch" userlevel="1">
-   <state data="00" name="Disabled"/>
-   <state data="41" name="Type A (1-trip MIL)"/>
-   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
-   <state data="42" name="Type B (2-trip MIL)"/>
-   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
-   <state data="43" name="Type B (2-trip MIL)"/>
-   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
-   <state data="44" name="Type A (1-trip blinking MIL)"/>
-   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Shift Solenoid D Electrical</description>
-  </table>
-  <table category="obd" name="obd: P1280" sizey="1" storageaddress="0x3080" type="Switch" userlevel="1">
-   <state data="00" name="Disabled"/>
-   <state data="41" name="Type A (1-trip MIL)"/>
-   <state data="51" name="Type A (1-trip MIL) + Freeze frame"/>
-   <state data="42" name="Type B (2-trip MIL)"/>
-   <state data="52" name="Type B (2-trip MIL) + Priority freeze frame (overwrite normal)"/>
-   <state data="43" name="Type B (2-trip MIL)"/>
-   <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
-   <state data="44" name="Type A (1-trip blinking MIL)"/>
-   <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Fuel System Relay Circuit</description>
-  </table>
   <table category="obd" name="obd: P1301" sizey="1" storageaddress="0x304E" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
    <state data="41" name="Type A (1-trip MIL)"/>
@@ -3412,7 +3412,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Misfire level causing emissions increase</description>
+   <description>MISFIRE emissions levels</description>
   </table>
   <table category="obd" name="obd: P1302" sizey="1" storageaddress="0x304F" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3424,7 +3424,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Misfire level causing catalyst system damage</description>
+   <description>MISFIRE catalyst damage levels</description>
   </table>
   <table category="obd" name="obd: P2100" sizey="1" storageaddress="0x3098" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3448,7 +3448,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Actuator Control Motor Circuit/Low</description>
+   <description>Throttle Actuator Control Motor Circuit Low</description>
   </table>
   <table category="obd" name="obd: P2103" sizey="1" storageaddress="0x309A" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3460,7 +3460,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Actuator Control Motor Circuit/High</description>
+   <description>Throttle Actuator Control Motor Circuit High</description>
   </table>
   <table category="obd" name="obd: P2104" sizey="1" storageaddress="0x3094" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3532,7 +3532,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Pedal Position Sensor D Circuit Low</description>
+   <description>Throttle Position Sensor 'D' Circuit Low</description>
   </table>
   <table category="obd" name="obd: P2123" sizey="1" storageaddress="0x3021" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3544,7 +3544,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Pedal Position Sensor D Circuit High</description>
+   <description>Throttle Position Sensor 'D' Circuit High</description>
   </table>
   <table category="obd" name="obd: P2127" sizey="1" storageaddress="0x3022" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3556,7 +3556,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Pedal Position Sensor E Circuit Low</description>
+   <description>Throttle Position Sensor 'E' Circuit Low</description>
   </table>
   <table category="obd" name="obd: P2128" sizey="1" storageaddress="0x3023" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3568,7 +3568,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Pedal Position Sensor E Circuit High</description>
+   <description>Throttle Position Sensor 'E' Circuit High</description>
   </table>
   <table category="obd" name="obd: P2135" sizey="1" storageaddress="0x3026" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3580,7 +3580,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Throttle Position Sensor A/B Voltage Correlation</description>
+   <description>Throttle Position Sensor 'A'/'B' Voltage Correlation</description>
   </table>
   <table category="obd" name="obd: P2138" sizey="1" storageaddress="0x3089" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3592,7 +3592,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Pedal Position Sensor D/E Voltage Correlation</description>
+   <description>Throttle Position Sensor 'D'/'E' Voltage Correlation</description>
   </table>
   <table category="obd" name="obd: P2173" sizey="1" storageaddress="0x3093" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3616,7 +3616,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Coolant Pump Control Circuit Low</description>
+   <description>Coolant recirculation open</description>
   </table>
   <table category="obd" name="obd: P2603" sizey="1" storageaddress="0x308B" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3628,7 +3628,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>Coolant Pump Control Circuit High</description>
+   <description>Coolant recirculation shorted</description>
   </table>
   <table category="obd" name="obd: P2646" sizey="1" storageaddress="0x3071" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3640,7 +3640,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>A Rocker Arm Actuator System Performance or Stuck Off</description>
+   <description>VM Actuator system perf / stuck off</description>
   </table>
   <table category="obd" name="obd: P2647" sizey="1" storageaddress="0x3072" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3652,7 +3652,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>A Rocker Arm Actuator System Stuck On</description>
+   <description>VM Actuator system stuck on</description>
   </table>
   <table category="obd" name="obd: P2648" sizey="1" storageaddress="0x3073" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3664,7 +3664,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>A Rocker Arm Actuator Control Circuit Low</description>
+   <description>VM Actuator control circuit low</description>
   </table>
   <table category="obd" name="obd: P2649" sizey="1" storageaddress="0x3074" type="Switch" userlevel="1">
    <state data="00" name="Disabled"/>
@@ -3676,7 +3676,7 @@ High end of the expected voltage range of the throttle position sensor 2.</descr
    <state data="53" name="Type B (2-trip MIL) + Freeze frame"/>
    <state data="44" name="Type A (1-trip blinking MIL)"/>
    <state data="54" name="Type A (1-trip blinking MIL) + Priority freeze frame (overwrite normal)"/>
-   <description>A Rocker Arm Actuator Control Circuit High</description>
+   <description>VM Actuator control circuit high</description>
   </table>
   <table category="obd" endian="big" name="obd: misfire threshold" sizex="16" sizey="16" storageaddress="0x36B6" storagetype="uint16" type="3D" userlevel="1">
    <scaling category="Microsecond" coarseincrement="10" expression="x-32768" fineincrement="1" format="0" to_byte="x+32768" units="us"/>
@@ -5260,6 +5260,13 @@ Formula: adv = BASE - adj</description>
    </table>
    <description/>
   </table>
+  <table category="obd" endian="big" name="obd: P0122 engine start count" sizex="1" storageaddress="0x03A4" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>P0122 engine start count</data>
+   </table>
+   <description/>
+  </table>
   <table category="obd" endian="big" name="obd: P0122 flags" sizex="1" storageaddress="0x03A3" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
    <table name="" sizex="1" type="Static X Axis">
@@ -5267,10 +5274,31 @@ Formula: adv = BASE - adj</description>
    </table>
    <description/>
   </table>
+  <table category="obd" endian="big" name="obd: P0122 warm up cycle count" sizex="1" storageaddress="0x03A5" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>P0122 warm up cycle count</data>
+   </table>
+   <description/>
+  </table>
+  <table category="obd" endian="big" name="obd: P0123 engine start count" sizex="1" storageaddress="0x03A7" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>P0123 engine start count</data>
+   </table>
+   <description/>
+  </table>
   <table category="obd" endian="big" name="obd: P0123 flags" sizex="1" storageaddress="0x03A6" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
    <table name="" sizex="1" type="Static X Axis">
     <data>P0123 flags</data>
+   </table>
+   <description/>
+  </table>
+  <table category="obd" endian="big" name="obd: P0123 warm up cycle count" sizex="1" storageaddress="0x03A8" storagetype="uint8" type="2D" userlevel="1">
+   <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
+   <table name="" sizex="1" type="Static X Axis">
+    <data>P0123 warm up cycle count</data>
    </table>
    <description/>
   </table>
@@ -5652,7 +5680,7 @@ Formula: adv = BASE - adj</description>
    </table>
    <description/>
   </table>
-  <table category="obd" endian="big" name="obd: P0222 engine start count" sizex="1" storageaddress="0x03A4" storagetype="uint8" type="2D" userlevel="1">
+  <table category="obd" endian="big" name="obd: P0222 engine start count" sizex="1" storageaddress="0x03D1" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
    <table name="" sizex="1" type="Static X Axis">
     <data>P0222 engine start count</data>
@@ -5666,14 +5694,14 @@ Formula: adv = BASE - adj</description>
    </table>
    <description/>
   </table>
-  <table category="obd" endian="big" name="obd: P0222 warm up cycle count" sizex="1" storageaddress="0x03A5" storagetype="uint8" type="2D" userlevel="1">
+  <table category="obd" endian="big" name="obd: P0222 warm up cycle count" sizex="1" storageaddress="0x03D2" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
    <table name="" sizex="1" type="Static X Axis">
     <data>P0222 warm up cycle count</data>
    </table>
    <description/>
   </table>
-  <table category="obd" endian="big" name="obd: P0223 engine start count" sizex="1" storageaddress="0x03A7" storagetype="uint8" type="2D" userlevel="1">
+  <table category="obd" endian="big" name="obd: P0223 engine start count" sizex="1" storageaddress="0x03D4" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
    <table name="" sizex="1" type="Static X Axis">
     <data>P0223 engine start count</data>
@@ -5687,7 +5715,7 @@ Formula: adv = BASE - adj</description>
    </table>
    <description/>
   </table>
-  <table category="obd" endian="big" name="obd: P0223 warm up cycle count" sizex="1" storageaddress="0x03A8" storagetype="uint8" type="2D" userlevel="1">
+  <table category="obd" endian="big" name="obd: P0223 warm up cycle count" sizex="1" storageaddress="0x03D5" storagetype="uint8" type="2D" userlevel="1">
    <scaling category="Number" coarseincrement="10" expression="x" fineincrement="1" format="0" to_byte="x" units="#"/>
    <table name="" sizex="1" type="Static X Axis">
     <data>P0223 warm up cycle count</data>

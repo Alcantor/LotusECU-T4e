@@ -27,7 +27,7 @@ byte DAT_0063;
 char DAT_0062;
 char DAT_0061;
 char DAT_0060;
-undefined1 adc_PTB1;
+undefined1 adc_PTB1_maf;
 undefined1 adc_PTB2_tps_1;
 undefined1 adc_PTB3_tps_2;
 undefined1 adc_PTB7;
@@ -340,7 +340,7 @@ byte adc_read(byte param_1)
 void adc_sample(void)
 
 {
-  adc_PTB1 = adc_read(1);
+  adc_PTB1_maf = adc_read(1);
   adc_PTB2_tps_1 = adc_read(2);
   adc_PTB3_tps_2 = adc_read(3);
   adc_PTB4_pps_1 = adc_read(4);
@@ -434,7 +434,7 @@ void release_forced_idle(void)
 
 
 
-// Force idle (P2014): set state >= 4, assert PTD4, set flag bit 4
+// Force idle (P2104): set state >= 4, assert PTD4, set flag bit 4
 
 void force_idle(void)
 
@@ -618,7 +618,7 @@ void normalize_sensors(void)
 
 
 
-// Compare PPS-derived TPS target vs actual TPS, assert forced idle (P2014) if mismatch persists
+// Compare PPS-derived TPS target vs actual TPS, assert forced idle (P2104) if mismatch persists
 // 100ms
 
 void check_pps_tps(void)
@@ -659,12 +659,12 @@ void check_pps_tps(void)
 
 
 
-// Monitor PTB1 analog input, escalate to engine shutdown (P2105) if threshold exceeded for 100ms
+// Monitor the MAF input, escalate to engine shutdown (P2105) if threshold exceeded for 100ms
 
-void monitor_ptb1(void)
+void monitor_maf(void)
 
 {
-  if (adc_PTB1 < 0x71) {
+  if (adc_PTB1_maf < 0x71) {
     if ((timer_2 == 0) || (99 < timer_2)) {
       if (timer_2 == 0) {
         release_engine_shutdown();
@@ -727,7 +727,7 @@ void state_machine_1ms(void)
   }
   else if (state == 4) {
     force_idle();
-    monitor_ptb1();
+    monitor_maf();
     if ((flags_from_mpc & 0x20) != 0) {
       force_engine_shutdown();
     }
@@ -1045,7 +1045,7 @@ void send_status(void)
   uRAM00bc = pps_to_mpc;
   uRAM00bd = tps_to_mpc;
   uRAM00be = tps_target_to_mpc;
-  uRAM00bf = adc_PTB1;
+  uRAM00bf = adc_PTB1_maf;
   uRAM00c0 = adc_PTB2_tps_1;
   uRAM00c1 = adc_PTB3_tps_2;
   uRAM00c2 = adc_PTB4_pps_1;

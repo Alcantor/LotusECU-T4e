@@ -11,9 +11,12 @@
 \usepackage{pdflscape}
 \usepackage{multicol}
 \usepackage[export]{adjustbox}
+\usepackage{changelog}
 \setlength{\headheight}{13.6pt}
 
 \newcommand{\sectionbreak}{\clearpage}
+
+\newcommand{\guideversion}{1.1}
 
 % Allow line breaks after underscores globally
 \let\oldunderscore\_
@@ -48,7 +51,7 @@
 
 \title{Lotus T4e ECU\\[0.5em]\large Engine Management \& Tuning Guide\\[0.5em]\normalsize Elise / Exige / 211 (Toyota 1ZZ-FE / 2ZZ-GE)\\\includegraphics[width=0.6\linewidth]{t4e.pdf}}
 \author{Reverse Engineered by J.F.}
-\date{\today}
+\date{Version \guideversion{} --- \today}
 
 \begin{document}
 \maketitle
@@ -61,6 +64,18 @@
 \section{List of tables}
 \listoftables
 \newpage
+
+\begin{changelog}[title={Change Log}, label={sec:changelog}, simple]
+  \begin{version}[v={\guideversion}, date={2026-06-24}]
+    \item Added the Safety CPU (HC08) state-machine section with the MAF
+          airflow cross-check and reprogramming note (Section~\ref{sec:safety-cpu}).
+    \item Fixed the forced-idle DTC (P2014~$\rightarrow$~P2104); engine shutdown
+          disables the injectors, not the ignition coil.
+  \end{version}
+  \begin{version}[v={1.0}, date={2026-03-03}]
+    \item Initial release of the tuning guide.
+  \end{version}
+\end{changelog}
 
 % =============================================================================
 \section{Introduction}
@@ -379,11 +394,53 @@ two shutdown mechanisms:
 \item[Forced idle (PTD4)] Inhibits the TLE6209R H-Bridge, removing motor drive
   and allowing the throttle plate to return to its rest position under spring
   force. The main MCU is simultaneously flagged via serial
-  (\texttt{flags\_to\_mpc} bit~4), which triggers OBD fault P2014.
-\item[Engine shutdown (PTD3)] Drives the EMD3 dual digital transistor to cut
-  the ignition coil drive path. The main MCU is flagged via serial
+  (\texttt{flags\_to\_mpc} bit~4), which triggers OBD fault P2104.
+\item[Engine shutdown (PTD3)] Cut the injector drive path. The main MCU is
+  flagged via serial
   (\texttt{flags\_to\_mpc} bit~5), which triggers OBD fault P2105.
 \end{description}
+
+Internally the HC08 runs a six-state machine that \emph{only escalates}: a fault
+state (forced idle or engine shutdown) latches and can be left only by a hardware
+reset (Figure~\ref{fig:hc08_safety}).
+
+\paragraph{Plausibility monitoring} In the normal monitoring state the HC08
+samples PPS and TPS every 1\,ms and, from a 16-point lookup table, derives the
+maximum throttle opening allowed for the current pedal position. The table floors
+at $\approx$10\%, so the idle air opening is permitted without a false trip, and
+the comparison is bypassed above $\approx$80\% pedal where a wide-open throttle is
+expected. If the measured throttle exceeds the target for 100\,ms, forced idle
+(P2104) is triggered.
+
+\paragraph{Smoothing suppression} While the main MCU runs its throttle-smoothing
+algorithm it raises a serial flag (\texttt{flags\_from\_mpc} bit~2) that drops the
+HC08 into a \emph{check-suppressed} state, pinning the fault timers and tolerating
+an open throttle for up to 400\,ms.
+
+\paragraph{Airflow cross-check} Forced idle is not the last line of defence. Once
+idle is forced, the HC08 watches an \emph{independent} airflow signal --- the MAF
+sensor, tapped on its \texttt{PTB1} analog input. If airflow remains above
+2.2\,V for 100\,ms despite the forced idle, the throttle has clearly not closed
+regardless of what the TPS reports, and the HC08 escalates to engine shutdown
+(P2105). Cross-checking against airflow rather than re-reading the suspect
+throttle sensor is what makes the shutdown robust.
+
+\paragraph{Reprogramming} The bootloader reflashes the HC08 image when the marker
+at \texttt{0x021FE8} is set to \texttt{0xAAAAAAAA} (together with the
+\texttt{"HC08CODE"} signature and a firmware pointer). \textbf{Before reprogramming,
+tie the TPS1 input (ECU pin RD3) to 5\,V.} RD3 is wired to the HC08's \texttt{PTB3}
+pin, which doubles as the monitor-mode baud-rate strap latched at reset: it must be
+high to select the clock divisor that yields 9600\,baud. Left at the normal sensor
+level --- or merely unplugged and floating --- it sits at the wrong level, the
+monitor link runs at the wrong baud, and programming fails at the passphrase step
+(HC08 authentication, error \texttt{0x90}).
+
+\begin{figure}[H]
+\centering
+\includegraphics[max width=\linewidth, max height=0.85\textheight, keepaspectratio]{dot/hc08_safety.pdf}
+\caption{HC08 safety-processor state machine}
+\label{fig:hc08_safety}
+\end{figure}
 
 \subsection{Time Processor Units (TPU)}
 

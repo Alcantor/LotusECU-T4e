@@ -997,7 +997,7 @@ void efip_state_wait_cmd(void)
       else {
         efip_crc = 0;
         DAT_003f9108 = 0;
-        efip_send_retry(0x97);
+        efip_send_retransmit(0x97);
       }
     }
   }
@@ -1074,10 +1074,10 @@ void efip_state_transfer(void)
         }
       }
       else if (cVar5 == '\0') {
-        efip_send_retry(0x97);
+        efip_send_retransmit(0x97);
       }
       else {
-        cVar5 = efip_check_ack();
+        cVar5 = efip_recv_retransmit();
         if (cVar5 == '\0') {
           uVar4 = efip_process_frame();
           if (((uVar4 & 0xff) < 0x80) || (0x95 < (uVar4 & 0xff))) {
@@ -1097,7 +1097,7 @@ void efip_state_transfer(void)
               }
             }
             else {
-              efip_send_retry(uVar4);
+              efip_send_retransmit(uVar4);
             }
           }
           else {
@@ -1107,7 +1107,7 @@ void efip_state_transfer(void)
       }
     }
     else {
-      efip_send_retry(0x96);
+      efip_send_retransmit(0x96);
     }
   }
   return;
@@ -1133,7 +1133,7 @@ void efip_state_end(void)
     else {
       cVar2 = efip_check_crc();
       if (cVar2 == '\x01') {
-        cVar2 = efip_check_ack();
+        cVar2 = efip_recv_retransmit();
         if (cVar2 == '\x01') {
           efip_retransmit();
         }
@@ -1162,7 +1162,7 @@ void efip_state_end(void)
         }
       }
       else {
-        efip_send_retry(0x97);
+        efip_send_retransmit(0x97);
       }
       efip_crc = 0;
       DAT_003f9108 = 0;
@@ -1367,10 +1367,10 @@ void efip_send_hello(void)
 
 
 
-// Sends retry response (cmd=0x04) with error code, increments retry counter (max 3 then fatal error
-// 0x82)
+// Sends cmd 4 to ask the host to resend the current data frame (max 3 attempts then fatal 0x82) --
+// TX counterpart of efip_recv_retransmit
 
-void efip_send_retry(uint8_t param_1)
+void efip_send_retransmit(uint8_t param_1)
 
 {
   if (DAT_003f911c < 3) {
@@ -1632,9 +1632,10 @@ void efip_send_hc08_erase_info(undefined4 param_1)
 
 
 
-// Checks if received message is acknowledge (cmd=4) with matching EFI ID, retransmits pending data
+// Handles a received cmd 4 (a retransmit request from the host) by resending the last TX via
+// efip_retransmit -- RX counterpart of efip_send_retransmit
 
-undefined4 efip_check_ack(void)
+undefined4 efip_recv_retransmit(void)
 
 {
   undefined4 uVar1;

@@ -4,11 +4,22 @@
 .lcomm	ethanol_timer,            1, 1
 .lcomm	ethanol_temp,             1, 1 # 0 = -40°C, 255 = 120°C
 .lcomm	ethanol_content,          1, 1 # 0 = 0%, 255 = 100%
+.lcomm	ethanol_signal_timer,     1, 1 # P0176 Watchdog
 .lcomm	ethanol_temp_smooth_x,    4, 4
 .lcomm	ethanol_content_smooth_x, 4, 4
+.lcomm	obd_P0176_config,         1, 1 # P0176: Fuel Composition Sensor Circuit (no signal)
+.lcomm	obd_P0176_flags,          1, 1
+.lcomm	obd_P0177_config,         1, 1 # P0177: Fuel Composition Sensor Range/Performance (>= 170 Hz)
+.lcomm	obd_P0177_flags,          1, 1
+.lcomm	obd_P0177_counter,        1, 1 # P0177 leaky maturation counter (P0177_DEBOUNCE = healthy, 0 = fault)
+.lcomm	obd_flexfuel_counter,     1, 1 # Dummy shared start/warm counter for obd_set_dtc
 
 .section .text
 .global flexfuel_init, flexfuel, flexfuel_5ms, lookup_2D_uint8_interpolated_withblend, lookup_3D_uint8_interpolated_withblend
+
+# Content samples arrive at the input frequency, so at 170 Hz 200 net bad
+# samples is a bit more than 1 s.
+.set	P0177_DEBOUNCE, 200
 
 flexfuel_init:
 	# Configure MMCSMSCR (free running counter)
@@ -30,34 +41,70 @@ flexfuel_init:
 	# We cannot read the temperature and the content at the same time, so
 	# we alternate the measurement.
 	#
-	#	100 ms reading the temperature
-	#	100 ms reading the content
+	#	  5 ms mode switch (sample dropped, see below)
+	#	 95 ms reading the temperature
+	#	  5 ms mode switch (sample dropped, see below)
+	#	 95 ms reading the content
 	#
 	# The ethanol sensor update his output every 225ms.
+	#
+	# The MDA31 mode is switched by flexfuel_5ms (a 5ms ISR) exactly on the
+	# ticks 0 and 20. That ISR can preempt the flexfuel reader (main loop)
+	# between the MDA31 capture and the temperature/content decision, which
+	# would make the data and the mode disagree (e.g. a pulse-width capture
+	# read as a period, giving a bogus content >= 170Hz and a spurious
+	# P0177). As flexfuel runs in well under 5ms, only one tick can elapse,
+	# so 0 and 20 are the only timer values that can pair stale data with
+	# the wrong mode. The reader therefore drops the sample on those ticks.
 	#
 	li	%r3, 39
 	lis	%r4, ethanol_timer@ha
 	stb	%r3, ethanol_timer@l(%r4)
 
-	# Start with 20°C
-	li	%r3, 96
+	# Load CAL_base_extra into r12 for multiple uses
+	lis	%r12, CAL_base_extra@ha
+	addi	%r12, %r12, CAL_base_extra@l
+
+	# Start with the temperature fallback value
+	lbz	%r3, OFF_CAL_sensor_ethanol_temp_fallback(%r12)
 	lis	%r4, ethanol_temp@ha
 	stb	%r3, ethanol_temp@l(%r4)
 	slwi	%r3, %r3, 8
 	lis	%r4, ethanol_temp_smooth_x@ha
 	stw	%r3, ethanol_temp_smooth_x@l(%r4)
 
-	# Start with 10% ethanol
-	li	%r3, 25
+	# Start with the ethanol content fallback value
+	lbz	%r3, OFF_CAL_sensor_ethanol_content_fallback(%r12)
 	lis	%r4, ethanol_content@ha
 	stb	%r3, ethanol_content@l(%r4)
 	slwi	%r3, %r3, 8
 	lis	%r4, ethanol_content_smooth_x@ha
 	stw	%r3, ethanol_content_smooth_x@l(%r4)
 
+	# Initialize signal timer (1s) and OBD DTC config bytes
+	li	%r3, 200
+	lis	%r4, ethanol_signal_timer@ha
+	stb	%r3, ethanol_signal_timer@l(%r4)
+	lbz	%r3, OFF_CAL_obd_P0176(%r12)
+	lis	%r4, obd_P0176_config@ha
+	stb	%r3, obd_P0176_config@l(%r4)
+	lbz	%r3, OFF_CAL_obd_P0177(%r12)
+	lis	%r4, obd_P0177_config@ha
+	stb	%r3, obd_P0177_config@l(%r4)
+
+	# Start the P0177 maturation counter full (healthy)
+	li	%r3, P0177_DEBOUNCE
+	lis	%r4, obd_P0177_counter@ha
+	stb	%r3, obd_P0177_counter@l(%r4)
+
 	blr
 
 flexfuel:
+	# Push link register on stack
+	stwu	%r1, -8(%r1)
+	mflr	%r0
+	stw	%r0, 12(%r1)
+
 	# Read MIRSM1 (Reading Flag)
 	lis	%r4, 0x306C40@ha
 	lhz	%r3, 0x306C40@l(%r4)
@@ -68,6 +115,16 @@ flexfuel:
 	#lis	%r4, 0x306C40@ha
 	sth	%r5, 0x306C40@l(%r4)
 
+	# Valid pulse received: reload signal timer and clear P0176
+	li	%r3, 200
+	lis	%r4, ethanol_signal_timer@ha
+	stb	%r3, ethanol_signal_timer@l(%r4)
+	lis	%r3, obd_P0176_config@ha
+	addi	%r3, %r3, obd_P0176_config@l
+	lis	%r4, obd_P0176_flags@ha
+	addi	%r4, %r4, obd_P0176_flags@l
+	bla	obd_clr_dtc
+
 	# Load CAL_base_extra into r12 for multiple uses
 	lis	%r12, CAL_base_extra@ha
 	addi	%r12, %r12, CAL_base_extra@l
@@ -75,7 +132,7 @@ flexfuel:
 	# Engine speed limit
 	#lis	%r12, CAL_base_extra@ha
 	#addi	%r12, %r12, CAL_base_extra@l
-	lbz	%r3, OFF_CAL_ethanol_sensor_engine_speed_limit(%r12)
+	lbz	%r3, OFF_CAL_sensor_ethanol_engine_speed_limit(%r12)
 	lis	%r4, engine_speed_3@ha
 	lbz	%r4, engine_speed_3@l(%r4)
 	cmplw	%r4, %r3
@@ -84,7 +141,7 @@ flexfuel:
 	# Engine load limit
 	#lis	%r12, CAL_base_extra@ha
 	#addi	%r12, %r12, CAL_base_extra@l
-	lbz	%r3, OFF_CAL_ethanol_sensor_engine_load_limit(%r12)
+	lbz	%r3, OFF_CAL_sensor_ethanol_engine_load_limit(%r12)
 	lis	%r4, load_2@ha
 	lbz	%r4, load_2@l(%r4)
 	cmplw	%r4, %r3
@@ -103,7 +160,10 @@ flexfuel:
 	# Read the timer
 	lis	%r4, ethanol_timer@ha
 	lbz	%r4, ethanol_timer@l(%r4)
+	cmplwi	%r4, 0
+	beq	flex_end
 	cmplwi	%r4, 20
+	beq	flex_end
 	bge	flex_content
 
 	# Temperature (Duty cycle: 1ms = -40°C and 5ms = 125°C)
@@ -127,7 +187,7 @@ flex_2:
 	#
 	#lis	%r12, CAL_base_extra@ha
 	#addi	%r12, %r12, CAL_base_extra@l
-	lbz	%r4, OFF_CAL_ethanol_sensor_temp_reactivity(%r12)
+	lbz	%r4, OFF_CAL_sensor_ethanol_temp_reactivity(%r12)
 	subfic	%r5, %r4, 256
 	lis	%r7, ethanol_temp_smooth_x@ha
 	lwz	%r6, ethanol_temp_smooth_x@l(%r7)
@@ -143,8 +203,6 @@ flex_2:
 	b	flex_end
 
 flex_content:
-	# TODO: If > 160 Hz, water contamination or sensor error.
-
 	# Ethanol Content (Freq: 50Hz = 0% and 150Hz = 100%)
 	# percent(in % ) = (78125 / %r3) - 50
 	# percent(1/255) = ((78125 / %r3) - 50) / 100 * 255 = (199218.75 / %r3) - 127.5
@@ -159,21 +217,46 @@ flex_content:
 	addi	%r4, %r4, 199219@l
 	divw	%r3, %r4, %r3
 	subi	%r3, %r3, 127
-	cmpwi	%r3, 0
-	bge	flex_3
-	li	%r3, 0 # Minimum is 0
+
+	# Drive the P0177 leaky maturation counter from the just-computed content.
+	# The DTC itself is asserted/cleared in flexfuel_5ms from this counter.
+	lis	%r4, obd_P0177_counter@ha
+	lbz	%r5, obd_P0177_counter@l(%r4)
+	# Sensor error band: >= 170 Hz (computed >= 306). Covers all defined
+	# codes: 170-179 Hz internal fault, 180/190 Hz contamination.
+	cmpwi	%r3, 306
+	blt	flex_3
+	# In-band sample: drain the counter towards 0 (fault).
+	cmplwi	%r5, 0
+	beq	flex_end
+	subi	%r5, %r5, 1
+	#lis	%r4, obd_P0177_counter@ha
+	stb	%r5, obd_P0177_counter@l(%r4)
+	b	flex_end
 flex_3:
-	cmpwi	%r3, 255
-	ble	flex_4
-	li	%r3, 255 # Maximum is 255
+	# Valid sample: heal the counter back towards P0177_DEBOUNCE (healthy).
+	cmplwi	%r5, P0177_DEBOUNCE
+	bge	flex_4
+	addi	%r5, %r5, 1
+	#lis	%r4, obd_P0177_counter@ha
+	stb	%r5, obd_P0177_counter@l(%r4)
 flex_4:
+	# Clamp 0-255
+	cmpwi	%r3, 0
+	bge	flex_5
+	li	%r3, 0 # Minimum is 0
+flex_5:
+	cmpwi	%r3, 255
+	ble	flex_6
+	li	%r3, 255 # Maximum is 255
+flex_6:
 	# Smooth (low-pass filter)
 	#
 	# smooth = (smooth * (256 - reactivity)) / 256 + (value * reactivity) / 256
 	#
 	#lis	%r12, CAL_base_extra@ha
 	#addi	%r12, %r12, CAL_base_extra@l
-	lbz	%r4, OFF_CAL_ethanol_sensor_content_reactivity(%r12)
+	lbz	%r4, OFF_CAL_sensor_ethanol_content_reactivity(%r12)
 	subfic	%r5, %r4, 256
 	lis	%r7, ethanol_content_smooth_x@ha
 	lwz	%r6, ethanol_content_smooth_x@l(%r7)
@@ -187,9 +270,18 @@ flex_4:
 	lis	%r4, ethanol_content@ha
 	stb	%r3, ethanol_content@l(%r4)
 flex_end:
+	# Pop link register from stack
+	lwz	%r0, 12(%r1)
+	mtlr	%r0
+	addi	%r1, %r1, 8
 	blr
 
 flexfuel_5ms:
+	# Push link register on stack
+	stwu	%r1, -8(%r1)
+	mflr	%r0
+	stw	%r0, 12(%r1)
+
 	# Increment the timer every 5ms
 	lis	%r4, ethanol_timer@ha
 	lbz	%r5, ethanol_timer@l(%r4)
@@ -229,6 +321,57 @@ timer_3:
 	#lis	%r4, 0x3060FE@ha
 	sth	%r3, 0x3060FE@l(%r4)
 timer_4:
+	# Decrement signal timer; set P0176 at timeout
+	lis	%r4, ethanol_signal_timer@ha
+	lbz	%r3, ethanol_signal_timer@l(%r4)
+	cmplwi	%r3, 0
+	beq	timer_5
+	subi	%r3, %r3, 1
+	#lis	%r4, ethanol_signal_timer@ha
+	stb	%r3, ethanol_signal_timer@l(%r4)
+	b	timer_6
+timer_5:
+	# Timer at 0: set P0176
+	lis	%r3, obd_P0176_config@ha
+	addi	%r3, %r3, obd_P0176_config@l
+	lis	%r4, obd_P0176_flags@ha
+	addi	%r4, %r4, obd_P0176_flags@l
+	lis	%r5, obd_flexfuel_counter@ha
+	addi	%r5, %r5, obd_flexfuel_counter@l
+	mr	%r6, %r5
+	li	%r7, 176
+	bla	obd_set_dtc
+timer_6:
+	# Report P0177 from the maturation counter.
+	lis	%r3, obd_P0177_counter@ha
+	lbz	%r3, obd_P0177_counter@l(%r3)
+	cmplwi	%r3, P0177_DEBOUNCE
+	bge	timer_7
+	cmplwi	%r3, 0
+	bgt	timer_8
+	# Counter drained to 0: latch P0177
+	lis	%r3, obd_P0177_config@ha
+	addi	%r3, %r3, obd_P0177_config@l
+	lis	%r4, obd_P0177_flags@ha
+	addi	%r4, %r4, obd_P0177_flags@l
+	lis	%r5, obd_flexfuel_counter@ha
+	addi	%r5, %r5, obd_flexfuel_counter@l
+	mr	%r6, %r5
+	li	%r7, 177
+	bla	obd_set_dtc
+	b	timer_8
+timer_7:
+	# Counter full: sensor healthy, clear P0177
+	lis	%r3, obd_P0177_config@ha
+	addi	%r3, %r3, obd_P0177_config@l
+	lis	%r4, obd_P0177_flags@ha
+	addi	%r4, %r4, obd_P0177_flags@l
+	bla	obd_clr_dtc
+timer_8:
+	# Pop link register from stack
+	lwz	%r0, 12(%r1)
+	mtlr	%r0
+	addi	%r1, %r1, 8
 	blr
 
 # Params:

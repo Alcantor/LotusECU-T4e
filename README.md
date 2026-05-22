@@ -280,6 +280,11 @@ The T4e bootloader will update this processor if the following conditions are me
 Once the update is successfully completed, the 0xAAAAAAAA will be changed to
 0x22222222. The process is very similar for the T6 ECU, but at address 0x040080.
 
+**Important (T4e only) — tie ECU pin RD3 (TPS1 signal) to 5V when reprogramming
+the safety CPU.** RD3 is wired to HC08 **PTB3**, which is also the monitor-mode
+baud-rate strap (sampled at RST). Without it, an error during the passphrase step
+(HC08 authentication, error 0x90) is to be expected.
+
 ## The Lotus ECU in other cars
 
 ### The Caterham Seven
