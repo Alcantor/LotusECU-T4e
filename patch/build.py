@@ -554,6 +554,85 @@ def build_combined():
 	# Test
 	#p.print_segments()
 
+def build_t6_flexfuel():
+	print("Flexfuel T6 support...")
+	c = Patcher_T6Calibration("../dump/t6/P138E0009/calrom.bin")
+	p = Patcher_T6Prog("../dump/t6/P138E0009/prog.bin")
+	os.system("make -C t6/flexfuel CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s}".format(
+		c.get_free_cal(),
+		p.get_free_rom(),
+		p.get_free_ram(),
+		"../T6-V000S.sym"
+	))
+	m = HDRMap("t6/flexfuel/flexfuel.txt")
+
+	# Change SIU_PCR184 for primary function (Input RG4)
+	p.check_and_replace(
+		0x4285C,
+		PPC32.ppc_li(0, 0x0100),
+		PPC32.ppc_li(0, 0x0500)
+	)
+
+	# Hook: Init
+	p.check_and_replace(
+		m.get_sym_addr("hook_init_loc"),
+		PPC32.ppc_li(0, 0x80),
+		PPC32.ppc_ba(m.get_sym_addr("hook_init"))
+	)
+
+	# Hook: Main Loop
+	p.check_and_replace(
+		m.get_sym_addr("hook_loop_loc"),
+		PPC32.ppc_b(
+			m.get_sym_addr("hook_loop_continue") -
+			m.get_sym_addr("hook_loop_loc")
+		),
+		PPC32.ppc_ba(m.get_sym_addr("hook_loop"))
+	)
+
+	# Hook: Main Loop Correction
+	p.check_and_replace(
+		0x43050,
+		PPC32.ppc_ble(-0x280),
+		PPC32.ppc_ble( 0x1C)
+	)
+
+	# Hook: Timer 5ms
+	p.check_and_replace(
+		m.get_sym_addr("hook_timer_5ms_loc"),
+		PPC32.ppc_li(0, 10),
+		PPC32.ppc_ba(m.get_sym_addr("hook_timer_5ms"))
+	)
+
+	# Hook: OBD Mode 0x01
+	p.check_and_replace(
+		m.get_sym_addr("hook_OBD_mode_0x01_loc"),
+		PPC32.ppc_rlwinm(0, 3, 0, 24, 31),
+		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
+	)
+
+	# Move the pointer for the freeram counter
+	addr = m.get_seg_addr(".bss") + m.get_seg_size(".bss")
+	addr_ha = (addr >> 16) + ((addr >> 15) & 1)
+	addr_l = addr & 0xFFFF
+	p.check_and_replace(
+		0x4307C,
+		PPC32.ppc_lis(3, 0x4001) + PPC32.ppc_addi(0, 3, -0x1000),
+		PPC32.ppc_lis(3, addr_ha) + PPC32.ppc_addi(0, 3, addr_l)
+	)
+
+	# Merge and save.
+	p.add_text("t6/flexfuel/flexfuel.text.bin", m.get_seg_addr(".text"))
+	c.add_cal("t6/flexfuel/flexfuel.data.bin", m.get_seg_addr(".data"))
+	p.add_bss(m.get_seg_size(".bss"), m.get_seg_addr(".bss"))
+	#p.write_segments()
+	p.save("t6/flexfuel/prog.bin")
+	c.save("t6/flexfuel/calrom.bin")
+
+	# Test
+	#p.print_segments()
+
 if __name__ == "__main__":
 	build_stage15()
 	build_combined()
+	build_t6_flexfuel()
