@@ -1,7 +1,10 @@
-# Mode 1 PID Mask
-.set OBD_PID_0x00_MASK, 0xFE1FB813
-.set OBD_PID_0x20_MASK, 0x80062001
-.set OBD_PID_0x40_MASK, 0x6AC00000
+# Mode 0x01 supported PID
+.set OBD_MODE01_PID_0x00_MASK, 0xFE1FB813
+.set OBD_MODE01_PID_0x20_MASK, 0x80062001
+.set OBD_MODE01_PID_0x40_MASK, 0x6AC00000
+
+# Mode 0x22 supported PID
+.set OBD_MODE22_PID_0x0400_MASK, 0x00000000
 
 .section .text
 .global hook_OBD_mode_0x01, hook_OBD_mode_0x22
@@ -28,20 +31,20 @@ hook_OBD_mode_0x01:
 	cmplwi	%r3, 0x40
 	beq	OBD_mode_0x01_pid_0x40
 .ifdef OBDOIL
-.set OBD_PID_0x00_MASK, OBD_PID_0x00_MASK | 1<<(0x20-0x0B)
-.set OBD_PID_0x40_MASK, OBD_PID_0x40_MASK | 1<<(0x60-0x5C)
+.set OBD_MODE01_PID_0x00_MASK, OBD_MODE01_PID_0x00_MASK | 1<<(0x20-0x0B)
+.set OBD_MODE01_PID_0x40_MASK, OBD_MODE01_PID_0x40_MASK | 1<<(0x60-0x5C)
 	cmplwi	%r3, 0x0B
 	beq	OBD_mode_0x01_pid_0x0B
 	cmplwi	%r3, 0x5C
 	beq	OBD_mode_0x01_pid_0x5C
 .endif
 .ifdef FLEXFUEL
-.set OBD_PID_0x40_MASK, OBD_PID_0x40_MASK | 1<<(0x60-0x52)
+.set OBD_MODE01_PID_0x40_MASK, OBD_MODE01_PID_0x40_MASK | 1<<(0x60-0x52)
 	cmplwi	%r3, 0x52
 	beq	OBD_mode_0x01_pid_0x52
 .endif
 .ifdef WIDEBAND
-.set OBD_PID_0x20_MASK, OBD_PID_0x20_MASK | 1<<(0x40-0x24)
+.set OBD_MODE01_PID_0x20_MASK, OBD_MODE01_PID_0x20_MASK | 1<<(0x40-0x24)
 	cmplwi	%r3, 0x24
 	beq	OBD_mode_0x01_pid_0x24
 .endif
@@ -51,16 +54,16 @@ hook_OBD_mode_0x01:
 
 # Available PIDs
 OBD_mode_0x01_pid_0x00:
-	lis	%r5, OBD_PID_0x00_MASK@ha
-	addi	%r5, %r5, OBD_PID_0x00_MASK@l
+	lis	%r5, OBD_MODE01_PID_0x00_MASK@ha
+	addi	%r5, %r5, OBD_MODE01_PID_0x00_MASK@l
 	b	OBD_mode_0x01_mask
 OBD_mode_0x01_pid_0x20:
-	lis	%r5, OBD_PID_0x20_MASK@ha
-	addi	%r5, %r5, OBD_PID_0x20_MASK@l
+	lis	%r5, OBD_MODE01_PID_0x20_MASK@ha
+	addi	%r5, %r5, OBD_MODE01_PID_0x20_MASK@l
 	b	OBD_mode_0x01_mask
 OBD_mode_0x01_pid_0x40:
-	lis	%r5, OBD_PID_0x40_MASK@ha
-	addi	%r5, %r5, OBD_PID_0x40_MASK@l
+	lis	%r5, OBD_MODE01_PID_0x40_MASK@ha
+	addi	%r5, %r5, OBD_MODE01_PID_0x40_MASK@l
 	b	OBD_mode_0x01_mask
 OBD_mode_0x01_mask:
 	addi	%r31, %r31, 5 # Answer 5 bytes
@@ -165,21 +168,35 @@ hook_OBD_mode_0x22:
 	add	%r4, %r4, %r31
 
 	# Branching
+	cmplwi	%r8, 0x0400
+	beq	OBD_mode_0x22_pid_0x0400
 .ifdef FLEXFUEL
+.set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x01)
 	cmplwi	%r8, 0x0401
 	beq	OBD_mode_0x22_pid_0x0401
 .endif
 .ifdef OILPRESSURE
+.set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x02)
 	cmplwi	%r8, 0x0402
 	beq	OBD_mode_0x22_pid_0x0402
 .endif
 .ifdef WIDEBAND
+.set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x03)
 	cmplwi	%r8, 0x0403
 	beq	OBD_mode_0x22_pid_0x0403
 .endif
+
 	# Mask %r8 (Erase by patch in original code)
 	rlwinm	%r29, %r8, 0,16,31
 	ba	hook_OBD_mode_0x22_continue
+
+OBD_mode_0x22_pid_0x0400:
+	# Supported PIDs 0x0401-0x0420 (group 0x04)
+	addi	%r31, %r31, 4 # Answer 4 bytes
+	lis	%r3, OBD_MODE22_PID_0x0400_MASK@ha
+	addi	%r3, %r3, OBD_MODE22_PID_0x0400_MASK@l
+	stw	%r3, 0(%r4)
+	ba	hook_OBD_mode_0x22_jump
 
 .ifdef FLEXFUEL
 OBD_mode_0x22_pid_0x0401:

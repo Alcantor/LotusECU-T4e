@@ -11,7 +11,7 @@
 .lcomm	obd_P0176_flags,          1, 1
 .lcomm	obd_P0177_config,         1, 1 # P0177: Fuel Composition Sensor Range/Performance (>= 170 Hz)
 .lcomm	obd_P0177_flags,          1, 1
-.lcomm	obd_P0177_counter,        1, 1 # P0177 leaky maturation counter (P0177_DEBOUNCE = healthy, 0 = fault)
+.lcomm	obd_P0177_debounce_count, 1, 1 # P0177 debounce down-counter (P0177_DEBOUNCE_THRESHOLD = healthy, 0 = fault)
 .lcomm	obd_flexfuel_counter,     1, 1 # Dummy shared start/warm counter for obd_set_dtc
 
 .section .text
@@ -19,7 +19,7 @@
 
 # Content samples arrive at the input frequency, so at 170 Hz 200 net bad
 # samples is a bit more than 1 s.
-.set	P0177_DEBOUNCE, 200
+.set	P0177_DEBOUNCE_THRESHOLD, 200
 
 flexfuel_init:
 	# Configure MMCSMSCR (free running counter)
@@ -92,10 +92,10 @@ flexfuel_init:
 	lis	%r4, obd_P0177_config@ha
 	stb	%r3, obd_P0177_config@l(%r4)
 
-	# Start the P0177 maturation counter full (healthy)
-	li	%r3, P0177_DEBOUNCE
-	lis	%r4, obd_P0177_counter@ha
-	stb	%r3, obd_P0177_counter@l(%r4)
+	# Start the P0177 debounce counter full (healthy)
+	li	%r3, P0177_DEBOUNCE_THRESHOLD
+	lis	%r4, obd_P0177_debounce_count@ha
+	stb	%r3, obd_P0177_debounce_count@l(%r4)
 
 	blr
 
@@ -218,10 +218,10 @@ flex_content:
 	divw	%r3, %r4, %r3
 	subi	%r3, %r3, 127
 
-	# Drive the P0177 leaky maturation counter from the just-computed content.
+	# Drive the P0177 debounce counter from the just-computed content.
 	# The DTC itself is asserted/cleared in flexfuel_5ms from this counter.
-	lis	%r4, obd_P0177_counter@ha
-	lbz	%r5, obd_P0177_counter@l(%r4)
+	lis	%r4, obd_P0177_debounce_count@ha
+	lbz	%r5, obd_P0177_debounce_count@l(%r4)
 	# Sensor error band: >= 170 Hz (computed >= 306). Covers all defined
 	# codes: 170-179 Hz internal fault, 180/190 Hz contamination.
 	cmpwi	%r3, 306
@@ -230,16 +230,16 @@ flex_content:
 	cmplwi	%r5, 0
 	beq	flex_end
 	subi	%r5, %r5, 1
-	#lis	%r4, obd_P0177_counter@ha
-	stb	%r5, obd_P0177_counter@l(%r4)
+	#lis	%r4, obd_P0177_debounce_count@ha
+	stb	%r5, obd_P0177_debounce_count@l(%r4)
 	b	flex_end
 flex_3:
-	# Valid sample: heal the counter back towards P0177_DEBOUNCE (healthy).
-	cmplwi	%r5, P0177_DEBOUNCE
+	# Valid sample: heal the debounce counter back towards P0177_DEBOUNCE_THRESHOLD (healthy).
+	cmplwi	%r5, P0177_DEBOUNCE_THRESHOLD
 	bge	flex_4
 	addi	%r5, %r5, 1
-	#lis	%r4, obd_P0177_counter@ha
-	stb	%r5, obd_P0177_counter@l(%r4)
+	#lis	%r4, obd_P0177_debounce_count@ha
+	stb	%r5, obd_P0177_debounce_count@l(%r4)
 flex_4:
 	# Clamp 0-255
 	cmpwi	%r3, 0
@@ -342,10 +342,10 @@ timer_5:
 	li	%r7, 176
 	bla	obd_set_dtc
 timer_6:
-	# Report P0177 from the maturation counter.
-	lis	%r3, obd_P0177_counter@ha
-	lbz	%r3, obd_P0177_counter@l(%r3)
-	cmplwi	%r3, P0177_DEBOUNCE
+	# Report P0177 from the debounce counter.
+	lis	%r3, obd_P0177_debounce_count@ha
+	lbz	%r3, obd_P0177_debounce_count@l(%r3)
+	cmplwi	%r3, P0177_DEBOUNCE_THRESHOLD
 	bge	timer_7
 	cmplwi	%r3, 0
 	bgt	timer_8

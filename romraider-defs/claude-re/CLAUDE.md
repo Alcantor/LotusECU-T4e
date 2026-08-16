@@ -12,11 +12,15 @@ The T4e ECU supports both K-Line and CAN-Bus for OBD diagnostics. Since 2008, CA
 
 ### Key Files
 
+- `../Ghidra-Disassembly.gar` - Ghidra project archive; source of the exported `black91.c`/`boot08.c`/`hc08.c` C files below
 - `black91.c` - Exported C code from Ghidra of the Lotus T4e 2008 ECU (black cluster version 91)
 - `boot08.c` - Exported C code from Ghidra of the Lotus T4e 2008 ECU (crp08 updater)
 - `hc08.c` - Exported C code from Ghidra of the Lotus T4e 2008 ECU (HC08 Safety CPU)
+- `../../patch/t4e/black91.sym` - GNU symbol map (name=addr) for `black91.c`, exported via `ExportGNUSym.java`
 - `guide/dot/*.dot` - Graphviz DOT files that visualize ECU formula calculations
 - `guide/T4E090_guide.tex` - Detailed description of ECU functions (LaTeX guide)
+- `../ghidra_scripts/` holds the Ghidra scripts used to reverse engineer, label, and export symbols from this project.
+- `Makefile` - run `make help` for targets and variables.
 
 ## Naming Conventions
 
@@ -24,6 +28,8 @@ Names use lowercase with underscores, organized from general category to specifi
 
 Prefixes pairs (`_disable`/`_enable`, `_low`/`_high`, `_limit_l`/`_limit_h`) should be kept at the end
 as much as possible, so an export script can merge them if desired.
+
+Multiple suffixes may be combined in one name (e.g., `CAL_obd_P0077_debounce_threshold`), but a symbol has only one prefix.
 
 ### Symbol Prefixes
 
@@ -38,9 +44,11 @@ as much as possible, so an export script can merge them if desired.
 | `COD_` | Coding data | Vehicle options (T6 ECU only) |
 | `DAT_` | Unnamed Ghidra data | Needs renaming during reverse engineering |
 | `dev_` | Development/tuning variables | Writable via OBD for real-time tuning |
+| `dfso_` | Deceleration fuel shut-off | Overrun fuel cut and recovery |
 | `ecu_` | ECU system parameters | Unlock, start relay, VIN, generic ECU config |
 | `evap_` | Evaporative emissions control system | |
 | `fan_` | Cooling fan control | |
+| `fuelpump_` | Fuel pump control | Closed-loop fuel pressure control (PWM pump + fuel pressure sensor) on high-end models |
 | `hc08_` | MC68HC908JK8 safety processor | Monitors PPS/TPS relationship |
 | `idle_` | Idle control system | |
 | `ign_` | Ignition | |
@@ -57,12 +65,14 @@ as much as possible, so an export script can merge them if desired.
 | `obd_` | OBD diagnostics | DTCs, freeze frames, monitors, IUMPR |
 | `pps_` | Pedal position sensor | Dual sensors: `_1`, `_2` suffixes |
 | `REG_` | Microcontroller registers | Hardware register access |
+| `revlimit_` | Engine speed limiter | |
 | `sensor_` | Values from various sensors | |
 | `sensor_adc_` | Voltage sensor values | |
 | `tc_` | Traction control | |
 | `trq_` | Torque model and torque limiter | T6 and G6 ECUs only |
 | `tpms_` | Tire Pressure Monitoring System | CAN communication with TPMS module |
 | `tps_` | Throttle position sensor | Dual sensors: `_1`, `_2` suffixes |
+| `tpssmooth_` | Throttle target smoothing | Per-gear rate limiting of the throttle demand |
 | `vvl_` | Variable Valve Lift | High-lift cam engagement |
 | `vvt_` | Variable Valve Timing | |
 
@@ -85,6 +95,7 @@ All `CAL_` and `LEA_` symbols must use types supported by: `../ghidra_scripts/Ex
 | `_ctrl_d` | PID controller derivative term |
 | `_ctrl_i` | PID controller integral term accumulator |
 | `_ctrl_p` | PID controller proportional term |
+| `_debounce` | Transient filtering: a condition must persist before it is acted on (e.g. DTC set pending); combines with `_threshold`/`_count` |
 | `_dec` | Decrement value |
 | `_delay` | Fixed waiting duration before an action or condition is allowed to proceed |
 | `_diff` | Difference |
@@ -119,6 +130,7 @@ All `CAL_` and `LEA_` symbols must use types supported by: `../ghidra_scripts/Ex
 | `_sum` | Running total accumulated over time (e.g., PID integral accumulator summing error samples) |
 | `_target` | Setpoint/desired value |
 | `_threshold` | Decision point that triggers an action (not a clamp; see `_limit`) |
+| `_time` | A duration, configured (`CAL_evap_leak_purge_time`) or measured (`ign_dwell_time`). Use `_timer` for a running count of elapsed time |
 | `_time_between_step` | Time/count between recovery or adjustment steps |
 | `_timer` | Variable used for timing |
 | `_offset` | Zero-point calibration value subtracted before scaling (paired with `_gain`) |
