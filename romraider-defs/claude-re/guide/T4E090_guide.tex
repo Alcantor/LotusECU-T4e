@@ -16,7 +16,7 @@
 
 \newcommand{\sectionbreak}{\clearpage}
 
-\newcommand{\guideversion}{1.1}
+\newcommand{\guideversion}{1.2}
 
 % Allow line breaks after underscores globally
 \let\oldunderscore\_
@@ -66,7 +66,34 @@
 \newpage
 
 \begin{changelog}[title={Change Log}, label={sec:changelog}, simple]
-  \begin{version}[v={\guideversion}, date={2026-06-24}]
+  \begin{version}[v={\guideversion}, date={2026-07-20}]
+    \item Documented the misfire threshold calibration: the 16\,$\times$\,16
+          emission map, the DFSO-decaying catalyst threshold, and the
+          non-calibratable 100-stroke dead-cylinder timer.
+    \item Documented the misfire evaluation windows, their normalisation to
+          misfires per 1000 strokes, and the 25\,\% dead-cylinder penalty.
+    \item Added the misfire DTCs (P1301, P1302, the catalyst-protection
+          cylinder cut and the P0300--P0304 attribution rules) and the list of
+          evaluation inhibit conditions.
+    \item Renamed the misfire DTC limits to \texttt{CAL\_obd\_P1301\_threshold}
+          and \texttt{CAL\_obd\_P1302\_threshold}; both now read directly as a
+          percentage of strokes.
+    \item Corrected the Mode~\$06 misfire terminology: \$A1--\$A5 are monitor
+          IDs, with \$0B and \$0C as the standardised test IDs.
+    \item Fixed two stale symbol names: \texttt{revlimit} in the shift-light
+          section and \texttt{learn\_pps\_1\_offset} in the PPS offset section.
+    \item Explained what the DFSO-learned stroke-time baseline actually
+          corrects: its ROM defaults split by crank throw, not by cylinder, so
+          it is mostly 36--1 wheel measurement geometry rather than engine
+          condition.
+    \item Typed the catalyst misfire threshold curves as microseconds, matching
+          the emission map.
+    \item Named the EVAP leak test's internal state end to end --- baseline
+          ripple, vacuum-target margin table, P0442/P0456 timers and
+          thresholds, compensated result --- and fixed the fuel-level axis
+          scaling on the two threshold tables.
+  \end{version}
+  \begin{version}[v={1.1}, date={2026-06-24}]
     \item Added the Safety CPU (HC08) state-machine section with the MAF
           airflow cross-check and reprogramming note (Section~\ref{sec:safety-cpu}).
     \item Fixed the forced-idle DTC (P2014~$\rightarrow$~P2104); engine shutdown
@@ -1191,11 +1218,26 @@ the misfire signal from noise:
 
   \item \textbf{Baseline correction.} A 16$\times$4 learned table
         (\texttt{LEA\_misfire\_stroke\_time}, one row per RPM band, one column
-        per cylinder) captures the normal inter-cylinder variation for this
-        specific engine. Subtracting the table value gives the residual
-        deviation (\texttt{misfire\_stroke\_diff\_1}). The table is adapted
-        continuously during DFSO, slowly tracking natural stroke-time asymmetry
-        between cylinders.
+        per cylinder) holds the stroke-time offset a \emph{healthy} engine
+        produces. Subtracting it gives the residual deviation
+        (\texttt{misfire\_stroke\_diff\_1}).
+
+        Most of that offset is measurement geometry rather than engine
+        condition. With a 36--1 crank wheel the four timing windows do not
+        span equivalent teeth, and the two cylinders sharing a crank throw are
+        at the same crank angle, so they time the \emph{same} physical teeth.
+        The factory defaults (\texttt{misfire\_stroke\_time\_baseline}, in ROM)
+        show this directly: cylinders~1 and~4 share one profile, sitting near
+        zero, while cylinders~3 and~2 share another, falling from 30\,$\mu$s at
+        500\,rpm to 8\,$\mu$s at 4000\,rpm. Two profiles, not four --- the
+        split follows the crank throws, not the cylinders.
+
+        The table is then trimmed per engine during DFSO, and only while the
+        speed-transient flag is clear. Cutting fuel removes combustion torque,
+        by far the largest cylinder-to-cylinder variable, leaving the fixed
+        mechanical and measurement signature to be measured against an engine
+        that is being turned smoothly by the driveline. Adaptation is a slow
+        $\pm$1 dither on a value stored at 16$\times$ resolution.
 
   \item \textbf{Adjacent-cylinder normalisation.} The residual of the previous
         cylinder is subtracted from the current residual
@@ -1225,6 +1267,110 @@ Two independent thresholds are applied at each TDC event:
         The normalised signal is used here because single severe misfires must
         be detected even when global RPM is fluctuating.
 \end{description}
+
+\subsubsection*{Threshold Calibration}
+
+The emission threshold is a direct lookup of \texttt{CAL\_misfire\_threshold},
+a 16\,$\times$\,16 map over engine speed and load holding signed stroke-time
+deviations in $\mu$s.
+
+The catalyst-damage threshold is assembled at run time from two 9-point
+engine-speed curves, holding stroke-time deviations in $\mu$s like the
+emission map. \texttt{CAL\_misfire\_cat\_threshold\_base} sets the floor, and \texttt{CAL\_misfire\_cat\_threshold\_adj} is added on top as a
+safety margin that fades out with accumulated overrun time: it applies in full
+on a freshly reset ECU and decays to nothing once the engine has spent
+\texttt{CAL\_misfire\_dfso\_count\_max} worth of DFSO time in that 500\,rpm
+band. The same DFSO periods adapt the \texttt{LEA\_misfire\_stroke\_time}
+baseline, so the margin disappears exactly as the baseline for that band
+becomes trustworthy --- until then, catalyst thresholds run deliberately wide.
+
+The per-cylinder countdown reload value \texttt{misfire\_cat\_timer\_max} is
+not calibratable: it is a data-segment constant of 100, so a cylinder is
+considered \emph{dead} after 100 consecutive over-threshold strokes.
+
+\subsubsection*{Window Results}
+
+Both windows restart their stroke counters on the first misfire recorded
+after all four per-cylinder counts were cleared, aligning the window start
+with the first event. At the end of each window the per-cylinder counts are
+summed and normalised to \emph{misfires per 1000 strokes}: the 2000-stroke
+(1000-revolution) emission window result is the sum halved
+(\texttt{misfire\_total\_count}), the 400-stroke (200-revolution) catalyst
+window result is the sum times 2.5 (\texttt{misfire\_cat\_total\_count}).
+
+Independently, every dead cylinder (expired \texttt{misfire\_cat\_timer})
+contributes a penalty of 250 --- the rate a completely non-firing cylinder
+would produce. The evaluated result is the maximum of the window result and
+this penalty, so a single dead cylinder pegs the result at 250 (25\,\%) even
+if the window count is low.
+
+\subsubsection*{Misfire DTCs}
+
+\begin{description}
+  \item[P1301 (emission-level misfire)] After each emission window the worst
+        result is compared against \texttt{CAL\_obd\_P1301\_threshold}
+        (stock:~40, i.e.\ 4\,\% of strokes). The debounce counter starts at 1,
+        so the first over-limit window of a driving cycle confirms the DTC
+        immediately; the first in-limit window reloads the counter with
+        \texttt{CAL\_obd\_P1301\_debounce\_threshold} (stock:~4), after which
+        that many further over-limit windows are needed. OBD Mode~\$06 reports
+        this result and limit multiplied by ten under monitor ID~\$A1 (misfire
+        monitor general data); monitor IDs \$A2--\$A5 carry the per-cylinder
+        window counts of cylinders 1--4 in the same scaling, each emitted
+        twice from the same value under the standardised test IDs \$0B (EWMA
+        counts) and \$0C (current driving cycle counts).
+
+  \item[P1302 (catalyst-damage misfire)] After each catalyst window the worst
+        result is compared against \emph{twice} the interpolated raw value of
+        \texttt{CAL\_obd\_P1302\_threshold}, an 8\,$\times$\,8 engine
+        speed\,$\times$\,load map (the doubling is folded into its scaling, so
+        the map reads directly as a percentage of strokes: 14--33\,\% in the
+        stock calibration, richest at low speed and load). The debounce works
+        like P1301's (\texttt{CAL\_obd\_P1302\_debounce\_threshold}, stock:~3).
+
+  \item[Cylinder cut] When P1302 confirms while enabled by a calibration
+        switch (stock: enabled) and no clear occurred in the last 2\,s, the
+        ECU cuts the injectors of one companion-cylinder pair: 1\,\&\,4 if
+        either of them is dead or their summed window counts are at least the
+        other pair's (with cylinders 2\,\&\,3 both alive), otherwise
+        2\,\&\,3. While the cut is active, closed-loop fuel control and EVAP
+        purge are disabled and misfire evaluation is inhibited --- which also
+        stops the windows, so the cut persists until the engine is restarted.
+
+  \item[P0300--P0304 (cylinder attribution)] Attribution happens only in the
+        cycle where P1301 or P1302 first confirms: each cylinder whose
+        emission window count is $\geq$\,6, or whose catalyst count is
+        $\geq$\,3 or timer is dead, gets its P030x. If two or more cylinders
+        qualify, P0300 (random misfire) is set as well. With a confirmed
+        camshaft-sensor fault (P0340) the per-cylinder DTCs are skipped
+        entirely --- attribution needs cam sync --- and P0300 is set instead
+        whenever P1301 or P1302 is present.
+\end{description}
+
+\subsubsection*{Evaluation Inhibit Conditions}
+
+Stroke counting (and thus window completion) requires two hold timers to be
+expired. Any of the following conditions reloads the first timer with a
+2\,s hold (values from the stock calibration):
+
+\begin{itemize}
+  \item catalyst-protection cylinder cut active;
+  \item coolant below $-$10\,$^{\circ}$C;
+  \item engine speed outside 690--8\,340\,rpm, or above
+        \texttt{revlimit} $-$ \texttt{CAL\_revlimit\_offset\_misfire\_eval}
+        (rev-limiter interventions look like misfires);
+  \item fuel level below $\approx$7\,\% (fuel starvation);
+  \item traction-control intervention active;
+  \item load below \texttt{CAL\_misfire\_load\_min} (9-point engine-speed
+        curve), unless the MAF is faulted;
+  \item DFSO active.
+\end{itemize}
+
+A rapid engine-speed change reloads the second timer with a 3\,s hold; the
+same transient flag also pauses baseline learning and
+\texttt{misfire\_dfso\_count} accumulation. A confirmed MAF fault
+(P0101--P0103) freezes stroke counting and window completion entirely, while
+the catalyst dead-cylinder timers keep running.
 
 \subsubsection*{Array Index Order}
 
@@ -1641,7 +1787,7 @@ learned zero offset.
 Unlike the TPS, which calibrates its zero at startup, the PPS zero offset is
 learned continuously during normal operation. Every
 \texttt{CAL\_sensor\_pps\_offset\_time\_between\_step}, the ECU calls
-\texttt{learn\_pps1\_offset} and \texttt{learn\_pps\_2\_offset}:
+\texttt{learn\_pps\_1\_offset} and \texttt{learn\_pps\_2\_offset}:
 
 \begin{itemize}
 \item If the current ADC reading is \emph{below} the learned offset
@@ -2135,13 +2281,21 @@ on next idle.
 \item \textbf{Baseline measurement.} Over
       \texttt{CAL\_evap\_leak\_baseline\_time}, the ECU records the minimum
       and maximum tank pressure to characterize the natural pressure
-      variation (``tank breathing'' from fuel sloshing and temperature). The
-      pressure range and fuel level are used to compute a reference threshold
-      for the gross leak check.
+      variation (``tank breathing'' from fuel sloshing and temperature).
+      Their difference (\texttt{evap\_leak\_pressure\_ripple}) and the fuel
+      level index \texttt{CAL\_evap\_leak\_pressure\_margin}; the result is
+      subtracted from the recorded minimum to set the vacuum target for the
+      next phase (\texttt{evap\_leak\_vacuum\_target}). The same ripple is
+      reused in step~5 to compensate the decay measurement, so a tank that
+      was breathing heavily gets both a shallower target and a larger
+      allowance.
 \item \textbf{Purge with gross leak check (P0455).} Purge is resumed with a
       limited pressure drop
-      (\texttt{evap\_pressure\_drop\_max\_leak\_test}), which is dynamically
-      adjusted based on the observed vacuum. Over
+      (\texttt{evap\_pressure\_drop\_max\_leak\_test}): the full drop is
+      allowed while the tank is still well above
+      \texttt{evap\_leak\_vacuum\_target}, then ramped down in proportion to
+      the remaining distance so the target is approached smoothly rather than
+      overshot. Over
       \texttt{CAL\_evap\_leak\_purge\_time}, if the tank pressure stays above
       \texttt{CAL\_evap\_leak\_gross\_pressure}, a large leak is indicated
       (P0455). If vacuum exceeds \texttt{CAL\_evap\_leak\_vacuum\_min}, the
@@ -2157,9 +2311,12 @@ on next idle.
       \texttt{CAL\_evap\_leak\_P0442\_time} and then
       \texttt{CAL\_evap\_leak\_P0456\_time}, the ECU measures how quickly the
       vacuum decays by comparing the current tank pressure to the reference,
-      with a correction for the baseline pressure variation measured in
-      step~2. The result (\texttt{evap\_leak\_result}) is compared against
-      two fuel-level-dependent thresholds:
+      minus a correction that grows linearly with elapsed test time and is
+      scaled by the baseline ripple from step~2 --- an estimate of the rise
+      the tank would have produced on its own. The result
+      (\texttt{evap\_leak\_pressure\_rise}, copied to
+      \texttt{evap\_leak\_result}) is compared against two fuel-level-dependent
+      thresholds:
       \begin{itemize}
       \item If the result exceeds the P0442 threshold over multiple test
             cycles: small leak (P0442).
@@ -2451,14 +2608,14 @@ rescaled to 0--255 for the cluster gauge.
 \subsubsection*{Shift Lights}
 
 A 4-state machine controls the shift light progression relative to the current
-\texttt{rev\_limit}. The lookup table
+\texttt{revlimit}. The lookup table
 \texttt{CAL\_misc\_shift\_lights\_before\_revlimit} provides an RPM step
 per gear. The three thresholds are:
 
 \begin{itemize}
-\item \textbf{State 0 $\to$ 1} (one red light): $\texttt{rev\_limit} - 8 \times \texttt{step}$
-\item \textbf{State 1 $\to$ 2} (two red lights): $\texttt{rev\_limit} - 6 \times \texttt{step}$
-\item \textbf{State 2 $\to$ 3} (three rapidly flashing): $\texttt{rev\_limit} - 4 \times \texttt{step}$
+\item \textbf{State 0 $\to$ 1} (one red light): $\texttt{revlimit} - 8 \times \texttt{step}$
+\item \textbf{State 1 $\to$ 2} (two red lights): $\texttt{revlimit} - 6 \times \texttt{step}$
+\item \textbf{State 2 $\to$ 3} (three rapidly flashing): $\texttt{revlimit} - 4 \times \texttt{step}$
 \end{itemize}
 
 In state~3, the code XORs the three light bits each cycle, causing all three
