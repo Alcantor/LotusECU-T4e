@@ -1,0 +1,213 @@
+DTC_Code,Fault,MIL type
+P0011,A Camshaft Position - Timing Over-Advanced or System Performance - Bank 1,MIL
+P0012,A Camshaft Position - Timing Over-Retarded - Bank 1,MIL
+P0014,B Camshaft Position - Timing Over-Advanced or System Performance - Bank 1,MIL
+P0015,B Camshaft Position - Timing Over-Retarded - Bank 1,MIL
+P0016,Crankshaft Position - Camshaft Position Correlation - Bank 1 Sensor A,MIL
+P0017,Crankshaft Position - Camshaft Position Correlation - Bank 1 Sensor B,MIL
+P0018,Crankshaft Position - Camshaft Position Correlation - Bank 2 Sensor A,MIL
+P0019,Crankshaft Position - Camshaft Position Correlation - Bank 2 Sensor B,MIL
+P0021,A Camshaft Position - Timing Over-Advanced or System Performance - Bank 2,MIL
+P0022,A Camshaft Position - Timing Over-Retarded - Bank 2,MIL
+P0024,B Camshaft Position - Timing Over-Advanced or System Performance - Bank 2,MIL
+P0025,B Camshaft Position - Timing Over-Retarded - Bank 2,MIL
+P025C,Fuel Pump Module A Control Circuit Low,MIL
+P025D,Fuel Pump Module A Control Circuit High,MIL
+P0071,Ambient Air Temperature Sensor Range/Performance,MIL
+P0072,Ambient Air Temperature Sensor Circuit Low,MIL
+P0073,Ambient Air Temperature Sensor Circuit High,MIL
+P0076,Intake Valve Control Solenoid Circuit Low - Bank 1,MIL
+P0077,Intake Valve Control Solenoid Circuit High - Bank 1,MIL
+P0079,Exhaust Valve Control Solenoid Circuit Low - Bank 1,MIL
+P0080,Exhaust Valve Control Solenoid Circuit High - Bank 1,MIL
+P0082,Intake Valve Control Solenoid Circuit Low - Bank 2,MIL
+P0083,Intake Valve Control Solenoid Circuit High - Bank 2,MIL
+P0085,Exhaust Valve Control Solenoid Circuit Low - Bank 2,MIL
+P0086,Exhaust Valve Control Solenoid Circuit High - Bank 2,MIL
+P0087,Fuel Rail/System Pressure - Too Low,MIL
+P0088,Fuel Rail/System Pressure - Too High,MIL
+P0096,Intake Air Temperature Sensor 2 Circuit Range/Performance,MIL
+P0097,Intake Air Temperature Sensor 2 Circuit Low,MIL
+P0098,Intake Air Temperature Sensor 2 Circuit High,MIL
+P0101,Mass or Volume Air Flow Circuit Range/Performance,MIL
+P0102,Mass or Volume Air Flow Circuit Low Input,MIL
+P0103,Mass or Volume Air Flow Circuit High Input,MIL
+P0106,Manifold Absolute Pressure/Barometric Pressure Circuit Range/Performance,MIL
+P0107,Manifold Absolute Pressure/Barometric Pressure Circuit Low Input,MIL
+P0108,Manifold Absolute Pressure/Barometric Pressure Circuit High Input,MIL
+P0111,Intake Air Temperature Sensor 1 Circuit Range/Performance,MIL
+P0112,Intake Air Temperature Sensor 1 Circuit Low,MIL
+P0113,Intake Air Temperature Sensor 1 Circuit High,MIL
+P0116,Engine Coolant Temperature Circuit Range/Performance,MIL
+P0117,Engine Coolant Temperature Circuit Low,MIL
+P0118,Engine Coolant Temperature Circuit High,MIL
+P0122,Throttle Position Sensor 'A' Circuit Low,MIL
+P0123,Throttle Position Sensor 'A' Circuit High,MIL
+P0128,Coolant Thermostat (Coolant Temperature Below Thermostat Regulating Temperature),MIL
+P0131,O2 Sensor Circuit Low Voltage (Pre Catalyst) - Bank1,MIL
+P0132,O2 Sensor Circuit High Voltage (Pre Catalyst) - Bank1,MIL
+P0133,O2 Sensor Circuit Slow Response (Pre Catalyst) - Bank1,MIL
+P0134,O2 Sensor Circuit No Activity Detected (Pre Catalyst) - Bank1,MIL
+P0135,O2 Sensor Heater Circuit (Pre Catalyst) - Bank1,MIL
+P0137,O2 Sensor Circuit Low Voltage (Post Catalyst) - Bank1,MIL
+P0138,O2 Sensor Circuit High Voltage (Post Catalyst) - Bank1,MIL
+P0139,O2 Sensor Circuit Slow Response (Post Catalyst),MIL
+P0140,O2 Sensor Circuit No Activity Detected (Post Catalyst) - Bank1,MIL
+P0141,O2 Sensor Heater Circuit (Post Catalyst) - Bank1,MIL
+P0151,O2 Sensor Circuit Low Voltage (Pre Catalyst) – Bank2,MIL
+P0152,O2 Sensor Circuit High Voltage (Pre Catalyst) – Bank2,MIL
+P0153,O2 Sensor Circuit Slow Response (Pre Catalyst) – Bank2,MIL
+P0154,O2 Sensor Circuit No Activity Detected (Pre Catalyst) – Bank2,MIL
+P0155,O2 Sensor Heater Circuit (Pre Catalyst) – Bank2,MIL
+P0157,O2 Sensor Circuit Low Voltage (Post Catalyst) – Bank2,MIL
+P0158,O2 Sensor Circuit High Voltage (Post Catalyst) – Bank2,MIL
+P0159,O2 sensor Circuit Slow Response (Post Catalyst),MIL
+P0160,O2 Sensor Circuit No Activity Detected (Post Catalyst) – Bank2,MIL
+P0161,O2 Sensor Heater Circuit (post Catalyst) – Bank2,MIL
+P0171,System Too Lean – Bank1,MIL
+P0172,System Too Rich – Bank1,MIL
+P0174,System Too Lean – Bank2,MIL
+P0175,System Too Rich – Bank2,MIL
+P0191,Fuel Rail Pressure Sensor A Circuit Range/Performance,MIL
+P0192,Fuel pressure sensor too low,MIL
+P0193,Fuel pressure sensor too high,MIL
+P0222,Throttle Position Sensor B Circuit Low,MIL
+P0223,Throttle Position Sensor B Circuit High,MIL
+P023B,Charge Air Cooler Coolant Pump Control Circuit Low,MIL
+P023C,Charge Air Cooler Coolant Pump Control Circuit High,MIL
+P0261,Cylinder 1 Injector Circuit Low,MIL
+P0262,Cylinder 1 Injector Circuit High,MIL
+P0264,Cylinder 2 Injector Circuit Low,MIL
+P0265,Cylinder 2 Injector Circuit High,MIL
+P0267,Cylinder 3 Injector Circuit Low,MIL
+P0268,Cylinder 3 Injector Circuit High,MIL
+P0270,Cylinder 4 Injector Circuit Low,MIL
+P0271,Cylinder 4 Injector Circuit High,MIL
+P0273,Cylinder 5 Injector Circuit Low,MIL
+P0274,Cylinder 5 Injector Circuit High,MIL
+P0276,Cylinder 6 Injector Circuit Low,MIL
+P0277,Cylinder 6 Injector Circuit High,MIL
+P0300,Random/Multiple Cylinder Misfire Detected,MIL
+P0301,Cylinder 1 Misfire Detected,MIL
+P0302,Cylinder 2 Misfire Detected,MIL
+P0303,Cylinder 3 Misfire Detected,MIL
+P0304,Cylinder 4 Misfire Detected,MIL
+P0305,Cylinder 5 Misfire Detected,MIL
+P0306,Cylinder 6 Misfire Detected,MIL
+P0327,Knock Sensor 1 Circuit Low,MIL
+P0328,Knock Sensor 1 Circuit High,MIL
+P0332,Knock Sensor 2 Circuit Low,MIL
+P0333,Knock Sensor 2 Circuit High,MIL
+P0335,Crankshaft Position Sensor A Circuit Range/Performance,MIL
+P0341,Camshaft Position Sensor A Circuit Range/Performance (Bank 1),MIL
+P0346,Camshaft Position Sensor A Circuit Range/Performance (Bank 2),MIL
+P0351,Ignition Coil A Primary/Secondary Circuit,MIL
+P0352,Ignition Coil B Primary/Secondary Circuit,MIL
+P0353,Ignition Coil C Primary/Secondary Circuit,MIL
+P0354,Ignition Coil D Primary/Secondary Circuit,MIL
+P0355,Ignition Coil E Primary/Secondary Circuit,MIL
+P0356,Ignition Coil F Primary/Secondary Circuit,MIL
+P0366,Camshaft Position Sensor B Circuit Range/Performance (Bank 1),MIL
+P0391,Camshaft Position Sensor B Circuit Range/Performance (Bank 2),MIL
+P0420,Catalyst System Efficiency Below Threshold (Bank 1),MIL
+P0430,Catalyst System Efficiency Below Threshold (Bank 2),MIL
+P0441,Evaporative Emission System Incorrect Purge Flow,MIL
+P0442,Evaporative Emission System Leak Detected (small leak),MIL
+P0444,Evaporative Emission System Purge Control Valve Circuit Open,MIL
+P0445,Evaporative Emission System Purge Control Valve Circuit Shorted,MIL
+P0446,Evaporative Emission System Vent Control Circuit,MIL
+P0447,Evaporative Emission System Vent Control Circuit Open,MIL
+P0448,Evaporative Emission System Vent Control Circuit Shorted,MIL
+P0451,Evaporative Emission System Pressure Sensor/Switch Range/Performance,MIL
+P0452,Evaporative Emission System Pressure Sensor/Switch Low,MIL
+P0453,Evaporative Emission System Pressure Sensor/Switch High,MIL
+P0455,Evaporative Emission System Leak Detected (large leak),MIL
+P0456,Evaporative Emission System Leak Detected (very small leak),MIL
+P0461,Fuel Level Sensor A Circuit Range/Performance,MIL
+P0462,Fuel Level Sensor A Circuit Low,MIL
+P0463,Fuel Level Sensor A Circuit High,MIL
+P0500,Vehicle Speed Sensor A,MIL
+P0506,Idle Air Control System RPM Lower Than Expected,MIL
+P0507,Idle Air Control System RPM Higher Than Expected,MIL
+P050A,Cold Start Idle Air Control System Performance,MIL
+P050B,Cold Start Ignition Timing Performance,MIL
+P0523,Engine Oil Pressure Sensor Switch High,MIL
+P0562,System Voltage Low,MIL
+P0563,System Voltage High,MIL
+P0601,Watchdog,MIL
+P0606,Checksum,MIL
+P0610,Variant Code not Programmed,MIL
+P0627,Fuel Pump A Control Circuit / Open,MIL
+P0630,VIN not Programmed or Incompatible,MIL
+P0638,Throttle Control Error,MIL
+P0685,ECM Power Relay Control Circuit Open,MIL
+P0700,Transmission Control System (MIL Request),MIL
+P1104,Safety Processor Throttle Shutdown,MIL
+P1106,Throttle shutdown by BTO,MIL
+P1107,Manifold Absolute Pressure Sensor Circuit Low Input,MIL
+P1108,Manifold Absolute Pressure Sensor Circuit High Input,MIL
+P1109,Manifold Absolute Pressure Sensor Intermittent,MIL
+P1301,Misfire level causing emissions increase,MIL
+P1302,Misfire level causing catalyst system damage,MIL
+P1562,Battery Voltage Too Low To Complete Throttle Autozero,MIL
+P2100,Throttle Actuator Control Motor Circuit/Open,MIL
+P2102,Throttle Actuator Control Motor Circuit Low,MIL
+P2103,Throttle Actuator Control Motor Circuit High,MIL
+P2104,Throttle Actuator Control System – Forced Idle,MIL
+P2105,Throttle Actuator Control System – Forced Engine Shutdown,MIL
+P2106,Throttle Actuator Control System – Forced Limited Power,MIL
+P2107,Throttle Actuator Control Module Processor,MIL
+P2108,Throttle Actuator Control Module Performance,MIL
+P2119,Throttle Actuator Control Throttle Body Range/Performance,MIL
+P2122,Throttle/Pedal Position Sensor/Switch D Circuit Low,MIL
+P2123,Throttle/Pedal Position Sensor/Switch D Circuit High,MIL
+P2127,Throttle/Pedal Position Sensor/Switch E Circuit Low,MIL
+P2128,Throttle/Pedal Position Sensor/Switch E Circuit High,MIL
+P2135,Voltage Correlation Error (Sensors A & B),MIL
+P2138,Voltage Correlation Error (Sensors D & E),MIL
+P2170,Exhaust Pressure Regulator Vent Solenoid Control Circuit Low,MIL
+P2171,Exhaust Pressure Regulator Vent Solenoid Control Circuit High,MIL
+P2173,Throttle Actuator Control System – High Airflow Detected,MIL
+P2191,System Too Lean at Higher Load – Bank1,MIL
+P2193,System Too Lean at Higher Load – Bank2,MIL
+P219A,Bank 1 Air-Fuel Ratio Imbalance,MIL
+P219B,Bank 2 Air-Fuel Ratio Imbalance,MIL
+U0109,Lost Communication With Fuel Pump Control Module,MIL
+P0482,Fan 3 Control Circuit,Non-MIL
+P0537,A/C Evaporator Temperature Sensor Circuit Low,Non-MIL
+P0538,A/C Evaporator Temperature Sensor Circuit High,Non-MIL
+P0564,Cruise Control Multi-function Input Signal,Non-MIL
+P0571,Brake Switch A Circuit,Non-MIL
+P0578,Cruise Control Multi-Function Input A Circuit Stuck,Non-MIL
+P0579,Cruise Control Multi-Function Input A Circuit Range / Performance,Non-MIL
+P0616,Starter Relay Circuit Low,Non-MIL
+P0617,Starter Relay Circuit High,Non-MIL
+P0646,A/C Clutch Relay Control Circuit Low,Non-MIL
+P0647,A/C Clutch Relay Control Circuit High,Non-MIL
+P0712,Transmission Fluid Temperature Sensor A Circuit Low,Non-MIL
+P0713,Transmission Fluid Temperature Sensor A Circuit High,Non-MIL
+P0806,Clutch Position Sensor Circuit Range/Performance,Non-MIL
+P0807,Clutch Position Sensor Circuit Low,Non-MIL
+P0808,Clutch Position Sensor Circuit High,Non-MIL
+P0826,Up and Down Shift Switch Circuit,Non-MIL
+P0827,Up and Down Shift Switch Circuit Low,Non-MIL
+P0828,Up and Down Shift Switch Circuit High,Non-MIL
+P0897,Transmission Fluid Deteriorated,Non-MIL
+P1809,Noisy Clutch Pedal Sensor,Non-MIL
+P2602,Coolant Pump Control Circuit Low,Non-MIL
+P2603,Coolant Pump Control Circuit High,Non-MIL
+P2612,A/C Refrigerant Distribution Valve Control Circuit Low,Non-MIL
+P2613,A/C Refrigerant Distribution Valve Control Circuit High,Non-MIL
+P2754,Transmission Fluid Cooler Control Circuit Low,Non-MIL
+P2755,Transmission Fluid Cooler Control Circuit High,Non-MIL
+P2797,Auxiliary Transmission Fluid Pump Performance,Non-MIL
+B1422,A/C Compressor Lock Sensor Circuit,Non-MIL
+U0101,Lost Communications with TCM,Non-MIL
+U0122,Lost Communications with VDCM,Non-MIL
+U0123,Lost Communications with Yaw Rate Sensor Module,Non-MIL
+U0141,Lost Communication with Body Control Module (Integrated Control Module) A,Non-MIL
+U0155,Lost Communications with Instrument Pack,Non-MIL
+U0302,Software Incompatible with TCM,Non-MIL
+U0316,Software Incompatible with VDCM,Non-MIL
+U0416,Invalid Data Received From VDCM,Non-MIL
+U0513,Invalid Data Received from Yaw Rate Sensor Module,Non-MIL
