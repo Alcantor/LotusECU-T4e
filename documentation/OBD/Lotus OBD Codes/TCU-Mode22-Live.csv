@@ -1,0 +1,192 @@
+Address,Text,Response,DataPos,DataSize,DataMask,isSigned,SimpleScale,TextUnit
+22 02 00,Supported PIDs 201-220,62 02 00,0,4,-1,FALSE,1,
+22 02 0E,TCU Serial Number,62 02 0E,0,4,-1,FALSE,1,
+22 02 0F,TCU Hardware Number,62 02 0F,0,4,-1,FALSE,1,
+22 02 10,TCU Crypto Flags,62 02 10,0,4,-1,FALSE,1,
+22 02 11,TCU Type,62 02 11,0,4,-1,FALSE,1,
+22 02 1C,Calibration Version String (bytes 0-3),62 02 1C,0,4,-1,FALSE,1,
+22 02 1D,Calibration Version String (bytes 4-7),62 02 1D,0,4,-1,FALSE,1,
+22 02 1E,Calibration Version String (bytes 8-11),62 02 1E,0,4,-1,FALSE,1,
+22 02 1F,Calibration Version String (bytes 12-15),62 02 1F,0,4,-1,FALSE,1,
+22 02 20,Supported PIDs 221-240,62 02 20,0,4,-1,FALSE,1,
+22 02 21,Calibration Version String (bytes 16-19),62 02 21,0,4,-1,FALSE,1,
+22 02 22,Calibration Version String (bytes 20-23),62 02 22,0,4,-1,FALSE,1,
+22 02 23,Calibration Version String (bytes 24-27),62 02 23,0,4,-1,FALSE,1,
+22 02 24,Calibration Version String (bytes 28-31),62 02 24,0,4,-1,FALSE,1,
+22 02 29,TCU Shutdown Timer,62 02 29,0,4,-1,FALSE,0.005,Seconds
+22 02 2D,TCU On Timer,62 02 2D,0,2,65535,FALSE,0.1,Seconds
+22 02 3D,Wheel Speed - LR,62 02 3D,0,2,65535,FALSE,0.01,km/h
+22 02 3E,Wheel Speed - RR,62 02 3E,0,2,65535,FALSE,0.01,km/h
+22 02 3F,Wheel Speed - LF,62 02 3F,0,2,65535,FALSE,0.01,km/h
+22 02 40,Supported PIDs 241-260,62 02 40,0,4,-1,FALSE,1,
+22 02 41,Wheel Speed - RF,62 02 41,0,2,65535,FALSE,0.01,km/h
+22 02 5D,Sport Button,62 02 5D,0,1,255,FALSE,1,
+22 02 5F,Brake Switch,62 02 5F,0,1,255,FALSE,1,
+22 02 60,Supported PIDs 261-280,62 02 60,0,4,-1,FALSE,1,
+22 02 61,Cruise Status,62 02 61,0,1,255,FALSE,1,
+22 02 63,Vehicle Coding Word 1,62 02 63,0,4,-1,FALSE,1,
+22 02 64,Vehicle Coding Word 2,62 02 64,0,4,-1,FALSE,1,
+22 02 6A,Engine Torque,62 02 6A,0,2,65535,TRUE,1,Nm
+22 02 71,Dura Position Learn Status,62 02 71,0,1,255,FALSE,1,
+22 02 75,Oil Temperature,62 02 75,0,1,255,FALSE,1,degC
+22 02 76,Auto Gear,62 02 76,0,1,255,FALSE,1,
+22 02 77,Engine Speed (Received from ECU),62 02 77,0,2,65535,FALSE,0.25,RPM
+22 02 78,Gear Request,62 02 78,0,1,255,FALSE,1,
+22 02 79,Input Shaft Speed,62 02 79,0,2,65535,FALSE,1,RPM
+22 02 7A,Output Shaft Speed,62 02 7A,0,2,65535,FALSE,1,RPM
+22 02 7B,SL1 Pressure Switch Status,62 02 7B,0,1,3,FALSE,1,
+22 02 7C,SL2 Pressure Switch Status,62 02 7C,0,1,3,FALSE,1,
+22 02 7D,SLU Pressure Switch Status,62 02 7D,0,1,3,FALSE,1,
+22 02 7E,Dura Position Sensor 1,62 02 7E,0,2,65535,FALSE,0.01,%
+22 02 7F,Dura Position Sensor 2,62 02 7F,0,2,65535,FALSE,0.01,%
+22 02 80,Supported PIDs 281-2A0,62 02 80,0,4,-1,FALSE,1,
+22 02 81,Current Dura Position,62 02 81,0,2,65535,FALSE,0.1,%
+22 02 82,Learnt Dura Position Park,62 02 82,0,2,65535,FALSE,0.1,%
+22 02 83,Learnt Dura Position Reverse,62 02 83,0,2,65535,FALSE,0.1,%
+22 02 84,Learnt Dura Position Neutral,62 02 84,0,2,65535,FALSE,0.1,%
+22 02 85,Learnt Dura Position Drive,62 02 85,0,2,65535,FALSE,0.1,%
+22 02 86,PRND Feedback Switch status - Park,62 02 86,0,1,3,FALSE,1,
+22 02 87,PRND Feedback Switch status - Reverse,62 02 87,0,1,3,FALSE,1,
+22 02 88,PRND Feedback Switch status - Neutral,62 02 88,0,1,3,FALSE,1,
+22 02 89,PRND Feedback Switch status - Drive,62 02 89,0,1,3,FALSE,1,
+22 02 8A,Park Request Switch,62 02 8A,0,1,3,FALSE,1,
+22 02 8B,Reverse Request Switch,62 02 8B,0,1,3,FALSE,1,
+22 02 8C,Neutral Request Switch,62 02 8C,0,1,3,FALSE,1,
+22 02 8D,Drive Request Switch,62 02 8D,0,1,3,FALSE,1,
+22 02 8E,Gear Ratio,62 02 8E,0,2,65535,FALSE,0.001,
+22 02 8F,Commanded Torque Converter Status,62 02 8F,0,1,3,FALSE,1,
+22 02 90,Green Learn Status,62 02 90,0,1,1,FALSE,1,
+22 02 91,Slip learn status flags - Gear 2,62 02 91,0,1,1,FALSE,1,
+22 02 91,Slip learn status flags - Gear 3 Low Index,62 02 91,0,1,2,FALSE,0.5,
+22 02 91,Slip learn status flags - Gear 3 High Index,62 02 91,0,1,4,FALSE,0.25,
+22 02 91,Slip learn status flags - Gear 4 Low Index,62 02 91,0,1,8,FALSE,0.125,
+22 02 91,Slip learn status flags - Gear 4 High Index,62 02 91,0,1,16,FALSE,0.0625,
+22 02 91,Slip learn status flags - Gear 5 Low Index,62 02 91,0,1,32,FALSE,0.03125,
+22 02 91,Slip learn status flags - Gear 5 High Index,62 02 91,0,1,64,FALSE,0.015625,
+22 02 91,Slip learn status flags - Gear 6,62 02 91,0,1,128,FALSE,0.0078125,
+22 02 92,Green Learn Target Load Minimum,62 02 92,0,1,255,FALSE,2.588235,Nm
+22 02 93,Green Learn Target Load Maximum,62 02 93,0,1,255,FALSE,2.588235,Nm
+22 02 94,Input Shaft Load,62 02 94,0,1,255,FALSE,2.588235,Nm
+22 02 95,Green Learn No. Complete current bin,62 02 95,0,1,255,FALSE,1,
+22 02 96,Green Learn Target No. current bin,62 02 96,0,1,255,FALSE,1,
+22 02 97,Torque Converter Slip,62 02 97,0,2,65535,FALSE,1,RPM
+22 02 98,Solenoid SL Duty Cycle,62 02 98,0,2,65535,TRUE,0.01,%
+22 02 99,Solenoid SL1 Duty Cycle,62 02 99,0,2,65535,TRUE,0.01,%
+22 02 9A,Solenoid SL2 Duty Cycle,62 02 9A,0,2,65535,TRUE,0.01,%
+22 02 9B,Solenoid SL3 Duty Cycle,62 02 9B,0,2,65535,TRUE,0.01,%
+22 02 9C,Solenoid SL4 Duty Cycle,62 02 9C,0,2,65535,TRUE,0.01,%
+22 02 9D,Solenoid SLT Duty Cycle,62 02 9D,0,2,65535,TRUE,0.01,%
+22 02 9E,Solenoid SLU Duty Cycle,62 02 9E,0,2,65535,TRUE,0.01,%
+22 02 9F,Solenoid SL Demand,62 02 9F,0,2,65535,TRUE,0.01,%
+22 02 A0,Supported PIDs 2A1-2C0,62 02 A0,0,4,-1,FALSE,1,
+22 02 A1,Solenoid SL1 Demand,62 02 A1,0,2,65535,TRUE,0.01,%
+22 02 A2,Solenoid SL2 Demand,62 02 A2,0,2,65535,TRUE,0.01,%
+22 02 A3,Solenoid SL3 Demand,62 02 A3,0,2,65535,TRUE,0.01,%
+22 02 A4,Solenoid SL4 Demand,62 02 A4,0,2,65535,TRUE,0.01,%
+22 02 A5,Solenoid SLT Demand,62 02 A5,0,2,65535,TRUE,0.01,%
+22 02 A6,Solenoid SLU Demand,62 02 A6,0,2,65535,TRUE,0.01,%
+22 02 A7,Power Off Condition Status,62 02 A7,0,1,255,FALSE,1,
+22 02 B0,Shift Adaptation History Valid,62 02 B0,0,1,1,FALSE,1,
+22 02 B1,Shift Adaptation Value,62 02 B1,0,2,65535,FALSE,1,
+22 02 B2,Shift Adaptation Phase,62 02 B2,0,1,255,FALSE,1,
+22 02 B4,Green Learn Enable - Load Minimum,62 02 B4,0,1,255,FALSE,2.588235,Nm
+22 02 B5,Green Learn Enable - Load Maximum,62 02 B5,0,1,255,FALSE,2.588235,Nm
+22 02 B6,Green Learn Enable - Input Speed Minimum,62 02 B6,0,1,255,FALSE,100,RPM
+22 02 B7,Green Learn Enable - Input Speed Maximum,62 02 B7,0,1,255,FALSE,100,RPM
+22 02 C0,Supported PIDs 2C1-2E0,62 02 C0,0,4,-1,FALSE,1,
+22 02 E0,Supported PIDs 2E1-300,62 02 E0,0,4,-1,FALSE,1,
+22 03 00,Supported PIDs 301-320 (chain link),62 03 00,0,4,-1,FALSE,1,
+22 03 20,Supported PIDs 321-340 (chain link),62 03 20,0,4,-1,FALSE,1,
+22 03 40,Supported PIDs 341-360 (chain link),62 03 40,0,4,-1,FALSE,1,
+22 03 60,Supported PIDs 361-380 (chain link),62 03 60,0,4,-1,FALSE,1,
+22 03 80,Supported PIDs 381-3A0 (chain link),62 03 80,0,4,-1,FALSE,1,
+22 03 A0,Supported PIDs 3A1-3C0 (chain link),62 03 A0,0,4,-1,FALSE,1,
+22 03 C0,Supported PIDs 3C1-3E0 (chain link),62 03 C0,0,4,-1,FALSE,1,
+22 03 E0,Supported PIDs 3E1-400 (chain link),62 03 E0,0,4,-1,FALSE,1,
+22 04 00,Supported PIDs 401-420,62 04 00,0,4,-1,FALSE,1,
+22 04 01,"Run Time - Auto mode, Sequential gate",62 04 01,0,4,-1,FALSE,0.1,Seconds
+22 04 02,Run Time - Auto mode,62 04 02,0,4,-1,FALSE,0.1,Seconds
+22 04 03,"Run Time - Manual mode, Sequential gate",62 04 03,0,4,-1,FALSE,0.1,Seconds
+22 04 04,Run Time - Manual mode,62 04 04,0,4,-1,FALSE,0.1,Seconds
+22 04 05,Run Time - Input Shaft Speed bin 1,62 04 05,0,4,-1,FALSE,0.1,Seconds
+22 04 06,Run Time - Input Shaft Speed bin 2,62 04 06,0,4,-1,FALSE,0.1,Seconds
+22 04 07,Run Time - Input Shaft Speed bin 3,62 04 07,0,4,-1,FALSE,0.1,Seconds
+22 04 08,Run Time - Input Shaft Speed bin 4,62 04 08,0,4,-1,FALSE,0.1,Seconds
+22 04 09,Run Time - Input Shaft Speed bin 5,62 04 09,0,4,-1,FALSE,0.1,Seconds
+22 04 0A,Run Time - Input Shaft Speed bin 6,62 04 0A,0,4,-1,FALSE,0.1,Seconds
+22 04 0B,Run Time - Input Shaft Speed bin 7,62 04 0B,0,4,-1,FALSE,0.1,Seconds
+22 04 0C,Run Time - Input Shaft Speed bin 8,62 04 0C,0,4,-1,FALSE,0.1,Seconds
+22 04 0D,Run Time - Oil Temperature bin 1,62 04 0D,0,4,-1,FALSE,0.1,Seconds
+22 04 0E,Run Time - Oil Temperature bin 2,62 04 0E,0,4,-1,FALSE,0.1,Seconds
+22 04 0F,Run Time - Oil Temperature bin 3,62 04 0F,0,4,-1,FALSE,0.1,Seconds
+22 04 10,Run Time - Oil Temperature bin 4,62 04 10,0,4,-1,FALSE,0.1,Seconds
+22 04 11,Run Time - Oil Temperature bin 5,62 04 11,0,4,-1,FALSE,0.1,Seconds
+22 04 12,Run Time - Oil Temperature bin 6,62 04 12,0,4,-1,FALSE,0.1,Seconds
+22 04 13,Engine Run Time (total),62 04 13,0,4,-1,FALSE,0.1,Seconds
+22 04 14,Solenoid SL1 Peak Adaptation,62 04 14,0,1,255,FALSE,0.390625,%
+22 04 15,Solenoid SL2 Peak Adaptation,62 04 15,0,1,255,FALSE,0.390625,%
+22 04 16,Solenoid SL3 Peak Adaptation,62 04 16,0,1,255,FALSE,0.390625,%
+22 04 17,Solenoid SL4 Peak Adaptation,62 04 17,0,1,255,FALSE,0.390625,%
+22 04 18,Overspeed Log 1 - Peak Input Shaft Speed,62 04 18,0,2,65535,FALSE,1,RPM
+22 04 19,Overspeed Log 2 - Peak Input Shaft Speed,62 04 19,0,2,65535,FALSE,1,RPM
+22 04 1A,Overspeed Log 3 - Peak Input Shaft Speed,62 04 1A,0,2,65535,FALSE,1,RPM
+22 04 1B,Overspeed Log 4 - Peak Input Shaft Speed,62 04 1B,0,2,65535,FALSE,1,RPM
+22 04 1C,Overspeed Log 5 - Peak Input Shaft Speed,62 04 1C,0,2,65535,FALSE,1,RPM
+22 04 1D,Overspeed Log 6 - Peak Input Shaft Speed,62 04 1D,0,2,65535,FALSE,1,RPM
+22 04 1E,Overspeed Log 7 - Peak Input Shaft Speed,62 04 1E,0,2,65535,FALSE,1,RPM
+22 04 1F,Overspeed Log 8 - Peak Input Shaft Speed,62 04 1F,0,2,65535,FALSE,1,RPM
+22 04 20,Supported PIDs 421-440,62 04 20,0,4,-1,FALSE,1,
+22 04 21,Overspeed Log 9 - Peak Input Shaft Speed,62 04 21,0,2,65535,FALSE,1,RPM
+22 04 22,Overspeed Log 10 - Peak Input Shaft Speed,62 04 22,0,2,65535,FALSE,1,RPM
+22 04 23,Overspeed Log 1 - Engine Torque,62 04 23,0,2,65535,TRUE,1,Nm
+22 04 24,Overspeed Log 2 - Engine Torque,62 04 24,0,2,65535,TRUE,1,Nm
+22 04 25,Overspeed Log 3 - Engine Torque,62 04 25,0,2,65535,TRUE,1,Nm
+22 04 26,Overspeed Log 4 - Engine Torque,62 04 26,0,2,65535,TRUE,1,Nm
+22 04 27,Overspeed Log 5 - Engine Torque,62 04 27,0,2,65535,TRUE,1,Nm
+22 04 28,Overspeed Log 6 - Engine Torque,62 04 28,0,2,65535,TRUE,1,Nm
+22 04 29,Overspeed Log 7 - Engine Torque,62 04 29,0,2,65535,TRUE,1,Nm
+22 04 2A,Overspeed Log 8 - Engine Torque,62 04 2A,0,2,65535,TRUE,1,Nm
+22 04 2B,Overspeed Log 9 - Engine Torque,62 04 2B,0,2,65535,TRUE,1,Nm
+22 04 2C,Overspeed Log 10 - Engine Torque,62 04 2C,0,2,65535,TRUE,1,Nm
+22 04 2D,Overspeed Log 1 - Gear,62 04 2D,0,1,255,FALSE,1,
+22 04 2E,Overspeed Log 2 - Gear,62 04 2E,0,1,255,FALSE,1,
+22 04 2F,Overspeed Log 3 - Gear,62 04 2F,0,1,255,FALSE,1,
+22 04 30,Overspeed Log 4 - Gear,62 04 30,0,1,255,FALSE,1,
+22 04 31,Overspeed Log 5 - Gear,62 04 31,0,1,255,FALSE,1,
+22 04 32,Overspeed Log 6 - Gear,62 04 32,0,1,255,FALSE,1,
+22 04 33,Overspeed Log 7 - Gear,62 04 33,0,1,255,FALSE,1,
+22 04 34,Overspeed Log 8 - Gear,62 04 34,0,1,255,FALSE,1,
+22 04 35,Overspeed Log 9 - Gear,62 04 35,0,1,255,FALSE,1,
+22 04 36,Overspeed Log 10 - Gear,62 04 36,0,1,255,FALSE,1,
+22 04 37,Overspeed Log 1 - Timestamp,62 04 37,0,4,-1,FALSE,0.1,Seconds
+22 04 38,Overspeed Log 2 - Timestamp,62 04 38,0,4,-1,FALSE,0.1,Seconds
+22 04 39,Overspeed Log 3 - Timestamp,62 04 39,0,4,-1,FALSE,0.1,Seconds
+22 04 3A,Overspeed Log 4 - Timestamp,62 04 3A,0,4,-1,FALSE,0.1,Seconds
+22 04 3B,Overspeed Log 5 - Timestamp,62 04 3B,0,4,-1,FALSE,0.1,Seconds
+22 04 3C,Overspeed Log 6 - Timestamp,62 04 3C,0,4,-1,FALSE,0.1,Seconds
+22 04 3D,Overspeed Log 7 - Timestamp,62 04 3D,0,4,-1,FALSE,0.1,Seconds
+22 04 3E,Overspeed Log 8 - Timestamp,62 04 3E,0,4,-1,FALSE,0.1,Seconds
+22 04 3F,Overspeed Log 9 - Timestamp,62 04 3F,0,4,-1,FALSE,0.1,Seconds
+22 04 40,Supported PIDs 441-460,62 04 40,0,4,-1,FALSE,1,
+22 04 41,Overspeed Log 10 - Timestamp,62 04 41,0,4,-1,FALSE,0.1,Seconds
+22 04 42,Oil Temp Peak Log 1 - Peak Oil Temperature,62 04 42,0,1,255,FALSE,1,degC
+22 04 43,Oil Temp Peak Log 2 - Peak Oil Temperature,62 04 43,0,1,255,FALSE,1,degC
+22 04 44,Oil Temp Peak Log 3 - Peak Oil Temperature,62 04 44,0,1,255,FALSE,1,degC
+22 04 45,Oil Temp Peak Log 4 - Peak Oil Temperature,62 04 45,0,1,255,FALSE,1,degC
+22 04 46,Oil Temp Peak Log 5 - Peak Oil Temperature,62 04 46,0,1,255,FALSE,1,degC
+22 04 47,Oil Temp Peak Log 6 - Peak Oil Temperature,62 04 47,0,1,255,FALSE,1,degC
+22 04 48,Oil Temp Peak Log 7 - Peak Oil Temperature,62 04 48,0,1,255,FALSE,1,degC
+22 04 49,Oil Temp Peak Log 8 - Peak Oil Temperature,62 04 49,0,1,255,FALSE,1,degC
+22 04 4A,Oil Temp Peak Log 9 - Peak Oil Temperature,62 04 4A,0,1,255,FALSE,1,degC
+22 04 4B,Oil Temp Peak Log 10 - Peak Oil Temperature,62 04 4B,0,1,255,FALSE,1,degC
+22 04 4C,Oil Temp Peak Log 1 - Vehicle Speed,62 04 4C,0,2,65535,FALSE,0.01,km/h
+22 04 4D,Oil Temp Peak Log 2 - Vehicle Speed,62 04 4D,0,2,65535,FALSE,0.01,km/h
+22 04 4E,Oil Temp Peak Log 3 - Vehicle Speed,62 04 4E,0,2,65535,FALSE,0.01,km/h
+22 04 4F,Oil Temp Peak Log 4 - Vehicle Speed,62 04 4F,0,2,65535,FALSE,0.01,km/h
+22 04 50,Oil Temp Peak Log 5 - Vehicle Speed,62 04 50,0,2,65535,FALSE,0.01,km/h
+22 04 51,Oil Temp Peak Log 6 - Vehicle Speed,62 04 51,0,2,65535,FALSE,0.01,km/h
+22 04 52,Oil Temp Peak Log 7 - Vehicle Speed,62 04 52,0,2,65535,FALSE,0.01,km/h
+22 04 53,Oil Temp Peak Log 8 - Vehicle Speed,62 04 53,0,2,65535,FALSE,0.01,km/h
+22 04 54,Oil Temp Peak Log 9 - Vehicle Speed,62 04 54,0,2,65535,FALSE,0.01,km/h
+22 04 55,Oil Temp Peak Log 10 - Vehicle Speed,62 04 55,0,2,65535,FALSE,0.01,km/h
+22 04 56,Adaptation Distance Accumulator,62 04 56,0,4,-1,FALSE,1,
