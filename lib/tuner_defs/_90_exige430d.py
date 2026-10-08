@@ -15,7 +15,7 @@ class TunerDefinition:
 		self.fuel_pressure = 0
 
 	def check(self):
-		return self.lta.read_memory(0x0d0588	, 37) == TunerDefinition.IDENT
+		return self.lta.read_memory(0x0d0588, 37) == TunerDefinition.IDENT
 
 	def read_u8(self, address):
 		return int.from_bytes(self.lta.read_memory(address, 1), BO_BE)
@@ -74,10 +74,16 @@ class TunerDefinition:
 			20, 110
 		),
 		SimpleGauge(parent,
-			"Engine air",
+			"Intake air",
 			lambda: self.read_u8(0x400018b2) * 5 / 8 - 40,
 			"{:.1f} °C",
 			20, 70
+		),
+		SimpleGauge(parent,
+			"Engine air",
+			lambda: self.read_u8(0x400018e0) * 5 / 8 - 40,
+			"{:.1f} °C",
+			20, 100
 		),
 		SimpleGauge(parent,
 			"MAF Accumulated",

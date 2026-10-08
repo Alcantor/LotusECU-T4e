@@ -3,6 +3,10 @@
 import os, configparser
 import tkinter as tk
 from tkinter import messagebox, ttk
+
+# Run from the project directory even when launched from a shortcut.
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
+
 try:
 	from lib.gui_crp01 import CRP01_editor_win, CRP01_uploader_win
 	from lib.gui_crp08 import CRP08_editor_win, CRP08_uploader_win
@@ -19,7 +23,6 @@ except ImportError as e:
 	raise e
 
 class main_window():
-	PREFS_FILE = 'prefs.cfg'
 	def __init__(self, master):
 		self.master = master
 		master.title('Lotus Tools')
@@ -35,11 +38,13 @@ class main_window():
 		tk.Button(master, text="T6 Coding Tool", height=3, width=20, command=self.open_cod_editor).pack()
 		tk.Button(master, text="Custom Flasher\n(Stage15)", height=3, width=20, command=self.open_flasher).pack()
 		#tk.Button(master, text="ABS EBC430", height=3, width=20, command=self.open_todo).pack()
-		self.prefs = configparser.ConfigParser()
-		self.prefs.read_file(open(self.PREFS_FILE))
 		# White background for read only combobox
 		style = ttk.Style()
 		style.map('TCombobox', fieldbackground=[('readonly','white')])
+		# Load preferences from DATA_DIR (defaults to the project directory).
+		self.prefs_path = os.environ.get("DATA_DIR",".")+"/prefs.cfg"
+		self.prefs = configparser.ConfigParser()
+		with open(self.prefs_path) as f: self.prefs.read_file(f)
 	def open_crp01_editor(self):
 		CRP01_editor_win(self.prefs, self.master)
 	def open_crp08_editor(self):
@@ -63,7 +68,7 @@ class main_window():
 		Flasher_win(self.prefs, self.master)
 	def on_close(self):
 		self.master.destroy()
-		with open(self.PREFS_FILE, 'w') as f: self.prefs.write(f)
+		with open(self.prefs_path, 'w') as f: self.prefs.write(f)
 
 root = tk.Tk()
 main_window(root)

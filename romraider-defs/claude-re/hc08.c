@@ -1339,9 +1339,9 @@ undefined1 acc32_mul(undefined1 param_1,char *param_2)
   byte bVar2;
   byte bVar3;
   byte bVar4;
-  short sVar5;
   byte bVar6;
   byte bVar7;
+  short sVar5;
   byte bVar8;
   
   bVar1 = param_2[3];
@@ -1357,23 +1357,23 @@ undefined1 acc32_mul(undefined1 param_1,char *param_2)
              (char)((ushort)DAT_0061 * (ushort)bVar1 >> 8) +
              DAT_0063 * *param_2 + DAT_0062 * param_2[1] + DAT_0061 * bVar2 + DAT_0060 * bVar1 +
              CARRY1(bVar7,bVar6) + CARRY1(bVar8,bVar3);
-  bVar7 = (byte)((ushort)DAT_0062 * (ushort)bVar1);
-  bVar6 = (byte)((ushort)DAT_0062 * (ushort)bVar1 >> 8);
-  bVar3 = bVar6 + bVar4;
-  if (CARRY1(bVar6,bVar4)) {
+  bVar6 = (byte)((ushort)DAT_0062 * (ushort)bVar1);
+  bVar7 = (byte)((ushort)DAT_0062 * (ushort)bVar1 >> 8);
+  bVar3 = bVar7 + bVar4;
+  if (CARRY1(bVar7,bVar4)) {
     DAT_0060 = DAT_0060 + '\x01';
   }
-  bVar6 = (byte)((ushort)DAT_0063 * (ushort)bVar2);
-  bVar4 = (byte)((ushort)DAT_0063 * (ushort)bVar2 >> 8);
-  bVar2 = bVar4 + bVar3;
-  DAT_0061 = bVar2 + CARRY1(bVar6,bVar7);
-  if (CARRY1(bVar4,bVar3) || CARRY1(bVar2,CARRY1(bVar6,bVar7))) {
+  bVar4 = (byte)((ushort)DAT_0063 * (ushort)bVar2);
+  bVar7 = (byte)((ushort)DAT_0063 * (ushort)bVar2 >> 8);
+  bVar2 = bVar7 + bVar3;
+  DAT_0061 = bVar2 + CARRY1(bVar4,bVar6);
+  if (CARRY1(bVar7,bVar3) || CARRY1(bVar2,CARRY1(bVar4,bVar6))) {
     DAT_0060 = DAT_0060 + '\x01';
   }
   bVar2 = (byte)((ushort)DAT_0063 * (ushort)bVar1 >> 8);
   DAT_0063 = (char)((ushort)DAT_0063 * (ushort)bVar1);
-  DAT_0062 = bVar2 + bVar6 + bVar7;
-  if ((CARRY1(bVar2,bVar6 + bVar7)) && (DAT_0061 = DAT_0061 + '\x01', DAT_0061 == '\0')) {
+  DAT_0062 = bVar2 + bVar4 + bVar6;
+  if ((CARRY1(bVar2,bVar4 + bVar6)) && (DAT_0061 = DAT_0061 + '\x01', DAT_0061 == '\0')) {
     DAT_0060 = DAT_0060 + '\x01';
   }
   return param_1;
@@ -1463,9 +1463,7 @@ ushort div16(byte param_1,ushort param_2)
   byte bVar6;
   ushort uVar5;
   bool bVar7;
-  undefined1 in_stack_00000000;
   char cStack_3;
-  byte local_1;
   
   bVar4 = (byte)(param_2 >> 8);
   bVar6 = (byte)param_2;
@@ -1491,8 +1489,7 @@ ushort div16(byte param_1,ushort param_2)
     return uVar5;
   }
   if (DAT_0064 < bVar6) {
-    uVar5 = CONCAT11(DAT_0064,in_stack_00000000);
-    bVar4 = (byte)(uVar5 % (param_2 & 0xff));
+    bVar4 = (byte)(CONCAT11(DAT_0064,param_1) % (param_2 & 0xff));
     DAT_0064 = 0;
   }
   else {

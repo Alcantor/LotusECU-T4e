@@ -54,5 +54,5 @@ all: $(NAME).text.bin $(NAME).data.bin $(NAME).txt $(NAME)_defs.xml
 	gawk -v base=0x10000 -f gen_defs.awk $< $(DEFS) > $@
 
 clean:
-	rm -f $(NAME).text.bin $(NAME).data.bin $(NAME).txt $(NAME)_defs.xml
+	rm -f $(OBJS) $(NAME).text.bin $(NAME).data.bin $(NAME).txt $(NAME)_defs.xml
 
