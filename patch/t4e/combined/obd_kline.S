@@ -14,48 +14,48 @@ hook_OBD_mode_0x01:
 
 	# Branching
 	cmplwi	%r3, 0x00
-	beq	OBD_mode_0x01_pid_0x00
+	beq	obd_mode_0x01_pid_0x00
 	cmplwi	%r3, 0x20
-	beq	OBD_mode_0x01_pid_0x20
+	beq	obd_mode_0x01_pid_0x20
 	cmplwi	%r3, 0x40
-	beq	OBD_mode_0x01_pid_0x40
+	beq	obd_mode_0x01_pid_0x40
 .ifdef OBDOIL
 .set OBD_MODE01_PID_0x00_MASK, OBD_MODE01_PID_0x00_MASK | 1<<(0x20-0x0B)
 .set OBD_MODE01_PID_0x40_MASK, OBD_MODE01_PID_0x40_MASK | 1<<(0x60-0x5C)
 	cmplwi	%r3, 0x0B
-	beq	OBD_mode_0x01_pid_0x0B
+	beq	obd_mode_0x01_pid_0x0B
 	cmplwi	%r3, 0x5C
-	beq	OBD_mode_0x01_pid_0x5C
+	beq	obd_mode_0x01_pid_0x5C
 .endif
 .ifdef FLEXFUEL
 .set OBD_MODE01_PID_0x40_MASK, OBD_MODE01_PID_0x40_MASK | 1<<(0x60-0x52)
 	cmplwi	%r3, 0x52
-	beq	OBD_mode_0x01_pid_0x52
+	beq	obd_mode_0x01_pid_0x52
 .endif
 .ifdef WIDEBAND
 .set OBD_MODE01_PID_0x20_MASK, OBD_MODE01_PID_0x20_MASK | 1<<(0x40-0x24)
 	cmplwi	%r3, 0x24
-	beq	OBD_mode_0x01_pid_0x24
+	beq	obd_mode_0x01_pid_0x24
 .endif
 	# Copy %r3 (Erase by patch in original code)
 	or	%r31, %r3, %r3
 	ba	hook_OBD_mode_0x01_continue
 
 # Available PIDs
-OBD_mode_0x01_pid_0x00:
+obd_mode_0x01_pid_0x00:
 	lis	%r4, OBD_MODE01_PID_0x00_MASK@ha
 	addi	%r4, %r4, OBD_MODE01_PID_0x00_MASK@l
-	b	OBD_mode_0x01_send_uint32
-OBD_mode_0x01_pid_0x20:
+	b	obd_kline_mode_0x01_send_uint32
+obd_mode_0x01_pid_0x20:
 	lis	%r4, OBD_MODE01_PID_0x20_MASK@ha
 	addi	%r4, %r4, OBD_MODE01_PID_0x20_MASK@l
-	b	OBD_mode_0x01_send_uint32
-OBD_mode_0x01_pid_0x40:
+	b	obd_kline_mode_0x01_send_uint32
+obd_mode_0x01_pid_0x40:
 	lis	%r4, OBD_MODE01_PID_0x40_MASK@ha
 	addi	%r4, %r4, OBD_MODE01_PID_0x40_MASK@l
-	b	OBD_mode_0x01_send_uint32
+	b	obd_kline_mode_0x01_send_uint32
 
-OBD_mode_0x01_send_uint32:
+obd_kline_mode_0x01_send_uint32:
 	lis	%r5, obd_resp@ha
 	addi	%r5, %r5, obd_resp@l
 
@@ -88,11 +88,11 @@ OBD_mode_0x01_send_uint32:
 
 	# Init sending variable
 	li	%r4, 0x09
-	lis	%r3, obd_resp_length@ha
-	stb	%r4, obd_resp_length@l(%r3)
+	lis	%r3, obd_resp_len@ha
+	stb	%r4, obd_resp_len@l(%r3)
 	li	%r4, 0x00
-	lis	%r3, obd_resp_index@ha
-	stb	%r4, obd_resp_index@l(%r3)
+	lis	%r3, obd_resp_i@ha
+	stb	%r4, obd_resp_i@l(%r3)
 
 	# Set the first byte into SCI1 Data Register
 	li	%r4, 0x48
@@ -102,7 +102,7 @@ OBD_mode_0x01_send_uint32:
 	ba	hook_OBD_mode_0x01_jump
 
 .ifdef OBDOIL
-OBD_mode_0x01_pid_0x0B:
+obd_mode_0x01_pid_0x0B:
 	# Intake manifold absolute pressure
 	lis	%r4, map@ha
 	lha	%r4, map@l(%r4)
@@ -123,30 +123,30 @@ presB_2:
 	mulli	%r4, %r4, ((1<<18)/10)
 	srwi	%r4, %r4, 18
 presB_3:
-	bl	OBD_mode_0x01_send_uint8
+	bl	obd_kline_mode_0x01_send_uint8
 	ba	hook_OBD_mode_0x01_jump
 
-OBD_mode_0x01_pid_0x5C:
+obd_mode_0x01_pid_0x5C:
 	# Oil temperature
 	lis	%r4, oil_temp@ha
 	lbz	%r4, oil_temp@l(%r4)
 
-	bl	OBD_mode_0x01_send_uint8
+	bl	obd_kline_mode_0x01_send_uint8
 	ba	hook_OBD_mode_0x01_jump
 .endif
 
 .ifdef FLEXFUEL
-OBD_mode_0x01_pid_0x52:
+obd_mode_0x01_pid_0x52:
 	# Ethanol fuel %
 	lis	%r4, ethanol_content@ha
 	lbz	%r4, ethanol_content@l(%r4)
 
-	bl	OBD_mode_0x01_send_uint8
+	bl	obd_kline_mode_0x01_send_uint8
 	ba	hook_OBD_mode_0x01_jump
 .endif
 
 .ifdef WIDEBAND
-OBD_mode_0x01_pid_0x24:
+obd_mode_0x01_pid_0x24:
 	# Wideband Lambda
 
 	# Corrected Pre-O2 WB input (0V = 10 AFR, 5V = 20 AFR)
@@ -165,7 +165,7 @@ OBD_mode_0x01_pid_0x24:
 	srwi	%r5, %r5, 9
 	or	%r4, %r4, %r5
 
-	bl	OBD_mode_0x01_send_uint32
+	bl	obd_kline_mode_0x01_send_uint32
 	ba	hook_OBD_mode_0x01_jump
 .endif
 
@@ -181,54 +181,54 @@ hook_OBD_mode_0x22:
 
 	# Branching
 	cmplwi	%r3, 0x0400
-	beq	OBD_mode_0x22_pid_0x0400
+	beq	obd_mode_0x22_pid_0x0400
 .ifdef FLEXFUEL
 .set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x01)
 	cmplwi	%r3, 0x0401
-	beq	OBD_mode_0x22_pid_0x0401
+	beq	obd_mode_0x22_pid_0x0401
 .endif
 .ifdef OILPRESSURE
 .set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x02)
 	cmplwi	%r3, 0x0402
-	beq	OBD_mode_0x22_pid_0x0402
+	beq	obd_mode_0x22_pid_0x0402
 .endif
 .ifdef WIDEBAND
 .set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x03)
 	cmplwi	%r3, 0x0403
-	beq	OBD_mode_0x22_pid_0x0403
+	beq	obd_mode_0x22_pid_0x0403
 .endif
 
 	# Copy %r3 (Erase by patch in original code)
 	or	%r31, %r3, %r3
 	ba	hook_OBD_mode_0x22_continue
 
-OBD_mode_0x22_pid_0x0400:
+obd_mode_0x22_pid_0x0400:
 	# Supported PIDs 0x0401-0x0420 (group 0x04)
 	lis	%r4, OBD_MODE22_PID_0x0400_MASK@ha
 	addi	%r4, %r4, OBD_MODE22_PID_0x0400_MASK@l
-	bl	OBD_mode_0x22_send_uint32
+	bl	obd_kline_mode_0x22_send_uint32
 	ba	hook_OBD_mode_0x22_jump
 
 .ifdef FLEXFUEL
-OBD_mode_0x22_pid_0x0401:
+obd_mode_0x22_pid_0x0401:
 	# Fuel temperature
 	lis	%r4, ethanol_temp@ha
 	lbz	%r4, ethanol_temp@l(%r4)
-	bl	OBD_mode_0x22_send_uint8
+	bl	obd_kline_mode_0x22_send_uint8
 	ba	hook_OBD_mode_0x22_jump
 .endif
 
 .ifdef OILPRESSURE
-OBD_mode_0x22_pid_0x0402:
+obd_mode_0x22_pid_0x0402:
 	# Oil Pressure
 	lis	%r4, oil_pressure@ha
 	lha	%r4, oil_pressure@l(%r4)
-	bl	OBD_mode_0x22_send_uint16
+	bl	obd_kline_mode_0x22_send_uint16
 	ba	hook_OBD_mode_0x22_jump
 .endif
 
 .ifdef WIDEBAND
-OBD_mode_0x22_pid_0x0403:
+obd_mode_0x22_pid_0x0403:
 	# Wideband correction slope and offset
 	lis	%r4, wb_slope@ha
 	lhz	%r4, wb_slope@l(%r4)
@@ -236,6 +236,6 @@ OBD_mode_0x22_pid_0x0403:
 	lis	%r5, wb_offset@ha
 	lha	%r5, wb_offset@l(%r5)
 	or	%r4, %r4, %r5
-	bl	OBD_mode_0x22_send_uint32
+	bl	obd_kline_mode_0x22_send_uint32
 	ba	hook_OBD_mode_0x22_jump
 .endif

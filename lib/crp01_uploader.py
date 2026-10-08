@@ -102,6 +102,7 @@ class CRP01_uploader:
 		self.p.progress_start(len(crp.file_data))
 		offset = 0
 		while(offset < len(crp.file_data)):
+			ui_cb()
 			self.send(0x70, crp.file_data[offset:offset+self.frame_size])
 			self.wait()
 			self.p.progress(self.frame_size)

@@ -41,8 +41,7 @@ class TunerDefinition:
 		self.load_1 = self.read_u32(0x3fd8e4)
 		self.afr_t = self.read_u16(0x3fd746)/100
 		if(force_ft0):
-			self.lta.write_memory(0x2f8148, b'\x80') # LTFT Zone 1
-			self.lta.write_memory(0x2f8149, b'\x80') # LTFT Zone 2
+			self.lta.write_memory(0x2f8148, b'\x80\x80') # LTFT Zone 1 & 2
 			self.lta.write_memory(0x3fd972, b'\x00\x00') # STFT
 			self.lta.write_memory(0x2f8152, b'\x00\x00') # Idle Trim
 		if(force_os0):

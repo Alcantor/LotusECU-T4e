@@ -46,8 +46,6 @@ class MapTable(tk.Canvas):
 		self.cells = []
 
 		self.interpolation = (0, 0, 0, 0, ((1.0, 0.0), (0.0, 0.0)), 0.0)
-		self.cursor = ()
-		self.selection = [0, 0, 0, 0, None, False]
 		self.color_job = None
 
 		self.bind("<Button-1>", self.on_left_click)
@@ -111,6 +109,22 @@ class MapTable(tk.Canvas):
 		]
 		self.color_cells()
 
+		# ECU Cursor
+		self.cursor = [
+			self.create_rectangle(0, 0, 0, 0, outline='red', width=4),
+			self.create_line(0, 0, 0, 0, fill='red', width=2),
+			self.create_line(0, 0, 0, 0, fill='red', width=2),
+			self.create_line(0, 0, 0, 0, fill='red', width=2),
+			self.create_line(0, 0, 0, 0, fill='red', width=2)
+		]
+
+		# User selection
+		self.selection = [
+			0, 0, 0, 0,
+			self.create_rectangle(0, 0, 0, 0, outline='blue', width=4, state='hidden'),
+			False
+		]
+
 	def color_cells(self):
 		vmin = vmax = self.data[0][0]
 		for y in range(self.ysize):
@@ -132,7 +146,13 @@ class MapTable(tk.Canvas):
 		self.color_job = self.after(1000, self.color_cells)
 
 	def draw_cursor(self):
-		for i in self.cursor: self.delete(i)
+		# The full-span crosshair is expensive: Tk merges all canvas
+		# damage of one redraw into a single union rectangle and
+		# repaints every item intersecting it. These lines span the
+		# whole table, so each 50 ms refresh tick repaints every cell
+		# between the cursor and the axis gutters. A smaller crosshair
+		# (one-cell ticks around the 2x2 cell box) would keep the
+		# damage local and drastically improve the drawing time.
 		cx, cy, x2r, y2r, m, res = self.interpolation
 		px=self.CELLW*(cx+1)
 		py=self.CELLH*(cy+1)
@@ -140,22 +160,18 @@ class MapTable(tk.Canvas):
 		py2=py+self.CELLH*(y2r+0.5)
 		width=self.CELLW*min(self.xsize-cx, 2)
 		height=self.CELLH*min(self.ysize-cy, 2)
-		self.cursor = (
-			self.create_rectangle(px, py, px+width, py+height, outline='red', width=4),
-			self.create_line(px2, self.CELLH, px2, py, fill="red", width=2),
-			self.create_line(self.CELLW, py2, px, py2, fill="red", width=2),
-			self.create_line(px2, py+height, px2, (self.ysize+1)*self.CELLH, fill="red", width=2),
-			self.create_line(px+width, py2, (self.xsize+1)*self.CELLW, py2, fill="red", width=2)
-		)
+		self.coords(self.cursor[0], px, py, px+width, py+height)
+		self.coords(self.cursor[1], px2, self.CELLH, px2, py)
+		self.coords(self.cursor[2], self.CELLW, py2, px, py2)
+		self.coords(self.cursor[3], px2, py+height, px2, (self.ysize+1)*self.CELLH)
+		self.coords(self.cursor[4], px+width, py2, (self.xsize+1)*self.CELLW, py2)
 
 	def draw_selection(self):
-		if(self.selection[4]): self.delete(self.selection[4])
-		if(self.selection[0:4] == [0,0,0,0]): return
 		px=self.CELLW*(self.selection[0]+1)
 		py=self.CELLH*(self.selection[1]+1)
 		px2=self.CELLW*(self.selection[2]+1)
 		py2=self.CELLH*(self.selection[3]+1)
-		self.selection[4] = self.create_rectangle(px, py, px2, py2, outline='blue', width=4)
+		self.coords(self.selection[4], px, py, px2, py2)
 
 	def update(self):
 		xvalue = self.read_xvalue()
@@ -243,12 +259,13 @@ class MapTable(tk.Canvas):
 		self.selection[2] = self.selection[0] + 1
 		self.selection[3] = self.selection[1] + 1
 		self.selection[5] = True
+		self.itemconfigure(self.selection[4], state='normal')
 		self.draw_selection()
 
 	def on_right_click(self, event):
 		self.selection[0] = self.selection[2] = 0
 		self.selection[1] = self.selection[3] = 0
-		self.draw_selection()
+		self.itemconfigure(self.selection[4], state='hidden')
 
 	def on_motion(self, event):
 		if(self.selection[5]):

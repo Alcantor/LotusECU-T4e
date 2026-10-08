@@ -278,21 +278,17 @@ class HDRMap:
 	def get_sym_addr(self, symbol):
 		return self.syms[symbol]
 
-# Bootloader from ALS3M0240J seems ugly. Look at 0x400 for example.
-# Bootloader A128E6009F, ALS3M0240F, ALS3M0244F and B120E0029F are identical
-# except the ID and CRC.
 def build_stage15():
 	print("Build white Stage 1.5...")
-	p = Patcher_T4eBoot("../dump/t4e-white/A128E6009F/bootldr.bin")
+	p = Patcher_T4eBoot("../dump/t4e-white/D129E6004H/bootldr.bin")
 	p.search_and_replace(
 		PPC32.ppc_ba(0x4000), # This value is also hardcoded in canstrap-white.bin
 		PPC32.ppc_ba(0x3000)
 	)
 	p.merge_file(0x3000, "../flasher/t4e/canstrap-white.bin")
 	p.save("t4e/stage15/white/bootldr.bin", False)
-
 	print("Build black Stage 1.5...")
-	p = Patcher_T4eBoot("../dump/t4e-black/A129E0002/bootldr.bin")
+	p = Patcher_T4eBoot("../dump/t4e-black/A128E0031/bootldr.bin")
 	p.search_and_replace(
 		PPC32.ppc_ori(4, 4, 0x1FDC), # This value is also hardcoded in canstrap-black.bin
 		PPC32.ppc_ori(4, 4, 0x9000)
@@ -302,21 +298,29 @@ def build_stage15():
 
 def build_combined():
 	print("Combined T4e patch...")
-	c = Patcher_T4eCalibration("../dump/t4e-black/A129E0002/calrom.bin")
-	p = Patcher_T4eProg("../dump/t4e-black/A129E0002/prog.bin")
+	obd_kline = input("Build for white dashboard (y/n) ? ")
+	if(obd_kline == 'y'):
+		c = Patcher_T4eCalibration("../dump/t4e-white/D129E6004H/calrom.bin")
+		p = Patcher_T4eProg("../dump/t4e-white/D129E6004H/prog.bin")
+		sym = "../white99.sym"
+	else:
+		c = Patcher_T4eCalibration("../dump/t4e-black/A128E0031/calrom.bin")
+		p = Patcher_T4eProg("../dump/t4e-black/A128E0031/prog.bin")
+		sym = "../black91.sym"
 	accusump = input("Include accusump support (y/n) ? ")
 	flexfuel = input("Include flexfuel support (y/n) ? ")
 	obdoil   = input("Include obdoil support (y/n) ? ")
 	wideband = input("Include wideband support (y/n) ? ")
 	softvtc = input("Disable VTC knob sampling (y/n) ? ")
 	os.system(
-		"make -C t4e/combined clean all OBD_KLINE=n "
+		"make -C t4e/combined clean all OBD_KLINE={:s} "
 		"CAL=0x{:X} ROM=0x{:X} RAM=0x{:X} SYM={:s} "
 		"ACCUSUMP={:s} FLEXFUEL={:s} OBDOIL={:s} WIDEBAND={:s}".format(
+		obd_kline,
 		c.get_free_cal(),
-		p.get_free_rom(),
+		(p.get_free_rom()+3) & ~3, # Round up to the next 4 bytes alignment (PPC jump needs it)
 		p.get_free_ram(),
-		"../black91.sym",
+		sym,
 		accusump, flexfuel, obdoil, wideband
 	))
 	m = HDRMap("t4e/combined/patch.txt")
@@ -348,16 +352,14 @@ def build_combined():
 	# Hook: OBD Mode 0x01
 	p.check_and_replace(
 		m.get_sym_addr("hook_OBD_mode_0x01_loc"),
-		#PPC32.ppc_or(31, 3, 3),
-		PPC32.ppc_rlwinm(0, 30, 0, 24, 31),
+		PPC32.ppc_or(31, 3, 3) if(obd_kline == 'y') else PPC32.ppc_rlwinm(0, 30, 0, 24, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x01"))
 	)
 
 	# Hook: OBD Mode 0x22
 	p.check_and_replace(
 		m.get_sym_addr("hook_OBD_mode_0x22_loc"),
-		#PPC32.ppc_or(31, 3, 3),
-		PPC32.ppc_rlwinm(29, 8, 0, 16, 31),
+		PPC32.ppc_or(31, 3, 3) if(obd_kline == 'y') else PPC32.ppc_rlwinm(29, 8, 0, 16, 31),
 		PPC32.ppc_ba(m.get_sym_addr("hook_OBD_mode_0x22"))
 	)
 
