@@ -25,54 +25,54 @@ hook_OBD_mode_0x01:
 
 	# Branching
 	cmplwi	%r3, 0x00
-	beq	OBD_mode_0x01_pid_0x00
+	beq	obd_mode_0x01_pid_0x00
 	cmplwi	%r3, 0x20
-	beq	OBD_mode_0x01_pid_0x20
+	beq	obd_mode_0x01_pid_0x20
 	cmplwi	%r3, 0x40
-	beq	OBD_mode_0x01_pid_0x40
+	beq	obd_mode_0x01_pid_0x40
 .ifdef OBDOIL
 .set OBD_MODE01_PID_0x00_MASK, OBD_MODE01_PID_0x00_MASK | 1<<(0x20-0x0B)
 .set OBD_MODE01_PID_0x40_MASK, OBD_MODE01_PID_0x40_MASK | 1<<(0x60-0x5C)
 	cmplwi	%r3, 0x0B
-	beq	OBD_mode_0x01_pid_0x0B
+	beq	obd_mode_0x01_pid_0x0B
 	cmplwi	%r3, 0x5C
-	beq	OBD_mode_0x01_pid_0x5C
+	beq	obd_mode_0x01_pid_0x5C
 .endif
 .ifdef FLEXFUEL
 .set OBD_MODE01_PID_0x40_MASK, OBD_MODE01_PID_0x40_MASK | 1<<(0x60-0x52)
 	cmplwi	%r3, 0x52
-	beq	OBD_mode_0x01_pid_0x52
+	beq	obd_mode_0x01_pid_0x52
 .endif
 .ifdef WIDEBAND
 .set OBD_MODE01_PID_0x20_MASK, OBD_MODE01_PID_0x20_MASK | 1<<(0x40-0x24)
 	cmplwi	%r3, 0x24
-	beq	OBD_mode_0x01_pid_0x24
+	beq	obd_mode_0x01_pid_0x24
 .endif
 	# Mask %r30 (Erase by patch in original code)
 	rlwinm	%r0, %r30, 0,24,31
 	ba	hook_OBD_mode_0x01_continue
 
 # Available PIDs
-OBD_mode_0x01_pid_0x00:
+obd_mode_0x01_pid_0x00:
 	lis	%r5, OBD_MODE01_PID_0x00_MASK@ha
 	addi	%r5, %r5, OBD_MODE01_PID_0x00_MASK@l
-	b	OBD_mode_0x01_mask
-OBD_mode_0x01_pid_0x20:
+	b	obd_mode_0x01_mask
+obd_mode_0x01_pid_0x20:
 	lis	%r5, OBD_MODE01_PID_0x20_MASK@ha
 	addi	%r5, %r5, OBD_MODE01_PID_0x20_MASK@l
-	b	OBD_mode_0x01_mask
-OBD_mode_0x01_pid_0x40:
+	b	obd_mode_0x01_mask
+obd_mode_0x01_pid_0x40:
 	lis	%r5, OBD_MODE01_PID_0x40_MASK@ha
 	addi	%r5, %r5, OBD_MODE01_PID_0x40_MASK@l
-	b	OBD_mode_0x01_mask
-OBD_mode_0x01_mask:
+	b	obd_mode_0x01_mask
+obd_mode_0x01_mask:
 	addi	%r31, %r31, 5 # Answer 5 bytes
 	stb	%r3, 0(%r4)
 	stw	%r5, 1(%r4)
 	ba	hook_OBD_mode_0x01_jump
 
 .ifdef OBDOIL
-OBD_mode_0x01_pid_0x0B:
+obd_mode_0x01_pid_0x0B:
 	# Intake manifold absolute pressure
 	addi	%r31, %r31, 2 # Answer 2 bytes
 	stb	%r3, 0(%r4)
@@ -99,7 +99,7 @@ presB_3:
 	stb	%r3, 1(%r4)
 	ba	hook_OBD_mode_0x01_jump
 
-OBD_mode_0x01_pid_0x5C:
+obd_mode_0x01_pid_0x5C:
 	# Oil temperature
 	addi	%r31, %r31, 2 # Answer 2 bytes
 	stb	%r3, 0(%r4)
@@ -113,7 +113,7 @@ OBD_mode_0x01_pid_0x5C:
 .endif
 
 .ifdef FLEXFUEL
-OBD_mode_0x01_pid_0x52:
+obd_mode_0x01_pid_0x52:
 	# Ethanol fuel %
 	addi	%r31, %r31, 2 # Answer 2 bytes
 	stb	%r3, 0(%r4)
@@ -127,7 +127,7 @@ OBD_mode_0x01_pid_0x52:
 .endif
 
 .ifdef WIDEBAND
-OBD_mode_0x01_pid_0x24:
+obd_mode_0x01_pid_0x24:
 	# Wideband Lambda
 	addi	%r31, %r31, 5 # Answer 5 bytes
 	stb	%r3, 0(%r4)
@@ -169,28 +169,28 @@ hook_OBD_mode_0x22:
 
 	# Branching
 	cmplwi	%r8, 0x0400
-	beq	OBD_mode_0x22_pid_0x0400
+	beq	obd_mode_0x22_pid_0x0400
 .ifdef FLEXFUEL
 .set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x01)
 	cmplwi	%r8, 0x0401
-	beq	OBD_mode_0x22_pid_0x0401
+	beq	obd_mode_0x22_pid_0x0401
 .endif
 .ifdef OILPRESSURE
 .set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x02)
 	cmplwi	%r8, 0x0402
-	beq	OBD_mode_0x22_pid_0x0402
+	beq	obd_mode_0x22_pid_0x0402
 .endif
 .ifdef WIDEBAND
 .set OBD_MODE22_PID_0x0400_MASK, OBD_MODE22_PID_0x0400_MASK | 1<<(0x20-0x03)
 	cmplwi	%r8, 0x0403
-	beq	OBD_mode_0x22_pid_0x0403
+	beq	obd_mode_0x22_pid_0x0403
 .endif
 
 	# Mask %r8 (Erase by patch in original code)
 	rlwinm	%r29, %r8, 0,16,31
 	ba	hook_OBD_mode_0x22_continue
 
-OBD_mode_0x22_pid_0x0400:
+obd_mode_0x22_pid_0x0400:
 	# Supported PIDs 0x0401-0x0420 (group 0x04)
 	addi	%r31, %r31, 4 # Answer 4 bytes
 	lis	%r3, OBD_MODE22_PID_0x0400_MASK@ha
@@ -199,7 +199,7 @@ OBD_mode_0x22_pid_0x0400:
 	ba	hook_OBD_mode_0x22_jump
 
 .ifdef FLEXFUEL
-OBD_mode_0x22_pid_0x0401:
+obd_mode_0x22_pid_0x0401:
 	# Fuel temperature
 	addi	%r31, %r31, 1 # Answer 1 bytes
 	lis	%r3, ethanol_temp@ha
@@ -209,7 +209,7 @@ OBD_mode_0x22_pid_0x0401:
 .endif
 
 .ifdef OILPRESSURE
-OBD_mode_0x22_pid_0x0402:
+obd_mode_0x22_pid_0x0402:
 	# Oil Pressure
 	addi	%r31, %r31, 2 # Answer 2 bytes
 	lis	%r3, oil_pressure@ha
@@ -219,7 +219,7 @@ OBD_mode_0x22_pid_0x0402:
 .endif
 
 .ifdef WIDEBAND
-OBD_mode_0x22_pid_0x0403:
+obd_mode_0x22_pid_0x0403:
 	# Wideband correction slope and offset
 	addi	%r31, %r31, 4 # Answer 4 bytes
 	lis	%r3, wb_slope@ha
