@@ -1,0 +1,10 @@
+Exige S 07MY FED
+
+bootldr:
+	A128E6009F K0404
+
+calrom:
+	D129E6004H LotusExige 220hp FED
+
+prog:
+	BCroftT4E090 03/12/2010 Lotus EngV0099

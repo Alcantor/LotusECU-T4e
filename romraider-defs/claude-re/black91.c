@@ -357,8 +357,6 @@ typedef uint8_t u8_time_10us;
 
 typedef uint16_t u16_afr_1/100;
 
-typedef ulonglong uint64_t;
-
 
 
 struct_segment_bss[3] segment_bss;
@@ -3253,7 +3251,7 @@ uint8_t obd_mode_0x09_pids_supported_11_18;
 undefined2 DAT_003fe746;
 uint8_t obd_mode_0x09_pids_supported_19_20;
 undefined2 DAT_003fe744;
-char[32] s_A129E0002_Sport_GT_240_EU_003fcf26;
+char[32] s_A128E0031_Exige_220Ps_EU_003fcf26;
 short DAT_003fc5da;
 short DAT_003fc5d8;
 short DAT_002f8354;
@@ -22359,7 +22357,7 @@ void obd_mode_0x09_informations(void)
       obd_resp[(byte)(bVar3 + 1)] = 1;
       bVar3 = bVar3 + 2;
       for (bVar1 = 0; bVar1 < 0x10; bVar1 = bVar1 + 1) {
-        obd_resp[bVar3] = s_A129E0002_Sport_GT_240_EU_003fcf26[bVar1];
+        obd_resp[bVar3] = s_A128E0031_Exige_220Ps_EU_003fcf26[bVar1];
         bVar3 = bVar3 + 1;
       }
       break;
