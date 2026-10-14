@@ -3353,12 +3353,11 @@ u16_factor_1/1023 DAT_003fe062;
 u16_factor_1/1023 DAT_003fe064;
 undefined2 DAT_003fbfe4;
 u16_factor_1/1023 CAL_sensor_tps_match_max;
-pointer PTR_DAT_0007601c;
-undefined DAT_00076020;
-pointer PTR_map_0007ab00;
+struct_varptr[470] struct_varptr_ARRAY_0007601c;
 undefined1 DAT_003f8b08;
 undefined1 DAT_003f8b09;
-undefined2 DAT_003f95fc;
+uint16_t[8] uint16_t_ARRAY_003f95fc;
+struct_varptr[231] log_varptr_list;
 char[512] log_data;
 ushort REG_RX14MSKLO_B;
 ushort REG_RX15MSKHI_B;
@@ -3439,8 +3438,8 @@ undefined4 can_b_rx_data_ptr;
 byte REG_CANB_MB13_DATA0;
 ushort REG_TIMER_B;
 byte REG_CANB_MB14_DATA0;
-undefined * *DAT_003f9074;
-undefined * *DAT_003f9060;
+struct_varptr *DAT_003f9074;
+struct_varptr *DAT_003f9060;
 ushort DAT_003f9064;
 byte *DAT_003f905c;
 byte REG_CANB_MB1_DATA0;
@@ -23898,15 +23897,14 @@ void log_copy(void)
   char *pcVar2;
   char *pcVar3;
   char cVar4;
-  undefined **ppuVar5;
+  struct_varptr *psVar5;
   int iVar6;
   undefined1 *puVar7;
   
   pcVar2 = log_data;
-  for (ppuVar5 = &PTR_map_0007ab00; *ppuVar5 != (undefined *)0x0;
-      ppuVar5 = (undefined **)((int)ppuVar5 + 6)) {
-    pcVar3 = *ppuVar5;
-    for (cVar4 = *(char *)(ppuVar5 + 1); cVar4 != '\0'; cVar4 = cVar4 + -1) {
+  for (psVar5 = log_varptr_list; psVar5->ptr != (void *)0x0; psVar5 = psVar5 + 1) {
+    pcVar3 = (char *)psVar5->ptr;
+    for (cVar4 = *(char *)&psVar5->size_le; cVar4 != '\0'; cVar4 = cVar4 + -1) {
       cVar1 = *pcVar3;
       pcVar3 = pcVar3 + 1;
       *pcVar2 = cVar1;
@@ -23914,17 +23912,19 @@ void log_copy(void)
     }
   }
   for (iVar6 = 0; iVar6 < 8; iVar6 = iVar6 + 1) {
-    puVar7 = *(undefined1 **)((int)&PTR_DAT_0007601c + ((ushort)(&DAT_003f95fc)[iVar6] & 0x3ff) * 6)
-    ;
-    if ((&DAT_00076020)[((ushort)(&DAT_003f95fc)[iVar6] & 0x3ff) * 6] == '\x01') {
+    puVar7 = (undefined1 *)struct_varptr_ARRAY_0007601c[uint16_t_ARRAY_003f95fc[iVar6] & 0x3ff].ptr;
+    if (*(char *)&struct_varptr_ARRAY_0007601c[uint16_t_ARRAY_003f95fc[iVar6] & 0x3ff].size_le ==
+        '\x01') {
       (&DAT_003f8b08)[iVar6 * 2] = 0;
       (&DAT_003f8b09)[iVar6 * 2] = *puVar7;
     }
-    else if ((&DAT_00076020)[((ushort)(&DAT_003f95fc)[iVar6] & 0x3ff) * 6] == '\x02') {
+    else if (*(char *)&struct_varptr_ARRAY_0007601c[uint16_t_ARRAY_003f95fc[iVar6] & 0x3ff].size_le
+             == '\x02') {
       (&DAT_003f8b08)[iVar6 * 2] = *puVar7;
       (&DAT_003f8b09)[iVar6 * 2] = puVar7[1];
     }
-    else if ((&DAT_00076020)[((ushort)(&DAT_003f95fc)[iVar6] & 0x3ff) * 6] == '\x04') {
+    else if (*(char *)&struct_varptr_ARRAY_0007601c[uint16_t_ARRAY_003f95fc[iVar6] & 0x3ff].size_le
+             == '\x04') {
       (&DAT_003f8b08)[iVar6 * 2] = puVar7[2];
       (&DAT_003f8b09)[iVar6 * 2] = puVar7[3];
     }
@@ -24385,27 +24385,28 @@ void can_b_mb15_recv_dev(void)
   byte bVar5;
   undefined2 uVar6;
   undefined4 uVar7;
-  byte *pbVar8;
-  ushort uVar9;
-  short sVar10;
+  void **ppvVar8;
+  byte *pbVar9;
+  ushort uVar10;
+  short sVar11;
   
-  uVar9 = REG_CANB_MB15_CS;
-  while ((uVar9 & 0x10) != 0) {
-    uVar9 = REG_CANB_MB15_CS;
+  uVar10 = REG_CANB_MB15_CS;
+  while ((uVar10 & 0x10) != 0) {
+    uVar10 = REG_CANB_MB15_CS;
   }
-  uVar9 = REG_CANB_MB15_CS;
-  if ((uVar9 & 0x60) == 0x60) {
+  uVar10 = REG_CANB_MB15_CS;
+  if ((uVar10 & 0x60) == 0x60) {
     REG_CANB_MB15_CS = 0x40;
     DAT_003f9068 = REG_TIMER_B;
   }
   else {
-    uVar9 = REG_CANB_MB15_CS;
-    if ((uVar9 & 0x20) != 0) {
+    uVar10 = REG_CANB_MB15_CS;
+    if ((uVar10 & 0x20) != 0) {
       can_b_rx_data_ptr = &REG_CANB_MB15_DATA0;
-      uVar9 = REG_CANB_MB15_ID_HI;
-      if ((int)(uint)uVar9 >> 5 == 0x50) {
-        uVar9 = REG_CANB_MB15_CS;
-        if ((uVar9 & 0xf) == 4) {
+      uVar10 = REG_CANB_MB15_ID_HI;
+      if ((int)(uint)uVar10 >> 5 == 0x50) {
+        uVar10 = REG_CANB_MB15_CS;
+        if ((uVar10 & 0xf) == 4) {
           DAT_003f9058 = (byte *)Ram003075f6;
           REG_CANB_MB15_CS = 0x40;
           DAT_003f9068 = REG_TIMER_B;
@@ -24421,10 +24422,10 @@ void can_b_mb15_recv_dev(void)
         }
       }
       else {
-        uVar9 = REG_CANB_MB15_ID_HI;
-        if ((int)(uint)uVar9 >> 5 == 0x51) {
-          uVar9 = REG_CANB_MB15_CS;
-          if ((uVar9 & 0xf) == 4) {
+        uVar10 = REG_CANB_MB15_ID_HI;
+        if ((int)(uint)uVar10 >> 5 == 0x51) {
+          uVar10 = REG_CANB_MB15_CS;
+          if ((uVar10 & 0xf) == 4) {
             DAT_003f9058 = (byte *)Ram003075f6;
             REG_CANB_MB15_CS = 0x40;
             DAT_003f9068 = REG_TIMER_B;
@@ -24435,15 +24436,15 @@ void can_b_mb15_recv_dev(void)
             REG_CANB_MB0_CS = 0xc2;
           }
           else {
-            uVar9 = REG_CANB_MB15_CS;
-            if ((uVar9 & 0xf) == 6) {
+            uVar10 = REG_CANB_MB15_CS;
+            if ((uVar10 & 0xf) == 6) {
               bVar1 = REG_CANB_MB15_DATA0;
               bVar2 = REG_CANB_MB15_DATA1;
               bVar3 = REG_CANB_MB15_DATA2;
               bVar4 = REG_CANB_MB15_DATA3;
               can_b_rx_data_ptr = &REG_CANB_MB15_DATA5;
               bVar5 = REG_CANB_MB15_DATA4;
-              DAT_003f9074 = (undefined **)CONCAT31(CONCAT21(CONCAT11(bVar2,bVar3),bVar4),bVar5);
+              DAT_003f9074 = (struct_varptr *)CONCAT31(CONCAT21(CONCAT11(bVar2,bVar3),bVar4),bVar5);
               bVar2 = REG_CANB_MB15_DATA5;
               REG_CANB_MB15_CS = 0x40;
               DAT_003f9068 = REG_TIMER_B;
@@ -24453,29 +24454,29 @@ void can_b_mb15_recv_dev(void)
                 REG_CANB_MB1_ID_HI = (ushort)bVar1 << 8 | 0x20;
                 DAT_003f9078 = &REG_CANB_MB1_DATA1;
                 REG_CANB_MB1_DATA0 = 10;
-                REG_CANB_MB1_DATA1 = *(byte *)DAT_003f9074;
+                REG_CANB_MB1_DATA1 = *(byte *)&DAT_003f9074->ptr;
                 REG_CANB_MB1_CS = 0xc2;
               }
               else if (bVar2 == 2) {
                 REG_CANB_MB1_CS = 0x88;
                 REG_CANB_MB1_ID_HI = (ushort)bVar1 << 8 | 0x20;
                 REG_CANB_MB1_DATA0 = 10;
-                DAT_003f9060 = (undefined **)((int)DAT_003f9074 + 1);
+                DAT_003f9060 = (struct_varptr *)((int)&DAT_003f9074->ptr + 1);
                 DAT_003f9078 = &REG_CANB_MB1_DATA2;
-                REG_CANB_MB1_DATA1 = *(byte *)DAT_003f9074;
-                REG_CANB_MB1_DATA2 = *(byte *)DAT_003f9060;
+                REG_CANB_MB1_DATA1 = *(byte *)&DAT_003f9074->ptr;
+                REG_CANB_MB1_DATA2 = *(byte *)&DAT_003f9060->ptr;
                 REG_CANB_MB1_CS = 0xc3;
               }
               else if (bVar2 == 4) {
                 REG_CANB_MB1_CS = 0x88;
                 REG_CANB_MB1_ID_HI = (ushort)bVar1 << 8 | 0x20;
                 REG_CANB_MB1_DATA0 = 10;
-                REG_CANB_MB1_DATA1 = *(byte *)DAT_003f9074;
-                REG_CANB_MB1_DATA2 = *(byte *)((int)DAT_003f9074 + 1);
-                DAT_003f9060 = (undefined **)((int)DAT_003f9074 + 3);
+                REG_CANB_MB1_DATA1 = *(byte *)&DAT_003f9074->ptr;
+                REG_CANB_MB1_DATA2 = *(byte *)((int)&DAT_003f9074->ptr + 1);
+                DAT_003f9060 = (struct_varptr *)((int)&DAT_003f9074->ptr + 3);
                 DAT_003f9078 = &REG_CANB_MB1_DATA4;
-                REG_CANB_MB1_DATA3 = *(byte *)((int)DAT_003f9074 + 2);
-                REG_CANB_MB1_DATA4 = *(byte *)DAT_003f9060;
+                REG_CANB_MB1_DATA3 = *(byte *)((int)&DAT_003f9074->ptr + 2);
+                REG_CANB_MB1_DATA4 = *(byte *)&DAT_003f9060->ptr;
                 REG_CANB_MB1_CS = 0xc5;
               }
             }
@@ -24486,10 +24487,10 @@ void can_b_mb15_recv_dev(void)
           }
         }
         else {
-          uVar9 = REG_CANB_MB15_ID_HI;
-          if ((int)(uint)uVar9 >> 5 == 0x52) {
-            uVar9 = REG_CANB_MB15_CS;
-            if ((uVar9 & 0xf) == 4) {
+          uVar10 = REG_CANB_MB15_ID_HI;
+          if ((int)(uint)uVar10 >> 5 == 0x52) {
+            uVar10 = REG_CANB_MB15_CS;
+            if ((uVar10 & 0xf) == 4) {
               DAT_003f9058 = (byte *)Ram003075f6;
               REG_CANB_MB15_CS = 0x40;
               DAT_003f9068 = REG_TIMER_B;
@@ -24500,17 +24501,18 @@ void can_b_mb15_recv_dev(void)
               REG_CANB_MB0_CS = 0xc1;
             }
             else {
-              uVar9 = REG_CANB_MB15_CS;
-              if ((uVar9 & 0xf) == 7) {
+              uVar10 = REG_CANB_MB15_CS;
+              if ((uVar10 & 0xf) == 7) {
                 bVar1 = REG_CANB_MB15_DATA0;
                 bVar2 = REG_CANB_MB15_DATA1;
                 bVar3 = REG_CANB_MB15_DATA2;
                 bVar4 = REG_CANB_MB15_DATA3;
                 bVar5 = REG_CANB_MB15_DATA4;
-                DAT_003f9074 = (undefined **)CONCAT31(CONCAT21(CONCAT11(bVar2,bVar3),bVar4),bVar5);
+                DAT_003f9074 = (struct_varptr *)
+                               CONCAT31(CONCAT21(CONCAT11(bVar2,bVar3),bVar4),bVar5);
                 can_b_rx_data_ptr = &REG_CANB_MB15_DATA7;
                 bVar2 = REG_CANB_MB15_DATA6;
-                uVar9 = (ushort)bVar2;
+                uVar10 = (ushort)bVar2;
                 REG_CANB_MB15_CS = 0x40;
                 DAT_003f9068 = REG_TIMER_B;
                 DAT_003f9060 = DAT_003f9074;
@@ -24518,14 +24520,14 @@ void can_b_mb15_recv_dev(void)
                 REG_CANB_MB1_CS = 0x88;
                 REG_CANB_MB1_ID_HI = (ushort)bVar1 << 8 | 0x40;
                 if (8 < bVar2) {
-                  uVar9 = 8;
+                  uVar10 = 8;
                 }
-                for (; uVar9 != 0; uVar9 = uVar9 - 1) {
-                  bVar1 = *(byte *)DAT_003f9060;
-                  DAT_003f9060 = (undefined **)((int)DAT_003f9060 + 1);
-                  pbVar8 = DAT_003f9078 + 1;
-                  *DAT_003f9078 = bVar1;
-                  DAT_003f9078 = pbVar8;
+                for (; uVar10 != 0; uVar10 = uVar10 - 1) {
+                  ppvVar8 = &DAT_003f9060->ptr;
+                  DAT_003f9060 = (struct_varptr *)((int)&DAT_003f9060->ptr + 1);
+                  pbVar9 = DAT_003f9078 + 1;
+                  *DAT_003f9078 = *(byte *)ppvVar8;
+                  DAT_003f9078 = pbVar9;
                 }
                 REG_CANB_MB1_CS = 200;
               }
@@ -24536,10 +24538,10 @@ void can_b_mb15_recv_dev(void)
             }
           }
           else {
-            uVar9 = REG_CANB_MB15_ID_HI;
-            if ((int)(uint)uVar9 >> 5 == 0x53) {
-              uVar9 = REG_CANB_MB15_CS;
-              if ((uVar9 & 0xf) == 5) {
+            uVar10 = REG_CANB_MB15_ID_HI;
+            if ((int)(uint)uVar10 >> 5 == 0x53) {
+              uVar10 = REG_CANB_MB15_CS;
+              if ((uVar10 & 0xf) == 5) {
                 DAT_003f9064 = 0;
                 can_b_rx_data_ptr = &REG_CANB_MB15_DATA4;
                 DAT_003f9058 = (byte *)Ram003075f6;
@@ -24550,33 +24552,33 @@ void can_b_mb15_recv_dev(void)
                 DAT_003f9078 = &REG_CANB_MB0_DATA0;
                 REG_CANB_MB0_CS = 0x88;
                 REG_CANB_MB0_ID_HI = 0xf400;
-                uVar9 = DAT_003f9066;
+                uVar10 = DAT_003f9066;
                 if (DAT_003f9066 < 9) {
-                  for (; uVar9 != 0; uVar9 = uVar9 - 1) {
+                  for (; uVar10 != 0; uVar10 = uVar10 - 1) {
                     bVar1 = *DAT_003f9058;
                     DAT_003f9058 = DAT_003f9058 + 1;
-                    pbVar8 = DAT_003f9078 + 1;
+                    pbVar9 = DAT_003f9078 + 1;
                     *DAT_003f9078 = bVar1;
-                    DAT_003f9078 = pbVar8;
+                    DAT_003f9078 = pbVar9;
                   }
                   REG_CANB_MB0_CS = DAT_003f9066 + 0xc0;
                   DAT_003f9066 = 0;
                 }
                 else {
-                  for (sVar10 = 8; sVar10 != 0; sVar10 = sVar10 + -1) {
+                  for (sVar11 = 8; sVar11 != 0; sVar11 = sVar11 + -1) {
                     bVar1 = *DAT_003f9058;
                     DAT_003f9058 = DAT_003f9058 + 1;
-                    pbVar8 = DAT_003f9078 + 1;
+                    pbVar9 = DAT_003f9078 + 1;
                     *DAT_003f9078 = bVar1;
-                    DAT_003f9078 = pbVar8;
+                    DAT_003f9078 = pbVar9;
                   }
                   REG_CANB_MB0_CS = 200;
                   DAT_003f9066 = DAT_003f9066 - 8;
                 }
               }
               else {
-                uVar9 = REG_CANB_MB15_CS;
-                if ((uVar9 & 0xf) == 6) {
+                uVar10 = REG_CANB_MB15_CS;
+                if ((uVar10 & 0xf) == 6) {
                   DAT_003f9064 = 0;
                   can_b_rx_data_ptr = &REG_CANB_MB15_DATA4;
                   DAT_003f9058 = (byte *)Ram003075f6;
@@ -24586,33 +24588,33 @@ void can_b_mb15_recv_dev(void)
                   DAT_003f9078 = &REG_CANB_MB0_DATA0;
                   REG_CANB_MB0_CS = 0x88;
                   REG_CANB_MB0_ID_HI = 0xf400;
-                  uVar9 = DAT_003f9066;
+                  uVar10 = DAT_003f9066;
                   if (DAT_003f9066 < 9) {
-                    for (; uVar9 != 0; uVar9 = uVar9 - 1) {
+                    for (; uVar10 != 0; uVar10 = uVar10 - 1) {
                       bVar1 = *DAT_003f9058;
                       DAT_003f9058 = DAT_003f9058 + 1;
-                      pbVar8 = DAT_003f9078 + 1;
+                      pbVar9 = DAT_003f9078 + 1;
                       *DAT_003f9078 = bVar1;
-                      DAT_003f9078 = pbVar8;
+                      DAT_003f9078 = pbVar9;
                     }
                     REG_CANB_MB0_CS = DAT_003f9066 + 0xc0;
                     DAT_003f9066 = 0;
                   }
                   else {
-                    for (sVar10 = 8; sVar10 != 0; sVar10 = sVar10 + -1) {
+                    for (sVar11 = 8; sVar11 != 0; sVar11 = sVar11 + -1) {
                       bVar1 = *DAT_003f9058;
                       DAT_003f9058 = DAT_003f9058 + 1;
-                      pbVar8 = DAT_003f9078 + 1;
+                      pbVar9 = DAT_003f9078 + 1;
                       *DAT_003f9078 = bVar1;
-                      DAT_003f9078 = pbVar8;
+                      DAT_003f9078 = pbVar9;
                     }
                     REG_CANB_MB0_CS = 200;
                     DAT_003f9066 = DAT_003f9066 - 8;
                   }
                 }
                 else {
-                  uVar9 = REG_CANB_MB15_CS;
-                  if ((uVar9 & 0xf) == 4) {
+                  uVar10 = REG_CANB_MB15_CS;
+                  if ((uVar10 & 0xf) == 4) {
                     DAT_003f9058 = (byte *)Ram003075f6;
                     REG_CANB_MB15_CS = 0x40;
                     DAT_003f9068 = REG_TIMER_B;
@@ -24623,14 +24625,14 @@ void can_b_mb15_recv_dev(void)
                     REG_CANB_MB0_CS = 0xc4;
                   }
                   else {
-                    uVar9 = REG_CANB_MB15_CS;
-                    if ((uVar9 & 0xf) == 1) {
+                    uVar10 = REG_CANB_MB15_CS;
+                    if ((uVar10 & 0xf) == 1) {
                       bVar1 = REG_CANB_MB15_DATA0;
                       REG_CANB_MB15_CS = 0x40;
                       DAT_003f9068 = REG_TIMER_B;
                       REG_CANB_MB1_CS = 0x88;
                       REG_CANB_MB1_ID_HI = (ushort)bVar1 << 8 | 0x60;
-                      DAT_003f9060 = &PTR_DAT_0007601c;
+                      DAT_003f9060 = struct_varptr_ARRAY_0007601c;
                       REG_CANB_MB1_DATA0 = 10;
                       REG_CANB_MB1_DATA1 = 0;
                       REG_CANB_MB1_DATA2 = 7;
@@ -24649,10 +24651,10 @@ void can_b_mb15_recv_dev(void)
               }
             }
             else {
-              uVar9 = REG_CANB_MB15_ID_HI;
-              if ((int)(uint)uVar9 >> 5 == 0x54) {
-                uVar9 = REG_CANB_MB15_CS;
-                if ((uVar9 & 0xf) == 8) {
+              uVar10 = REG_CANB_MB15_ID_HI;
+              if ((int)(uint)uVar10 >> 5 == 0x54) {
+                uVar10 = REG_CANB_MB15_CS;
+                if ((uVar10 & 0xf) == 8) {
                   can_b_rx_data_ptr = &REG_CANB_MB15_DATA4;
                   DAT_003f905c = (byte *)Ram003075f6;
                   REG_CANB_MB15_CS = 0x40;
@@ -24667,10 +24669,10 @@ void can_b_mb15_recv_dev(void)
                 }
               }
               else {
-                uVar9 = REG_CANB_MB15_ID_HI;
-                if ((int)(uint)uVar9 >> 5 == 0x55) {
-                  uVar9 = REG_CANB_MB15_CS;
-                  if ((uVar9 & 0xf) == 6) {
+                uVar10 = REG_CANB_MB15_ID_HI;
+                if ((int)(uint)uVar10 >> 5 == 0x55) {
+                  uVar10 = REG_CANB_MB15_CS;
+                  if ((uVar10 & 0xf) == 6) {
                     can_b_rx_data_ptr = &REG_CANB_MB15_DATA4;
                     DAT_003f905c = (byte *)Ram003075f6;
                     REG_CANB_MB15_CS = 0x40;
@@ -24684,10 +24686,10 @@ void can_b_mb15_recv_dev(void)
                   }
                 }
                 else {
-                  uVar9 = REG_CANB_MB15_ID_HI;
-                  if ((int)(uint)uVar9 >> 5 == 0x56) {
-                    uVar9 = REG_CANB_MB15_CS;
-                    if ((uVar9 & 0xf) == 5) {
+                  uVar10 = REG_CANB_MB15_ID_HI;
+                  if ((int)(uint)uVar10 >> 5 == 0x56) {
+                    uVar10 = REG_CANB_MB15_CS;
+                    if ((uVar10 & 0xf) == 5) {
                       can_b_rx_data_ptr = &REG_CANB_MB15_DATA4;
                       DAT_003f905c = (byte *)Ram003075f6;
                       REG_CANB_MB15_CS = 0x40;
@@ -24701,11 +24703,11 @@ void can_b_mb15_recv_dev(void)
                     }
                   }
                   else {
-                    uVar9 = REG_CANB_MB15_ID_HI;
-                    if ((int)(uint)uVar9 >> 5 == 0x57) {
+                    uVar10 = REG_CANB_MB15_ID_HI;
+                    if ((int)(uint)uVar10 >> 5 == 0x57) {
                       if (DAT_003f9064 == 0) {
-                        uVar9 = REG_CANB_MB15_CS;
-                        if ((uVar9 & 0xf) == 5) {
+                        uVar10 = REG_CANB_MB15_CS;
+                        if ((uVar10 & 0xf) == 5) {
                           can_b_rx_data_ptr = &REG_CANB_MB15_DATA4;
                           DAT_003f905c = (byte *)Ram003075f6;
                           bVar1 = REG_CANB_MB15_DATA4;
@@ -24719,13 +24721,13 @@ void can_b_mb15_recv_dev(void)
                         }
                       }
                       else {
-                        uVar9 = REG_CANB_MB15_CS;
-                        for (uVar9 = uVar9 & 0xf; uVar9 != 0; uVar9 = uVar9 - 1) {
+                        uVar10 = REG_CANB_MB15_CS;
+                        for (uVar10 = uVar10 & 0xf; uVar10 != 0; uVar10 = uVar10 - 1) {
                           bVar1 = *can_b_rx_data_ptr;
-                          pbVar8 = DAT_003f905c + 1;
+                          pbVar9 = DAT_003f905c + 1;
                           can_b_rx_data_ptr = can_b_rx_data_ptr + 1;
                           *DAT_003f905c = bVar1;
-                          DAT_003f905c = pbVar8;
+                          DAT_003f905c = pbVar9;
                           DAT_003f9064 = DAT_003f9064 - 1;
                         }
                         REG_CANB_MB15_CS = 0x40;
@@ -24745,8 +24747,8 @@ void can_b_mb15_recv_dev(void)
       }
     }
   }
-  uVar9 = REG_IFLAG_B;
-  REG_IFLAG_B = uVar9 & 0x7fff;
+  uVar10 = REG_IFLAG_B;
+  REG_IFLAG_B = uVar10 & 0x7fff;
   return;
 }
 
@@ -25787,7 +25789,7 @@ void can_a_mb15_recv_dev(void)
                       DAT_003f9090 = REG_TIMER_A;
                       REG_CANA_MB1_CS = 0x88;
                       REG_CANA_MB1_ID_HI = (ushort)bVar1 << 8 | 0x60;
-                      PTR_DAT_003f9088 = (struct_varptr *)&PTR_DAT_0007601c;
+                      PTR_DAT_003f9088 = struct_varptr_ARRAY_0007601c;
                       REG_CANA_MB1_DATA0 = 10;
                       REG_CANA_MB1_DATA1 = 0;
                       REG_CANA_MB1_DATA2 = 7;
