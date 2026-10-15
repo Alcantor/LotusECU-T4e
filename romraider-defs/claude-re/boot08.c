@@ -138,7 +138,7 @@ undefined2 tx_buffer_i;
 ushort REG_IFLAG_A;
 uint16_t tx_can_id;
 byte DAT_003f910a;
-uint8_t[256] CRC8_lookup_ram;
+uint8_t[256] crc8_table_ram;
 undefined DAT_003f938f;
 uint8_t efip_crc;
 uint16_t rx_buffer_write_i;
@@ -812,7 +812,7 @@ void can_a_mb0_send(void)
 
 // Computes CRC8 using lookup table (polynomial 0x31)
 
-byte CRC8(byte *param_1,int param_2)
+byte crc8(byte *param_1,int param_2)
 
 {
   byte bVar1;
@@ -822,7 +822,7 @@ byte CRC8(byte *param_1,int param_2)
   for (iVar2 = 0; iVar2 < param_2; iVar2 = iVar2 + 1) {
     bVar1 = *param_1;
     param_1 = param_1 + 1;
-    DAT_003f910a = CRC8_lookup_ram[bVar1 ^ DAT_003f910a];
+    DAT_003f910a = crc8_table_ram[bVar1 ^ DAT_003f910a];
   }
   return DAT_003f910a;
 }
@@ -1354,7 +1354,7 @@ void efip_send_hello(void)
   tx_buffer[4] = 0;
   tx_buffer[5] = (uint8_t)((ushort)DAT_00000a06 >> 8);
   tx_buffer[6] = (uint8_t)DAT_00000a06;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1382,7 +1382,7 @@ void efip_send_retransmit(uint8_t param_1)
     tx_buffer[6] = 0;
     DAT_003f911c = DAT_003f911c + 1;
     tx_buffer[5] = param_1;
-    tx_buffer[7] = CRC8(tx_buffer,7);
+    tx_buffer[7] = crc8(tx_buffer,7);
     tx_buffer_len = 8;
     tx_buffer_i = 0;
     efip_poll_can_tx();
@@ -1411,7 +1411,7 @@ void efip_send_frame_request(void)
   tx_buffer[4] = 0;
   tx_buffer[5] = (uint8_t)(crp_frame_i >> 8);
   tx_buffer[6] = (uint8_t)crp_frame_i;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1435,7 +1435,7 @@ void efip_send_error(uint8_t param_1)
   tx_buffer[4] = 0;
   tx_buffer[6] = 0;
   tx_buffer[5] = param_1;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1460,7 +1460,7 @@ void efip_send_error_hc08(uint8_t param_1)
   tx_buffer[4] = 0;
   tx_buffer[6] = 0;
   tx_buffer[5] = param_1;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1557,7 +1557,7 @@ void efip_send_complete(void)
   tx_buffer[4] = 0;
   tx_buffer[5] = 0;
   tx_buffer[6] = 0;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1581,7 +1581,7 @@ void efip_send_hc08_result(undefined4 param_1)
   tx_buffer[4] = 0;
   tx_buffer[5] = 0;
   tx_buffer[6] = 0;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1602,7 +1602,7 @@ void efip_send_hc08_start(undefined4 param_1)
   tx_buffer[4] = 0;
   tx_buffer[5] = 0;
   tx_buffer[6] = 0;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1623,7 +1623,7 @@ void efip_send_hc08_erase_info(undefined4 param_1)
   tx_buffer[4] = 0;
   tx_buffer[5] = 0;
   tx_buffer[6] = 0;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -1960,7 +1960,7 @@ void efip_send_erasing(void)
   tx_buffer[4] = 32;
   tx_buffer[5] = 0;
   tx_buffer[6] = 0;
-  tx_buffer[7] = CRC8(tx_buffer,7);
+  tx_buffer[7] = crc8(tx_buffer,7);
   tx_buffer_len = 8;
   tx_buffer_i = 0;
   efip_poll_can_tx();
@@ -4057,7 +4057,7 @@ void crc8_update(byte *param_1)
 
 {
   efip_crc = DAT_003f9108;
-  DAT_003f9108 = CRC8_lookup_ram[*param_1 ^ DAT_003f9108];
+  DAT_003f9108 = crc8_table_ram[*param_1 ^ DAT_003f9108];
   return;
 }
 
@@ -4374,7 +4374,7 @@ void crc8_update_ram(byte *param_1)
 
 {
   efip_crc = DAT_003f9108;
-  DAT_003f9108 = CRC8_lookup_ram[*param_1 ^ DAT_003f9108];
+  DAT_003f9108 = crc8_table_ram[*param_1 ^ DAT_003f9108];
   return;
 }
 

@@ -15,7 +15,7 @@ class TunerDefinition:
 		self.fuel_pressure = 0
 
 	def check(self):
-		return self.lta.read_memory(0x0d0588	, 37) == TunerDefinition.IDENT
+		return self.lta.read_memory(0x0d0588, 37) == TunerDefinition.IDENT
 
 	def read_u8(self, address):
 		return int.from_bytes(self.lta.read_memory(address, 1), BO_BE)

@@ -23,7 +23,7 @@ HEADLESS = $(GHIDRA_PATH)/support/analyzeHeadless $(abspath $(WORKDIR)) $(PROJEC
 
 .PHONY: all unpack pack guide clean help
 
-all: black91.c boot08.c hc08.c ../../patch/t4e/black91.sym ../T4E090_defs.xml
+all: black91.c white99.c boot06_stage1.c boot06_stage2.c boot08.c hc08.c ../../patch/t4e/black91.sym ./../patch/t4e/white99.c ../T4E090_defs.xml
 
 help:
 	@echo "Targets:"
@@ -76,17 +76,17 @@ pack: $(PROJECT_GPR)
 	@echo "Packed to $(GAR)"
 
 %.c: $(PROJECT_GPR)
-	$(HEADLESS) -process $(notdir $*).bin -postScript ExportCCode.java $@
+	$(HEADLESS) -recursive -process $(notdir $*).bin -postScript ExportCCode.java $@
 
 %.sym: $(PROJECT_GPR)
-	$(HEADLESS) -process $(notdir $*).bin -postScript ExportGNUSym.java $@
+	$(HEADLESS) -recursive -process $(notdir $*).bin -postScript ExportGNUSym.java $@
 
 # ExportRomRaiderDefs.java takes no arguments: it writes "<xmlid>_defs.xml"
 # (xmlid "T4E090" comes from the CAL_base EOL comment) in the current
 # directory, and merges in "<xmlid>_defs.inc" from the current directory if
 # present. The "cd .." puts it in romraider-defs/, where both live.
 ../T4E090_defs.xml: $(PROJECT_GPR) ../T4E090_defs.inc
-	cd .. && $(HEADLESS) -process black91.bin -postScript ExportRomRaiderDefs.java
+	cd .. && $(HEADLESS) -recursive -process black91.bin -postScript ExportRomRaiderDefs.java
 
 clean:
 	rm -rf $(WORKDIR)
